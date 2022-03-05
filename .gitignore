@@ -1,0 +1,8 @@
+
+.vs/
+
+_bin/
+_int/
+
+*.user
+UserMacro.props

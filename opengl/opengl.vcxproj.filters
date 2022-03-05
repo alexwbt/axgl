@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{0d3b441a-6883-4f6d-b620-9a664f7c01a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\util">
+      <UniqueIdentifier>{6249606c-424a-4b86-98ad-a58055c0ebce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\gl">
+      <UniqueIdentifier>{18c9e7ac-b239-42ed-932a-7cc4721a6917}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\gl\window">
+      <UniqueIdentifier>{818227b6-0c90-4d38-85b1-912d7eb0c6f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\gl\model">
+      <UniqueIdentifier>{94f95b0e-10a1-4365-8270-2178bf77594f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\gl\camera">
+      <UniqueIdentifier>{cb7a9ce4-8503-40ad-8bc2-b7b60005d5df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\gl\model\shaders">
+      <UniqueIdentifier>{16c64d96-bd8a-462d-b144-78051649cfc6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\model.cpp">
+      <Filter>src\gl\model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader.cpp">
+      <Filter>src\gl\model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\texture.cpp">
+      <Filter>src\gl\model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\file.cpp">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window.cpp">
+      <Filter>src\gl\window</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera.cpp">
+      <Filter>src\gl\camera</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\include\opengl\file.h">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\opengl\model.h">
+      <Filter>src\gl\model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\opengl\shader.h">
+      <Filter>src\gl\model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\opengl\texture.h">
+      <Filter>src\gl\model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\opengl\window.h">
+      <Filter>src\gl\window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\opengl\camera.h">
+      <Filter>src\gl\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\opengl\shaders\unicolor-shader.h">
+      <Filter>src\gl\model\shaders</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
