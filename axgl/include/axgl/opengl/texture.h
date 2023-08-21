@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 #include <memory>
@@ -10,8 +12,8 @@ NAMESPACE_OPENGL
 class Texture final
 {
 public:
-  static std::shared_ptr<Texture> Load2DTexture(const std::string& path, int format = GL_RGB);
-  static std::shared_ptr<Texture> LoadCubemapTexture(std::vector<std::string>& paths, int format = GL_RGB);
+  static std::shared_ptr<Texture> load_2d_texture(const std::string& path, int format = GL_RGB);
+  static std::shared_ptr<Texture> load_cubemap_texture(std::vector<std::string>& paths, int format = GL_RGB);
 
 private:
   uint32_t id_;

@@ -62,8 +62,9 @@ namespace glfw
 
     // GLFWwindow* get_glfw_window() const;
     bool is_destroyed() const { return destroyed_; }
-
     bool key_pressed(int key) const;
+
+    void use() const;
 
   private:
     void destroy();

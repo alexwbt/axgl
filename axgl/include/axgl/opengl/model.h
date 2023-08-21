@@ -1,3 +1,5 @@
+#pragma once
+
 #include <memory>
 #include <vector>
 
@@ -52,7 +54,7 @@ public:
     glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
     glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(VertexType), vertices.data(), GL_STATIC_DRAW);
 
-    shader_->EnableAttributes();
+    shader_->enable_attributes();
 
     glBindVertexArray(0);
   }
@@ -83,7 +85,7 @@ public:
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id_);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
 
-    shader_->EnableAttributes();
+    shader_->enable_attributes();
 
     glBindVertexArray(0);
   }

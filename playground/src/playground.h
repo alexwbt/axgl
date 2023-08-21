@@ -5,6 +5,9 @@
 #include "axgl/window.h"
 #include "axgl/gameloop.h"
 #include "axgl/world/world.h"
+#include "axgl/opengl/entity/skybox.h"
+
+#include "resource.h"
 
 class Playground : public axgl::Component
 {
@@ -24,9 +27,17 @@ public:
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    // create window
+    window_ = std::make_shared<glfw::Window>(800, 600, "Hello World");
+    window_->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    window_->use();
+
     // initialize glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
+    else
+      SPDLOG_INFO("Loaded OpenGL");
+
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
     glCullFace(GL_FRONT);
@@ -36,12 +47,19 @@ public:
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // create window
-    window_ = std::make_shared<glfw::Window>(800, 600, "Hello World");
-    window_->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // load resources
+    load_shaders();
+    load_textures();
 
     // create world
     world_ = std::make_shared<axgl::world::World>();
+
+    auto skybox = std::make_shared<axgl::opengl::entity::Skybox>(
+      get_shader(ShaderID::kSkybox),
+      get_texture(TextureID::kSkybox)
+    );
+    world_->push_entity(skybox);
+
     world_->initialize();
   }
 

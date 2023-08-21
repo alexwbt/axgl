@@ -12,7 +12,10 @@ inline std::string read_text_file(const std::string& path)
 {
     std::ifstream file(path, std::ifstream::in);
     std::stringstream output;
-    if (!file.is_open()) throw std::runtime_error("Failed to read file. (" + path + ")");
+
+    if (!file.is_open())
+        SPDLOG_ERROR("Failed to read file: {}", path);
+
     output << file.rdbuf();
     return output.str();
 }

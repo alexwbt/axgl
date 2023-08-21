@@ -18,6 +18,8 @@ public:
   virtual void terminate();
   virtual void update();
   virtual void render();
+
+  virtual void push_entity(std::shared_ptr<Entity> entity);
 };
 
 NAMESPACE_WORLD_END

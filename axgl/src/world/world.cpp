@@ -28,4 +28,9 @@ void World::render()
     entity->render(info);
 }
 
+void World::push_entity(std::shared_ptr<Entity> entity)
+{
+  entities_.push_back(std::move(entity));
+}
+
 NAMESPACE_WORLD_END

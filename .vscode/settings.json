@@ -2,14 +2,15 @@
   "editor.tabSize": 2,
   "cSpell.words": [
     "axgl",
+    "cubemap",
     "gameloop",
     "glfw",
     "opengl",
     "Parameteri",
+    "Phong",
     "skybox",
     "spdlog",
-    "stbi",
-    "cubemap"
+    "stbi"
   ],
   "cmake.buildDirectory": "${workspaceFolder}/_build",
   "C_Cpp.formatting": "vcFormat",

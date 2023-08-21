@@ -23,3 +23,6 @@ target_link_libraries(playground
   spdlog
   axgl
 )
+
+include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
+add_resource_dir(${CMAKE_CURRENT_SOURCE_DIR}/res)

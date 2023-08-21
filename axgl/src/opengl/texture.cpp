@@ -10,7 +10,7 @@
 
 NAMESPACE_OPENGL
 
-std::shared_ptr<Texture> Texture::Load2DTexture(const std::string& path, int format)
+std::shared_ptr<Texture> Texture::load_2d_texture(const std::string& path, int format)
 {
   uint32_t id;
   glGenTextures(1, &id);
@@ -40,11 +40,14 @@ std::shared_ptr<Texture> Texture::Load2DTexture(const std::string& path, int for
   return std::make_shared<Texture>(id, GL_TEXTURE_2D);
 }
 
-std::shared_ptr<Texture> Texture::LoadCubemapTexture(std::vector<std::string>& paths, int format)
+std::shared_ptr<Texture> Texture::load_cubemap_texture(std::vector<std::string>& paths, int format)
 {
   static constexpr int kSides = 6;
   if (paths.size() != kSides)
-    throw std::runtime_error("Failed to create cubemap. Invalid paths param.");
+  {
+    SPDLOG_ERROR("Failed to create cubemap. Invalid paths param.");
+    return nullptr;
+  }
 
   uint32_t id;
   glGenTextures(1, &id);
@@ -61,7 +64,11 @@ std::shared_ptr<Texture> Texture::LoadCubemapTexture(std::vector<std::string>& p
   for (int i = 0; i < kSides; ++i)
   {
     data = stbi_load(paths[i].c_str(), &width, &height, &nrChannels, 0);
-    if (!data) throw std::runtime_error("Failed to load texture " + paths[i]);
+    if (!data)
+    {
+      SPDLOG_ERROR("Failed to load texture: {}", paths[i]);
+      continue;
+    }
     glTexImage2D(
       GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
       0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data

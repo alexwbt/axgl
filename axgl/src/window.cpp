@@ -20,7 +20,10 @@ namespace glfw
     glfwSetErrorCallback(Window::glfw_error_callback);
 
     if (!glfwInit())
-      throw std::runtime_error("Failed to initialize GLFW.");
+    {
+      SPDLOG_CRITICAL("Failed to initialize GLFW.");
+      return;
+    }
 
     initialized_ = true;
   }
@@ -127,11 +130,17 @@ namespace glfw
   Window::Window(int width, int height, const std::string& title)
   {
     if (!initialized_ || terminated_)
-      throw std::runtime_error("Failed to create window, GLFW not initialized.");
+    {
+      SPDLOG_CRITICAL("Failed to create window, GLFW not initialized.");
+      return;
+    }
 
     glfw_window_ = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     if (!glfw_window_)
-      throw std::runtime_error("Failed to create window " + title + ".");
+    {
+      SPDLOG_CRITICAL("Failed to create window: {}", title);
+      return;
+    }
 
     glfwSetKeyCallback(glfw_window_, Window::key_callback);
     glfwSetCursorPosCallback(glfw_window_, Window::cursor_pos_callback);
@@ -169,6 +178,11 @@ namespace glfw
   bool Window::key_pressed(int key) const
   {
     return glfwGetKey(glfw_window_, key) == GLFW_PRESS;
+  }
+
+  void Window::use() const
+  {
+    glfwMakeContextCurrent(glfw_window_);
   }
 
   void Window::destroy()
