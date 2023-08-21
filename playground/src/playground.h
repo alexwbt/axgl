@@ -6,11 +6,11 @@
 #include "axgl/gameloop.h"
 #include "axgl/world/world.h"
 
-class Playground : public gl::Component
+class Playground : public axgl::Component
 {
   std::shared_ptr<glfw::Window> window_;
 
-  std::shared_ptr<gl::world::World> world_;
+  std::shared_ptr<axgl::world::World> world_;
 
 public:
   void initialize()
@@ -41,7 +41,7 @@ public:
     window_->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // create world
-    world_ = std::make_shared<gl::world::World>();
+    world_ = std::make_shared<axgl::world::World>();
     world_->initialize();
   }
 

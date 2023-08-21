@@ -1,0 +1,81 @@
+#include "axgl/opengl/shader_program.h"
+
+#include <spdlog/spdlog.h>
+
+#include "axgl/file.h"
+
+NAMESPACE_OPENGL
+
+GLuint ShaderProgram::create_shader(const char* code, GLenum type)
+{
+  GLuint id = glCreateShader(type);
+
+  glShaderSource(id, 1, &code, NULL);
+
+  glCompileShader(id);
+
+  int success;
+  glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+  if (!success)
+  {
+    char log[512] = {};
+    glGetShaderInfoLog(id, sizeof(log), NULL, log);
+    SPDLOG_ERROR("Failed to compile shader. {}", log);
+  }
+  return id;
+}
+
+ShaderProgram::ShaderProgram(const std::vector<Shader>& shaders)
+{
+  program_id_ = glCreateProgram();
+
+  const auto count = shaders.size();
+  auto shader_ids = new GLuint[count];
+
+  for (int i = 0; i < count; ++i)
+  {
+    shader_ids[i] = create_shader(axgl::read_text_file(shaders[i].source).c_str(), shaders[i].type);
+    glAttachShader(program_id_, shader_ids[i]);
+  }
+
+  glLinkProgram(program_id_);
+
+  int success;
+  glGetProgramiv(program_id_, GL_LINK_STATUS, &success);
+  if (!success)
+  {
+    char log[512] = {};
+    glGetProgramInfoLog(program_id_, sizeof(log), NULL, log);
+    SPDLOG_ERROR("Failed to link shader program. {}", log);
+  }
+
+  for (int i = 0; i < count; ++i)
+    glDeleteShader(shader_ids[i]);
+
+  delete[] shader_ids;
+}
+
+ShaderProgram::~ShaderProgram()
+{
+  glDeleteProgram(program_id_);
+}
+
+void ShaderProgram::set_bool(const std::string& name, bool value) const { glUniform1i(glGetUniformLocation(program_id_, name.c_str()), (int)value); }
+void ShaderProgram::set_int(const std::string& name, int value) const { glUniform1i(glGetUniformLocation(program_id_, name.c_str()), value); }
+void ShaderProgram::set_float(const std::string& name, float value) const { glUniform1f(glGetUniformLocation(program_id_, name.c_str()), value); }
+void ShaderProgram::set_vec2(const std::string& name, const glm::vec2& value) const { glUniform2fv(glGetUniformLocation(program_id_, name.c_str()), 1, &value[0]); }
+void ShaderProgram::set_vec2(const std::string& name, float x, float y) const { glUniform2f(glGetUniformLocation(program_id_, name.c_str()), x, y); }
+void ShaderProgram::set_vec3(const std::string& name, const glm::vec3& value) const { glUniform3fv(glGetUniformLocation(program_id_, name.c_str()), 1, &value[0]); }
+void ShaderProgram::set_vec3(const std::string& name, float x, float y, float z) const { glUniform3f(glGetUniformLocation(program_id_, name.c_str()), x, y, z); }
+void ShaderProgram::set_vec4(const std::string& name, const glm::vec4& value) const { glUniform4fv(glGetUniformLocation(program_id_, name.c_str()), 1, &value[0]); }
+void ShaderProgram::set_vec4(const std::string& name, float x, float y, float z, float w) const { glUniform4f(glGetUniformLocation(program_id_, name.c_str()), x, y, z, w); }
+void ShaderProgram::set_mat2(const std::string& name, const glm::mat2& mat) const { glUniformMatrix2fv(glGetUniformLocation(program_id_, name.c_str()), 1, GL_FALSE, &mat[0][0]); }
+void ShaderProgram::set_mat3(const std::string& name, const glm::mat3& mat) const { glUniformMatrix3fv(glGetUniformLocation(program_id_, name.c_str()), 1, GL_FALSE, &mat[0][0]); }
+void ShaderProgram::set_mat4(const std::string& name, const glm::mat4& mat) const { glUniformMatrix4fv(glGetUniformLocation(program_id_, name.c_str()), 1, GL_FALSE, &mat[0][0]); }
+
+void ShaderProgram::use_program()
+{
+  glUseProgram(program_id_);
+}
+
+NAMESPACE_OPENGL_END

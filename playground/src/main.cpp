@@ -4,7 +4,7 @@ int main()
 {
   auto playground = std::make_shared<Playground>();
 
-  gl::Gameloop gameloop;
+  axgl::Gameloop gameloop;
   gameloop.add_component(playground);
   gameloop.run();
 }

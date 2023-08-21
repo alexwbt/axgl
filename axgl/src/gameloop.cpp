@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-NAMESPACE_GL
+NAMESPACE_AXGL
 
 void Gameloop::add_component(std::shared_ptr<Component> component)
 {
@@ -71,4 +71,4 @@ void Gameloop::run()
   terminate();
 }
 
-NAMESPACE_GL_END
+NAMESPACE_AXGL_END

@@ -1,14 +1,20 @@
 {
   "editor.tabSize": 2,
   "cSpell.words": [
+    "axgl",
+    "gameloop",
     "glfw",
-    "spdlog",
-    "gameloop"
+    "opengl",
+    "skybox",
+    "spdlog"
   ],
   "cmake.buildDirectory": "${workspaceFolder}/_build",
   "C_Cpp.formatting": "vcFormat",
   "files.associations": {
     "xiosbase": "cpp",
-    "list": "cpp"
+    "list": "cpp",
+    "memory": "cpp",
+    "xstring": "cpp",
+    "fstream": "cpp"
   }
 }

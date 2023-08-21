@@ -5,7 +5,7 @@
 
 #include "axgl/namespace.h"
 
-NAMESPACE_GL
+NAMESPACE_AXGL
 
 struct Component
 {
@@ -33,4 +33,4 @@ public:
   void run();
 };
 
-NAMESPACE_GL_END
+NAMESPACE_AXGL_END

@@ -1,10 +1,10 @@
 #pragma once
 
-#define NAMESPACE_GL namespace gl {
-#define NAMESPACE_GL_END }
+#define NAMESPACE_AXGL namespace axgl {
+#define NAMESPACE_AXGL_END }
 
-#define NAMESPACE_WORLD NAMESPACE_GL namespace world {
-#define NAMESPACE_WORLD_END } NAMESPACE_GL_END
+#define NAMESPACE_WORLD NAMESPACE_AXGL namespace world {
+#define NAMESPACE_WORLD_END } NAMESPACE_AXGL_END
 
-#define NAMESPACE_RENDER NAMESPACE_GL namespace render {
-#define NAMESPACE_RENDER_END } NAMESPACE_GL_END
+#define NAMESPACE_OPENGL NAMESPACE_AXGL namespace opengl {
+#define NAMESPACE_OPENGL_END } NAMESPACE_AXGL_END
