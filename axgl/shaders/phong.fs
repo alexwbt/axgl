@@ -63,17 +63,17 @@ void main()
 
     vec3 result = vec3(0);
 
-    for (int i = 0; i < sunLights_size; ++i)
+    for (int i = 0; i < sunLights_size; i++)
     {
     	result += calcSunLight(sunLights[i], viewDir);
     }
 
-    for (int i = 0; i < lights_size; ++i)
+    for (int i = 0; i < lights_size; i++)
     {
     	result += calcPointLight(lights[i], viewDir);
     }
 
-    for (int i = 0; i < spotLights_size; ++i)
+    for (int i = 0; i < spotLights_size; i++)
     {
     	result += calcSpotLight(spotLights[i], viewDir);
     }

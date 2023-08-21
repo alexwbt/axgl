@@ -52,7 +52,7 @@ Skybox::Skybox()
 
 }
 
-void Skybox::render()
+void Skybox::render(const RenderContext& context)
 {
 
 }

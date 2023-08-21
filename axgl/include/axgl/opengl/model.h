@@ -1,8 +1,10 @@
 #include <memory>
+#include <vector>
 
 #include "glad/glad.h"
-
 #include "axgl/namespace.h"
+#include "axgl/opengl/texture.h"
+#include "axgl/opengl/shader_program.h"
 
 NAMESPACE_OPENGL
 
@@ -15,10 +17,8 @@ private:
     kElement
   };
 
-  std::shared_ptr<ShaderProgram> shader_;
-  std::shared_ptr<std::vector<std::shared_ptr<Texture>>> textures_;
-
   Type type_;
+  GLenum mode_;
 
   GLuint vao_id_ = 0;
   GLuint vbo_id_ = 0;
@@ -27,7 +27,8 @@ private:
   GLsizei vertices_size_ = 0;
   GLsizei indices_size_ = 0;
 
-  GLenum mode_;
+  std::shared_ptr<ShaderProgram> shader_;
+  std::shared_ptr<std::vector<std::shared_ptr<Texture>>> textures_;
 
 public:
   template <typename VertexType>
@@ -87,32 +88,9 @@ public:
     glBindVertexArray(0);
   }
 
-  ~Model()
-  {
-    if (vao_id_ > 0) glDeleteVertexArrays(1, &vao_id_);
-    if (vbo_id_ > 0) glDeleteBuffers(1, &vbo_id_);
-    if (ebo_id_ > 0) glDeleteBuffers(1, &ebo_id_);
-  }
+  ~Model();
 
-  void Render(const ShaderProgram::Uniforms& uniforms)
-  {
-    shader_->Use(uniforms);
-
-    if (textures_)
-      for (int i = 0; i < textures_->size(); i++)
-        textures_->at(i)->Use(i);
-
-    glBindVertexArray(vao_id_);
-    switch (type_)
-    {
-    case Type::kVertex:
-      glDrawArrays(mode_, 0, vertices_size_);
-      break;
-    case Type::kElement:
-      glDrawElements(mode_, indices_size_, GL_UNSIGNED_INT, 0);
-      break;
-    }
-  }
+  void render(const ShaderProgram::Uniforms& uniforms);
 };
 
 NAMESPACE_OPENGL_END

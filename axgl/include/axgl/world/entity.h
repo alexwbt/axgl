@@ -1,27 +1,25 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
 #include "axgl/namespace.h"
-#include "axgl/opengl/model.h"
 
 NAMESPACE_WORLD
 
 class Entity
 {
-  glm::vec3 position_;
-
-  std::list<std::shared_ptr<axgl::opengl::Model>> models_;
-  
-
 public:
+  struct RenderContext final
+  {
+    glm::mat4 projection;
+    glm::mat4 view;
+    glm::mat4 pv;
+  };
+
   virtual ~Entity() {}
   virtual void initialize() {}
   virtual void terminate() {}
   virtual void update() {}
-  virtual void render() {}
-
-  void add_model();
+  virtual void render(const RenderContext& context) = 0;
 };
 
 NAMESPACE_WORLD_END

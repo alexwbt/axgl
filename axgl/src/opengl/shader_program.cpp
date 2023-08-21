@@ -20,7 +20,7 @@ GLuint ShaderProgram::create_shader(const char* code, GLenum type)
   {
     char log[512] = {};
     glGetShaderInfoLog(id, sizeof(log), NULL, log);
-    SPDLOG_ERROR("Failed to compile shader. {}", log);
+    SPDLOG_CRITICAL("Failed to compile shader: {}", log);
   }
   return id;
 }
@@ -46,7 +46,7 @@ ShaderProgram::ShaderProgram(const std::vector<Shader>& shaders)
   {
     char log[512] = {};
     glGetProgramInfoLog(program_id_, sizeof(log), NULL, log);
-    SPDLOG_ERROR("Failed to link shader program. {}", log);
+    SPDLOG_CRITICAL("Failed to link shader program: {}", log);
   }
 
   for (int i = 0; i < count; ++i)

@@ -1,3 +1,8 @@
+#include <string>
+#include <vector>
+#include <memory>
+
+#include "glad/glad.h"
 #include "axgl/namespace.h"
 
 NAMESPACE_OPENGL
@@ -10,14 +15,13 @@ public:
 
 private:
   uint32_t id_;
-
   GLenum type_;
 
 public:
   Texture(uint32_t id, GLenum type);
   ~Texture();
 
-  void Use(int i);
+  void use(int i);
 };
 
 NAMESPACE_OPENGL_END

@@ -22,8 +22,10 @@ void World::update()
 
 void World::render()
 {
+  const Entity::RenderContext info{};
+
   for (auto& entity : entities_)
-    entity->render();
+    entity->render(info);
 }
 
 NAMESPACE_WORLD_END
