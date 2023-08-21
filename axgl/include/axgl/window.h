@@ -43,11 +43,12 @@ namespace glfw
     static void frame_buffer_size_callback(GLFWwindow* glfw_window, int width, int height);
 
     static Window* get_window(GLFWwindow* glfw_window);
+    static std::shared_ptr<EventListener> get_window_event_listener(GLFWwindow* glfw_window);
 
   private:
     GLFWwindow* glfw_window_;
 
-    std::shared_ptr<EventListener> event_listener_;
+    std::weak_ptr<EventListener> event_listener_;
 
     bool destroyed_ = false;
 
@@ -57,7 +58,7 @@ namespace glfw
 
   public:
     void set_title(const std::string& title);
-    void set_event_listener(std::shared_ptr<EventListener> event_listener);
+    void set_event_listener(std::weak_ptr<EventListener> event_listener);
     void set_input_mode(int mode, int value);
 
     // GLFWwindow* get_glfw_window() const;
@@ -65,6 +66,7 @@ namespace glfw
     bool key_pressed(int key) const;
 
     void use() const;
+    void swap_buffers() const;
 
   private:
     void destroy();

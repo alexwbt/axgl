@@ -5,6 +5,7 @@
 
 #include "axgl/namespace.h"
 #include "axgl/world/entity.h"
+#include "axgl/world/render_context.h"
 
 NAMESPACE_WORLD
 
@@ -17,7 +18,7 @@ public:
   virtual void initialize();
   virtual void terminate();
   virtual void update();
-  virtual void render();
+  virtual void render(const RenderContext& context);
 
   virtual void push_entity(std::shared_ptr<Entity> entity);
 };

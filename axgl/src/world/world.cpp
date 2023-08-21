@@ -20,12 +20,10 @@ void World::update()
     entity->update();
 }
 
-void World::render()
+void World::render(const RenderContext& context)
 {
-  const Entity::RenderContext info{};
-
   for (auto& entity : entities_)
-    entity->render(info);
+    entity->render(context);
 }
 
 void World::push_entity(std::shared_ptr<Entity> entity)

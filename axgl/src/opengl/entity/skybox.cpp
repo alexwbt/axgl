@@ -70,7 +70,7 @@ Skybox::Skybox(
   model_ = std::make_shared<Model>(vertices, std::move(skybox_shader), textures);
 }
 
-void Skybox::render(const RenderContext& context)
+void Skybox::render(const world::RenderContext& context)
 {
   glm::mat4 view = glm::mat4(glm::mat3(context.view));
 

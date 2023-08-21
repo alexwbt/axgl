@@ -74,42 +74,40 @@ namespace glfw
 
   void Window::key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
   {
-    auto* window = get_window(glfw_window);
-    if (!window || !window->event_listener_)
-      return;
+    auto listener = get_window_event_listener(glfw_window);
+    if (!listener) return;
 
     switch (action)
     {
-    case GLFW_PRESS:    window->event_listener_->on_key_down(key); break;
-    case GLFW_RELEASE:  window->event_listener_->on_key_down(key); break;
+    case GLFW_PRESS:    listener->on_key_down(key); break;
+    case GLFW_RELEASE:  listener->on_key_down(key); break;
     }
   }
 
   void Window::cursor_pos_callback(GLFWwindow* glfw_window, double x, double y)
   {
-    auto* window = get_window(glfw_window);
-    if (window && window->event_listener_)
-      window->event_listener_->on_mouse_move(x, y);
+    auto listener = get_window_event_listener(glfw_window);
+    if (listener)
+      listener->on_mouse_move(x, y);
   }
 
   void Window::mouse_button_callback(GLFWwindow* glfw_window, int button, int action, int mods)
   {
-    auto* window = get_window(glfw_window);
-    if (!window || !window->event_listener_)
-      return;
+    auto listener = get_window_event_listener(glfw_window);
+    if (!listener) return;
 
     switch (action)
     {
-    case GLFW_PRESS:    window->event_listener_->on_mouse_down(button); break;
-    case GLFW_RELEASE:  window->event_listener_->on_key_down(button); break;
+    case GLFW_PRESS:    listener->on_mouse_down(button); break;
+    case GLFW_RELEASE:  listener->on_key_down(button); break;
     }
   }
 
   void Window::frame_buffer_size_callback(GLFWwindow* glfw_window, int width, int height)
   {
-    auto* window = get_window(glfw_window);
-    if (window && window->event_listener_)
-      window->event_listener_->on_resize(width, height);
+    auto listener = get_window_event_listener(glfw_window);
+    if (listener)
+      listener->on_resize(width, height);
   }
 
   Window* Window::get_window(GLFWwindow* glfw_window)
@@ -123,6 +121,14 @@ namespace glfw
       SPDLOG_DEBUG("Tried to get GLFW window that does not exists. ({})", e.what());
       return nullptr;
     }
+  }
+
+  std::shared_ptr<Window::EventListener> Window::get_window_event_listener(GLFWwindow* glfw_window)
+  {
+    auto* window = get_window(glfw_window);
+    if (!window) return nullptr;
+
+    return window->event_listener_.lock();
   }
 
   /* Non-static */
@@ -160,7 +166,7 @@ namespace glfw
     glfwSetWindowTitle(glfw_window_, title.c_str());
   }
 
-  void Window::set_event_listener(std::shared_ptr<EventListener> event_listener)
+  void Window::set_event_listener(std::weak_ptr<EventListener> event_listener)
   {
     event_listener_ = std::move(event_listener);
   }
@@ -183,6 +189,11 @@ namespace glfw
   void Window::use() const
   {
     glfwMakeContextCurrent(glfw_window_);
+  }
+
+  void Window::swap_buffers() const
+  {
+    glfwSwapBuffers(glfw_window_);
   }
 
   void Window::destroy()
