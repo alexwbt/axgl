@@ -1,0 +1,14 @@
+{
+  "editor.tabSize": 2,
+  "cSpell.words": [
+    "glfw",
+    "spdlog",
+    "gameloop"
+  ],
+  "cmake.buildDirectory": "${workspaceFolder}/_build",
+  "C_Cpp.formatting": "vcFormat",
+  "files.associations": {
+    "xiosbase": "cpp",
+    "list": "cpp"
+  }
+}
