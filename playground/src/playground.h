@@ -28,8 +28,7 @@ class Playground : public axgl::Component,
   axgl::world::RenderContext render_context_;
 
   // phong lights
-  std::list<std::shared_ptr<axgl::opengl::shader::PhongShader::Light>> lights_;
-  
+  // std::list<std::shared_ptr<axgl::opengl::shader::PhongShader::Light>> lights_;
 
 public:
   void initialize() override
@@ -68,15 +67,17 @@ public:
     load_shaders();
     load_textures();
 
-    // create world
-    world_ = std::make_shared<axgl::world::World>();
-
+    // entities
     auto skybox = std::make_shared<axgl::opengl::entity::Skybox>(
       get_shader(ShaderID::kSkybox),
       get_texture(TextureID::kSkybox)
     );
-    world_->push_entity(skybox);
+    auto cube = std::make_shared<Cube>();
 
+    // create world
+    world_ = std::make_shared<axgl::world::World>();
+    world_->push_entity(skybox);
+    world_->push_entity(cube);
     world_->initialize();
 
     // initialize camera
@@ -86,6 +87,7 @@ public:
     camera_->fov = 100.0f;
     camera_->update_transform();
     camera_controller_.set_camera(camera_);
+    render_context_.camera = camera_;
   }
 
   void terminate() override
@@ -100,8 +102,8 @@ public:
     camera_controller_.move({
         window_->key_pressed(GLFW_KEY_W),
         window_->key_pressed(GLFW_KEY_S),
-        window_->key_pressed(GLFW_KEY_D),
         window_->key_pressed(GLFW_KEY_A),
+        window_->key_pressed(GLFW_KEY_D),
         window_->key_pressed(GLFW_KEY_SPACE),
         window_->key_pressed(GLFW_KEY_LEFT_SHIFT) });
 

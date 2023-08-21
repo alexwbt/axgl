@@ -33,6 +33,11 @@ private:
   std::shared_ptr<std::vector<std::shared_ptr<Texture>>> textures_;
 
 public:
+  glm::vec3 scale{ 1.0f };
+  glm::vec3 rotation{ 0.0f };
+  glm::vec3 translation{ 0.0f };
+
+public:
   template <typename VertexType>
   Model(
     const std::vector<VertexType>& vertices,
@@ -91,6 +96,8 @@ public:
   }
 
   ~Model();
+
+  glm::mat4 model_matrix();
 
   void render(const ShaderProgram::Uniforms& uniforms);
 };

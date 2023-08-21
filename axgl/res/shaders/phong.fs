@@ -2,7 +2,8 @@
 
 in vec3 Normal;
 in vec3 FragPos;
-in vec2 UV;
+in vec3 Color;
+// in vec2 UV;
 
 out vec4 FragColor;
 
@@ -74,7 +75,8 @@ void main() {
         result += calcSpotLight(spotLights[i], viewDir);
     }
 
-    FragColor = vec4(result * texture(diffuseMap, UV).rgb, 1.0);
+    FragColor = vec4(result * Color, 1.0);
+    // FragColor = vec4(result * texture(diffuseMap, UV).rgb, 1.0);
 }
 
 vec3 calcSunLight(SunLight light, vec3 viewDir) {

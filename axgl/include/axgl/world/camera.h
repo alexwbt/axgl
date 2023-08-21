@@ -54,7 +54,7 @@ private:
 
   float pivot_x_ = 0;
   float pivot_y_ = 0;
-  float pivot_sensitivity_ = 0.5f;
+  float pivot_sensitivity_ = 0.2f;
 
 public:
   void set_camera(std::shared_ptr<Camera> camera);

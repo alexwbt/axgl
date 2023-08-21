@@ -4,6 +4,7 @@
 enum class ShaderID : uint32_t
 {
   kSkybox,
+  kPhong,
 };
 
 enum class TextureID : uint32_t
@@ -15,8 +16,8 @@ void load_shaders()
 {
   using namespace axgl::opengl::shader;
 
-  load_shader(static_cast<uint32_t>(ShaderID::kSkybox),
-    std::make_shared<SkyboxShader>());
+  load_shader(static_cast<uint32_t>(ShaderID::kSkybox), std::make_shared<SkyboxShader>());
+  load_shader(static_cast<uint32_t>(ShaderID::kPhong), std::make_shared<PhongShader>());
 }
 
 void load_textures()
