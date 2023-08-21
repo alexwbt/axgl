@@ -24,12 +24,12 @@ void load_textures()
   using namespace axgl::opengl;
 
   std::vector<std::string> skybox_texture_paths{
-      "res/textures/skybox/right.jpg",
-      "res/textures/skybox/left.jpg",
-      "res/textures/skybox/top.jpg",
-      "res/textures/skybox/bottom.jpg",
-      "res/textures/skybox/front.jpg",
-      "res/textures/skybox/back.jpg"
+      "res/textures/skybox/void/right.png",
+      "res/textures/skybox/void/left.png",
+      "res/textures/skybox/void/top.png",
+      "res/textures/skybox/void/bottom.png",
+      "res/textures/skybox/void/front.png",
+      "res/textures/skybox/void/back.png"
   };
   load_texture(static_cast<uint32_t>(ShaderID::kSkybox),
     Texture::load_cubemap_texture(skybox_texture_paths));

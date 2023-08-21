@@ -9,8 +9,10 @@
 #include "axgl/world/camera.h"
 #include "axgl/world/render_context.h"
 #include "axgl/opengl/entity/skybox.h"
+#include "axgl/opengl/shader/phong-shader.h"
 
 #include "resource.h"
+#include "cube.h"
 
 class Playground : public axgl::Component,
   public glfw::Window::EventListener,
@@ -24,6 +26,10 @@ class Playground : public axgl::Component,
   axgl::world::CameraController camera_controller_;
 
   axgl::world::RenderContext render_context_;
+
+  // phong lights
+  std::list<std::shared_ptr<axgl::opengl::shader::PhongShader::Light>> lights_;
+  
 
 public:
   void initialize() override
@@ -77,6 +83,7 @@ public:
     camera_ = std::make_shared<axgl::world::Camera>();
     camera_->position = { 0.0f, 0.0f, -5.0f };
     camera_->yaw = 90.0f;
+    camera_->fov = 100.0f;
     camera_->update_transform();
     camera_controller_.set_camera(camera_);
   }
@@ -96,7 +103,7 @@ public:
         window_->key_pressed(GLFW_KEY_D),
         window_->key_pressed(GLFW_KEY_A),
         window_->key_pressed(GLFW_KEY_SPACE),
-        window_->key_pressed(GLFW_KEY_LEFT_CONTROL) });
+        window_->key_pressed(GLFW_KEY_LEFT_SHIFT) });
 
     world_->update();
   }
