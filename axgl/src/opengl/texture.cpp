@@ -10,7 +10,7 @@
 
 NAMESPACE_OPENGL
 
-std::shared_ptr<Texture> Texture::load_2d_texture(const std::string& path, int format)
+std::shared_ptr<Texture> Texture::load_2d_texture(const std::string& path, Type type, int format)
 {
   uint32_t id;
   glGenTextures(1, &id);
@@ -37,10 +37,10 @@ std::shared_ptr<Texture> Texture::load_2d_texture(const std::string& path, int f
 
   stbi_image_free(data);
 
-  return std::make_shared<Texture>(id, GL_TEXTURE_2D);
+  return std::make_shared<Texture>(id, type, GL_TEXTURE_2D);
 }
 
-std::shared_ptr<Texture> Texture::load_cubemap_texture(std::vector<std::string>& paths, int format)
+std::shared_ptr<Texture> Texture::load_cubemap_texture(std::vector<std::string>& paths, Type type, int format)
 {
   static constexpr int kSides = 6;
   if (paths.size() != kSides)
@@ -76,11 +76,11 @@ std::shared_ptr<Texture> Texture::load_cubemap_texture(std::vector<std::string>&
     stbi_image_free(data);
   }
 
-  return std::make_shared<Texture>(id, GL_TEXTURE_CUBE_MAP);
+  return std::make_shared<Texture>(id, type, GL_TEXTURE_CUBE_MAP);
 }
 
-Texture::Texture(uint32_t id, GLenum type)
-  : id_(id), type_(type)
+Texture::Texture(uint32_t id, Type type, GLenum gl_texture_type)
+  : id_(id), type_(type), gl_texture_type_(gl_texture_type)
 {}
 
 Texture::~Texture()
@@ -88,13 +88,25 @@ Texture::~Texture()
   glDeleteTextures(1, &id_);
 }
 
-void Texture::use(int i)
+void Texture::use(
+  std::shared_ptr<ShaderProgram> shader,
+  int i, const std::string& uniform_name)
 {
   if (i >= 32)
+  {
+    SPDLOG_ERROR("Texture index cannot be more than 31. ({})", i);
     return;
+  }
 
   glActiveTexture(GL_TEXTURE0 + i);
-  glBindTexture(type_, id_);
+  glBindTexture(gl_texture_type_, id_);
+
+  shader->set_int(uniform_name, i);
+}
+
+Texture::Type Texture::texture_type()
+{
+  return type_;
 }
 
 NAMESPACE_OPENGL_END

@@ -13,6 +13,7 @@
 
 #include "resource.h"
 #include "cube.h"
+#include "backpack.h"
 
 class Playground : public axgl::Component,
   public glfw::Window::EventListener,
@@ -69,15 +70,17 @@ public:
 
     // entities
     auto skybox = std::make_shared<axgl::opengl::entity::Skybox>(
-      get_shader(ShaderID::kSkybox),
-      get_texture(TextureID::kSkybox)
+      get_shader<axgl::opengl::shader::SkyboxShader>(ShaderID::kSkybox),
+      axgl::opengl::load_texture("skybox/void")
     );
     auto cube = std::make_shared<Cube>();
+    auto backpack = std::make_shared<Backpack>();
 
     // create world
     world_ = std::make_shared<axgl::world::World>();
     world_->push_entity(skybox);
     world_->push_entity(cube);
+    world_->push_entity(backpack);
     world_->initialize();
 
     // initialize camera

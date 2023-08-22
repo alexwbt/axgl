@@ -55,7 +55,7 @@ public:
     {}
   };
 
-  struct Uniforms : public ShaderProgram::Uniforms
+  struct Uniforms
   {
     std::vector<std::shared_ptr<Light>> lights;
     glm::vec3 camera_pos;
@@ -66,22 +66,10 @@ public:
     glm::mat4 model;
   };
 
-  struct Vertex final
-  {
-    glm::vec3 pos;
-    glm::vec3 normal;
-    glm::vec3 color;
-    // glm::vec2 uv;
-  };
-
 public:
   PhongShader();
-
-  void enable_attributes() override;
-
-private:
+  void use_uniforms(const Uniforms& uniforms);
   void use_light(std::shared_ptr<Light> light, int i);
-  void use(const ShaderProgram::Uniforms& uniforms) override;
 
 };
 

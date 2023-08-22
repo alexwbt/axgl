@@ -6,24 +6,38 @@
 
 #include "glad/glad.h"
 #include "axgl/namespace.h"
+#include "axgl/opengl/shader_program.h"
 
 NAMESPACE_OPENGL
 
 class Texture final
 {
 public:
-  static std::shared_ptr<Texture> load_2d_texture(const std::string& path, int format = GL_RGB);
-  static std::shared_ptr<Texture> load_cubemap_texture(std::vector<std::string>& paths, int format = GL_RGB);
+  enum Type
+  {
+    kDiffuse,
+    kSpecular,
+    kNormal,
+    kHeight
+  };
+
+  static std::shared_ptr<Texture> load_2d_texture(const std::string& path, Type type = kDiffuse, int format = GL_RGB);
+  static std::shared_ptr<Texture> load_cubemap_texture(std::vector<std::string>& paths, Type type = kDiffuse, int format = GL_RGB);
 
 private:
   uint32_t id_;
-  GLenum type_;
+  Type type_;
+  GLenum gl_texture_type_;
 
 public:
-  Texture(uint32_t id, GLenum type);
+  Texture(uint32_t id, Type type, GLenum gl_texture_type);
   ~Texture();
 
-  void use(int i);
+  void use(
+    std::shared_ptr<ShaderProgram> shader,
+    int i, const std::string& name);
+
+  Type texture_type();
 };
 
 NAMESPACE_OPENGL_END

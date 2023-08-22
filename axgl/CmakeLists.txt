@@ -13,6 +13,7 @@ target_include_directories(axgl
 
   glfw/include
   glad/include
+  assimp/include
   spdlog/include
 
   ../_external/stb
@@ -26,6 +27,7 @@ target_link_libraries(axgl
   glm
   glfw
   glad
+  assimp
   spdlog
 )
 

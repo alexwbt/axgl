@@ -1,6 +1,4 @@
 #include "axgl/opengl/shader/phong-shader.h"
-#include <exception>
-#include <spdlog/spdlog.h>
 
 NAMESPACE_OPENGL_SHADER
 
@@ -43,53 +41,27 @@ void PhongShader::use_light(std::shared_ptr<PhongShader::Light> light, int i)
   }
 }
 
-void PhongShader::use(const ShaderProgram::Uniforms& uniforms)
+void PhongShader::use_uniforms(const Uniforms& data)
 {
-  use_program();
-
-  try
+  int sizes[3] = { 0, 0, 0 };
+  for (auto& light : data.lights)
   {
-    auto data = dynamic_cast<const Uniforms&>(uniforms);
-
-    int sizes[3] = { 0, 0, 0 };
-    for (auto& light : data.lights)
-    {
-      int type = (int)(light->type);
-      use_light(std::move(light), sizes[type]);
-      sizes[type]++;
-    }
-    set_int("sunLights_size", sizes[0]);
-    set_int("lights_size", sizes[1]);
-    set_int("spotLights_size", sizes[2]);
-
-    set_vec3("cameraPos", data.camera_pos);
-
-    set_int("diffuseMap", data.diffuse_map);
-    set_float("specular", data.specular);
-    set_float("shininess", data.shininess);
-
-    set_mat4("mvp", data.mvp);
-    set_mat4("model", data.model);
+    int type = (int)(light->type);
+    use_light(std::move(light), sizes[type]);
+    sizes[type]++;
   }
-  catch (const std::bad_cast& exception)
-  {
-    SPDLOG_ERROR("Failed to cast phong shader uniform: {}", exception.what());
-  }
-}
+  set_int("sunLights_size", sizes[0]);
+  set_int("lights_size", sizes[1]);
+  set_int("spotLights_size", sizes[2]);
 
-void PhongShader::enable_attributes()
-{
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(struct Vertex, pos));
+  set_vec3("cameraPos", data.camera_pos);
 
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(struct Vertex, normal));
+  set_int("diffuseMap", data.diffuse_map);
+  set_float("specular", data.specular);
+  set_float("shininess", data.shininess);
 
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(struct Vertex, color));
-
-  // glEnableVertexAttribArray(2);
-  // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(struct Vertex, uv));
+  set_mat4("mvp", data.mvp);
+  set_mat4("model", data.model);
 }
 
 NAMESPACE_OPENGL_SHADER_END

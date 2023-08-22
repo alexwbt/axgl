@@ -53,10 +53,11 @@ static constexpr float kSkyboxVertices[kSkyboxVerticesSize] = {
 };
 
 Skybox::Skybox(
-  std::shared_ptr<ShaderProgram> skybox_shader,
-  std::shared_ptr<Texture> skybox_texture)
+  std::shared_ptr<shader::SkyboxShader> skybox_shader,
+  std::shared_ptr<Texture> skybox_texture
+) : skybox_shader_(std::move(skybox_shader))
 {
-  std::vector<shader::SkyboxShader::Vertex> vertices;
+  std::vector<Vertex2> vertices;
   vertices.reserve(kSkyboxVerticesSize / 3);
   for (int i = 0; i < kSkyboxVerticesSize; i += 3)
     vertices.push_back({ {
@@ -64,10 +65,11 @@ Skybox::Skybox(
         kSkyboxVertices[i + 1],
         kSkyboxVertices[i + 2]} });
 
-  auto textures = std::make_shared<std::vector<std::shared_ptr<Texture>>>(1);
-  textures->at(0) = skybox_texture;
+  auto mesh = std::make_shared<Mesh>(vertices);
+  mesh->add_texture(skybox_texture);
 
-  model_ = std::make_shared<Model>(vertices, std::move(skybox_shader), textures);
+  model_ = std::make_shared<Model>();
+  model_->add_mesh(mesh);
 }
 
 void Skybox::render(const world::RenderContext& context)
@@ -81,7 +83,9 @@ void Skybox::render(const world::RenderContext& context)
   glDepthMask(GL_FALSE);
   glCullFace(GL_BACK);
 
-  model_->render(uniforms);
+  skybox_shader_->use_program();
+  skybox_shader_->use_uniforms(uniforms);
+  model_->render(skybox_shader_);
 
   glCullFace(GL_FRONT);
   glDepthMask(GL_TRUE);

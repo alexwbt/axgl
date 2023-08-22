@@ -15,11 +15,6 @@ private:
   static GLuint create_shader(const char* code, GLenum type);
 
 public:
-  struct Uniforms
-  {
-    virtual ~Uniforms() {}
-  };
-
   struct Shader final
   {
     GLenum type;
@@ -33,10 +28,6 @@ public:
   ShaderProgram(const std::vector<Shader>& shaders);
   virtual ~ShaderProgram();
 
-  virtual void enable_attributes() = 0;
-  virtual void use(const Uniforms& uniforms) = 0;
-
-protected:
   void set_bool(const std::string& name, bool value) const;
   void set_int(const std::string& name, int value) const;
   void set_float(const std::string& name, float value) const;
