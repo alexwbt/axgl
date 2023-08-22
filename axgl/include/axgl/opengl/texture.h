@@ -21,8 +21,8 @@ public:
     kHeight
   };
 
-  static std::shared_ptr<Texture> load_2d_texture(const std::string& path, Type type = kDiffuse, int format = GL_RGB);
-  static std::shared_ptr<Texture> load_cubemap_texture(std::vector<std::string>& paths, Type type = kDiffuse, int format = GL_RGB);
+  static std::shared_ptr<Texture> load_2d_texture(const std::string& path, Type type = kDiffuse);
+  static std::shared_ptr<Texture> load_cubemap_texture(std::vector<std::string>& paths, Type type = kDiffuse);
 
 private:
   uint32_t id_;

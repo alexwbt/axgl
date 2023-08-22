@@ -72,7 +72,6 @@ public:
     uniforms.camera_pos = context.camera->position;
     uniforms.model = model_->model_matrix();
     uniforms.mvp = context.pv * uniforms.model;
-    uniforms.diffuse_map = 0;
     uniforms.shininess = 16.0f;
     uniforms.specular = 0.2f;
 

@@ -2,9 +2,9 @@
 
 NAMESPACE_OPENGL_SHADER
 
-PhongShader::PhongShader() : ShaderProgram(
-  { {GL_VERTEX_SHADER, "res/shaders/phong.vs"},
-  {GL_FRAGMENT_SHADER, "res/shaders/phong.fs"} }
+PhongShader::PhongShader(const std::string& name) : ShaderProgram(
+  { {GL_VERTEX_SHADER, "res/shaders/" + name + ".vs"},
+  {GL_FRAGMENT_SHADER, "res/shaders/" + name + ".fs"} }
 ) {}
 
 void PhongShader::use_light(std::shared_ptr<PhongShader::Light> light, int i)
@@ -56,7 +56,6 @@ void PhongShader::use_uniforms(const Uniforms& data)
 
   set_vec3("cameraPos", data.camera_pos);
 
-  set_int("diffuseMap", data.diffuse_map);
   set_float("specular", data.specular);
   set_float("shininess", data.shininess);
 

@@ -10,16 +10,21 @@
 
 NAMESPACE_OPENGL
 
-std::shared_ptr<Texture> Texture::load_2d_texture(const std::string& path, Type type, int format)
+std::shared_ptr<Texture> Texture::load_2d_texture(const std::string& path, Type type)
 {
   uint32_t id;
   glGenTextures(1, &id);
   glBindTexture(GL_TEXTURE_2D, id);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   //GLfloat max_aniso = 0.0f;
   //glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &max_aniso);
@@ -29,6 +34,12 @@ std::shared_ptr<Texture> Texture::load_2d_texture(const std::string& path, Type 
   stbi_uc* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
   if (data)
   {
+    GLenum format = GL_RGB;
+    if (nrChannels == 1)
+      format = GL_RED;
+    else if (nrChannels == 4)
+      format = GL_RGBA;
+
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
   }
@@ -40,7 +51,7 @@ std::shared_ptr<Texture> Texture::load_2d_texture(const std::string& path, Type 
   return std::make_shared<Texture>(id, type, GL_TEXTURE_2D);
 }
 
-std::shared_ptr<Texture> Texture::load_cubemap_texture(std::vector<std::string>& paths, Type type, int format)
+std::shared_ptr<Texture> Texture::load_cubemap_texture(std::vector<std::string>& paths, Type type)
 {
   static constexpr int kSides = 6;
   if (paths.size() != kSides)
@@ -69,6 +80,13 @@ std::shared_ptr<Texture> Texture::load_cubemap_texture(std::vector<std::string>&
       SPDLOG_ERROR("Failed to load texture: {}", paths[i]);
       continue;
     }
+
+    GLenum format = GL_RGB;
+    if (nrChannels == 1)
+      format = GL_RED;
+    else if (nrChannels == 4)
+      format = GL_RGBA;
+
     glTexImage2D(
       GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
       0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data

@@ -6,7 +6,7 @@ class Backpack : public axgl::world::Entity
 
 public:
   Backpack() :
-    shader_(get_shader<axgl::opengl::shader::PhongShader>(ShaderID::kPhong)),
+    shader_(get_shader<axgl::opengl::shader::PhongShader>(ShaderID::kTexturePhong)),
     model_(axgl::opengl::Model::load_model("res/models/backpack/backpack.obj"))
   {
     model_->translation.x += 10;
@@ -24,15 +24,16 @@ public:
 
     PhongShader::Uniforms uniforms;
     uniforms.lights = lights;
-    uniforms.camera_pos = context.camera->position;
     uniforms.model = model_->model_matrix();
     uniforms.mvp = context.pv * uniforms.model;
-    uniforms.diffuse_map = 0;
+    uniforms.camera_pos = context.camera->position;
     uniforms.shininess = 16.0f;
     uniforms.specular = 0.2f;
 
     shader_->use_program();
     shader_->use_uniforms(uniforms);
+
+    glFrontFace(GL_CW);
 
     model_->render(shader_);
   }

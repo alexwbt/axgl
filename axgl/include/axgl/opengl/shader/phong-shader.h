@@ -59,7 +59,6 @@ public:
   {
     std::vector<std::shared_ptr<Light>> lights;
     glm::vec3 camera_pos;
-    int diffuse_map;
     float specular;
     float shininess;
     glm::mat4 mvp;
@@ -67,7 +66,7 @@ public:
   };
 
 public:
-  PhongShader();
+  PhongShader(const std::string& name);
   void use_uniforms(const Uniforms& uniforms);
   void use_light(std::shared_ptr<Light> light, int i);
 
