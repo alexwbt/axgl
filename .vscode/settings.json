@@ -9,6 +9,7 @@
     "glfw",
     "opengl",
     "Parameteri",
+    "Perlin",
     "Phong",
     "skybox",
     "spdlog",

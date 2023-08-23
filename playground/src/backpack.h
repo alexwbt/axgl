@@ -1,3 +1,4 @@
+#include <assimp/postprocess.h>
 
 class Backpack : public axgl::world::Entity
 {
@@ -7,7 +8,11 @@ class Backpack : public axgl::world::Entity
 public:
   Backpack() :
     shader_(get_shader<axgl::opengl::shader::PhongShader>(ShaderID::kTexturePhong)),
-    model_(axgl::opengl::Model::load_model("res/models/backpack/backpack.obj"))
+    model_(axgl::opengl::Model::load_model(
+      "res/models/backpack/backpack.obj",
+      aiProcess_Triangulate |
+      aiProcess_GenSmoothNormals |
+      aiProcess_CalcTangentSpace))
   {
     model_->translation.x += 10;
   }

@@ -1,9 +1,11 @@
 
 add_executable(playground)
 
+file(GLOB_RECURSE source_cpp_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/*.cpp")
+
 target_sources(playground
   PRIVATE
-  ./src/main.cpp
+  ${source_cpp_files}
 )
 
 target_include_directories(playground
@@ -12,6 +14,7 @@ target_include_directories(playground
   glfw/include
   glad/include
   spdlog/include
+  assimp/include
   axgl/include
 )
 
@@ -21,6 +24,7 @@ target_link_libraries(playground
   glfw
   glad
   spdlog
+  assimp
   axgl
 )
 

@@ -215,16 +215,12 @@ void process_node(std::shared_ptr<Model> model, aiNode* ai_node, const aiScene* 
     process_node(model, ai_node->mChildren[i], ai_scene);
 }
 
-std::shared_ptr<Model> Model::load_model(const std::string& path)
+std::shared_ptr<Model> Model::load_model(const std::string& path, unsigned int options)
 {
   Assimp::Importer importer;
-  const aiScene* ai_scene = importer.ReadFile(path,
-    aiProcess_Triangulate |
-    aiProcess_GenSmoothNormals |
-    aiProcess_FlipUVs |
-    aiProcess_CalcTangentSpace);
+  const aiScene* ai_scene = importer.ReadFile(path, options);
 
-  if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode) // if is Not Zero
+  if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode)
   {
     SPDLOG_ERROR("Failed to load model: {}", importer.GetErrorString());
     return nullptr;

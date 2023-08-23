@@ -127,7 +127,7 @@ public:
 class Model
 {
 public:
-  static std::shared_ptr<Model> load_model(const std::string& path);
+  static std::shared_ptr<Model> load_model(const std::string& path, unsigned int options);
 
 private:
   std::vector<std::shared_ptr<Mesh>> meshes_;

@@ -14,6 +14,7 @@
 #include "resource.h"
 #include "cube.h"
 #include "backpack.h"
+#include "chunks.h"
 
 class Playground : public axgl::Component,
   public glfw::Window::EventListener,
@@ -66,12 +67,14 @@ public:
     );
     auto cube = std::make_shared<Cube>();
     auto backpack = std::make_shared<Backpack>();
+    auto chunk = std::make_shared<Chunk>();
 
     // create world
     world_ = std::make_shared<axgl::world::World>();
     world_->push_entity(skybox);
     world_->push_entity(cube);
     world_->push_entity(backpack);
+    world_->push_entity(chunk);
     world_->initialize();
 
     // initialize camera
