@@ -81,13 +81,11 @@ void Skybox::render(const world::RenderContext& context)
   uniforms.skybox_map = 0;
 
   glDepthMask(GL_FALSE);
-  glCullFace(GL_BACK);
 
   skybox_shader_->use_program();
   skybox_shader_->use_uniforms(uniforms);
   model_->render(skybox_shader_);
 
-  glCullFace(GL_FRONT);
   glDepthMask(GL_TRUE);
 }
 

@@ -7,17 +7,17 @@ PhongShader::PhongShader(const std::string& name) : ShaderProgram(
   {GL_FRAGMENT_SHADER, "res/shaders/" + name + ".fs"} }
 ) {}
 
-void PhongShader::use_light(std::shared_ptr<PhongShader::Light> light, int i)
+void PhongShader::use_light(std::shared_ptr<axgl::world::Light> light, int i)
 {
   switch (light->type)
   {
-  case PhongShader::SUN:
+  case axgl::world::LightType::kSun:
     set_vec3(("sunLights[" + std::to_string(i) + "].direction"), light->direction);
     set_vec3(("sunLights[" + std::to_string(i) + "].ambient"), light->ambient);
     set_vec3(("sunLights[" + std::to_string(i) + "].diffuse"), light->diffuse);
     set_vec3(("sunLights[" + std::to_string(i) + "].specular"), light->specular);
     break;
-  case PhongShader::POINT:
+  case axgl::world::LightType::kPoint:
     set_vec3(("lights[" + std::to_string(i) + "].position"), light->position);
     set_vec3(("lights[" + std::to_string(i) + "].ambient"), light->ambient);
     set_vec3(("lights[" + std::to_string(i) + "].diffuse"), light->diffuse);
@@ -26,7 +26,7 @@ void PhongShader::use_light(std::shared_ptr<PhongShader::Light> light, int i)
     set_float(("lights[" + std::to_string(i) + "].linear"), light->linear);
     set_float(("lights[" + std::to_string(i) + "].quadratic"), light->quadratic);
     break;
-  case PhongShader::SPOT:
+  case axgl::world::LightType::kSpot:
     set_vec3(("spotLights[" + std::to_string(i) + "].direction"), light->direction);
     set_vec3(("spotLights[" + std::to_string(i) + "].position"), light->position);
     set_vec3(("spotLights[" + std::to_string(i) + "].ambient"), light->ambient);
@@ -44,10 +44,10 @@ void PhongShader::use_light(std::shared_ptr<PhongShader::Light> light, int i)
 void PhongShader::use_uniforms(const Uniforms& data)
 {
   int sizes[3] = { 0, 0, 0 };
-  for (auto& light : data.lights)
+  for (const auto& light : data.lights)
   {
-    int type = (int)(light->type);
-    use_light(std::move(light), sizes[type]);
+    int type = static_cast<int>(light->type);
+    use_light(light, sizes[type]);
     sizes[type]++;
   }
   set_int("sunLights_size", sizes[0]);

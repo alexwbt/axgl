@@ -39,37 +39,37 @@ const glm::mat4 Camera::view_matrix()
 
 void CameraController::set_camera(std::shared_ptr<Camera> camera)
 {
-    camera_ = std::move(camera);
+  camera_ = std::move(camera);
 }
 
 void CameraController::move(const Input& input)
 {
-    if (!camera_) return;
-    if (input.forward) camera_->position += camera_speed_ * camera_->front();
-    if (input.backward) camera_->position -= camera_speed_ * camera_->front();
-    if (input.right) camera_->position += camera_speed_ * camera_->right();
-    if (input.left) camera_->position -= camera_speed_ * camera_->right();
-    if (input.up) camera_->position += camera_speed_ * glm::vec3(0, 1, 0);
-    if (input.down) camera_->position -= camera_speed_ * glm::vec3(0, 1, 0);
+  if (!camera_) return;
+  if (input.forward) camera_->position += camera_speed_ * camera_->front_side();
+  if (input.backward) camera_->position -= camera_speed_ * camera_->front_side();
+  if (input.right) camera_->position += camera_speed_ * camera_->right();
+  if (input.left) camera_->position -= camera_speed_ * camera_->right();
+  if (input.up) camera_->position += camera_speed_ * glm::vec3(0, 1, 0);
+  if (input.down) camera_->position -= camera_speed_ * glm::vec3(0, 1, 0);
 
-    camera_->update_transform();
+  camera_->update_transform();
 }
 
 void CameraController::pivot(float x, float y)
 {
-    if (!camera_) return;
-    if (pivot_x_ || pivot_y_)
-    {
-        camera_->yaw += (x - pivot_x_) * pivot_sensitivity_;
-        camera_->pitch += (pivot_y_ - y) * pivot_sensitivity_;
-    }
-    pivot_x_ = x;
-    pivot_y_ = y;
+  if (!camera_) return;
+  if (pivot_x_ || pivot_y_)
+  {
+    camera_->yaw += (x - pivot_x_) * pivot_sensitivity_;
+    camera_->pitch += (pivot_y_ - y) * pivot_sensitivity_;
+  }
+  pivot_x_ = x;
+  pivot_y_ = y;
 
-    if (camera_->pitch > 89.0f) camera_->pitch = 89.0f;
-    if (camera_->pitch < -89.0f) camera_->pitch = -89.0f;
+  if (camera_->pitch > 89.0f) camera_->pitch = 89.0f;
+  if (camera_->pitch < -89.0f) camera_->pitch = -89.0f;
 
-    camera_->update_transform();
+  camera_->update_transform();
 }
 
 NAMESPACE_WORLD_END

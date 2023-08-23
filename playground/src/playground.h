@@ -7,6 +7,7 @@
 #include "axgl/gameloop.h"
 #include "axgl/world/world.h"
 #include "axgl/world/camera.h"
+#include "axgl/world/light.h"
 #include "axgl/world/render_context.h"
 #include "axgl/opengl/entity/skybox.h"
 #include "axgl/opengl/shader/phong-shader.h"
@@ -55,6 +56,15 @@ public:
     // initialize glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glFrontFace(GL_CW);
+
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // load resources
     load_shaders();
@@ -111,15 +121,6 @@ public:
   {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    glFrontFace(GL_CCW);
-
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     render_context_.projection = glm::perspective(
       glm::radians(camera_->fov),

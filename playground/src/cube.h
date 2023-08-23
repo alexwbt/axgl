@@ -61,10 +61,10 @@ public:
   {
     using namespace axgl::opengl::shader;
 
-    PhongShader::LightColor light_color{ glm::vec3(0.3f), glm::vec3(1.0f), glm::vec3(1.0f) };
+    axgl::world::LightColor light_color{ glm::vec3(0.3f), glm::vec3(1.0f), glm::vec3(1.0f) };
 
-    std::vector<std::shared_ptr<PhongShader::Light>> lights = {
-      std::make_shared<PhongShader::Light>(glm::vec3(0.2f, -1.0f, 1.2f), light_color)
+    std::vector<std::shared_ptr<axgl::world::Light>> lights = {
+      std::make_shared<axgl::world::Light>(glm::vec3(0.2f, -1.0f, 1.2f), light_color)
     };
 
     PhongShader::Uniforms uniforms;
@@ -78,7 +78,11 @@ public:
     shader_->use_program();
     shader_->use_uniforms(uniforms);
 
+    glFrontFace(GL_CCW);
+
     model_->render(shader_);
+
+    glFrontFace(GL_CW);
   }
 
 };
