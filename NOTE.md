@@ -1,4 +1,0 @@
-
-Up Next:
-
-- shadow

@@ -2,12 +2,14 @@
 
 #include "axgl/opengl/static_resource.h"
 #include "axgl/opengl/shader/skybox-shader.h"
+#include "axgl/opengl/shader/shadow-map-shader.h"
 
 enum class ShaderID : uint32_t
 {
   kSkybox,
   kPhong,
-  kTexturePhong
+  kTexturePhong,
+  kShadowMap
 };
 
 inline void load_shaders()
@@ -22,6 +24,9 @@ inline void load_shaders()
 
   load_shader(static_cast<uint32_t>(ShaderID::kTexturePhong),
     std::make_shared<PhongShader>("texture_phong"));
+
+  load_shader(static_cast<uint32_t>(ShaderID::kShadowMap),
+    std::make_shared<ShadowMapShader>());
 }
 
 inline void load_textures()

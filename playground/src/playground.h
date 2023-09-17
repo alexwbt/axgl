@@ -30,9 +30,6 @@ class Playground : public axgl::Component,
 
   axgl::world::RenderContext render_context_;
 
-  // phong lights
-  // std::list<std::shared_ptr<axgl::opengl::shader::PhongShader::Light>> lights_;
-
 public:
   void initialize() override
   {
