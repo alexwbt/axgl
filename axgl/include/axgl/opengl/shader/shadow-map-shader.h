@@ -18,7 +18,7 @@ public:
   };
 
 public:
-  ShadowMapShader(const std::string& name);
+  ShadowMapShader();
   void use_uniforms(const Uniforms& uniforms);
 
 };

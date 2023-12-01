@@ -3,7 +3,7 @@
 NAMESPACE_OPENGL_SHADER
 
 ShadowMapShader::ShadowMapShader() : ShaderProgram(
-  { {GL_VERTEX_SHADER, "res/shaders/mvp.vs"},
+  { {GL_VERTEX_SHADER, "res/shaders/mvp.vs"} }
 ) {}
 
 void ShadowMapShader::use_uniforms(const Uniforms& data)

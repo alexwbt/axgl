@@ -69,7 +69,7 @@ namespace glfw
 
   void Window::glfw_error_callback(int error, const char* description)
   {
-    SPDLOG_DEBUG("GLFW Error {}: {}", error, description);
+    SPDLOG_ERROR("GLFW Error {}: {}", error, description);
   }
 
   void Window::key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)

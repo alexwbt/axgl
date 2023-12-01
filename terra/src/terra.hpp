@@ -11,7 +11,7 @@
 
 class Terra : public axgl::Component
 {
-  glfw::Window window_;
+  glfw::Window window_; // FIXME: initialized before GLFW
   axgl::world::World world_;
 
 public:
@@ -21,8 +21,8 @@ public:
   {
     glfw::Window::initialize();
     glfwWindowHint(GLFW_SAMPLES, 8);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // initialize glad
