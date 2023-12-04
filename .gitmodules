@@ -13,3 +13,6 @@
 [submodule "_external/assimp"]
 	path = _external/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "_external/asio"]
+	path = _external/asio
+	url = https://github.com/chriskohlhoff/asio.git
