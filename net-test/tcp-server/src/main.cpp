@@ -8,6 +8,8 @@
 
 class Server : public net::TcpServer
 {
+  using net::TcpServer::TcpServer;
+
 public:
   std::string get_daytime_string()
   {
@@ -28,18 +30,12 @@ int main()
 {
   try
   {
-    asio::io_context io_context;
-
     constexpr uint16_t PORT = 13000;
-
-    Server server;
-    server.start(io_context, PORT);
     SPDLOG_INFO("starting server on {}", PORT);
 
-    asio::signal_set signals(io_context, SIGINT, SIGTERM);
-    signals.async_wait([&io_context](auto, auto) { io_context.stop(); });
+    Server server(PORT);
+    server.start();
 
-    io_context.run();
     SPDLOG_INFO("server stopped", PORT);
   }
   catch (const std::exception& e)

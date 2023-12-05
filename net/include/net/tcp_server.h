@@ -1,16 +1,18 @@
 #pragma once
 
-#include <asio.hpp>
+#include "net/asio_application.h"
 
 namespace net {
 
-  class TcpServer
+  class TcpServer : private AsioApplication
   {
-  public:
-    TcpServer() {}
-    virtual ~TcpServer() {}
+  private:
+    asio::ip::tcp::acceptor acceptor_;
 
-    void start(asio::io_context& io_context, asio::ip::port_type port);
+  public:
+    TcpServer(asio::ip::port_type port);
+
+    void start();
 
     virtual void on_new_connection(asio::ip::tcp::socket socket) {}
   };

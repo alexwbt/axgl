@@ -1,6 +1,7 @@
-#include <asio.hpp>
 #include <spdlog/spdlog.h>
 #include <sstream>
+
+#include <net/asio_application.h>
 
 using asio::ip::tcp;
 

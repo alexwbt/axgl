@@ -112,5 +112,6 @@
     "source_location": "cpp",
     "strstream": "cpp",
     "*.ipp": "cpp"
-  }
+  },
+  "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false
 }
