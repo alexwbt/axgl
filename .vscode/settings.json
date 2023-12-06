@@ -5,6 +5,7 @@
     "axgl",
     "bitangent",
     "cubemap",
+    "flatbuffers",
     "gameloop",
     "glfw",
     "opengl",

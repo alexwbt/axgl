@@ -5,3 +5,7 @@ table Header {
   command: int32;
   body_size: int32;
 }
+
+table TextMessage {
+  message: string;
+}
