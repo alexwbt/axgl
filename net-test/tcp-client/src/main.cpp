@@ -18,22 +18,26 @@ int main()
 
     SPDLOG_INFO("Connected");
 
-    std::stringstream stringstream;
-    while (true)
-    {
-      std::vector<char> buf(128);
-      asio::error_code error;
 
-      size_t len = socket.read_some(asio::buffer(buf), error);
-      if (error == asio::error::eof)
-        break; // Connection closed cleanly by peer.
-      else if (error)
-        throw asio::system_error(error); // Some other error.
+    asio::error_code ignored_error;
+    asio::write(socket, asio::buffer("hello world\n"), ignored_error);
 
-      stringstream.write(buf.data(), len);
-    }
+    // std::stringstream stringstream;
+    // while (true)
+    // {
+    //   std::vector<char> buf(128);
+    //   asio::error_code error;
 
-    SPDLOG_INFO("Received daytime: {}", stringstream.str());
+    //   size_t len = socket.read_some(asio::buffer(buf), error);
+    //   if (error == asio::error::eof)
+    //     break; // Connection closed cleanly by peer.
+    //   else if (error)
+    //     throw asio::system_error(error); // Some other error.
+
+    //   stringstream.write(buf.data(), len);
+    // }
+
+    // SPDLOG_INFO("Received daytime: {}", stringstream.str());
   }
   catch (const std::exception& e)
   {
