@@ -8,23 +8,8 @@ target_sources(terra
   ${source_cpp_files}
 )
 
-target_include_directories(terra
-  PRIVATE
-
-  glfw/include
-  glad/include
-  spdlog/include
-  assimp/include
-  axgl/include
-)
-
 target_link_libraries(terra
   PRIVATE
-  glm
-  glfw
-  glad
-  spdlog
-  assimp
   axgl
 )
 

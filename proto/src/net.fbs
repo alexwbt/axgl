@@ -1,0 +1,7 @@
+
+namespace net;
+
+table Header {
+  command: int32;
+  body_size: int32;
+}

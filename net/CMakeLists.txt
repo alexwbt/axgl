@@ -13,3 +13,9 @@ target_include_directories(net
   ../_external/asio/asio/include
   ./include
 )
+
+target_link_libraries(net
+  PUBLIC
+  spdlog
+  proto
+)

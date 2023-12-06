@@ -10,20 +10,13 @@ target_sources(axgl
 
 target_include_directories(axgl
   PRIVATE
-
-  glfw/include
-  glad/include
-  assimp/include
-  spdlog/include
-
   ../_external/stb
-
   PUBLIC
   ./include
 )
 
 target_link_libraries(axgl
-  PRIVATE
+  PUBLIC
   glm
   glfw
   glad

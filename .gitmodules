@@ -16,3 +16,6 @@
 [submodule "_external/asio"]
 	path = _external/asio
 	url = https://github.com/chriskohlhoff/asio.git
+[submodule "_external/flatbuffer"]
+	path = _external/flatbuffer
+	url = https://github.com/google/flatbuffers.git

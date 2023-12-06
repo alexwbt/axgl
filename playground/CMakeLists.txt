@@ -8,23 +8,8 @@ target_sources(playground
   ${source_cpp_files}
 )
 
-target_include_directories(playground
-  PRIVATE
-
-  glfw/include
-  glad/include
-  spdlog/include
-  assimp/include
-  axgl/include
-)
-
 target_link_libraries(playground
   PRIVATE
-  glm
-  glfw
-  glad
-  spdlog
-  assimp
   axgl
 )
 

@@ -3,7 +3,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include <net/asio_application.h>
+#include <net/asio.h>
 
 using asio::ip::udp;
 
@@ -28,11 +28,12 @@ int main()
       std::vector<char> recv_buf(1);
       udp::endpoint remote_endpoint;
       socket.receive_from(asio::buffer(recv_buf), remote_endpoint);
+      SPDLOG_INFO("Received request from {}", remote_endpoint.address().to_string());
 
       std::string message = get_daytime_string();
       asio::error_code ignored_error;
       socket.send_to(asio::buffer(message),
-          remote_endpoint, 0, ignored_error);
+        remote_endpoint, 0, ignored_error);
     }
 
     SPDLOG_INFO("server stopped");

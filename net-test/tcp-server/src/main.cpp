@@ -17,29 +17,19 @@ public:
     return std::format("{:%d-%m-%Y %H:%M:%OS}", now);
   }
 
-  void on_new_connection(asio::ip::tcp::socket socket)
+  void on_new_connection(uint32_t id, std::shared_ptr<asio::ip::tcp::socket> socket) override
   {
-    SPDLOG_INFO("new connection from {}", socket.remote_endpoint().address().to_string());
+    SPDLOG_INFO("new connection from {}", socket->remote_endpoint().address().to_string());
 
     asio::error_code ignored_error;
-    asio::write(socket, asio::buffer(get_daytime_string()), ignored_error);
+    asio::write(*socket, asio::buffer(get_daytime_string()), ignored_error);
+
+    remove_socket(id);
   }
 };
 
 int main()
 {
-  try
-  {
-    constexpr uint16_t PORT = 13000;
-    SPDLOG_INFO("starting server on {}", PORT);
-
-    Server server(PORT);
-    server.start();
-
-    SPDLOG_INFO("server stopped", PORT);
-  }
-  catch (const std::exception& e)
-  {
-    SPDLOG_CRITICAL(e.what());
-  }
+  Server server(13000);
+  server.start();
 }

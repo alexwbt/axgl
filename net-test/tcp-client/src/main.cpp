@@ -1,7 +1,7 @@
 #include <spdlog/spdlog.h>
 #include <sstream>
 
-#include <net/asio_application.h>
+#include <net/asio.h>
 
 using asio::ip::tcp;
 
@@ -15,6 +15,8 @@ int main()
 
     tcp::socket socket(io_context);
     asio::connect(socket, resolver.resolve("localhost", "13000"));
+
+    SPDLOG_INFO("Connected");
 
     std::stringstream stringstream;
     while (true)
