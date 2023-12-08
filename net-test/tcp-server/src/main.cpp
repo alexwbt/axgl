@@ -32,9 +32,23 @@ public:
     SPDLOG_INFO("client disconnected (id: {})", session_id);
   }
 
-  void on_receive(uint32_t session_id, const std::string& message) override
+  void on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer) override
   {
-    SPDLOG_INFO("received message from client (id: {}): {}", session_id, message);
+    std::string raw_data_str(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+    SPDLOG_INFO("received message from client (id: {}, type: {}): {}", session_id, identifier, raw_data_str);
+
+    // std::string str(reinterpret_cast<const char*>(buffer.data()), size);
+    // SPDLOG_INFO("Raw message. buffer_size: {}, size: {}, str: {}", buffer.size(), size, str);
+
+    // flatbuffers::Verifier::Options verifier_options;
+    // verifier_options.assert = true;
+
+    // auto verifier = flatbuffers::Verifier(buffer.data(), size, verifier_options);
+    // auto valid_message = net::VerifySizePrefixedMessageBuffer(verifier);
+
+    // auto message = net::GetSizePrefixedMessage(buffer.data());
+    // SPDLOG_INFO("Received message. valid: {}, type: {}, size: {}, subject: {}, content: {}",
+    //   valid_message, type, size, message->subject()->str(), message->content()->str());
   }
 
 };

@@ -1,0 +1,17 @@
+
+namespace proto;
+
+table Message {
+  id: string; // message id
+  reply_to: string; // replying message id
+  forwarded_by: string; // forwarded by user id
+  sender: string; // messaege sender user id
+  recipient: string; // recipient user id
+  subject: string; // message subject
+  content_type: string;
+  content: string;
+}
+
+file_identifier "MESG";
+
+root_type Message;

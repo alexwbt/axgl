@@ -10,8 +10,8 @@ namespace net
     socket_(std::move(socket)),
     timer_(socket_.get_executor())
   {
-    asio::co_spawn(socket_.get_executor(), read_messages(), asio::detached);
-    asio::co_spawn(socket_.get_executor(), write_messages(), asio::detached);
+    asio::co_spawn(socket_.get_executor(), read_buffers(), asio::detached);
+    asio::co_spawn(socket_.get_executor(), write_buffers(), asio::detached);
   }
 
   TcpServer::Session::~Session()
@@ -19,13 +19,13 @@ namespace net
     server_.on_disconnect(id_);
   }
 
-  void TcpServer::Session::send_message(const std::string& message)
+  void TcpServer::Session::send(flatbuffers::DetachedBuffer buffer)
   {
-    output_queue_.push(message);
+    output_queue_.push(std::move(buffer));
     timer_.cancel_one();
   }
 
-  asio::awaitable<void> TcpServer::Session::write_messages()
+  asio::awaitable<void> TcpServer::Session::write_buffers()
   {
     try
     {
@@ -36,8 +36,8 @@ namespace net
       }
       else
       {
-        co_await asio::async_write(socket_,
-          asio::buffer(output_queue_.front()), asio::use_awaitable);
+        const auto& buffer = output_queue_.front();
+        co_await asio::async_write(socket_, asio::buffer(buffer.data(), buffer.size()), asio::use_awaitable);
         output_queue_.pop();
       }
     }
@@ -47,22 +47,32 @@ namespace net
     }
   }
 
-  asio::awaitable<void> TcpServer::Session::read_messages()
+  asio::awaitable<void> TcpServer::Session::read_buffers()
   {
     try
     {
-      std::string message;
       while (true)
       {
-        std::size_t n = co_await asio::async_read_until(socket_,
-          asio::dynamic_buffer(message, 1024), "\n", asio::use_awaitable);
+        std::vector<uint8_t> buffer;
 
-        server_.on_receive(id_, message);
-        message.erase(0, n);
+        // read size
+        co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, 4), asio::use_awaitable);
+
+        auto size = flatbuffers::GetSizePrefixedBufferLength(buffer.data());
+
+        // read all of size
+        co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, size), asio::use_awaitable);
+
+        std::string identifier(
+          flatbuffers::GetBufferIdentifier(buffer.data(), true),
+          flatbuffers::FlatBufferBuilder::kFileIdentifierLength);
+
+        server_.on_receive(id_, identifier, std::move(buffer));
       }
     }
     catch (const std::exception& e)
     {
+      // disconnect
       server_.remove_session(id_);
     }
   }
@@ -96,9 +106,14 @@ namespace net
     io_context_.stop();
   }
 
-  void TcpServer::remove_session(uint32_t id)
+  void TcpServer::send(uint32_t session_id, flatbuffers::DetachedBuffer buffer)
   {
-    sessions_.erase(id);
+    sessions_[session_id]->send(std::move(buffer));
+  }
+
+  void TcpServer::remove_session(uint32_t session_id)
+  {
+    sessions_.erase(session_id);
   }
 
   uint32_t TcpServer::use_next_session_id()
