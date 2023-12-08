@@ -4,9 +4,9 @@
 namespace net
 {
 
-  TcpServer::Session::Session(TcpServer& server, uint32_t id, asio::ip::tcp::socket socket) :
-    server_(server),
+  TcpSession::TcpSession(uint32_t id, asio::ip::tcp::socket socket, Handler& handler) :
     id_(id),
+    handler_(handler),
     socket_(std::move(socket)),
     timer_(socket_.get_executor())
   {
@@ -14,28 +14,24 @@ namespace net
     asio::co_spawn(socket_.get_executor(), write_buffers(), asio::detached);
   }
 
-  TcpServer::Session::~Session()
-  {
-    server_.on_disconnect(id_);
-  }
-
-  void TcpServer::Session::send(flatbuffers::DetachedBuffer buffer)
+  void TcpSession::send(flatbuffers::DetachedBuffer buffer)
   {
     output_queue_.push(std::move(buffer));
     timer_.cancel_one();
   }
 
-  asio::awaitable<void> TcpServer::Session::write_buffers()
+  asio::awaitable<void> TcpSession::write_buffers()
   {
     try
     {
-      if (output_queue_.empty())
+      while (socket_.is_open())
       {
-        asio::error_code ec;
-        co_await timer_.async_wait(asio::redirect_error(asio::use_awaitable, ec));
-      }
-      else
-      {
+        if (output_queue_.empty())
+        {
+          asio::error_code ec;
+          co_await timer_.async_wait(asio::redirect_error(asio::use_awaitable, ec));
+        }
+
         const auto& buffer = output_queue_.front();
         co_await asio::async_write(socket_, asio::buffer(buffer.data(), buffer.size()), asio::use_awaitable);
         output_queue_.pop();
@@ -43,11 +39,11 @@ namespace net
     }
     catch (const std::exception& e)
     {
-      server_.remove_session(id_);
+      handler_.disconnect(id_);
     }
   }
 
-  asio::awaitable<void> TcpServer::Session::read_buffers()
+  asio::awaitable<void> TcpSession::read_buffers()
   {
     try
     {
@@ -67,13 +63,12 @@ namespace net
           flatbuffers::GetBufferIdentifier(buffer.data(), true),
           flatbuffers::FlatBufferBuilder::kFileIdentifierLength);
 
-        server_.on_receive(id_, identifier, std::move(buffer));
+        handler_.on_receive(id_, identifier, std::move(buffer));
       }
     }
     catch (const std::exception& e)
     {
-      // disconnect
-      server_.remove_session(id_);
+      handler_.disconnect(id_);
     }
   }
 
@@ -111,9 +106,10 @@ namespace net
     sessions_[session_id]->send(std::move(buffer));
   }
 
-  void TcpServer::remove_session(uint32_t session_id)
+  void TcpServer::disconnect(uint32_t session_id)
   {
     sessions_.erase(session_id);
+    on_disconnect(session_id);
   }
 
   uint32_t TcpServer::use_next_session_id()
@@ -128,11 +124,18 @@ namespace net
       auto socket = co_await acceptor_.async_accept(asio::use_awaitable);
 
       const auto session_id = use_next_session_id();
-      const auto session = std::make_shared<Session>(*this, session_id, std::move(socket));
+      const auto session = std::make_shared<TcpSession>(session_id, std::move(socket), *this);
 
       sessions_.insert({ session_id, session });
       on_connect(session_id, session);
     }
+  }
+
+  TcpClient::TcpClient(const std::string& server_host, asio::ip::port_type server_port)
+  {
+    asio::ip::tcp::resolver resolver(io_context_);
+    asio::ip::tcp::socket socket(io_context_);
+    asio::connect(socket, resolver.resolve(server_host, server_port));
   }
 
 }
