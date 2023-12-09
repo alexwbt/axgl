@@ -1,5 +1,5 @@
 #include <chrono>
-#include <format>
+// #include <format>
 
 #include <spdlog/spdlog.h>
 
@@ -10,7 +10,8 @@ using asio::ip::udp;
 std::string get_daytime_string()
 {
   const auto now = std::chrono::system_clock::now();
-  return std::format("{:%d-%m-%Y %H:%M:%OS}", now);
+  // return std::format("{:%d-%m-%Y %H:%M:%OS}", now);
+  return "";
 }
 
 int main()

@@ -34,6 +34,8 @@ namespace net
 
     void send(flatbuffers::DetachedBuffer buffer);
 
+    asio::ip::tcp::socket& socket() { return socket_; }
+
   private:
     asio::awaitable<void> write_buffers();
     asio::awaitable<void> read_buffers();
@@ -75,12 +77,11 @@ namespace net
     TcpSession session_;
 
   public:
-    TcpClient(const std::string& server_host, asio::ip::port_type server_port);
-    virtual ~TcpClient();
+    TcpClient(const std::string& host, asio::ip::port_type port);
+    virtual ~TcpClient() {}
 
-    virtual void on_connect(std::shared_ptr<TcpSession> session) = 0;
-    virtual void on_disconnect() = 0;
-    virtual void on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer) = 0;
+    void start();
+    void send(flatbuffers::DetachedBuffer buffer);
   };
 
 }

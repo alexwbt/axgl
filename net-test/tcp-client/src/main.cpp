@@ -1,71 +1,73 @@
 #include <spdlog/spdlog.h>
-#include <sstream>
+#include <iostream>
 
-#include <net/asio.h>
+#include <net/tcp_server.h>
 #include <proto/message.h>
 
 using asio::ip::tcp;
 
 
-flatbuffers::DetachedBuffer create_message(const std::string& subject, const std::string& content)
+flatbuffers::DetachedBuffer create_message(const std::string& content)
 {
   flatbuffers::FlatBufferBuilder builder;
 
-  auto subject_offset = builder.CreateString(subject);
   auto content_offset = builder.CreateString(content);
 
   proto::MessageBuilder message_builder(builder);
-  message_builder.add_subject(subject_offset);
   message_builder.add_content(content_offset);
   auto message = message_builder.Finish();
 
   builder.FinishSizePrefixed(message, proto::MessageIdentifier());
 
-  uint8_t* buf = builder.GetBufferPointer();
-  const auto size = builder.GetSize();
-  std::string str(reinterpret_cast<const char*>(buf), size);
+  // uint8_t* buf = builder.GetBufferPointer();
+  // const auto size = builder.GetSize();
+  // std::string str(reinterpret_cast<const char*>(buf), size);
 
-  SPDLOG_INFO("Create message. size: {}, str: {}", size, str);
+  // SPDLOG_INFO("Create message. size: {}, str: {}", size, str);
 
   return builder.Release();
 }
+
+
+class Client : public net::TcpClient
+{
+public:
+  Client() : net::TcpClient("127.0.0.1", 13000)
+  {
+    SPDLOG_INFO("Connected");
+    start();
+  }
+
+  void disconnect(uint32_t session_id) override
+  {
+    SPDLOG_INFO("Disconnected");
+  }
+
+  void on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer) override
+  {
+    SPDLOG_INFO("Received {}", identifier);
+  }
+
+  void send_message(const std::string& message)
+  {
+    send(create_message(message));
+  }
+};
 
 
 int main()
 {
   try
   {
-    auto message1 = create_message("Hello", "World");
-    auto message2 = create_message("what", "I decided that I need to write a wrapper over the socket, which inside itself can store the remainder of the call async_read_until, and then successfully use this buffer in subsequent calls of my function.");
+    Client client;
 
-    asio::io_context io_context;
-    tcp::resolver resolver(io_context);
+    while (true)
+    {
+        std::string input;
+        std::getline(std::cin, input);
 
-    tcp::socket socket(io_context);
-    asio::connect(socket, resolver.resolve("localhost", "13000"));
-
-    SPDLOG_INFO("Connected");
-
-    asio::error_code ignored_error;
-    asio::write(socket, asio::buffer(message1.data(), message1.size()), ignored_error);
-    asio::write(socket, asio::buffer(message2.data(), message2.size()), ignored_error);
-
-    // std::stringstream stringstream;
-    // while (true)
-    // {
-    //   std::vector<char> buf(128);
-    //   asio::error_code error;
-
-    //   size_t len = socket.read_some(asio::buffer(buf), error);
-    //   if (error == asio::error::eof)
-    //     break; // Connection closed cleanly by peer.
-    //   else if (error)
-    //     throw asio::system_error(error); // Some other error.
-
-    //   stringstream.write(buf.data(), len);
-    // }
-
-    // SPDLOG_INFO("Received daytime: {}", stringstream.str());
+        client.send_message(input);
+    }
   }
   catch (const std::exception& e)
   {

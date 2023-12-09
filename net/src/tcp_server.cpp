@@ -131,11 +131,29 @@ namespace net
     }
   }
 
-  TcpClient::TcpClient(const std::string& server_host, asio::ip::port_type server_port)
+  TcpClient::TcpClient(const std::string& host, asio::ip::port_type port) :
+    session_(0, asio::ip::tcp::socket(io_context_), *this)
   {
     asio::ip::tcp::resolver resolver(io_context_);
-    asio::ip::tcp::socket socket(io_context_);
-    asio::connect(socket, resolver.resolve(server_host, server_port));
+    asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(host), port);
+    asio::connect(session_.socket(), resolver.resolve(endpoint));
+  }
+
+  void TcpClient::start()
+  {
+    try
+    {
+      io_context_.run();
+    }
+    catch (const std::exception& e)
+    {
+      SPDLOG_CRITICAL(e.what());
+    }
+  }
+
+  void TcpClient::send(flatbuffers::DetachedBuffer buffer)
+  {
+    session_.send(std::move(buffer));
   }
 
 }
