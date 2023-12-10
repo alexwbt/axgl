@@ -127,7 +127,8 @@
     "__verbose_abort": "cpp",
     "complex": "cpp",
     "cwctype": "cpp",
-    "string_view": "cpp"
+    "string_view": "cpp",
+    "shared_mutex": "cpp"
   },
   "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false
 }

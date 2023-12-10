@@ -72,9 +72,9 @@ namespace net
 
   class TcpClient : public TcpSession::Handler
   {
-  private:
+  protected:
     asio::io_context io_context_;
-    TcpSession session_;
+    std::shared_ptr<TcpSession> session_;
 
   public:
     TcpClient(const std::string& host, asio::ip::port_type port);
@@ -82,6 +82,13 @@ namespace net
 
     void start();
     void send(flatbuffers::DetachedBuffer buffer);
+
+    void disconnect(uint32_t session_id) override;
+    void on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer) override;
+
+    virtual void on_connect() = 0;
+    virtual void on_disconnect() = 0;
+    virtual void on_receive(const std::string& identifier, std::vector<uint8_t> buffer) = 0;
   };
 
 }

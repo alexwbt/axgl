@@ -10,6 +10,7 @@ namespace net
     socket_(std::move(socket)),
     timer_(socket_.get_executor())
   {
+    timer_.expires_at(std::chrono::steady_clock::time_point::max());
     asio::co_spawn(socket_.get_executor(), read_buffers(), asio::detached);
     asio::co_spawn(socket_.get_executor(), write_buffers(), asio::detached);
   }
@@ -30,6 +31,8 @@ namespace net
         {
           asio::error_code ec;
           co_await timer_.async_wait(asio::redirect_error(asio::use_awaitable, ec));
+          if (!ec) continue;
+          else break;
         }
 
         const auto& buffer = output_queue_.front();
@@ -131,12 +134,25 @@ namespace net
     }
   }
 
-  TcpClient::TcpClient(const std::string& host, asio::ip::port_type port) :
-    session_(0, asio::ip::tcp::socket(io_context_), *this)
+  TcpClient::TcpClient(const std::string& host, asio::ip::port_type port)
   {
-    asio::ip::tcp::resolver resolver(io_context_);
-    asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(host), port);
-    asio::connect(session_.socket(), resolver.resolve(endpoint));
+    asio::co_spawn(io_context_, [this, host, port]() -> asio::awaitable<void>
+    {
+      asio::ip::tcp::resolver resolver(io_context_);
+      asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(host), port);
+      asio::ip::tcp::socket socket(io_context_);
+
+      asio::error_code ec;
+      co_await asio::async_connect(socket, resolver.resolve(endpoint), asio::redirect_error(asio::use_awaitable, ec));
+
+      if (!ec)
+      {
+        session_ = std::make_shared<TcpSession>(0, std::move(socket), *this);
+        on_connect();
+      }
+      else
+        SPDLOG_ERROR("connection failed ({})", ec.message());
+    }, asio::detached);
   }
 
   void TcpClient::start()
@@ -153,7 +169,19 @@ namespace net
 
   void TcpClient::send(flatbuffers::DetachedBuffer buffer)
   {
-    session_.send(std::move(buffer));
+    if (session_)
+      session_->send(std::move(buffer));
+  }
+
+  void TcpClient::disconnect(uint32_t session_id)
+  {
+    session_ = nullptr;
+    on_disconnect();
+  }
+
+  void TcpClient::on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer)
+  {
+    on_receive(identifier, buffer);
   }
 
 }

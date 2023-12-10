@@ -1,5 +1,5 @@
-#include <spdlog/spdlog.h>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 #include <net/tcp_server.h>
 #include <proto/message.h>
@@ -32,18 +32,20 @@ flatbuffers::DetachedBuffer create_message(const std::string& content)
 class Client : public net::TcpClient
 {
 public:
-  Client() : net::TcpClient("127.0.0.1", 13000)
+  using net::TcpClient::TcpClient;
+
+  void on_connect() override
   {
     SPDLOG_INFO("Connected");
-    start();
   }
 
-  void disconnect(uint32_t session_id) override
+  void on_disconnect() override
   {
     SPDLOG_INFO("Disconnected");
+    io_context_.stop();
   }
 
-  void on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer) override
+  void on_receive(const std::string& identifier, std::vector<uint8_t> buffer) override
   {
     SPDLOG_INFO("Received {}", identifier);
   }
@@ -52,6 +54,28 @@ public:
   {
     send(create_message(message));
   }
+
+  void read_input()
+  {
+    // asio::co_spawn(io_context_, [this]() -> asio::awaitable<void>
+    // {
+    //   try
+    //   {
+    //     while (true)
+    //     {
+    //       std::string input;
+    //       asio::posix::stream_descriptor input_stream(io_context_, 0);
+    //       co_await asio::async_read(input_stream, asio::buffer(input), asio::use_awaitable);
+
+    //       send_message(input);
+    //     }
+    //   }
+    //   catch (const std::exception& e)
+    //   {
+    //     SPDLOG_ERROR(e.what());
+    //   }
+    // }, asio::detached);
+  }
 };
 
 
@@ -59,15 +83,24 @@ int main()
 {
   try
   {
-    Client client;
+    Client client("127.0.0.1", 13000);
+    bool running = true;
 
-    while (true)
+    std::thread thread([&]()
     {
+      while (running)
+      {
         std::string input;
         std::getline(std::cin, input);
-
         client.send_message(input);
-    }
+      }
+    });
+
+    client.start();
+
+    running = false;
+    if (thread.joinable())
+      thread.join();
   }
   catch (const std::exception& e)
   {
