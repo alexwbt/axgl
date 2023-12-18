@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <mutex>
 #include <queue>
 
 #include <flatbuffers/flatbuffers.h>
@@ -13,35 +14,33 @@ namespace net
 
   class TcpSession final
   {
-  public:
-    class Handler
-    {
-    public:
-      virtual ~Handler() {};
-      virtual void disconnect(uint32_t session_id) = 0;
-      virtual void on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer) = 0;
-    };
-
   private:
     uint32_t id_;
-    Handler& handler_;
     asio::ip::tcp::socket socket_;
     asio::steady_timer timer_;
+
+    std::mutex input_queue_mutex_;
+    std::mutex output_queue_mutex_;
+    std::queue<std::vector<uint8_t>> input_queue_;
     std::queue<flatbuffers::DetachedBuffer> output_queue_;
 
   public:
-    TcpSession(uint32_t id, asio::ip::tcp::socket socket, Handler& handler);
+    static std::shared_ptr<TcpSession> create(uint32_t id, asio::ip::tcp::socket socket);
 
     void send(flatbuffers::DetachedBuffer buffer);
+    void handle_input(std::function<void(std::vector<uint8_t>*)> handler);
+    void close();
 
-    asio::ip::tcp::socket& socket() { return socket_; }
+    bool connected();
 
   private:
+    TcpSession(uint32_t id, asio::ip::tcp::socket socket);
+
     asio::awaitable<void> write_buffers();
     asio::awaitable<void> read_buffers();
   };
 
-  class TcpServer : public TcpSession::Handler
+  class TcpServer
   {
   private:
     const asio::ip::port_type port_;
@@ -59,7 +58,7 @@ namespace net
     void stop();
 
     void send(uint32_t session_id, flatbuffers::DetachedBuffer buffer);
-    void disconnect(uint32_t session_id);
+    void close_session(uint32_t session_id);
 
     virtual void on_connect(uint32_t session_id, std::shared_ptr<TcpSession> session) = 0;
     virtual void on_disconnect(uint32_t session_id) = 0;
@@ -70,7 +69,7 @@ namespace net
     asio::awaitable<void> accept_connections();
   };
 
-  class TcpClient : public TcpSession::Handler
+  class TcpClient
   {
   protected:
     asio::io_context io_context_;
@@ -81,10 +80,8 @@ namespace net
     virtual ~TcpClient() {}
 
     void start();
+    void stop();
     void send(flatbuffers::DetachedBuffer buffer);
-
-    void disconnect(uint32_t session_id) override;
-    void on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer) override;
 
     virtual void on_connect() = 0;
     virtual void on_disconnect() = 0;

@@ -37,6 +37,8 @@ public:
   void on_connect() override
   {
     SPDLOG_INFO("Connected");
+
+    send_message("what the fuck is wrong with you");
   }
 
   void on_disconnect() override
@@ -84,23 +86,25 @@ int main()
   try
   {
     Client client("127.0.0.1", 13000);
-    bool running = true;
-
-    std::thread thread([&]()
-    {
-      while (running)
-      {
-        std::string input;
-        std::getline(std::cin, input);
-        client.send_message(input);
-      }
-    });
 
     client.start();
 
-    running = false;
-    if (thread.joinable())
-      thread.join();
+    // std::thread thread([&]()
+    // {
+    //   client.start();
+    // });
+
+    // while (true)
+    // {
+    //   std::string input;
+    //   std::getline(std::cin, input);
+    //   client.send_message(input);
+    // }
+
+    // client.stop();
+
+    // if (thread.joinable())
+    //   thread.join();
   }
   catch (const std::exception& e)
   {
