@@ -1,9 +1,28 @@
 #include <chrono>
+#include <iostream>
 
 #include <spdlog/spdlog.h>
 
-#include <net/tcp_server.h>
+#include <net/tcp_session.h>
 #include <proto/message.h>
+
+
+std::shared_ptr<std::vector<uint8_t>> create_message(const std::string& content)
+{
+  flatbuffers::FlatBufferBuilder builder;
+
+  auto content_offset = builder.CreateString(content);
+
+  proto::MessageBuilder message_builder(builder);
+  message_builder.add_content(content_offset);
+  auto message = message_builder.Finish();
+
+  builder.FinishSizePrefixed(message, proto::MessageIdentifier());
+
+  auto buffer = builder.Release();
+  return std::make_shared<std::vector<uint8_t>>(
+    buffer.data(), buffer.data() + buffer.size());
+}
 
 
 class Server : public net::TcpServer
@@ -14,11 +33,6 @@ public:
   void on_connect(uint32_t session_id, std::shared_ptr<net::TcpSession> session) override
   {
     SPDLOG_INFO("new connection (id: {})", session_id);
-
-    // asio::error_code ignored_error;
-    // asio::write(*socket, asio::buffer(get_daytime_string()), ignored_error);
-
-    // remove_session(id);
   }
 
   void on_disconnect(uint32_t session_id) override
@@ -26,36 +40,62 @@ public:
     SPDLOG_INFO("client disconnected (id: {})", session_id);
   }
 
-  void on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer) override
+  void on_receive(uint32_t session_id, net::TcpSession::DataPtr buffer) override
   {
-    // std::string raw_data_str(reinterpret_cast<const char*>(buffer.data()), buffer.size());
-    // SPDLOG_INFO("received message from client (id: {}, type: {}): {}", session_id, identifier, raw_data_str);
+    std::string identifier(
+      flatbuffers::GetBufferIdentifier(buffer->data(), true),
+      flatbuffers::FlatBufferBuilder::kFileIdentifierLength);
 
-    // std::string str(reinterpret_cast<const char*>(buffer.data()), size);
-    // SPDLOG_INFO("Raw message. buffer_size: {}, size: {}, str: {}", buffer.size(), size, str);
+    SPDLOG_INFO("(client: {}) Received {}", session_id, identifier);
+    if (identifier != "MESG")
+      return;
 
-    // flatbuffers::Verifier::Options verifier_options;
-    // verifier_options.assert = true;
-
-    auto verifier = flatbuffers::Verifier(buffer.data(), buffer.size());
-    auto valid_message = proto::VerifySizePrefixedMessageBuffer(verifier);
-
-    if (!valid_message)
+    auto verifier = flatbuffers::Verifier(buffer->data(), buffer->size());
+    auto is_valid_message = proto::VerifySizePrefixedMessageBuffer(verifier);
+    if (!is_valid_message)
     {
-      SPDLOG_INFO("received invalid message");
+      SPDLOG_WARN("(client: {}) Received invalid message", session_id);
       return;
     }
 
-    auto message = proto::GetSizePrefixedMessage(buffer.data());
-    SPDLOG_INFO("received message: {}", message->content()->str());
-    // SPDLOG_INFO("Received message. valid: {}, type: {}, size: {}, subject: {}, content: {}",
-    //   valid_message, type, size, message->subject()->str(), message->content()->str());
+    auto message = proto::GetSizePrefixedMessage(buffer->data());
+    SPDLOG_INFO("(client: {}) Message Content: {}", session_id, message->content()->str());
   }
 
+  void send_message(const std::string& message)
+  {
+    send_to_all(create_message(message));
+  }
 };
 
 int main()
 {
-  Server server(13000);
-  server.start();
+  try
+  {
+    Server server(13000);
+
+    std::thread thread([&]()
+    {
+      server.start();
+    });
+
+    while (true)
+    {
+      server.update();
+
+      std::string input;
+      std::getline(std::cin, input);
+      if (!input.empty())
+        server.send_message(input);
+    }
+
+    server.stop();
+
+    if (thread.joinable())
+      thread.join();
+  }
+  catch (const std::exception& e)
+  {
+    SPDLOG_CRITICAL(e.what());
+  }
 }

@@ -5,8 +5,6 @@
 #include <mutex>
 #include <queue>
 
-#include <flatbuffers/flatbuffers.h>
-
 #include "net/asio.h"
 
 namespace net
@@ -14,26 +12,29 @@ namespace net
 
   class TcpSession final
   {
+  public:
+    typedef std::shared_ptr<std::vector<uint8_t>> DataPtr;
+
   private:
     uint32_t id_;
     asio::ip::tcp::socket socket_;
-    asio::steady_timer timer_;
 
     std::mutex input_queue_mutex_;
     std::mutex output_queue_mutex_;
-    std::queue<std::vector<uint8_t>> input_queue_;
-    std::queue<flatbuffers::DetachedBuffer> output_queue_;
+    std::queue<DataPtr> input_queue_;
+    std::queue<DataPtr> output_queue_;
+    asio::steady_timer output_signal_;
 
   public:
     static std::shared_ptr<TcpSession> create(uint32_t id, asio::ip::tcp::socket socket);
 
-    void send(flatbuffers::DetachedBuffer buffer);
-    void handle_input(std::function<void(std::vector<uint8_t>*)> handler);
+    void send(DataPtr buffer);
+    void handle_input(std::function<void(DataPtr)> handler);
     void close();
 
     bool connected();
 
-  private:
+  public:
     TcpSession(uint32_t id, asio::ip::tcp::socket socket);
 
     asio::awaitable<void> write_buffers();
@@ -56,13 +57,16 @@ namespace net
 
     void start();
     void stop();
+    void update();
+    bool running();
 
-    void send(uint32_t session_id, flatbuffers::DetachedBuffer buffer);
+    void send(uint32_t session_id, TcpSession::DataPtr buffer);
+    void send_to_all(TcpSession::DataPtr buffer);
     void close_session(uint32_t session_id);
 
     virtual void on_connect(uint32_t session_id, std::shared_ptr<TcpSession> session) = 0;
     virtual void on_disconnect(uint32_t session_id) = 0;
-    virtual void on_receive(uint32_t session_id, const std::string& identifier, std::vector<uint8_t> buffer) = 0;
+    virtual void on_receive(uint32_t session_id, TcpSession::DataPtr buffer) = 0;
 
   private:
     uint32_t use_next_session_id();
@@ -81,11 +85,13 @@ namespace net
 
     void start();
     void stop();
-    void send(flatbuffers::DetachedBuffer buffer);
+    void update();
+    bool running();
+    void send(TcpSession::DataPtr buffer);
 
     virtual void on_connect() = 0;
     virtual void on_disconnect() = 0;
-    virtual void on_receive(const std::string& identifier, std::vector<uint8_t> buffer) = 0;
+    virtual void on_receive(TcpSession::DataPtr buffer) = 0;
   };
 
 }

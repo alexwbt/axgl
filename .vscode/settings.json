@@ -8,6 +8,7 @@
     "flatbuffers",
     "gameloop",
     "glfw",
+    "MESG",
     "opengl",
     "Parameteri",
     "Perlin",
@@ -128,7 +129,8 @@
     "complex": "cpp",
     "cwctype": "cpp",
     "string_view": "cpp",
-    "shared_mutex": "cpp"
+    "shared_mutex": "cpp",
+    "resumable": "cpp"
   },
   "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false
 }

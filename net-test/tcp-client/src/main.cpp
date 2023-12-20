@@ -1,13 +1,12 @@
 #include <iostream>
+
 #include <spdlog/spdlog.h>
 
-#include <net/tcp_server.h>
+#include <net/tcp_session.h>
 #include <proto/message.h>
 
-using asio::ip::tcp;
 
-
-flatbuffers::DetachedBuffer create_message(const std::string& content)
+std::shared_ptr<std::vector<uint8_t>> create_message(const std::string& content)
 {
   flatbuffers::FlatBufferBuilder builder;
 
@@ -19,13 +18,9 @@ flatbuffers::DetachedBuffer create_message(const std::string& content)
 
   builder.FinishSizePrefixed(message, proto::MessageIdentifier());
 
-  // uint8_t* buf = builder.GetBufferPointer();
-  // const auto size = builder.GetSize();
-  // std::string str(reinterpret_cast<const char*>(buf), size);
-
-  // SPDLOG_INFO("Create message. size: {}, str: {}", size, str);
-
-  return builder.Release();
+  auto buffer = builder.Release();
+  return std::make_shared<std::vector<uint8_t>>(
+    buffer.data(), buffer.data() + buffer.size());
 }
 
 
@@ -37,46 +32,38 @@ public:
   void on_connect() override
   {
     SPDLOG_INFO("Connected");
-
-    send_message("what the fuck is wrong with you");
   }
 
   void on_disconnect() override
   {
     SPDLOG_INFO("Disconnected");
-    io_context_.stop();
   }
 
-  void on_receive(const std::string& identifier, std::vector<uint8_t> buffer) override
+  void on_receive(net::TcpSession::DataPtr buffer) override
   {
+    std::string identifier(
+      flatbuffers::GetBufferIdentifier(buffer->data(), true),
+      flatbuffers::FlatBufferBuilder::kFileIdentifierLength);
+
     SPDLOG_INFO("Received {}", identifier);
+    if (identifier != "MESG")
+      return;
+
+    auto verifier = flatbuffers::Verifier(buffer->data(), buffer->size());
+    auto is_valid_message = proto::VerifySizePrefixedMessageBuffer(verifier);
+    if (!is_valid_message)
+    {
+      SPDLOG_WARN("Received invalid message");
+      return;
+    }
+
+    auto message = proto::GetSizePrefixedMessage(buffer->data());
+    SPDLOG_INFO("Message Content: {}", message->content()->str());
   }
 
   void send_message(const std::string& message)
   {
     send(create_message(message));
-  }
-
-  void read_input()
-  {
-    // asio::co_spawn(io_context_, [this]() -> asio::awaitable<void>
-    // {
-    //   try
-    //   {
-    //     while (true)
-    //     {
-    //       std::string input;
-    //       asio::posix::stream_descriptor input_stream(io_context_, 0);
-    //       co_await asio::async_read(input_stream, asio::buffer(input), asio::use_awaitable);
-
-    //       send_message(input);
-    //     }
-    //   }
-    //   catch (const std::exception& e)
-    //   {
-    //     SPDLOG_ERROR(e.what());
-    //   }
-    // }, asio::detached);
   }
 };
 
@@ -87,24 +74,30 @@ int main()
   {
     Client client("127.0.0.1", 13000);
 
-    client.start();
+    std::thread thread([&]()
+    {
+      client.start();
+    });
 
-    // std::thread thread([&]()
-    // {
-    //   client.start();
-    // });
+    std::thread update_thread([&]()
+    {
+      while (client.running()) // bad
+        client.update();
+    });
 
-    // while (true)
-    // {
-    //   std::string input;
-    //   std::getline(std::cin, input);
-    //   client.send_message(input);
-    // }
+    while (true)
+    {
 
-    // client.stop();
+      std::string input;
+      std::getline(std::cin, input);
+      if (!input.empty())
+        client.send_message(input);
+    }
 
-    // if (thread.joinable())
-    //   thread.join();
+    client.stop();
+
+    if (thread.joinable())
+      thread.join();
   }
   catch (const std::exception& e)
   {
