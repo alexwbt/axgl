@@ -1,5 +1,6 @@
 #pragma once
 
+#include <condition_variable>
 #include <unordered_map>
 #include <memory>
 #include <mutex>
@@ -20,8 +21,9 @@ namespace net
     asio::ip::tcp::socket socket_;
 
     std::mutex input_queue_mutex_;
-    std::mutex output_queue_mutex_;
     std::queue<DataPtr> input_queue_;
+
+    std::mutex output_queue_mutex_;
     std::queue<DataPtr> output_queue_;
     asio::steady_timer output_signal_;
 

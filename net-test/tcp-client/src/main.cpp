@@ -79,25 +79,33 @@ int main()
       client.start();
     });
 
-    std::thread update_thread([&]()
+    std::thread cin_thread([&]()
     {
-      while (client.running()) // bad
-        client.update();
+      while (true)
+      {
+        std::string input;
+        std::getline(std::cin, input);
+        if (input.empty())
+          continue;
+
+        if (input == "/exit")
+        {
+          client.stop();
+          break;
+        }
+
+        client.send_message(input);
+      }
     });
 
-    while (true)
-    {
-
-      std::string input;
-      std::getline(std::cin, input);
-      if (!input.empty())
-        client.send_message(input);
-    }
-
-    client.stop();
+    while (client.running())
+      client.update();
 
     if (thread.joinable())
       thread.join();
+
+    if (cin_thread.joinable())
+      cin_thread.join();
   }
   catch (const std::exception& e)
   {
