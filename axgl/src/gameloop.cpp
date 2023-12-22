@@ -5,9 +5,9 @@
 
 NAMESPACE_AXGL
 
-void Gameloop::add_component(std::shared_ptr<Component> component)
+void Gameloop::add_component(Component* component)
 {
-  components_.push_back(std::move(component));
+  components_.push_back(component);
 }
 
 void Gameloop::initialize()

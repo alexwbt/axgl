@@ -1,14 +1,13 @@
 #include <spdlog/spdlog.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include "axgl/gameloop.h"
+#include "axgl/glfw/window.h"
 #include "axgl/world/world.h"
 #include "axgl/world/camera.h"
 #include "axgl/world/light.h"
 #include "axgl/world/render_context.h"
-#include "axgl/glfw/window.h"
 #include "axgl/opengl/entity/skybox.h"
 #include "axgl/opengl/shader/phong-shader.h"
 
@@ -18,8 +17,7 @@
 #include "chunks.h"
 
 class Playground : public axgl::Component,
-  public axgl::glfw::Window::EventListener,
-  public std::enable_shared_from_this<Playground>
+  public axgl::glfw::Window::EventListener
 {
   std::shared_ptr<axgl::glfw::Window> window_;
 
@@ -45,7 +43,7 @@ public:
     // create window
     window_ = std::make_shared<axgl::glfw::Window>(800, 600, "Hello World");
     window_->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    window_->set_event_listener(shared_from_this());
+    window_->set_event_listener(this);
     window_->use();
     render_context_.view_width = 800;
     render_context_.view_height = 600;

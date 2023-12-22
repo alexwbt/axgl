@@ -2,9 +2,9 @@
 
 int main()
 {
-  auto playground = std::make_shared<Playground>();
+  Playground playground;
 
   axgl::Gameloop gameloop;
-  gameloop.add_component(playground);
+  gameloop.add_component(&playground);
   gameloop.run();
 }

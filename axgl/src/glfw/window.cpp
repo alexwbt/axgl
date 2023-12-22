@@ -122,12 +122,12 @@ Window* Window::get_window(GLFWwindow* glfw_window)
   }
 }
 
-std::shared_ptr<Window::EventListener> Window::get_window_event_listener(GLFWwindow* glfw_window)
+Window::EventListener* Window::get_window_event_listener(GLFWwindow* glfw_window)
 {
   auto* window = get_window(glfw_window);
   if (!window) return nullptr;
 
-  return window->event_listener_.lock();
+  return window->event_listener_;
 }
 
 /* Non-static */
@@ -165,9 +165,9 @@ void Window::set_title(const std::string& title)
   glfwSetWindowTitle(glfw_window_, title.c_str());
 }
 
-void Window::set_event_listener(std::weak_ptr<EventListener> event_listener)
+void Window::set_event_listener(EventListener* event_listener)
 {
-  event_listener_ = std::move(event_listener);
+  event_listener_ = event_listener;
 }
 
 void Window::set_input_mode(int mode, int value)

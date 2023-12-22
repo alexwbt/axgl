@@ -4,9 +4,9 @@
 #include <memory>
 #include <string>
 
-#include "axgl/namespace.h"
+#include <GLFW/glfw3.h>
 
-struct GLFWwindow;
+#include "axgl/namespace.h"
 
 NAMESPACE_GLFW
 
@@ -45,12 +45,12 @@ private:
   static void frame_buffer_size_callback(GLFWwindow* glfw_window, int width, int height);
 
   static Window* get_window(GLFWwindow* glfw_window);
-  static std::shared_ptr<EventListener> get_window_event_listener(GLFWwindow* glfw_window);
+  static EventListener* get_window_event_listener(GLFWwindow* glfw_window);
 
 private:
   GLFWwindow* glfw_window_;
 
-  std::weak_ptr<EventListener> event_listener_;
+  EventListener* event_listener_;
 
   bool destroyed_ = false;
 
@@ -60,8 +60,9 @@ public:
 
 public:
   void set_title(const std::string& title);
-  void set_event_listener(std::weak_ptr<EventListener> event_listener);
   void set_input_mode(int mode, int value);
+  // does not take ownership of event listener
+  void set_event_listener(EventListener* event_listener);
 
   // GLFWwindow* get_glfw_window() const;
   bool is_destroyed() const { return destroyed_; }

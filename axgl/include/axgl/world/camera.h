@@ -39,7 +39,7 @@ public:
   const glm::mat4 view_matrix();
 };
 
-class CameraController : public Camera
+class CameraController
 {
 public:
   struct Input

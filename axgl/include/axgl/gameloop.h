@@ -19,10 +19,11 @@ struct Component
 
 class Gameloop : public Component
 {
-  std::vector<std::shared_ptr<Component>> components_;
+  std::vector<Component*> components_;
 
 public:
-  void add_component(std::shared_ptr<Component> component);
+  // does not take ownership of component
+  void add_component(Component* component);
 
   void initialize() override;
   void terminate() override;
