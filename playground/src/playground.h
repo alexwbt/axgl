@@ -3,12 +3,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "axgl/window.h"
 #include "axgl/gameloop.h"
 #include "axgl/world/world.h"
 #include "axgl/world/camera.h"
 #include "axgl/world/light.h"
 #include "axgl/world/render_context.h"
+#include "axgl/glfw/window.h"
 #include "axgl/opengl/entity/skybox.h"
 #include "axgl/opengl/shader/phong-shader.h"
 
@@ -18,10 +18,10 @@
 #include "chunks.h"
 
 class Playground : public axgl::Component,
-  public glfw::Window::EventListener,
+  public axgl::glfw::Window::EventListener,
   public std::enable_shared_from_this<Playground>
 {
-  std::shared_ptr<glfw::Window> window_;
+  std::shared_ptr<axgl::glfw::Window> window_;
 
   std::shared_ptr<axgl::world::World> world_;
 
@@ -36,14 +36,14 @@ public:
     spdlog::set_level(spdlog::level::info);
 
     // initialize glfw
-    glfw::Window::initialize();
+    axgl::glfw::Window::initialize();
     glfwWindowHint(GLFW_SAMPLES, 8);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // create window
-    window_ = std::make_shared<glfw::Window>(800, 600, "Hello World");
+    window_ = std::make_shared<axgl::glfw::Window>(800, 600, "Hello World");
     window_->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     window_->set_event_listener(shared_from_this());
     window_->use();
@@ -98,7 +98,7 @@ public:
   {
     world_->terminate();
 
-    glfw::Window::terminate();
+    axgl::glfw::Window::terminate();
   }
 
   void update() override
@@ -131,12 +131,12 @@ public:
 
     window_->swap_buffers();
 
-    glfw::Window::update_all();
+    axgl::glfw::Window::update_all();
   }
 
   bool alive() override
   {
-    return !glfw::Window::should_close_all();
+    return !axgl::glfw::Window::should_close_all();
   }
 
   void on_mouse_move(double x, double y) override

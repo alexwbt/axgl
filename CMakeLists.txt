@@ -19,5 +19,5 @@ add_subdirectory(proto)
 add_subdirectory(net)
 
 add_subdirectory(playground)
-add_subdirectory(terra)
+add_subdirectory(net-playground)
 add_subdirectory(net-test)
