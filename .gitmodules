@@ -19,3 +19,6 @@
 [submodule "_external/flatbuffer"]
 	path = _external/flatbuffer
 	url = https://github.com/google/flatbuffers.git
+[submodule "_external/imgui"]
+	path = _external/imgui
+	url = https://github.com/ocornut/imgui.git

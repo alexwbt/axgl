@@ -64,7 +64,7 @@ public:
   // does not take ownership of event listener
   void set_event_listener(EventListener* event_listener);
 
-  // GLFWwindow* get_glfw_window() const;
+  GLFWwindow* get_glfw_window() const;
   bool is_destroyed() const { return destroyed_; }
   bool key_pressed(int key) const;
 

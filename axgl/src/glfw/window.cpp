@@ -175,10 +175,10 @@ void Window::set_input_mode(int mode, int value)
   glfwSetInputMode(glfw_window_, mode, value);
 }
 
-// GLFWwindow* Window::get_glfw_window() const
-// {
-//   return glfw_window_;
-// }
+GLFWwindow* Window::get_glfw_window() const
+{
+  return glfw_window_;
+}
 
 bool Window::key_pressed(int key) const
 {

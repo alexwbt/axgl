@@ -3,8 +3,12 @@
 #include <axgl/glfw/window.h>
 #include <spdlog/spdlog.h>
 
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
-class Playground : public axgl::Component,
+class Playground :
+  public axgl::Component,
   public axgl::glfw::Window::EventListener
 {
   axgl::glfw::Window* window_;
@@ -28,12 +32,31 @@ public:
     // initialize glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window_->get_glfw_window(), true);
+    ImGui_ImplOpenGL3_Init();
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    ImGui::ShowDemoWindow();
   }
 
   void render() override
   {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     window_->swap_buffers();
     axgl::glfw::Window::update_all();
@@ -46,6 +69,10 @@ public:
 
   void terminate() override
   {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     axgl::glfw::Window::terminate();
   }
 
