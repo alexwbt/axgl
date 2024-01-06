@@ -10,12 +10,16 @@ file(GLOB_RECURSE imgui_backend_files
   "../_external/imgui/backends/imgui_impl_glfw.cpp"
   "../_external/imgui/backends/imgui_impl_opengl3.cpp")
 
+  file(GLOB_RECURSE imgui_misc_files
+    "../_external/imgui/misc/cpp/*.cpp")
+
 target_sources(axgl
   PRIVATE
   ${source_cpp_files}
 
   ${imgui_files}
   ${imgui_backend_files}
+  ${imgui_misc_files}
 )
 
 target_include_directories(axgl

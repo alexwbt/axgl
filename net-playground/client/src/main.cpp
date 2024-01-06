@@ -3,6 +3,8 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <imgui_stdlib.h>
+
 
 class Playground :
   public axgl::Component,
@@ -20,24 +22,35 @@ public:
     opengl_window_.window()->set_title("Playground");
   }
 
-  bool alive() override
-  {
-    return true;
-  }
+  bool alive() override { return true; }
 };
 
-class ImGuiDemo : public axgl::Component
+class UI : public axgl::Component
 {
+  std::string input_;
+
 public:
   void render() override
   {
-    ImGui::ShowDemoWindow();
+    ImGuiWindowFlags window_flags =
+      ImGuiWindowFlags_NoTitleBar |
+      ImGuiWindowFlags_NoScrollbar |
+      ImGuiWindowFlags_NoMove |
+      ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoCollapse |
+      ImGuiWindowFlags_NoNav |
+      ImGuiWindowFlags_NoBackground
+      ;
+
+    ImGui::SetNextWindowPos(ImVec2(0, ImGui::GetMainViewport()->Size.y - 200), ImGuiCond_Always, ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Always);
+
+    ImGui::Begin("Console", nullptr, window_flags);
+    ImGui::InputText("", &input_, 0, NULL, NULL);
+    ImGui::End();
   }
 
-  bool alive() override
-  {
-    return true;
-  }
+  bool alive() override { return true; }
 };
 
 int main()
@@ -57,9 +70,9 @@ int main()
   Playground playground(window);
   window.add_component(&playground);
 
-  // imgui demo
-  ImGuiDemo demo;
-  imgui.add_component(&demo);
+  // ui
+  UI ui;
+  imgui.add_component(&ui);
 
   // run
   gameloop.run();
