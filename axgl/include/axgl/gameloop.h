@@ -1,37 +1,54 @@
 #pragma once
 
-#include <vector>
-#include <memory>
+#include <chrono>
+#include <spdlog/spdlog.h>
 
-#include "axgl/namespace.h"
+#include "axgl/component.h"
+
 
 NAMESPACE_AXGL
 
-struct Component
+class Gameloop : public ComponentParent
 {
-  virtual ~Component() {}
-  virtual void initialize() {}
-  virtual void terminate() {}
-  virtual void update() {}
-  virtual void render() {}
-  virtual bool alive() { return false; }
-};
-
-class Gameloop : public Component
-{
-  std::vector<Component*> components_;
-
 public:
-  // does not take ownership of component
-  void add_component(Component* component);
+  void run()
+  {
+    try
+    {
+      initialize();
 
-  void initialize() override;
-  void terminate() override;
-  void update() override;
-  void render() override;
-  bool alive() override;
+      constexpr int64_t kOneSecond = 1000000000;
+      constexpr double kTimeStep = kOneSecond / 60.0;
 
-  void run();
+      auto start_time = std::chrono::high_resolution_clock::now();
+      double delta_time = 0.0;
+
+      while (alive())
+      {
+        auto now = std::chrono::high_resolution_clock::now();
+        delta_time += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
+        start_time = now;
+
+        auto should_update = delta_time >= 1;
+
+        while (delta_time >= 1)
+        {
+          update();
+          delta_time--;
+        }
+
+        if (should_update)
+          render();
+      }
+
+      terminate();
+    }
+    catch (const std::exception& e)
+    {
+      SPDLOG_CRITICAL(e.what());
+    }
+
+  }
 };
 
 NAMESPACE_AXGL_END
