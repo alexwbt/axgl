@@ -30,6 +30,11 @@ class UI : public axgl::Component
   std::string input_;
 
 public:
+  void test()
+  {
+    SPDLOG_INFO(input_);
+  }
+
   void render() override
   {
     ImGuiWindowFlags window_flags =
@@ -46,7 +51,16 @@ public:
     ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Always);
 
     ImGui::Begin("Console", nullptr, window_flags);
-    ImGui::InputText("", &input_, 0, NULL, NULL);
+    auto enter = ImGui::InputText("", &input_,
+      ImGuiInputTextFlags_EnterReturnsTrue |
+      ImGuiInputTextFlags_EscapeClearsAll |
+      ImGuiInputTextFlags_CallbackCompletion |
+      ImGuiInputTextFlags_CallbackHistory, [](ImGuiInputTextCallbackData* data) {
+        ((UI*)data->UserData)->test();
+        return 0;
+      }, this);
+    if (enter)
+      SPDLOG_INFO(input_);
     ImGui::End();
   }
 
