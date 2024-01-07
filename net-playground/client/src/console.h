@@ -24,13 +24,14 @@ public:
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always, ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size, ImGuiCond_Always);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
 
     ImGui::Begin("Console", nullptr, window_flags);
     {
-      ImGui::SetNextItemWidth(ImGui::GetWindowSize().x);
+      // ImGui::GetStyleVarInfo();
+      ImGui::SetNextItemWidth(ImGui::GetWindowSize().x - 60);
       ImGui::SetKeyboardFocusHere();
-      if (ImGui::InputText("", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
+      if (ImGui::InputText("Input", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
         on_enter();
     }
     ImGui::End();
