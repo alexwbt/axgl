@@ -12,14 +12,14 @@ public:
 
   void render() override
   {
-    ImGuiWindowFlags window_flags =
-      ImGuiWindowFlags_NoTitleBar |
-      ImGuiWindowFlags_NoScrollbar |
-      ImGuiWindowFlags_NoMove |
-      ImGuiWindowFlags_NoResize |
-      ImGuiWindowFlags_NoCollapse |
-      ImGuiWindowFlags_NoNav |
-      ImGuiWindowFlags_NoBackground
+    ImGuiWindowFlags window_flags
+      = ImGuiWindowFlags_NoTitleBar
+      | ImGuiWindowFlags_NoScrollbar
+      | ImGuiWindowFlags_NoMove
+      | ImGuiWindowFlags_NoResize
+      | ImGuiWindowFlags_NoCollapse
+      | ImGuiWindowFlags_NoNav
+      | ImGuiWindowFlags_NoBackground
       ;
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always, ImVec2(0, 0));
@@ -28,14 +28,10 @@ public:
 
     ImGui::Begin("Console", nullptr, window_flags);
     {
-      ImGui::PushItemWidth(ImGui::GetWindowSize().x);
-
+      ImGui::SetNextItemWidth(ImGui::GetWindowSize().x);
       ImGui::SetKeyboardFocusHere();
-      auto enter = ImGui::InputText("", &input_, ImGuiInputTextFlags_EnterReturnsTrue);
-      if (enter)
-      {
+      if (ImGui::InputText("", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
         on_enter();
-      }
     }
     ImGui::End();
   }
