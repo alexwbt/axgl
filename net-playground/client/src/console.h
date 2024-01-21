@@ -1,11 +1,17 @@
+#pragma once
+
+#include <axgl/components/opengl.h>
+
 
 class Console : public axgl::Component
 {
   std::string input_;
+  std::string history_;
 
 public:
   void on_enter()
   {
+    // history_ += input_ + '\n';
     SPDLOG_INFO(input_);
     input_.clear();
   }
@@ -24,15 +30,20 @@ public:
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always, ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size, ImGuiCond_Always);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+
+    constexpr auto padding = 10.0f;
+    const auto inner_window_width = ImGui::GetWindowSize().x - (padding * 2);
+    const auto inner_window_height = ImGui::GetWindowSize().y - (padding * 2);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(padding, padding));
 
     ImGui::Begin("Console", nullptr, window_flags);
     {
-      // ImGui::GetStyleVarInfo();
-      ImGui::SetNextItemWidth(ImGui::GetWindowSize().x - 60);
+      ImGui::SetNextItemWidth(inner_window_width);
       ImGui::SetKeyboardFocusHere();
-      if (ImGui::InputText("Input", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
+      if (ImGui::InputText("", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
         on_enter();
+
+      ImGui::Text(history_.c_str());
     }
     ImGui::End();
   }
