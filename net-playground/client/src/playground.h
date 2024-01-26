@@ -1,8 +1,5 @@
 #pragma once
 
-#include <axgl/components/opengl.h>
-
-
 class Playground :
   public axgl::Component,
   public axgl::glfw::Window::EventListener

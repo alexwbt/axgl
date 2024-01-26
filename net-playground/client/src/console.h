@@ -1,8 +1,5 @@
 #pragma once
 
-#include <axgl/components/opengl.h>
-
-
 class Console : public axgl::Component
 {
   std::string input_;
@@ -11,8 +8,7 @@ class Console : public axgl::Component
 public:
   void on_enter()
   {
-    // history_ += input_ + '\n';
-    SPDLOG_INFO(input_);
+    history_ += input_ + '\n';
     input_.clear();
   }
 
@@ -40,12 +36,13 @@ public:
     {
       ImGui::SetNextItemWidth(inner_window_width);
       ImGui::SetKeyboardFocusHere();
-      if (ImGui::InputText("", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
+      if (ImGui::InputText("##", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
         on_enter();
 
       ImGui::Text(history_.c_str());
     }
     ImGui::End();
+    ImGui::PopStyleVar();
   }
 
   bool alive() override { return true; }
