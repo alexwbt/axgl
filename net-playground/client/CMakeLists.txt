@@ -10,8 +10,7 @@ target_sources(net_playrgound
 
 target_link_libraries(net_playrgound
   PRIVATE
-  axgl
-  net
+  net_playground_common
 )
 
 include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
