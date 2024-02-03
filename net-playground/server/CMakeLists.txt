@@ -10,6 +10,5 @@ target_sources(net_playrgound_server
 
 target_link_libraries(net_playrgound_server
   PRIVATE
-  axgl
-  net
+  net_playground_common
 )
