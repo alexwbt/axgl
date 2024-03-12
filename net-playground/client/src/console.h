@@ -5,29 +5,18 @@ class Console : public axgl::Component
   std::string input_;
   std::string history_;
 
-  NetClient client_;
-  std::thread client_thread_;
+  NetClient& client_;
 
 public:
-  Console() :
-    client_("127.0.0.1", 13000),
-    client_thread_([&]()
-    {
-      client_.start();
-    })
+  Console(NetClient& client) :
+    client_(client)
   {}
 
   void on_enter()
   {
-    client_.send(create_message(input_));
+    client_.send_message(input_);
     history_ += input_ + '\n';
     input_.clear();
-  }
-
-  void terminate() override
-  {
-    client_.stop();
-    client_thread_.join();
   }
 
   void render() override
