@@ -1,5 +1,6 @@
 #include <axgl/components/opengl.h>
 
+#include "client.h"
 #include "console.h"
 #include "playground.h"
 

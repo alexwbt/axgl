@@ -1,11 +1,10 @@
-#include <common/server.h>
-
+#include "server.h"
 
 int main()
 {
   try
   {
-    Server server(13000);
+    NetServer server(13000);
 
     std::thread thread([&]()
     {
