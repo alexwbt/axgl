@@ -27,9 +27,11 @@ public:
 private:
   static bool initialized_;
   static bool terminated_;
-  static std::unordered_map<GLFWwindow*, Window*> windows_;
+  static std::unordered_map<GLFWwindow*, std::shared_ptr<Window>> windows_;
 
 public:
+  static std::shared_ptr<Window> create(int width, int height, const std::string& title);
+
   static void initialize();
   static void terminate();
 
@@ -44,25 +46,25 @@ private:
   static void mouse_button_callback(GLFWwindow* glfw_window, int button, int action, int mods);
   static void frame_buffer_size_callback(GLFWwindow* glfw_window, int width, int height);
 
-  static Window* get_window(GLFWwindow* glfw_window);
-  static EventListener* get_window_event_listener(GLFWwindow* glfw_window);
+  static std::shared_ptr<Window> get_window(GLFWwindow* glfw_window);
+  static std::shared_ptr<EventListener> get_window_event_listener(GLFWwindow* glfw_window);
 
 private:
   GLFWwindow* glfw_window_;
 
-  EventListener* event_listener_;
+  std::shared_ptr<EventListener> event_listener_;
 
   bool destroyed_ = false;
 
-public:
   Window(int width, int height, const std::string& title);
+
+public:
   ~Window();
 
 public:
   void set_title(const std::string& title);
   void set_input_mode(int mode, int value);
-  // does not take ownership of event listener
-  void set_event_listener(EventListener* event_listener);
+  void set_event_listener(std::shared_ptr<EventListener> event_listener);
 
   GLFWwindow* get_glfw_window() const;
   bool is_destroyed() const { return destroyed_; }

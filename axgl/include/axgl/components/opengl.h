@@ -16,7 +16,7 @@ NAMESPACE_AXGL
 
 class OpenglWindow : public ComponentParent
 {
-  glfw::Window* window_;
+  std::shared_ptr<glfw::Window> window_;
 
   int initial_width_, initial_height_;
   const std::string initial_title_;
@@ -27,66 +27,65 @@ public:
 
   OpenglWindow() : OpenglWindow(800, 600, "OpenGL") {}
 
-  virtual ~OpenglWindow()
-  {
-    delete window_;
+  virtual ~OpenglWindow() {}
+
+  auto window() {
+    return std::weak_ptr<glfw::Window>(window_);
   }
 
-  glfw::Window* window() { return window_; }
-
-  void initialize() override
+  void initialize(ComponentContext& context) override
   {
     // initialize glfw
-    axgl::glfw::Window::initialize();
+    glfw::Window::initialize();
     glfwWindowHint(GLFW_SAMPLES, 8);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // create window
-    window_ = new axgl::glfw::Window(initial_width_, initial_height_, initial_title_);
+    window_ = glfw::Window::create(initial_width_, initial_height_, initial_title_);
     window_->use();
 
     // initialize glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
 
-    ComponentParent::initialize();
+    ComponentParent::initialize(context);
   }
 
-  void render() override
+  void render(ComponentContext& context) override
   {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    ComponentParent::render();
+    ComponentParent::render(context);
 
     window_->swap_buffers();
-    axgl::glfw::Window::update_all();
+    glfw::Window::update_all();
   }
 
-  bool alive() override
+  bool alive(ComponentContext& context) override
   {
-    return !axgl::glfw::Window::should_close_all();
+    return !glfw::Window::should_close_all();
   }
 
-  void terminate() override
+  void terminate(ComponentContext& context) override
   {
-    ComponentParent::terminate();
-    axgl::glfw::Window::terminate();
+    ComponentParent::terminate(context);
+    glfw::Window::terminate();
   }
 };
 
 class OpenglImgui : public ComponentParent
 {
-  axgl::OpenglWindow& opengl_window_;
+  std::shared_ptr<OpenglWindow> opengl_window_;
 
 public:
-  OpenglImgui(axgl::OpenglWindow& opengl_window) :
-    opengl_window_(opengl_window) {}
+  OpenglImgui(std::shared_ptr<OpenglWindow> opengl_window) :
+    opengl_window_(std::move(opengl_window)) {}
 
 
-  void initialize() override
+  void initialize(ComponentContext& context) override
   {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -96,19 +95,22 @@ public:
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(opengl_window_.window()->get_glfw_window(), true);
+    {
+      auto window = opengl_window_->window().lock();
+      ImGui_ImplGlfw_InitForOpenGL(window->get_glfw_window(), true);
+    }
     ImGui_ImplOpenGL3_Init();
 
-    ComponentParent::initialize();
+    ComponentParent::initialize(context);
   }
 
-  void render() override
+  void render(ComponentContext& context) override
   {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ComponentParent::render();
+    ComponentParent::render(context);
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

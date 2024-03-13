@@ -5,8 +5,12 @@
 #include <proto/message.h>
 #include <common/proto.h>
 
-class NetClient : public net::FlatClient
+#include <axgl/component.h>
+
+class NetClient : public net::FlatClient, public axgl::Component
 {
+  std::thread* client_thread_;
+
 public:
   NetClient(const std::string& host, asio::ip::port_type port) :
     net::FlatClient(host, port)
@@ -40,5 +44,31 @@ public:
   void send_message(const std::string& message)
   {
     send(create_message(message));
+  }
+
+  void update(axgl::ComponentContext& context) override
+  {
+    auto events = context.get_events("send_network_message");
+    for (auto event : events)
+    {
+      if (!event->attributes.contains("message"))
+        continue;
+
+      auto message = event->attributes.at("message");
+      send_message(message);
+      event->consumed++;
+    }
+  }
+
+  void initialize(axgl::ComponentContext& context) override
+  {
+    client_thread_ = new std::thread([&]() { start(); });
+  }
+
+  void terminate(axgl::ComponentContext& context) override
+  {
+    stop();
+    client_thread_->join();
+    delete client_thread_;
   }
 };

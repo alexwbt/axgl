@@ -17,7 +17,8 @@
 #include "chunks.h"
 
 class Playground : public axgl::Component,
-  public axgl::glfw::Window::EventListener
+  public axgl::glfw::Window::EventListener,
+  public std::enable_shared_from_this<Playground>
 {
   std::shared_ptr<axgl::glfw::Window> window_;
 
@@ -28,8 +29,15 @@ class Playground : public axgl::Component,
 
   axgl::world::RenderContext render_context_;
 
+  Playground() {}
+
 public:
-  void initialize() override
+  static auto make_shared()
+  {
+    return std::shared_ptr<Playground>(new Playground());
+  }
+
+  void initialize(axgl::ComponentContext& context) override
   {
     spdlog::set_level(spdlog::level::info);
 
@@ -41,9 +49,9 @@ public:
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // create window
-    window_ = std::make_shared<axgl::glfw::Window>(800, 600, "Hello World");
+    window_ = axgl::glfw::Window::create(800, 600, "Hello World");
     window_->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    window_->set_event_listener(this);
+    window_->set_event_listener(shared_from_this());
     window_->use();
     render_context_.view_width = 800;
     render_context_.view_height = 600;
@@ -92,14 +100,14 @@ public:
     render_context_.camera = camera_;
   }
 
-  void terminate() override
+  void terminate(axgl::ComponentContext& context) override
   {
     world_->terminate();
 
     axgl::glfw::Window::terminate();
   }
 
-  void update() override
+  void update(axgl::ComponentContext& context) override
   {
     camera_controller_.move({
         window_->key_pressed(GLFW_KEY_W),
@@ -112,7 +120,7 @@ public:
     world_->update();
   }
 
-  void render() override
+  void render(axgl::ComponentContext& context) override
   {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -132,7 +140,7 @@ public:
     axgl::glfw::Window::update_all();
   }
 
-  bool alive() override
+  bool alive(axgl::ComponentContext& context) override
   {
     return !axgl::glfw::Window::should_close_all();
   }

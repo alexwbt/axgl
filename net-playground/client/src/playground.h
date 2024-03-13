@@ -2,19 +2,28 @@
 
 class Playground :
   public axgl::Component,
-  public axgl::glfw::Window::EventListener
+  public axgl::glfw::Window::EventListener,
+  public std::enable_shared_from_this<Playground>
 {
-  axgl::OpenglWindow& opengl_window_;
+  std::shared_ptr<axgl::OpenglWindow> opengl_window_;
+
+  Playground(std::shared_ptr<axgl::OpenglWindow> opengl_window) :
+    opengl_window_(std::move(opengl_window)) {}
 
 public:
-  Playground(axgl::OpenglWindow& opengl_window) :
-    opengl_window_(opengl_window) {}
-
-  void initialize() override
+  static auto make_shared(std::shared_ptr<axgl::OpenglWindow> opengl_window)
   {
-    opengl_window_.window()->set_event_listener(this);
-    opengl_window_.window()->set_title("Playground");
+    return std::shared_ptr<Playground>(new Playground(std::move(opengl_window)));
   }
 
-  bool alive() override { return true; }
+  void initialize(axgl::ComponentContext& context) override
+  {
+    if (auto window = opengl_window_->window().lock())
+    {
+      window->set_event_listener(shared_from_this());
+      window->set_title("Playground");
+    }
+  }
+
+  bool alive(axgl::ComponentContext& context) override { return true; }
 };

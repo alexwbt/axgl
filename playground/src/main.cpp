@@ -2,9 +2,7 @@
 
 int main()
 {
-  Playground playground;
-
   axgl::Gameloop gameloop;
-  gameloop.add_component(&playground);
+  gameloop.add_component(Playground::make_shared());
   gameloop.run();
 }

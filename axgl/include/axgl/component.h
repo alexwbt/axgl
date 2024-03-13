@@ -1,63 +1,106 @@
 #pragma once
 
 #include <vector>
+#include <string>
+#include <memory>
+#include <unordered_map>
+#include <algorithm>
+#include <ranges>
 
 #include "axgl/namespace.h"
 
 
 NAMESPACE_AXGL
 
-struct Component
+struct Event
 {
-  virtual ~Component() {}
-  virtual void initialize() {}
-  virtual void terminate() {}
-  virtual void update() {}
-  virtual void render() {}
-  virtual bool alive() { return false; }
+  int consumed = 0;
+  bool keep_alive = false;
+  std::string type = "";
+  std::unordered_map<std::string, std::string> attributes;
 };
 
-class ComponentParent : public Component
+class ComponentContext
 {
-  std::vector<Component*> components_;
+  std::vector<std::shared_ptr<Event>> new_events_;
+  std::vector<std::shared_ptr<Event>> events_;
 
 public:
-  // does not take ownership of component
-  void add_component(Component* component)
+  void raise_event(std::shared_ptr<Event> event)
   {
-    components_.push_back(component);
+    new_events_.push_back(std::move(event));
   }
 
-  void initialize()
+  auto get_events(const std::string& type)
   {
-    for (const auto& component : components_)
-      component->initialize();
-  }
-
-  void terminate()
-  {
-    for (auto it = components_.rbegin(); it != components_.rend(); ++it)
-      (*it)->terminate();
+    SPDLOG_INFO("type: {}", type);
+    return events_ | std::ranges::views::filter([&type](std::shared_ptr<Event> event)
+    {
+      return event->type == type;
+    });
   }
 
   void update()
   {
-    for (const auto& component : components_)
-      if (component->alive())
-        component->update();
+    // update events
+    std::erase_if(events_, [](std::shared_ptr<Event> event)
+    {
+      return !event->keep_alive && event->consumed > 0;
+    });
+    std::ranges::move(new_events_, std::back_inserter(events_));
+  }
+};
+
+struct Component
+{
+  virtual ~Component() {}
+  virtual void initialize(ComponentContext& context) {}
+  virtual void terminate(ComponentContext& context) {}
+  virtual void update(ComponentContext& context) {}
+  virtual void render(ComponentContext& context) {}
+  virtual bool alive(ComponentContext& context) { return false; }
+};
+
+class ComponentParent : public Component
+{
+  std::vector<std::shared_ptr<Component>> components_;
+
+public:
+  void add_component(std::shared_ptr<Component> component)
+  {
+    components_.push_back(std::move(component));
   }
 
-  void render()
+  void initialize(ComponentContext& context) override
   {
     for (const auto& component : components_)
-      if (component->alive())
-        component->render();
+      component->initialize(context);
   }
 
-  bool alive()
+  void terminate(ComponentContext& context) override
+  {
+    for (auto it = components_.rbegin(); it != components_.rend(); ++it)
+      (*it)->terminate(context);
+  }
+
+  void update(ComponentContext& context) override
   {
     for (const auto& component : components_)
-      if (component->alive())
+      if (component->alive(context))
+        component->update(context);
+  }
+
+  void render(ComponentContext& context) override
+  {
+    for (const auto& component : components_)
+      if (component->alive(context))
+        component->render(context);
+  }
+
+  bool alive(ComponentContext& context) override
+  {
+    for (const auto& component : components_)
+      if (component->alive(context))
         return true;
     return false;
   }

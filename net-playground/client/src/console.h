@@ -5,21 +5,19 @@ class Console : public axgl::Component
   std::string input_;
   std::string history_;
 
-  NetClient& client_;
-
 public:
-  Console(NetClient& client) :
-    client_(client)
-  {}
-
-  void on_enter()
+  void on_enter(axgl::ComponentContext& context)
   {
-    client_.send_message(input_);
+    auto event = std::make_shared<axgl::Event>();
+    event->type = "send_network_message";
+    event->attributes.insert({ {"message", input_} });
+
+    context.raise_event(std::move(event));
     history_ += input_ + '\n';
     input_.clear();
   }
 
-  void render() override
+  void render(axgl::ComponentContext& context) override
   {
     ImGuiWindowFlags window_flags
       = ImGuiWindowFlags_NoTitleBar
@@ -44,7 +42,7 @@ public:
       ImGui::SetNextItemWidth(inner_window_width);
       ImGui::SetKeyboardFocusHere();
       if (ImGui::InputText("##", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
-        on_enter();
+        on_enter(context);
 
       ImGui::Text(history_.c_str());
     }
@@ -52,5 +50,5 @@ public:
     ImGui::PopStyleVar();
   }
 
-  bool alive() override { return true; }
+  bool alive(axgl::ComponentContext& context) override { return true; }
 };

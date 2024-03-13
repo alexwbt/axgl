@@ -9,7 +9,14 @@ NAMESPACE_GLFW
 bool Window::initialized_ = false;
 bool Window::terminated_ = false;
 
-std::unordered_map<GLFWwindow*, Window*> Window::windows_;
+std::unordered_map<GLFWwindow*, std::shared_ptr<Window>> Window::windows_;
+
+std::shared_ptr<Window> Window::create(int width, int height, const std::string& title)
+{
+  std::shared_ptr<Window> window(new Window(width, height, title));
+  windows_.insert({ window->glfw_window_, window });
+  return window;
+}
 
 void Window::initialize()
 {
@@ -109,7 +116,7 @@ void Window::frame_buffer_size_callback(GLFWwindow* glfw_window, int width, int 
     listener->on_resize(width, height);
 }
 
-Window* Window::get_window(GLFWwindow* glfw_window)
+std::shared_ptr<Window> Window::get_window(GLFWwindow* glfw_window)
 {
   try
   {
@@ -122,9 +129,9 @@ Window* Window::get_window(GLFWwindow* glfw_window)
   }
 }
 
-Window::EventListener* Window::get_window_event_listener(GLFWwindow* glfw_window)
+std::shared_ptr<Window::EventListener> Window::get_window_event_listener(GLFWwindow* glfw_window)
 {
-  auto* window = get_window(glfw_window);
+  auto window = get_window(glfw_window);
   if (!window) return nullptr;
 
   return window->event_listener_;
@@ -151,8 +158,6 @@ Window::Window(int width, int height, const std::string& title)
   glfwSetCursorPosCallback(glfw_window_, Window::cursor_pos_callback);
   glfwSetMouseButtonCallback(glfw_window_, Window::mouse_button_callback);
   glfwSetFramebufferSizeCallback(glfw_window_, Window::frame_buffer_size_callback);
-
-  windows_.insert({ glfw_window_, this });
 }
 
 Window::~Window()
@@ -165,7 +170,7 @@ void Window::set_title(const std::string& title)
   glfwSetWindowTitle(glfw_window_, title.c_str());
 }
 
-void Window::set_event_listener(EventListener* event_listener)
+void Window::set_event_listener(std::shared_ptr<EventListener> event_listener)
 {
   event_listener_ = event_listener;
 }
