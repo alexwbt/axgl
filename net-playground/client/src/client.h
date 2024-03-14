@@ -30,7 +30,7 @@ public:
       auto message = proto::GetSizePrefixedMessage(buffer->data());
       SPDLOG_INFO("Message Content: {}", message->content()->str());
     };
-    buffer_handlers_.insert({ {"MESG", mesg_handler} });
+    buffer_handlers_.insert({ {proto::MessageIdentifier(), mesg_handler} });
   }
 
   void on_connect() override

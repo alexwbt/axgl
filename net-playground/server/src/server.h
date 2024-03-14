@@ -24,7 +24,7 @@ public:
       auto message = proto::GetSizePrefixedMessage(buffer->data());
       SPDLOG_INFO("(client: {}) Message Content: {}", session_id, message->content()->str());
     };
-    buffer_handlers_.insert({ {"MESG", mesg_handler} });
+    buffer_handlers_.insert({ {proto::MessageIdentifier(), mesg_handler} });
   }
 
   void on_connect(uint32_t session_id, std::shared_ptr<net::TcpSession> session) override
