@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <ranges>
+#include <deque>
 
 #include "axgl/namespace.h"
 
@@ -23,8 +24,9 @@ struct Event
 class ComponentContext
 {
   std::unordered_map<std::string, std::string> attributes_;
+
   std::vector<std::shared_ptr<Event>> new_events_;
-  std::vector<std::shared_ptr<Event>> events_;
+  std::unordered_map<uint32_t, std::deque<std::shared_ptr<Event>>> events_;
 
 public:
   void raise_event(std::shared_ptr<Event> event)
@@ -34,21 +36,26 @@ public:
 
   auto get_events(uint32_t type)
   {
-    return events_ | std::ranges::views::filter([type](std::shared_ptr<Event> event)
-    {
-      return event->type == type;
-    });
+    return events_[type];
   }
 
   void update()
   {
-    // update events
-    std::erase_if(events_, [](std::shared_ptr<Event> event)
+    for (auto& [type, events] : events_)
     {
-      return !event->keep_alive && event->consumed > 0;
-    });
-    std::ranges::move(new_events_, std::back_inserter(events_));
-    new_events_.clear();
+      std::erase_if(events, [](std::shared_ptr<Event> event)
+      {
+        return !event->keep_alive && event->consumed > 0;
+      });
+    }
+
+    if (!new_events_.empty())
+    {
+      for (const auto& event : new_events_)
+        events_[event->type].push_back(event);
+
+      new_events_.clear();
+    }
   }
 };
 

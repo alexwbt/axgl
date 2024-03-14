@@ -70,7 +70,10 @@ public:
   void terminate(axgl::ComponentContext& context) override
   {
     stop();
-    client_thread_->join();
+
+    if (client_thread_->joinable())
+      client_thread_->join();
+
     delete client_thread_;
   }
 };
