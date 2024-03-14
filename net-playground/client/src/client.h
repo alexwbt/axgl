@@ -7,6 +7,8 @@
 
 #include <axgl/component.h>
 
+#include "event.h"
+
 class NetClient : public net::FlatClient, public axgl::Component
 {
   std::thread* client_thread_;
@@ -48,7 +50,7 @@ public:
 
   void update(axgl::ComponentContext& context) override
   {
-    auto events = context.get_events("send_network_message");
+    auto events = context.get_events(EVENT_TYPE_SEND_NETWORK_MESSAGE);
     for (auto event : events)
     {
       if (!event->attributes.contains("message"))

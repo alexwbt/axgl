@@ -9,6 +9,7 @@ int main()
 {
   auto window = std::make_shared<axgl::OpenglWindow>();
   window->add_component(Playground::make_shared(window));
+  window->add_component(std::make_shared<NetClient>("127.0.0.1", 13000));
 
   auto imgui = std::make_shared<axgl::OpenglImgui>(window);
   imgui->add_component(std::make_shared<Console>());
@@ -16,7 +17,6 @@ int main()
 
   axgl::Gameloop gameloop;
   gameloop.add_component(window);
-  gameloop.add_component(std::make_shared<NetClient>("127.0.0.1", 13000));
 
   // run
   gameloop.run();

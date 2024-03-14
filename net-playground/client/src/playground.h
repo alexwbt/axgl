@@ -24,6 +24,4 @@ public:
       window->set_title("Playground");
     }
   }
-
-  bool alive(axgl::ComponentContext& context) override { return true; }
 };

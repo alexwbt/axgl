@@ -15,13 +15,14 @@ NAMESPACE_AXGL
 struct Event
 {
   int consumed = 0;
+  uint32_t type = 0;
   bool keep_alive = false;
-  std::string type = "";
   std::unordered_map<std::string, std::string> attributes;
 };
 
 class ComponentContext
 {
+  std::unordered_map<std::string, std::string> attributes_;
   std::vector<std::shared_ptr<Event>> new_events_;
   std::vector<std::shared_ptr<Event>> events_;
 
@@ -31,10 +32,9 @@ public:
     new_events_.push_back(std::move(event));
   }
 
-  auto get_events(const std::string& type)
+  auto get_events(uint32_t type)
   {
-    SPDLOG_INFO("type: {}", type);
-    return events_ | std::ranges::views::filter([&type](std::shared_ptr<Event> event)
+    return events_ | std::ranges::views::filter([type](std::shared_ptr<Event> event)
     {
       return event->type == type;
     });
@@ -48,6 +48,7 @@ public:
       return !event->keep_alive && event->consumed > 0;
     });
     std::ranges::move(new_events_, std::back_inserter(events_));
+    new_events_.clear();
   }
 };
 
@@ -58,7 +59,7 @@ struct Component
   virtual void terminate(ComponentContext& context) {}
   virtual void update(ComponentContext& context) {}
   virtual void render(ComponentContext& context) {}
-  virtual bool alive(ComponentContext& context) { return false; }
+  virtual bool alive(ComponentContext& context) { return true; }
 };
 
 class ComponentParent : public Component

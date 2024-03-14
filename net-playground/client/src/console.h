@@ -1,5 +1,7 @@
 #pragma once
 
+#include "event.h"
+
 class Console : public axgl::Component
 {
   std::string input_;
@@ -9,7 +11,7 @@ public:
   void on_enter(axgl::ComponentContext& context)
   {
     auto event = std::make_shared<axgl::Event>();
-    event->type = "send_network_message";
+    event->type = EVENT_TYPE_SEND_NETWORK_MESSAGE;
     event->attributes.insert({ {"message", input_} });
 
     context.raise_event(std::move(event));
@@ -49,6 +51,4 @@ public:
     ImGui::End();
     ImGui::PopStyleVar();
   }
-
-  bool alive(axgl::ComponentContext& context) override { return true; }
 };
