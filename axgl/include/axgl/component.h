@@ -1,43 +1,50 @@
 #pragma once
 
-#include <vector>
-#include <string>
-#include <memory>
-#include <unordered_map>
-#include <algorithm>
-#include <ranges>
 #include <deque>
+#include <vector>
+#include <memory>
+#include <string>
+#include <variant>
+#include <stdint.h>
+#include <unordered_map>
 
 #include "axgl/namespace.h"
 
-
 NAMESPACE_AXGL
+
+class Attributes
+{
+public:
+  typedef std::variant<bool, double, float, int32_t, uint32_t, int64_t, uint64_t, std::string> AttributeValue;
+
+private:
+  std::unordered_map<std::string, AttributeValue> attributes_;
+
+public:
+  bool contains(const std::string& key) { return attributes_.contains(key); }
+  template <typename T> void set(const std::string& key, const T& value) { attributes_[key] = value; }
+  template <typename T> T get(const std::string& key) const { return std::get<T>(attributes_.at(key)); }
+};
 
 struct Event
 {
-  int consumed = 0;
   uint32_t type = 0;
   bool keep_alive = false;
-  std::unordered_map<std::string, std::string> attributes;
+  Attributes attributes;
 };
 
 class ComponentContext
 {
-  std::unordered_map<std::string, std::string> attributes_;
+public:
+  Attributes attributes;
 
+private:
   std::vector<std::shared_ptr<Event>> new_events_;
   std::unordered_map<uint32_t, std::deque<std::shared_ptr<Event>>> events_;
 
 public:
-  void raise_event(std::shared_ptr<Event> event)
-  {
-    new_events_.push_back(std::move(event));
-  }
-
-  auto get_events(uint32_t type)
-  {
-    return events_[type];
-  }
+  void raise_event(std::shared_ptr<Event> event) { new_events_.push_back(std::move(event)); }
+  auto get_events(uint32_t type) { return events_[type]; }
 
   void update()
   {
@@ -45,7 +52,7 @@ public:
     {
       std::erase_if(events, [](std::shared_ptr<Event> event)
       {
-        return !event->keep_alive && event->consumed > 0;
+        return !event->keep_alive;
       });
     }
 

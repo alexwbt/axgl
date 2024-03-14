@@ -50,16 +50,10 @@ public:
 
   void update(axgl::ComponentContext& context) override
   {
-    auto events = context.get_events(EVENT_TYPE_SEND_NETWORK_MESSAGE);
+    const auto& events = context.get_events(EVENT_TYPE_SEND_NETWORK_MESSAGE);
     for (auto event : events)
-    {
-      if (!event->attributes.contains("message"))
-        continue;
-
-      auto message = event->attributes.at("message");
-      send_message(message);
-      event->consumed++;
-    }
+      if (event->attributes.contains("message"))
+        send_message(event->attributes.get<std::string>("message"));
   }
 
   void initialize(axgl::ComponentContext& context) override

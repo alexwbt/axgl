@@ -10,6 +10,7 @@
 
 #include "axgl/gameloop.h"
 #include "axgl/glfw/window.h"
+#include "axgl/components/window_event_adapter.h"
 
 
 NAMESPACE_AXGL
@@ -17,6 +18,7 @@ NAMESPACE_AXGL
 class OpenglWindow : public ComponentParent
 {
   std::shared_ptr<glfw::Window> window_;
+  std::shared_ptr<WindowEventAdapter> window_event_adapter_;
 
   int initial_width_, initial_height_;
   const std::string initial_title_;
@@ -31,6 +33,11 @@ public:
 
   auto window() {
     return std::weak_ptr<glfw::Window>(window_);
+  }
+
+  void set_event_adapter(std::shared_ptr<WindowEventAdapter> event_adapter)
+  {
+    window_event_adapter_ = std::move(event_adapter);
   }
 
   void initialize(ComponentContext& context) override
@@ -49,6 +56,13 @@ public:
     // initialize glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
+
+    // set event adapter if provided
+    if (window_event_adapter_)
+    {
+      add_component(window_event_adapter_);
+      window_->set_event_listener(window_event_adapter_);
+    }
 
     ComponentParent::initialize(context);
   }

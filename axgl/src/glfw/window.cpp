@@ -86,7 +86,7 @@ void Window::key_callback(GLFWwindow* glfw_window, int key, int scancode, int ac
   switch (action)
   {
   case GLFW_PRESS:    listener->on_key_down(key); break;
-  case GLFW_RELEASE:  listener->on_key_down(key); break;
+  case GLFW_RELEASE:  listener->on_key_up(key); break;
   }
 }
 
@@ -105,7 +105,7 @@ void Window::mouse_button_callback(GLFWwindow* glfw_window, int button, int acti
   switch (action)
   {
   case GLFW_PRESS:    listener->on_mouse_down(button); break;
-  case GLFW_RELEASE:  listener->on_key_down(button); break;
+  case GLFW_RELEASE:  listener->on_mouse_up(button); break;
   }
 }
 
@@ -172,7 +172,7 @@ void Window::set_title(const std::string& title)
 
 void Window::set_event_listener(std::shared_ptr<EventListener> event_listener)
 {
-  event_listener_ = event_listener;
+  event_listener_ = std::move(event_listener);
 }
 
 void Window::set_input_mode(int mode, int value)

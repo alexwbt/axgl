@@ -4,6 +4,7 @@
 
 class Console : public axgl::Component
 {
+  bool show_ = false;
   std::string input_;
   std::string history_;
 
@@ -12,15 +13,32 @@ public:
   {
     auto event = std::make_shared<axgl::Event>();
     event->type = EVENT_TYPE_SEND_NETWORK_MESSAGE;
-    event->attributes.insert({ {"message", input_} });
+    event->attributes.set("message", input_);
 
     context.raise_event(std::move(event));
     history_ += input_ + '\n';
     input_.clear();
   }
 
+  void update(axgl::ComponentContext& context) override
+  {
+    const auto& events = context.get_events(EVENT_TYPE_WINDOW_KEYDOWN);
+    for (const auto& event : events)
+    {
+      const auto& key = event->attributes.get<int>("key");
+      if (key == GLFW_KEY_T)
+      {
+        show_ = !show_;
+        break;
+      }
+    }
+  }
+
   void render(axgl::ComponentContext& context) override
   {
+    if (!show_)
+      return;
+
     ImGuiWindowFlags window_flags
       = ImGuiWindowFlags_NoTitleBar
       | ImGuiWindowFlags_NoScrollbar
