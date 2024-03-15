@@ -14,7 +14,7 @@ namespace net
   class FlatServer : public TcpServer
   {
   public:
-    typedef std::function<void(uint32_t session_id, TcpSession::DataPtr)> BufferHandler;
+    typedef std::function<void(uint32_t, TcpSession::DataPtr)> BufferHandler;
 
   protected:
     std::unordered_map<std::string, BufferHandler> buffer_handlers_;
