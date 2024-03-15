@@ -5,6 +5,8 @@
 class Console : public axgl::Component
 {
   bool show_ = false;
+  bool scroll_to_bottom_ = false;
+
   std::string input_;
   std::string history_;
 
@@ -14,10 +16,16 @@ public:
     auto event = std::make_shared<axgl::Event>();
     event->type = EVENT_TYPE_SEND_NETWORK_MESSAGE;
     event->attributes.set("message", input_);
-
     context.raise_event(std::move(event));
-    history_ += input_ + '\n';
+
+    append_history(input_);
     input_.clear();
+  }
+
+  void append_history(const std::string& value)
+  {
+    history_ += input_ + '\n';
+    scroll_to_bottom_ = true;
   }
 
   void update(axgl::ComponentContext& context) override
@@ -26,7 +34,7 @@ public:
     for (const auto& event : events)
     {
       const auto& key = event->attributes.get<int>("key");
-      if (key == GLFW_KEY_T)
+      if (key == (show_ ? GLFW_KEY_ESCAPE : GLFW_KEY_T))
       {
         show_ = !show_;
         break;
@@ -48,25 +56,32 @@ public:
       | ImGuiWindowFlags_NoNav
       | ImGuiWindowFlags_NoBackground
       ;
-
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always, ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size, ImGuiCond_Always);
-
-    constexpr auto padding = 10.0f;
-    const auto inner_window_width = ImGui::GetWindowSize().x - (padding * 2);
-    const auto inner_window_height = ImGui::GetWindowSize().y - (padding * 2);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(padding, padding));
-
     ImGui::Begin("Console", nullptr, window_flags);
     {
-      ImGui::SetNextItemWidth(inner_window_width);
+      // Display console lines
+      ImGui::BeginChild("History",
+        ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),
+        false, ImGuiWindowFlags_HorizontalScrollbar);
+      {
+        ImGui::Text(history_.c_str());
+
+        if (scroll_to_bottom_)
+        {
+          ImGui::SetScrollHereY(1.0f);
+          scroll_to_bottom_ = false;
+        }
+      }
+      ImGui::EndChild();
+
+      // Input Text
       ImGui::SetKeyboardFocusHere();
+      ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
       if (ImGui::InputText("##", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
         on_enter(context);
 
-      ImGui::Text(history_.c_str());
     }
     ImGui::End();
-    ImGui::PopStyleVar();
   }
 };
