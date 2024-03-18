@@ -1,7 +1,7 @@
 #pragma once
 
 // #include <flatbuffer/flatbuffer.h>
-#include <net/flat/flat_client.h>
+#include <net/flat/tcp_adapter.h>
 #include <proto/message.h>
 #include <common/proto.h>
 
@@ -9,13 +9,13 @@
 
 #include "event.h"
 
-class NetClient : public net::FlatTcpClient, public axgl::Component
+class NetClient : public net::flat::TcpClientAdapter, public axgl::Component
 {
   std::thread* client_thread_;
 
 public:
   NetClient(const std::string& host, asio::ip::port_type port) :
-    net::FlatTcpClient(host, port)
+    net::flat::TcpClientAdapter(host, port)
   {
     auto mesg_handler = [](net::DataPtr buffer)
     {
@@ -43,6 +43,11 @@ public:
     SPDLOG_INFO("Disconnected");
   }
 
+  void connection_failed(const asio::error_code& error_code) override
+  {
+    SPDLOG_ERROR("connection failed ({})", error_code.message());
+  }
+
   void send_message(const std::string& message)
   {
     send(create_message(message));
@@ -58,7 +63,14 @@ public:
 
   void initialize(axgl::ComponentContext& context) override
   {
-    client_thread_ = new std::thread([&]() { start(); });
+    client_thread_ = new std::thread([&]()
+    {
+      try { start(); }
+      catch (const std::exception& e)
+      {
+        SPDLOG_CRITICAL(e.what());
+      }
+    });
   }
 
   void terminate(axgl::ComponentContext& context) override

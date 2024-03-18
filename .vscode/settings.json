@@ -130,7 +130,8 @@
     "cwctype": "cpp",
     "string_view": "cpp",
     "shared_mutex": "cpp",
-    "resumable": "cpp"
+    "resumable": "cpp",
+    "__std_stream": "cpp"
   },
   "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false
 }
