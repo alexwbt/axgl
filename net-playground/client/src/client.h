@@ -9,13 +9,13 @@
 
 #include "event.h"
 
-class NetClient : public net::FlatClient, public axgl::Component
+class NetClient : public net::FlatTcpClient, public axgl::Component
 {
   std::thread* client_thread_;
 
 public:
   NetClient(const std::string& host, asio::ip::port_type port) :
-    net::FlatClient(host, port)
+    net::FlatTcpClient(host, port)
   {
     auto mesg_handler = [](net::TcpSession::DataPtr buffer)
     {

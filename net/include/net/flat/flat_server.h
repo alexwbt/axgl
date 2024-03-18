@@ -11,7 +11,7 @@
 namespace net
 {
 
-  class FlatServer : public TcpServer
+  class FlatTcpServer : public TcpServer
   {
   public:
     typedef std::function<void(uint32_t, TcpSession::DataPtr)> BufferHandler;

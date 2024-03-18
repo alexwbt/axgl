@@ -5,11 +5,11 @@
 #include <proto/message.h>
 #include <common/proto.h>
 
-class NetServer : public net::FlatServer
+class NetServer : public net::FlatTcpServer
 {
 public:
   NetServer(asio::ip::port_type port) :
-    net::FlatServer(port)
+    net::FlatTcpServer(port)
   {
     auto mesg_handler = [](uint32_t session_id, net::TcpSession::DataPtr buffer)
     {
