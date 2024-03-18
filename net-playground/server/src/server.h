@@ -42,7 +42,7 @@ public:
     send_to_all(create_message(message));
   }
 
-  void start()
+  void start() override
   {
     try
     {
