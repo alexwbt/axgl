@@ -14,17 +14,17 @@ namespace net
   class FlatTcpServer : public TcpServer
   {
   public:
-    typedef std::function<void(uint32_t, TcpSession::DataPtr)> BufferHandler;
+    typedef std::function<void(uint32_t, DataPtr)> BufferHandler;
 
   protected:
     std::unordered_map<std::string, BufferHandler> buffer_handlers_;
 
   public:
     using TcpServer::TcpServer;
-    void on_connect(uint32_t session_id, std::shared_ptr<TcpSession> session) override {}
+    void on_connect(uint32_t session_id, std::shared_ptr<Session> session) override {}
     void on_disconnect(uint32_t session_id) override {}
 
-    void on_receive(uint32_t session_id, TcpSession::DataPtr buffer) override
+    void on_receive(uint32_t session_id, DataPtr buffer) override
     {
       std::string identifier(
         flatbuffers::GetBufferIdentifier(buffer->data(), true),

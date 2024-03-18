@@ -39,7 +39,7 @@ public:
     SPDLOG_INFO("Disconnected");
   }
 
-  void on_receive(net::TcpSession::DataPtr buffer) override
+  void on_receive(net::DataPtr buffer) override
   {
     std::string identifier(
       flatbuffers::GetBufferIdentifier(buffer->data(), true),

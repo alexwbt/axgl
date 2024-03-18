@@ -11,7 +11,7 @@ public:
   NetServer(asio::ip::port_type port) :
     net::FlatTcpServer(port)
   {
-    auto mesg_handler = [](uint32_t session_id, net::TcpSession::DataPtr buffer)
+    auto mesg_handler = [](uint32_t session_id, net::DataPtr buffer)
     {
       auto verifier = flatbuffers::Verifier(buffer->data(), buffer->size());
       auto is_valid_message = proto::VerifySizePrefixedMessageBuffer(verifier);
@@ -27,7 +27,7 @@ public:
     buffer_handlers_.insert({ {proto::MessageIdentifier(), mesg_handler} });
   }
 
-  void on_connect(uint32_t session_id, std::shared_ptr<net::TcpSession> session) override
+  void on_connect(uint32_t session_id, std::shared_ptr<net::Session> session) override
   {
     SPDLOG_INFO("new connection (id: {})", session_id);
   }

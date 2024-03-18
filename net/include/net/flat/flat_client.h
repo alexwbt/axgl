@@ -14,7 +14,7 @@ namespace net
   class FlatTcpClient : public TcpClient
   {
   public:
-    typedef std::function<void(TcpSession::DataPtr)> BufferHandler;
+    typedef std::function<void(DataPtr)> BufferHandler;
 
   protected:
     std::unordered_map<std::string, BufferHandler> buffer_handlers_;
@@ -24,7 +24,7 @@ namespace net
     void on_connect() override {}
     void on_disconnect() override {}
 
-    void on_receive(TcpSession::DataPtr buffer) override
+    void on_receive(DataPtr buffer) override
     {
       std::string identifier(
         flatbuffers::GetBufferIdentifier(buffer->data(), true),

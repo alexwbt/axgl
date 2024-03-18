@@ -60,7 +60,7 @@ public:
     ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size, ImGuiCond_Always);
     ImGui::Begin("Console", nullptr, window_flags);
     {
-      // Display console lines
+      // History
       ImGui::BeginChild("History",
         ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),
         false, ImGuiWindowFlags_HorizontalScrollbar);
@@ -78,9 +78,12 @@ public:
       // Input Text
       ImGui::SetKeyboardFocusHere();
       ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
       if (ImGui::InputText("##", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
         on_enter(context);
-
+      ImGui::PopStyleColor(2);
     }
     ImGui::End();
   }

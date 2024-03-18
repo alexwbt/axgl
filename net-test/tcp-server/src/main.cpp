@@ -30,7 +30,7 @@ class Server : public net::TcpServer
   using net::TcpServer::TcpServer;
 
 public:
-  void on_connect(uint32_t session_id, std::shared_ptr<net::TcpSession> session) override
+  void on_connect(uint32_t session_id, std::shared_ptr<net::Session> session) override
   {
     SPDLOG_INFO("new connection (id: {})", session_id);
   }
@@ -40,7 +40,7 @@ public:
     SPDLOG_INFO("client disconnected (id: {})", session_id);
   }
 
-  void on_receive(uint32_t session_id, net::TcpSession::DataPtr buffer) override
+  void on_receive(uint32_t session_id, net::DataPtr buffer) override
   {
     std::string identifier(
       flatbuffers::GetBufferIdentifier(buffer->data(), true),

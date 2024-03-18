@@ -1,46 +1,44 @@
 #pragma once
 
-#include <condition_variable>
 #include <unordered_map>
-#include <memory>
-#include <mutex>
-#include <queue>
+#include <flatbuffers/flatbuffers.h>
 
-#include "net/asio.h"
+#include "net/session.h"
 
 namespace net
 {
 
-  class TcpSession final
+  class TcpFlatBufferSocket final : public Socket
   {
-  public:
-    typedef std::shared_ptr<std::vector<uint8_t>> DataPtr;
-
   private:
-    uint32_t id_;
     asio::ip::tcp::socket socket_;
 
-    std::mutex input_queue_mutex_;
-    std::queue<DataPtr> input_queue_;
-
-    std::mutex output_queue_mutex_;
-    std::queue<DataPtr> output_queue_;
-    asio::steady_timer output_signal_;
-
   public:
-    static std::shared_ptr<TcpSession> create(uint32_t id, asio::ip::tcp::socket socket);
+    TcpFlatBufferSocket(asio::ip::tcp::socket socket) :
+      socket_(std::move(socket)) {}
 
-    void send(DataPtr buffer);
-    void handle_input(std::function<void(DataPtr)> handler);
-    void close();
+    asio::awaitable<void> write_buffer(DataPtr buffer)
+    {
+      co_await asio::async_write(socket_,
+        asio::buffer(buffer->data(), buffer->size()),
+        asio::use_awaitable);
+    }
 
-    bool connected();
+    asio::awaitable<void> read_buffer(std::vector<uint8_t>& buffer)
+    {
+      // read size
+      co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, 4), asio::use_awaitable);
 
-  public:
-    TcpSession(uint32_t id, asio::ip::tcp::socket socket);
+      auto size = flatbuffers::GetSizePrefixedBufferLength(buffer.data());
 
-    asio::awaitable<void> write_buffers();
-    asio::awaitable<void> read_buffers();
+      // read all of size
+      co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, size), asio::use_awaitable);
+    }
+
+    void close() { socket_.close(); }
+    bool connected() { return socket_.is_open(); }
+
+    asio::any_io_executor get_executor() { return socket_.get_executor(); }
   };
 
   class TcpServer
@@ -49,7 +47,7 @@ namespace net
     const asio::ip::port_type port_;
     asio::io_context io_context_;
     asio::ip::tcp::acceptor acceptor_;
-    std::unordered_map<uint32_t, std::shared_ptr<TcpSession>> sessions_;
+    std::unordered_map<uint32_t, std::shared_ptr<Session>> sessions_;
 
     uint32_t next_session_id_ = 1;
 
@@ -62,13 +60,13 @@ namespace net
     void update();
     bool running();
 
-    void send(uint32_t session_id, TcpSession::DataPtr buffer);
-    void send_to_all(TcpSession::DataPtr buffer);
+    void send(uint32_t session_id, DataPtr buffer);
+    void send_to_all(DataPtr buffer);
     void close_session(uint32_t session_id);
 
-    virtual void on_connect(uint32_t session_id, std::shared_ptr<TcpSession> session) = 0;
+    virtual void on_connect(uint32_t session_id, std::shared_ptr<Session> session) = 0;
     virtual void on_disconnect(uint32_t session_id) = 0;
-    virtual void on_receive(uint32_t session_id, TcpSession::DataPtr buffer) = 0;
+    virtual void on_receive(uint32_t session_id, DataPtr buffer) = 0;
 
   private:
     uint32_t use_next_session_id();
@@ -79,7 +77,7 @@ namespace net
   {
   protected:
     asio::io_context io_context_;
-    std::shared_ptr<TcpSession> session_;
+    std::shared_ptr<Session> session_;
 
   public:
     TcpClient(const std::string& host, asio::ip::port_type port);
@@ -89,11 +87,11 @@ namespace net
     void stop();
     void update();
     bool running();
-    void send(TcpSession::DataPtr buffer);
+    void send(DataPtr buffer);
 
     virtual void on_connect() = 0;
     virtual void on_disconnect() = 0;
-    virtual void on_receive(TcpSession::DataPtr buffer) = 0;
+    virtual void on_receive(DataPtr buffer) = 0;
   };
 
 }

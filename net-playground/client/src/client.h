@@ -17,7 +17,7 @@ public:
   NetClient(const std::string& host, asio::ip::port_type port) :
     net::FlatTcpClient(host, port)
   {
-    auto mesg_handler = [](net::TcpSession::DataPtr buffer)
+    auto mesg_handler = [](net::DataPtr buffer)
     {
       auto verifier = flatbuffers::Verifier(buffer->data(), buffer->size());
       auto is_valid_message = proto::VerifySizePrefixedMessageBuffer(verifier);

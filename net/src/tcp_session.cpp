@@ -1,116 +1,9 @@
 #include "net/tcp_session.h"
+
 #include <spdlog/spdlog.h>
-#include <flatbuffers/flatbuffers.h>
 
 namespace net
 {
-
-  std::shared_ptr<TcpSession> TcpSession::create(uint32_t id, asio::ip::tcp::socket socket)
-  {
-    auto session = std::make_shared<TcpSession>(id, std::move(socket));
-    // start read loop
-    asio::co_spawn(session->socket_.get_executor(),
-      [session]() -> asio::awaitable<void> { return session->read_buffers(); },
-      asio::detached);
-    // start write loop
-    asio::co_spawn(session->socket_.get_executor(),
-      [session]() -> asio::awaitable<void> { return session->write_buffers(); },
-      asio::detached);
-
-    return session;
-  }
-
-  TcpSession::TcpSession(uint32_t id, asio::ip::tcp::socket socket) :
-    id_(id),
-    socket_(std::move(socket)),
-    output_signal_(socket_.get_executor())
-  {
-    output_signal_.expires_at(std::chrono::steady_clock::time_point::max());
-  }
-
-  void TcpSession::send(DataPtr buffer)
-  {
-    std::lock_guard<std::mutex> lock(output_queue_mutex_);
-    output_queue_.push(std::move(buffer));
-    output_signal_.cancel_one();
-  }
-
-  void TcpSession::handle_input(std::function<void(DataPtr)> handler)
-  {
-    std::lock_guard<std::mutex> lock(input_queue_mutex_);
-    while (!input_queue_.empty())
-    {
-      handler(input_queue_.front());
-      input_queue_.pop();
-    }
-  }
-
-  void TcpSession::close()
-  {
-    socket_.close();
-    output_signal_.cancel();
-  }
-
-  bool TcpSession::connected()
-  {
-    return socket_.is_open();
-  }
-
-  asio::awaitable<void> TcpSession::write_buffers()
-  {
-    try
-    {
-      while (connected())
-      {
-        {
-          std::lock_guard<std::mutex> lock(output_queue_mutex_);
-          while (!output_queue_.empty())
-          {
-            const auto buffer = output_queue_.front();
-
-            co_await asio::async_write(socket_,
-              asio::buffer(buffer->data(), buffer->size()),
-              asio::use_awaitable);
-
-            output_queue_.pop();
-          }
-        }
-
-        asio::error_code ec;
-        co_await output_signal_.async_wait(asio::redirect_error(asio::use_awaitable, ec));
-      }
-    }
-    catch (const std::exception& e)
-    {
-      close();
-    }
-  }
-
-  asio::awaitable<void> TcpSession::read_buffers()
-  {
-    try
-    {
-      while (true)
-      {
-        std::vector<uint8_t> buffer;
-
-        // read size
-        co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, 4), asio::use_awaitable);
-
-        auto size = flatbuffers::GetSizePrefixedBufferLength(buffer.data());
-
-        // read all of size
-        co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, size), asio::use_awaitable);
-
-        std::lock_guard<std::mutex> lock(input_queue_mutex_);
-        input_queue_.push(std::make_shared<std::vector<uint8_t>>(std::move(buffer)));
-      }
-    }
-    catch (const std::exception& e)
-    {
-      close();
-    }
-  }
 
   TcpServer::TcpServer(asio::ip::port_type port) :
     port_(port),
@@ -144,7 +37,7 @@ namespace net
   void TcpServer::update()
   {
     for (auto it = sessions_.begin(); it != sessions_.end();) {
-      it->second->handle_input([this, &it](TcpSession::DataPtr buffer)
+      it->second->handle_input([this, &it](DataPtr buffer)
       {
         on_receive(it->first, std::move(buffer));
       });
@@ -164,13 +57,13 @@ namespace net
     return !io_context_.stopped();
   }
 
-  void TcpServer::send(uint32_t session_id, TcpSession::DataPtr buffer)
+  void TcpServer::send(uint32_t session_id, DataPtr buffer)
   {
     if (sessions_.contains(session_id))
       sessions_.at(session_id)->send(std::move(buffer));
   }
 
-  void TcpServer::send_to_all(TcpSession::DataPtr buffer)
+  void TcpServer::send_to_all(DataPtr buffer)
   {
     for (auto& session : sessions_)
       session.second->send(buffer);
@@ -192,9 +85,10 @@ namespace net
     while (true)
     {
       auto socket = co_await acceptor_.async_accept(asio::use_awaitable);
+      auto tcp_flat_socket = std::make_shared<TcpFlatBufferSocket>(std::move(socket));
 
       const auto session_id = use_next_session_id();
-      const auto session = TcpSession::create(session_id, std::move(socket));
+      const auto session = Session::create(session_id, std::move(tcp_flat_socket));
 
       sessions_.insert({ session_id, session });
       on_connect(session_id, session);
@@ -212,9 +106,11 @@ namespace net
       asio::error_code ec;
       co_await asio::async_connect(socket, resolver.resolve(endpoint), asio::redirect_error(asio::use_awaitable, ec));
 
+      auto tcp_flat_socket = std::make_shared<TcpFlatBufferSocket>(std::move(socket));
+
       if (!ec)
       {
-        session_ = TcpSession::create(0, std::move(socket));
+        session_ = Session::create(0, std::move(tcp_flat_socket));
         on_connect();
       }
       else
@@ -246,7 +142,7 @@ namespace net
     if (!session_)
       return;
 
-    session_->handle_input([this](TcpSession::DataPtr buffer)
+    session_->handle_input([this](DataPtr buffer)
     {
       on_receive(std::move(buffer));
     });
@@ -263,7 +159,7 @@ namespace net
     return !io_context_.stopped();
   }
 
-  void TcpClient::send(TcpSession::DataPtr buffer)
+  void TcpClient::send(DataPtr buffer)
   {
     if (session_)
       session_->send(std::move(buffer));
