@@ -88,24 +88,26 @@ void TcpClient::connect(const std::string& host, const asio::ip::port_type& port
 {
   asio::co_spawn(*io_context_, [this, host, port]() -> asio::awaitable<void>
   {
-    asio::ip::tcp::resolver resolver(*io_context_);
-    asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(host), port);
-    asio::ip::tcp::socket asio_socket(*io_context_);
-
     asio::error_code ec;
-    co_await asio::async_connect(asio_socket, resolver.resolve(endpoint), asio::redirect_error(asio::use_awaitable, ec));
-
-    auto socket = new_socket(std::move(asio_socket));
-
-    if (!ec)
-    {
-      session_ = Session::create(0, std::move(socket));
-      on_connect();
-    }
-    else
+    asio::ip::tcp::endpoint endpoint(asio::ip::make_address(host, ec), port);
+    if (ec)
     {
       connection_failed(ec);
+      co_return;
     }
+
+    asio::ip::tcp::resolver resolver(*io_context_);
+    asio::ip::tcp::socket asio_socket(*io_context_);
+    co_await asio::async_connect(asio_socket, resolver.resolve(endpoint), asio::redirect_error(asio::use_awaitable, ec));
+    if (ec)
+    {
+      connection_failed(ec);
+      co_return;
+    }
+
+    auto socket = new_socket(std::move(asio_socket));
+    session_ = Session::create(0, std::move(socket));
+    on_connect();
   }, asio::detached);
 }
 

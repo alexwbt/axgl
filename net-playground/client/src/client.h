@@ -12,7 +12,7 @@
 class NetClient : public net::flat::TcpClientAdapter, public axgl::Component
 {
 private:
-  std::thread* client_thread_;
+  std::shared_ptr<std::thread> client_thread_;
 
 public:
   NetClient(std::shared_ptr<asio::io_context> io_context) :
@@ -82,22 +82,16 @@ public:
 
   void connect(const std::string& host, const asio::ip::port_type& port) override
   {
+    disconnect();
+
     SPDLOG_INFO("Connecting to {}:{}", host, port);
     net::flat::TcpClientAdapter::connect(host, port);
-  }
 
-  void disconnect() override
-  {
-    SPDLOG_INFO("Disconnecting from server");
-    net::flat::TcpClientAdapter::disconnect();
-  }
-
-  void initialize(axgl::ComponentContext& context) override
-  {
-    client_thread_ = new std::thread([this]()
+    client_thread_ = std::make_shared<std::thread>([this]()
     {
       try
       {
+        io_context_->restart();
         io_context_->run();
       }
       catch (const std::exception& e)
@@ -107,16 +101,14 @@ public:
     });
   }
 
-  void terminate(axgl::ComponentContext& context) override
+  void disconnect() override
   {
-    disconnect();
+    net::flat::TcpClientAdapter::disconnect();
 
-    if (!io_context_->stopped())
+    if (io_context_ && !io_context_->stopped())
       io_context_->stop();
 
-    if (client_thread_->joinable())
+    if (client_thread_ && client_thread_->joinable())
       client_thread_->join();
-
-    delete client_thread_;
   }
 };

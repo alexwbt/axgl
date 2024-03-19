@@ -96,7 +96,7 @@ public:
         ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),
         false, ImGuiWindowFlags_HorizontalScrollbar);
       {
-        ImGui::Text(history_.c_str());
+        ImGui::TextUnformatted(history_.c_str());
 
         if (scroll_to_bottom_)
         {
