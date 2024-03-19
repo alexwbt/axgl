@@ -90,7 +90,7 @@ class Client : protected IoContextComponent
 public:
   using IoContextComponent::IoContextComponent;
 
-  virtual void connect() = 0;
+  virtual void connect(const std::string& host, const asio::ip::port_type& port) = 0;
   virtual void disconnect() = 0;
   virtual void update() = 0;
   virtual bool connected() = 0;

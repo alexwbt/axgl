@@ -1,5 +1,10 @@
 #pragma once
 
+#include <string>
+#include <sstream>
+#include <vector>
+#include <iterator>
+
 #include "event.h"
 
 class Console : public axgl::Component
@@ -13,10 +18,36 @@ class Console : public axgl::Component
 public:
   void on_enter(axgl::ComponentContext& context)
   {
-    auto event = std::make_shared<axgl::Event>();
-    event->type = EVENT_TYPE_SEND_NETWORK_MESSAGE;
-    event->attributes.set("message", input_);
-    context.raise_event(std::move(event));
+    if (input_.starts_with("/"))
+    {
+      std::vector<std::string> tokens;
+      std::istringstream iss(input_);
+      std::string item;
+      while (std::getline(iss, item, ' '))
+        tokens.push_back(item);
+
+      if (tokens[0] == "/connect" && tokens.size() == 3)
+      {
+        auto event = std::make_shared<axgl::Event>();
+        event->type = EVENT_TYPE_CONNECT_SERVER;
+        event->attributes.set("host", tokens[1]);
+        event->attributes.set<uint32_t>("port", std::stoi(tokens[2]));
+        context.raise_event(std::move(event));
+      }
+      else if (tokens[0] == "/disconnect")
+      {
+        auto event = std::make_shared<axgl::Event>();
+        event->type = EVENT_TYPE_DISCONNECT_SERVER;
+        context.raise_event(std::move(event));
+      }
+    }
+    else
+    {
+      auto event = std::make_shared<axgl::Event>();
+      event->type = EVENT_TYPE_SEND_NETWORK_MESSAGE;
+      event->attributes.set("message", input_);
+      context.raise_event(std::move(event));
+    }
 
     append_history(input_);
     input_.clear();

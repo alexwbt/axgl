@@ -80,17 +80,16 @@ asio::awaitable<void> TcpServer::accept_connections()
   }
 }
 
-TcpClient::TcpClient(std::shared_ptr<asio::io_context> io_context,
-  const std::string& host, asio::ip::port_type port) :
-  Client(io_context), host_(host), port_(port)
+TcpClient::TcpClient(std::shared_ptr<asio::io_context> io_context) :
+  Client(io_context)
 {}
 
-void TcpClient::connect()
+void TcpClient::connect(const std::string& host, const asio::ip::port_type& port)
 {
-  asio::co_spawn(*io_context_, [this]() -> asio::awaitable<void>
+  asio::co_spawn(*io_context_, [this, host, port]() -> asio::awaitable<void>
   {
     asio::ip::tcp::resolver resolver(*io_context_);
-    asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(host_), port_);
+    asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(host), port);
     asio::ip::tcp::socket asio_socket(*io_context_);
 
     asio::error_code ec;

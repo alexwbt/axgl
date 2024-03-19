@@ -15,8 +15,8 @@ private:
   std::thread* client_thread_;
 
 public:
-  NetClient(std::shared_ptr<asio::io_context> io_context, const std::string& host, asio::ip::port_type port) :
-    net::flat::TcpClientAdapter(io_context, host, port)
+  NetClient(std::shared_ptr<asio::io_context> io_context) :
+    net::flat::TcpClientAdapter(io_context)
   {
     add_handler(proto::MessageIdentifier(), [](uint32_t, net::DataPtr buffer)
     {
@@ -57,10 +57,39 @@ public:
   {
     net::flat::TcpClientAdapter::update();
 
-    const auto& events = context.get_events(EVENT_TYPE_SEND_NETWORK_MESSAGE);
-    for (auto event : events)
+    const auto& send_message_events = context.get_events(EVENT_TYPE_SEND_NETWORK_MESSAGE);
+    for (auto event : send_message_events)
       if (event->attributes.contains("message"))
         send_message(event->attributes.get<std::string>("message"));
+
+    const auto& connect_events = context.get_events(EVENT_TYPE_CONNECT_SERVER);
+    for (auto event : connect_events)
+    {
+      if (event->attributes.contains("host") && event->attributes.contains("port"))
+      {
+        connect(
+          event->attributes.get<std::string>("host"),
+          event->attributes.get<uint32_t>("port")
+        );
+        break;
+      }
+    }
+
+    const auto& disconnect_events = context.get_events(EVENT_TYPE_DISCONNECT_SERVER);
+    if (!disconnect_events.empty())
+      disconnect();
+  }
+
+  void connect(const std::string& host, const asio::ip::port_type& port) override
+  {
+    SPDLOG_INFO("Connecting to {}:{}", host, port);
+    net::flat::TcpClientAdapter::connect(host, port);
+  }
+
+  void disconnect() override
+  {
+    SPDLOG_INFO("Disconnecting from server");
+    net::flat::TcpClientAdapter::disconnect();
   }
 
   void initialize(axgl::ComponentContext& context) override
@@ -69,7 +98,6 @@ public:
     {
       try
       {
-        connect();
         io_context_->run();
       }
       catch (const std::exception& e)

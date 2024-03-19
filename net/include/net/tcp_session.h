@@ -16,8 +16,7 @@ protected:
   uint32_t next_session_id_ = 1;
 
 public:
-  TcpServer(std::shared_ptr<asio::io_context> io_context,
-    asio::ip::port_type port);
+  TcpServer(std::shared_ptr<asio::io_context> io_context, asio::ip::port_type port);
 
   void start() override;
   void stop() override;
@@ -38,15 +37,12 @@ private:
 class TcpClient : public Client
 {
 protected:
-  std::string host_;
-  asio::ip::port_type port_;
   std::shared_ptr<Session> session_;
 
 public:
-  TcpClient(std::shared_ptr<asio::io_context> io_context,
-    const std::string& host, asio::ip::port_type port);
+  TcpClient(std::shared_ptr<asio::io_context> io_context);
 
-  void connect() override;
+  void connect(const std::string& host, const asio::ip::port_type& port) override;
   void disconnect() override;
   void update() override;
   bool connected() override;
