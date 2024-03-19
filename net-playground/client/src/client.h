@@ -1,11 +1,9 @@
 #pragma once
 
-// #include <flatbuffer/flatbuffer.h>
 #include <net/flat/tcp_adapter.h>
+#include <axgl/component.h>
 #include <proto/message.h>
 #include <common/proto.h>
-
-#include <axgl/component.h>
 
 #include "event.h"
 
