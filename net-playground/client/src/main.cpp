@@ -7,7 +7,7 @@
 int main()
 {
   auto window = std::make_shared<axgl::OpenglWindow>(800, 600, "Net Playground");
-  window->add_component(std::make_shared<NetClient>("127.0.0.1", 13000));
+  window->add_component(std::make_shared<NetClient>(std::make_shared<asio::io_context>(), "127.0.0.1", 13000));
   window->add_component(std::make_shared<Playground>());
 
   auto imgui = std::make_shared<axgl::OpenglImgui>(window);

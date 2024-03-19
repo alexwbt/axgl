@@ -1,17 +1,19 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
+
 #include <net/flat/tcp_adapter.h>
+
 #include <proto/message.h>
 #include <common/proto.h>
 
 class NetServer : public net::flat::TcpServerAdapter
 {
 public:
-  NetServer(asio::ip::port_type port) :
-    net::flat::TcpServerAdapter(port)
+  NetServer(std::shared_ptr<asio::io_context> io_context, asio::ip::port_type port) :
+    net::flat::TcpServerAdapter(io_context, port)
   {
-    auto mesg_handler = [](uint32_t session_id, net::DataPtr buffer)
+    add_handler(proto::MessageIdentifier(), [](uint32_t session_id, net::DataPtr buffer)
     {
       auto verifier = flatbuffers::Verifier(buffer->data(), buffer->size());
       auto is_valid_message = proto::VerifySizePrefixedMessageBuffer(verifier);
@@ -23,8 +25,7 @@ public:
 
       auto message = proto::GetSizePrefixedMessage(buffer->data());
       SPDLOG_INFO("(client: {}) Message Content: {}", session_id, message->content()->str());
-    };
-    buffer_handlers_.insert({ {proto::MessageIdentifier(), mesg_handler} });
+    });
   }
 
   void on_connect(uint32_t session_id, std::shared_ptr<net::Session> session) override
@@ -44,17 +45,7 @@ public:
 
   void start() override
   {
-    try
-    {
-      SPDLOG_INFO("starting server on {}", port());
-
-      net::flat::TcpServerAdapter::start();
-
-      SPDLOG_INFO("server stopped");
-    }
-    catch (const std::exception& e)
-    {
-      SPDLOG_CRITICAL(e.what());
-    }
+    SPDLOG_INFO("starting server on {}", port_);
+    net::flat::TcpServerAdapter::start();
   }
 };

@@ -6,20 +6,18 @@
 
 NAMESPACE_NET
 
-class TcpServer : Server
+class TcpServer : public Server
 {
-private:
+protected:
   const asio::ip::port_type port_;
-  asio::io_context io_context_;
   asio::ip::tcp::acceptor acceptor_;
   std::unordered_map<uint32_t, std::shared_ptr<Session>> sessions_;
 
   uint32_t next_session_id_ = 1;
 
 public:
-  TcpServer(asio::ip::port_type port);
-
-  const asio::ip::port_type port() const { return port_; }
+  TcpServer(std::shared_ptr<asio::io_context> io_context,
+    asio::ip::port_type port);
 
   void start() override;
   void stop() override;
@@ -37,19 +35,21 @@ private:
   asio::awaitable<void> accept_connections();
 };
 
-class TcpClient : Client
+class TcpClient : public Client
 {
 protected:
-  asio::io_context io_context_;
+  std::string host_;
+  asio::ip::port_type port_;
   std::shared_ptr<Session> session_;
 
 public:
-  TcpClient(const std::string& host, asio::ip::port_type port);
+  TcpClient(std::shared_ptr<asio::io_context> io_context,
+    const std::string& host, asio::ip::port_type port);
 
-  void start() override;
-  void stop() override;
+  void connect() override;
+  void disconnect() override;
   void update() override;
-  bool running() override;
+  bool connected() override;
   void send(DataPtr buffer) override;
 
   virtual std::shared_ptr<Socket> new_socket(asio::ip::tcp::socket socket) = 0;

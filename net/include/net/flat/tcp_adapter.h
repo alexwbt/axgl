@@ -44,8 +44,14 @@ class FlatBufferHandler
 public:
   typedef std::function<void(uint32_t, DataPtr)> BufferHandler;
 
-protected:
+private:
   std::unordered_map<std::string, BufferHandler> buffer_handlers_;
+
+protected:
+  void add_handler(const std::string& identifier, BufferHandler handler)
+  {
+    buffer_handlers_.insert({ {identifier, handler} });
+  }
 
   void on_receive(uint32_t session_id, DataPtr buffer)
   {

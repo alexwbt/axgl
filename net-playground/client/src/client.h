@@ -11,13 +11,14 @@
 
 class NetClient : public net::flat::TcpClientAdapter, public axgl::Component
 {
+private:
   std::thread* client_thread_;
 
 public:
-  NetClient(const std::string& host, asio::ip::port_type port) :
-    net::flat::TcpClientAdapter(host, port)
+  NetClient(std::shared_ptr<asio::io_context> io_context, const std::string& host, asio::ip::port_type port) :
+    net::flat::TcpClientAdapter(io_context, host, port)
   {
-    auto mesg_handler = [](net::DataPtr buffer)
+    add_handler(proto::MessageIdentifier(), [](uint32_t, net::DataPtr buffer)
     {
       auto verifier = flatbuffers::Verifier(buffer->data(), buffer->size());
       auto is_valid_message = proto::VerifySizePrefixedMessageBuffer(verifier);
@@ -29,8 +30,7 @@ public:
 
       auto message = proto::GetSizePrefixedMessage(buffer->data());
       SPDLOG_INFO("Message Content: {}", message->content()->str());
-    };
-    buffer_handlers_.insert({ {proto::MessageIdentifier(), mesg_handler} });
+    });
   }
 
   void on_connect() override
@@ -45,7 +45,7 @@ public:
 
   void connection_failed(const asio::error_code& error_code) override
   {
-    SPDLOG_ERROR("connection failed ({})", error_code.message());
+    SPDLOG_ERROR("Connection failed ({})", error_code.message());
   }
 
   void send_message(const std::string& message)
@@ -55,6 +55,8 @@ public:
 
   void update(axgl::ComponentContext& context) override
   {
+    net::flat::TcpClientAdapter::update();
+
     const auto& events = context.get_events(EVENT_TYPE_SEND_NETWORK_MESSAGE);
     for (auto event : events)
       if (event->attributes.contains("message"))
@@ -63,9 +65,13 @@ public:
 
   void initialize(axgl::ComponentContext& context) override
   {
-    client_thread_ = new std::thread([&]()
+    client_thread_ = new std::thread([this]()
     {
-      try { start(); }
+      try
+      {
+        connect();
+        io_context_->run();
+      }
       catch (const std::exception& e)
       {
         SPDLOG_CRITICAL(e.what());
@@ -75,7 +81,10 @@ public:
 
   void terminate(axgl::ComponentContext& context) override
   {
-    stop();
+    disconnect();
+
+    if (!io_context_->stopped())
+      io_context_->stop();
 
     if (client_thread_->joinable())
       client_thread_->join();

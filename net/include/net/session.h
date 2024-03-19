@@ -55,10 +55,21 @@ public:
   bool connected();
 };
 
-class Server
+class IoContextComponent
+{
+protected:
+  std::shared_ptr<asio::io_context> io_context_;
+
+  IoContextComponent(std::shared_ptr<asio::io_context> io_context) :
+    io_context_(std::move(io_context)) {}
+
+  virtual ~IoContextComponent() {}
+};
+
+class Server : protected IoContextComponent
 {
 public:
-  virtual ~Server() {}
+  using IoContextComponent::IoContextComponent;
 
   virtual void start() = 0;
   virtual void stop() = 0;
@@ -74,15 +85,15 @@ public:
   virtual void on_connect(uint32_t session_id, std::shared_ptr<Session> session) = 0;
 };
 
-class Client
+class Client : protected IoContextComponent
 {
 public:
-  virtual ~Client() {}
+  using IoContextComponent::IoContextComponent;
 
-  virtual void start() = 0;
-  virtual void stop() = 0;
+  virtual void connect() = 0;
+  virtual void disconnect() = 0;
   virtual void update() = 0;
-  virtual bool running() = 0;
+  virtual bool connected() = 0;
   virtual void send(DataPtr buffer) = 0;
 
   virtual void on_connect() = 0;

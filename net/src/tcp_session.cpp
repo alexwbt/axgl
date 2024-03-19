@@ -2,22 +2,21 @@
 
 NAMESPACE_NET
 
-TcpServer::TcpServer(asio::ip::port_type port) :
+TcpServer::TcpServer(std::shared_ptr<asio::io_context> io_context, asio::ip::port_type port) :
+  Server(io_context),
   port_(port),
-  acceptor_(io_context_, { asio::ip::tcp::v4(), port })
+  acceptor_(*io_context, { asio::ip::tcp::v4(), port })
 {}
 
 void TcpServer::start()
 {
-  asio::co_spawn(io_context_, accept_connections(), asio::detached);
-  io_context_.run();
+  asio::co_spawn(*io_context_, accept_connections(), asio::detached);
 }
 
 void TcpServer::stop()
 {
   sessions_.clear();
   acceptor_.close();
-  io_context_.stop();
 }
 
 void TcpServer::update()
@@ -40,7 +39,7 @@ void TcpServer::update()
 
 bool TcpServer::running()
 {
-  return !io_context_.stopped();
+  return acceptor_.is_open();
 }
 
 void TcpServer::send(uint32_t session_id, DataPtr buffer)
@@ -81,13 +80,18 @@ asio::awaitable<void> TcpServer::accept_connections()
   }
 }
 
-TcpClient::TcpClient(const std::string& host, asio::ip::port_type port)
+TcpClient::TcpClient(std::shared_ptr<asio::io_context> io_context,
+  const std::string& host, asio::ip::port_type port) :
+  Client(io_context), host_(host), port_(port)
+{}
+
+void TcpClient::connect()
 {
-  asio::co_spawn(io_context_, [this, host, port]() -> asio::awaitable<void>
+  asio::co_spawn(*io_context_, [this]() -> asio::awaitable<void>
   {
-    asio::ip::tcp::resolver resolver(io_context_);
-    asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(host), port);
-    asio::ip::tcp::socket asio_socket(io_context_);
+    asio::ip::tcp::resolver resolver(*io_context_);
+    asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string(host_), port_);
+    asio::ip::tcp::socket asio_socket(*io_context_);
 
     asio::error_code ec;
     co_await asio::async_connect(asio_socket, resolver.resolve(endpoint), asio::redirect_error(asio::use_awaitable, ec));
@@ -106,16 +110,10 @@ TcpClient::TcpClient(const std::string& host, asio::ip::port_type port)
   }, asio::detached);
 }
 
-void TcpClient::start()
-{
-  io_context_.run();
-}
-
-void TcpClient::stop()
+void TcpClient::disconnect()
 {
   if (session_)
     session_->close();
-  io_context_.stop();
 }
 
 void TcpClient::update()
@@ -135,9 +133,9 @@ void TcpClient::update()
   }
 }
 
-bool TcpClient::running()
+bool TcpClient::connected()
 {
-  return !io_context_.stopped();
+  return session_ && session_->connected();
 }
 
 void TcpClient::send(DataPtr buffer)
