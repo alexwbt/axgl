@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <iterator>
+#include <deque>
 
 #include "event.h"
 
@@ -13,7 +13,7 @@ class Console : public axgl::Component
   bool scroll_to_bottom_ = false;
 
   std::string input_;
-  std::string history_;
+  std::deque<std::string> history_;
 
 public:
   void on_enter(axgl::ComponentContext& context)
@@ -40,6 +40,10 @@ public:
         event->type = EVENT_TYPE_DISCONNECT_SERVER;
         context.raise_event(std::move(event));
       }
+      else if (tokens[0] == "/clear")
+      {
+        history_.clear();
+      }
     }
     else
     {
@@ -55,7 +59,7 @@ public:
 
   void append_history(const std::string& value)
   {
-    history_ += input_ + '\n';
+    history_.push_back(input_);
     scroll_to_bottom_ = true;
   }
 
@@ -96,7 +100,8 @@ public:
         ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),
         false, ImGuiWindowFlags_HorizontalScrollbar);
       {
-        ImGui::TextUnformatted(history_.c_str());
+        for (const auto& history : history_)
+          ImGui::TextUnformatted(history.c_str());
 
         if (scroll_to_bottom_)
         {
