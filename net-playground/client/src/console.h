@@ -1,9 +1,8 @@
 #pragma once
 
+#include <vector>
 #include <string>
 #include <sstream>
-#include <vector>
-#include <deque>
 
 #include "event.h"
 
@@ -13,7 +12,9 @@ class Console : public axgl::Component
   bool scroll_to_bottom_ = false;
 
   std::string input_;
-  std::deque<std::string> history_;
+  std::string tmp_input_;
+  int history_cursor_ = 0;
+  std::vector<std::string> history_;
 
 public:
   void on_enter(axgl::ComponentContext& context)
@@ -54,7 +55,9 @@ public:
     }
 
     append_history(input_);
-    input_.clear();
+    input_ = "";
+    tmp_input_ = "";
+    history_cursor_ = 0;
   }
 
   void append_history(const std::string& value)
@@ -72,8 +75,26 @@ public:
       if (key == (show_ ? GLFW_KEY_ESCAPE : GLFW_KEY_T))
       {
         show_ = !show_;
-        break;
       }
+      else if (key == GLFW_KEY_UP)
+      {
+        // if (history_cursor_ == 0)
+        //   tmp_input_ = input_;
+        history_cursor_++;
+        input_ = history_[history_.size() - history_cursor_];
+        // SPDLOG_INFO("input: {}, history_cursor: {}, tmp_input: {}", input_, history_cursor_, tmp_input_);
+      }
+      // else if (key == GLFW_KEY_DOWN)
+      // {
+      //   history_cursor_--;
+      //   if (history_cursor_ <= 0)
+      //   {
+      //     input_ = tmp_input_;
+      //     history_cursor_ = 0;
+      //     tmp_input_ = "";
+      //   }
+      //   SPDLOG_INFO("input: {}, history_cursor: {}, tmp_input: {}", input_, history_cursor_, tmp_input_);
+      // }
     }
   }
 
@@ -114,9 +135,9 @@ public:
       // Input Text
       ImGui::SetKeyboardFocusHere();
       ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-
       ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+      // TODO: use history callback
       if (ImGui::InputText("##", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
         on_enter(context);
       ImGui::PopStyleColor(2);
