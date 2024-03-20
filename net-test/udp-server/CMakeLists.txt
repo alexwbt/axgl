@@ -9,4 +9,5 @@ target_sources(net_test_udp_server
 target_link_libraries(net_test_udp_server
   PRIVATE
   net
+  spdlog
 )

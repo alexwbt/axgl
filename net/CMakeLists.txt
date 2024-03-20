@@ -14,8 +14,3 @@ target_include_directories(net
   ./include
 )
 
-target_link_libraries(net
-  PUBLIC
-  spdlog
-  proto
-)

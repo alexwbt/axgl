@@ -16,6 +16,7 @@ target_sources(net_playground_common
 
 target_link_libraries(net_playground_common
   PUBLIC
-  axgl
   net
+  axgl
+  proto
 )
