@@ -9,7 +9,6 @@
 
 namespace console
 {
-
   class Command
   {
   public:
@@ -39,8 +38,17 @@ namespace console
       const std::vector<std::string>& tokens
     )
     {
-      if (commands_.contains(name))
+      if (!commands_.contains(name))
+        return;
+
+      try
+      {
         commands_.at(name)->run(context, tokens);
+      }
+      catch (const std::exception& exception)
+      {
+        event::console_log(context, "Error: " + std::string(exception.what()));
+      }
     }
   };
 

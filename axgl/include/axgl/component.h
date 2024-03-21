@@ -31,6 +31,8 @@ struct Event
   uint32_t type = 0;
   bool keep_alive = false;
   Attributes attributes;
+
+  Event(uint32_t type) : type(type) {}
 };
 
 class ComponentContext

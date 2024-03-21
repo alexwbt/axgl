@@ -5,45 +5,47 @@
 #include <proto/message.h>
 #include <common/proto.h>
 
-#include "event.h"
+#include "event.hpp"
 
 class NetClient : public net::flat::TcpClientAdapter, public axgl::Component
 {
 private:
   std::shared_ptr<std::thread> client_thread_;
+  
+  std::vector<std::string> messages_;
 
 public:
   NetClient(std::shared_ptr<asio::io_context> io_context) :
     net::flat::TcpClientAdapter(io_context)
   {
-    add_handler(proto::MessageIdentifier(), [](uint32_t, net::DataPtr buffer)
+    add_handler(proto::MessageIdentifier(), [this](uint32_t, net::DataPtr buffer)
     {
       auto verifier = flatbuffers::Verifier(buffer->data(), buffer->size());
       auto is_valid_message = proto::VerifySizePrefixedMessageBuffer(verifier);
       if (!is_valid_message)
       {
-        SPDLOG_WARN("Received invalid message");
+        messages_.push_back("Received invalid message");
         return;
       }
 
       auto message = proto::GetSizePrefixedMessage(buffer->data());
-      SPDLOG_INFO("Message Content: {}", message->content()->str());
+      messages_.push_back("Message Content: " + message->content()->str());
     });
   }
 
   void on_connect() override
   {
-    SPDLOG_INFO("Connected");
+    messages_.push_back("Connected");
   }
 
   void on_disconnect() override
   {
-    SPDLOG_INFO("Disconnected");
+    messages_.push_back("Disconnected");
   }
 
   void connection_failed(const asio::error_code& error_code) override
   {
-    SPDLOG_ERROR("Connection failed ({})", error_code.message());
+    messages_.push_back("Connection failed: " + error_code.message());
   }
 
   void send_message(const std::string& message)
@@ -76,13 +78,17 @@ public:
     const auto& disconnect_events = context.get_events(EVENT_TYPE_DISCONNECT_SERVER);
     if (!disconnect_events.empty())
       disconnect();
+
+    for (const auto& message : messages_)
+      event::console_log(context, message);
+    messages_.clear();
   }
 
   void connect(const std::string& host, const asio::ip::port_type& port) override
   {
     disconnect();
 
-    SPDLOG_INFO("Connecting to {}:{}", host, port);
+    messages_.push_back("Connecting to " + host + ":" + std::to_string(port));
     net::flat::TcpClientAdapter::connect(host, port);
 
     client_thread_ = std::make_shared<std::thread>([this]()

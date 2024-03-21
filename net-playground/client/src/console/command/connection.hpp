@@ -1,6 +1,6 @@
 #pragma once
 
-#include "event.h"
+#include "event.hpp"
 #include "console/command.hpp"
 
 namespace console
@@ -14,11 +14,10 @@ namespace console
       const std::vector<std::string>& tokens
     )
     {
-      auto event = std::make_shared<axgl::Event>();
-      event->type = EVENT_TYPE_CONNECT_SERVER;
-      event->attributes.set("host", tokens[1]);
-      event->attributes.set<uint32_t>("port", std::stoi(tokens[2]));
-      context.raise_event(std::move(event));
+      if (tokens.size() == 3)
+        event::network_connect(context, tokens[1], std::stoi(tokens[2]));
+      else
+        event::console_log(context, "invalid arguments");
     }
   };
 
@@ -30,9 +29,7 @@ namespace console
       const std::vector<std::string>& tokens
     )
     {
-      auto event = std::make_shared<axgl::Event>();
-      event->type = EVENT_TYPE_DISCONNECT_SERVER;
-      context.raise_event(std::move(event));
+      event::network_disconnect(context);
     }
   };
 

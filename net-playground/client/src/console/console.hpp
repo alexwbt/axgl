@@ -2,7 +2,7 @@
 
 #include <util/string.hpp>
 
-#include "event.h"
+#include "event.hpp"
 #include "console/command/connection.hpp"
 
 namespace console
@@ -18,6 +18,7 @@ namespace console
     std::string tmp_input_;
     int history_cursor_ = 0;
     std::vector<std::string> history_;
+    std::vector<std::string> input_history_;
 
     Commands commands_;
 
@@ -36,7 +37,7 @@ namespace console
 
     void append_history(const std::string& value)
     {
-      history_.push_back(input_);
+      history_.push_back(value);
       scroll_to_bottom_ = true;
     }
 
@@ -57,23 +58,21 @@ namespace console
         }
         else
         {
+          // call a command
           std::vector<std::string> tokens = util::split(input_, ' ');
           commands_.call(context, tokens[0], tokens);
         }
       }
       else
-      {
-        auto event = std::make_shared<axgl::Event>();
-        event->type = EVENT_TYPE_SEND_NETWORK_MESSAGE;
-        event->attributes.set("message", input_);
-        context.raise_event(std::move(event));
-      }
+        // sends network message
+        event::network_message(context, input_);
 
       if (!clear)
         append_history(input_);
       else
         history_.clear();
       reset_history_cursor();
+      input_history_.push_back(input_);
       input_.clear();
     }
 
@@ -101,9 +100,9 @@ namespace console
           this_->history_cursor_ = 0;
         else
         {
-          if (this_->history_cursor_ > this_->history_.size())
-            this_->history_cursor_ = this_->history_.size();
-          this_->input_ = this_->history_[this_->history_.size() - this_->history_cursor_];
+          if (this_->history_cursor_ > this_->input_history_.size())
+            this_->history_cursor_ = this_->input_history_.size();
+          this_->input_ = this_->input_history_[this_->input_history_.size() - this_->history_cursor_];
         }
 
         data->DeleteChars(0, data->BufTextLen);
@@ -139,6 +138,13 @@ namespace console
           input_ = "/";
           deselect_text_ = true;
         }
+      }
+
+      const auto& log_events = context.get_events(EVENT_TYPE_CONSOLE_LOG);
+      for (const auto& event : log_events)
+      {
+        const auto& message = event->attributes.get<std::string>("message");
+        append_history(message);
       }
     }
 
