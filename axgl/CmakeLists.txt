@@ -27,6 +27,7 @@ target_include_directories(axgl
   ../_external/stb
   PUBLIC
   ./include
+  ../util/include
   ../_external/imgui
   ../_external/imgui/backends
   ../_external/imgui/misc/cpp

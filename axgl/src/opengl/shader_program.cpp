@@ -1,8 +1,7 @@
 #include "axgl/opengl/shader_program.h"
 
 #include <spdlog/spdlog.h>
-
-#include "axgl/file.h"
+#include <util/file.hpp>
 
 NAMESPACE_OPENGL
 
@@ -34,7 +33,11 @@ ShaderProgram::ShaderProgram(const std::vector<Shader>& shaders)
 
   for (int i = 0; i < count; ++i)
   {
-    shader_ids[i] = create_shader(axgl::read_text_file(shaders[i].source).c_str(), shaders[i].type);
+    auto shader_code = util::read_text_file(shaders[i].source);
+    if (shader_code.empty())
+      SPDLOG_ERROR("Failed to read file: {}", shaders[i].source);
+
+    shader_ids[i] = create_shader(shader_code.c_str(), shaders[i].type);
     glAttachShader(program_id_, shader_ids[i]);
   }
 
