@@ -1,8 +1,8 @@
 #include <axgl/components/opengl.h>
 
-#include "client.h"
-#include "console.h"
-#include "playground.h"
+#include "client.hpp"
+#include "playground.hpp"
+#include "console/console.hpp"
 
 int main()
 {
@@ -11,7 +11,7 @@ int main()
   window->add_component(std::make_shared<Playground>());
 
   auto imgui = std::make_shared<axgl::OpenglImgui>(window);
-  imgui->add_component(std::make_shared<Console>());
+  imgui->add_component(std::make_shared<console::Console>());
   window->add_component(imgui);
 
   auto window_event_adapter = std::make_shared<axgl::WindowEventAdapter>(EVENT_TYPE_WINDOW_EVENT_BASE);
