@@ -55,9 +55,40 @@ public:
     }
 
     append_history(input_);
-    input_ = "";
-    tmp_input_ = "";
+    input_.clear();
+    tmp_input_.clear();
     history_cursor_ = 0;
+  }
+
+  static int input_text_callback(ImGuiInputTextCallbackData* data)
+  {
+    auto* this_ = static_cast<Console*>(data->UserData);
+    switch (data->EventFlag)
+    {
+    case ImGuiInputTextFlags_CallbackHistory:
+      if (this_->history_cursor_ == 0)
+        this_->tmp_input_ = this_->input_;
+
+      this_->history_cursor_ += data->EventKey == ImGuiKey_UpArrow ? 1 : -1;
+
+      if (this_->history_cursor_ == 0)
+        this_->input_ = this_->tmp_input_;
+      else if (this_->history_cursor_ < 0)
+        this_->history_cursor_ = 0;
+      else if (this_->history_cursor_ > 0)
+      {
+        if (this_->history_cursor_ > this_->history_.size())
+          this_->history_cursor_ = this_->history_.size();
+        this_->input_ = this_->history_[this_->history_.size() - this_->history_cursor_];
+      }
+
+      data->DeleteChars(0, data->BufTextLen);
+      data->InsertChars(0, this_->input_.c_str());
+      return 1;
+
+    default:
+      return 0;
+    }
   }
 
   void append_history(const std::string& value)
@@ -75,26 +106,8 @@ public:
       if (key == (show_ ? GLFW_KEY_ESCAPE : GLFW_KEY_T))
       {
         show_ = !show_;
+        break;
       }
-      else if (key == GLFW_KEY_UP)
-      {
-        // if (history_cursor_ == 0)
-        //   tmp_input_ = input_;
-        history_cursor_++;
-        input_ = history_[history_.size() - history_cursor_];
-        // SPDLOG_INFO("input: {}, history_cursor: {}, tmp_input: {}", input_, history_cursor_, tmp_input_);
-      }
-      // else if (key == GLFW_KEY_DOWN)
-      // {
-      //   history_cursor_--;
-      //   if (history_cursor_ <= 0)
-      //   {
-      //     input_ = tmp_input_;
-      //     history_cursor_ = 0;
-      //     tmp_input_ = "";
-      //   }
-      //   SPDLOG_INFO("input: {}, history_cursor: {}, tmp_input: {}", input_, history_cursor_, tmp_input_);
-      // }
     }
   }
 
@@ -137,8 +150,11 @@ public:
       ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
       ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-      // TODO: use history callback
-      if (ImGui::InputText("##", &input_, ImGuiInputTextFlags_EnterReturnsTrue))
+      if (ImGui::InputText("##", &input_,
+        ImGuiInputTextFlags_EnterReturnsTrue |
+        ImGuiInputTextFlags_CallbackCompletion |
+        ImGuiInputTextFlags_CallbackHistory,
+        &Console::input_text_callback, this))
         on_enter(context);
       ImGui::PopStyleColor(2);
     }
