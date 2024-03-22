@@ -2,7 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include <net/flat/tcp_adapter.h>
+#include <net/flat/tcp_adapter.hpp>
 
 #include <proto/message.h>
 #include <common/proto.h>

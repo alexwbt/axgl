@@ -2,9 +2,10 @@
 
 NAMESPACE_NET
 
-TcpServer::TcpServer(std::shared_ptr<asio::io_context> io_context, asio::ip::port_type port) :
-  Server(io_context),
-  port_(port),
+/* TcpServer */
+
+TcpServer::TcpServer(std::shared_ptr<asio::io_context> io_context, const asio::ip::port_type& port) :
+  Server(io_context, port),
   acceptor_(*io_context, { asio::ip::tcp::v4(), port })
 {}
 
@@ -19,50 +20,9 @@ void TcpServer::stop()
   acceptor_.close();
 }
 
-void TcpServer::update()
-{
-  for (auto it = sessions_.begin(); it != sessions_.end();) {
-    it->second->handle_input([this, &it](DataPtr buffer)
-    {
-      on_receive(it->first, std::move(buffer));
-    });
-
-    if (!it->second->connected())
-    {
-      on_disconnect(it->first);
-      it = sessions_.erase(it);
-      continue;
-    }
-    it++;
-  }
-}
-
 bool TcpServer::running()
 {
   return acceptor_.is_open();
-}
-
-void TcpServer::send(uint32_t session_id, DataPtr buffer)
-{
-  if (sessions_.contains(session_id))
-    sessions_.at(session_id)->send(std::move(buffer));
-}
-
-void TcpServer::send_to_all(DataPtr buffer)
-{
-  for (auto& session : sessions_)
-    session.second->send(buffer);
-}
-
-void TcpServer::close_session(uint32_t session_id)
-{
-  if (sessions_.contains(session_id))
-    sessions_.at(session_id)->close();
-}
-
-uint32_t TcpServer::use_next_session_id()
-{
-  return next_session_id_++;
 }
 
 asio::awaitable<void> TcpServer::accept_connections()
@@ -80,9 +40,7 @@ asio::awaitable<void> TcpServer::accept_connections()
   }
 }
 
-TcpClient::TcpClient(std::shared_ptr<asio::io_context> io_context) :
-  Client(io_context)
-{}
+/* TcpClient */
 
 void TcpClient::connect(const std::string& host, const asio::ip::port_type& port)
 {
@@ -109,40 +67,6 @@ void TcpClient::connect(const std::string& host, const asio::ip::port_type& port
     session_ = Session::create(0, std::move(socket));
     on_connect();
   }, asio::detached);
-}
-
-void TcpClient::disconnect()
-{
-  if (session_)
-    session_->close();
-}
-
-void TcpClient::update()
-{
-  if (!session_)
-    return;
-
-  session_->handle_input([this](DataPtr buffer)
-  {
-    on_receive(std::move(buffer));
-  });
-
-  if (!session_->connected())
-  {
-    on_disconnect();
-    session_ = nullptr;
-  }
-}
-
-bool TcpClient::connected()
-{
-  return session_ && session_->connected();
-}
-
-void TcpClient::send(DataPtr buffer)
-{
-  if (session_)
-    session_->send(std::move(buffer));
 }
 
 NAMESPACE_NET_END

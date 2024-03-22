@@ -1,6 +1,7 @@
 #pragma once
 
 #include <condition_variable>
+#include <unordered_map>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -68,37 +69,52 @@ protected:
 
 class Server : protected IoContextComponent
 {
+private:
+  uint32_t next_session_id_ = 1;
+
+protected:
+  const asio::ip::port_type port_;
+  std::unordered_map<uint32_t, std::shared_ptr<Session>> sessions_;
+
 public:
-  using IoContextComponent::IoContextComponent;
+  Server(std::shared_ptr<asio::io_context> io_context, const asio::ip::port_type& port);
+
+  virtual void update();
+  virtual void send(uint32_t session_id, DataPtr buffer);
+  virtual void send_to_all(DataPtr buffer);
+  virtual void close_session(uint32_t session_id);
+
+  virtual void on_disconnect(uint32_t session_id) {};
+  virtual void on_receive(uint32_t session_id, DataPtr buffer) {};
+  virtual void on_connect(uint32_t session_id, std::shared_ptr<Session> session) {};
 
   virtual void start() = 0;
   virtual void stop() = 0;
-  virtual void update() = 0;
   virtual bool running() = 0;
 
-  virtual void send(uint32_t session_id, DataPtr buffer) = 0;
-  virtual void send_to_all(DataPtr buffer) = 0;
-  virtual void close_session(uint32_t session_id) = 0;
-
-  virtual void on_disconnect(uint32_t session_id) = 0;
-  virtual void on_receive(uint32_t session_id, DataPtr buffer) = 0;
-  virtual void on_connect(uint32_t session_id, std::shared_ptr<Session> session) = 0;
+protected:
+  uint32_t use_next_session_id() { return next_session_id_++; }
 };
 
 class Client : protected IoContextComponent
 {
+protected:
+  std::shared_ptr<Session> session_;
+
 public:
   using IoContextComponent::IoContextComponent;
 
-  virtual void connect(const std::string& host, const asio::ip::port_type& port) = 0;
-  virtual void disconnect() = 0;
-  virtual void update() = 0;
-  virtual bool connected() = 0;
-  virtual void send(DataPtr buffer) = 0;
+  virtual void disconnect();
+  virtual void update();
+  virtual bool connected();
+  virtual void send(DataPtr buffer);
 
-  virtual void on_connect() = 0;
-  virtual void on_disconnect() = 0;
-  virtual void on_receive(DataPtr buffer) = 0;
+  virtual void on_connect() {}
+  virtual void on_disconnect() {}
+  virtual void on_receive(DataPtr buffer) {}
+  virtual void connection_failed(const asio::error_code& error_code) {}
+
+  virtual void connect(const std::string& host, const asio::ip::port_type& port) = 0;
 };
 
 NAMESPACE_NET_END

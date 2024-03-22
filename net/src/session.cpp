@@ -2,6 +2,8 @@
 
 NAMESPACE_NET
 
+/* Session */
+
 std::shared_ptr<Session> Session::create(uint32_t id, std::shared_ptr<Socket> socket)
 {
   std::shared_ptr<Session> session(new Session(id, std::move(socket)));
@@ -95,6 +97,84 @@ asio::awaitable<void> Session::read_buffers()
   {
     close();
   }
+}
+
+/* Server */
+
+Server::Server(std::shared_ptr<asio::io_context> io_context, const asio::ip::port_type& port) :
+  IoContextComponent(std::move(io_context)), port_(port)
+{}
+
+void Server::update()
+{
+  for (auto it = sessions_.begin(); it != sessions_.end();) {
+    it->second->handle_input([this, &it](DataPtr buffer)
+    {
+      on_receive(it->first, std::move(buffer));
+    });
+
+    if (!it->second->connected())
+    {
+      on_disconnect(it->first);
+      it = sessions_.erase(it);
+      continue;
+    }
+    it++;
+  }
+}
+
+void Server::send(uint32_t session_id, DataPtr buffer)
+{
+  if (sessions_.contains(session_id))
+    sessions_.at(session_id)->send(std::move(buffer));
+}
+
+void Server::send_to_all(DataPtr buffer)
+{
+  for (auto& session : sessions_)
+    session.second->send(buffer);
+}
+
+void Server::close_session(uint32_t session_id)
+{
+  if (sessions_.contains(session_id))
+    sessions_.at(session_id)->close();
+}
+
+/* Client */
+
+void Client::disconnect()
+{
+  if (session_)
+    session_->close();
+}
+
+void Client::update()
+{
+  if (!session_)
+    return;
+
+  session_->handle_input([this](DataPtr buffer)
+  {
+    on_receive(std::move(buffer));
+  });
+
+  if (!session_->connected())
+  {
+    on_disconnect();
+    session_ = nullptr;
+  }
+}
+
+bool Client::connected()
+{
+  return session_ && session_->connected();
+}
+
+void Client::send(DataPtr buffer)
+{
+  if (session_)
+    session_->send(std::move(buffer));
 }
 
 NAMESPACE_NET_END

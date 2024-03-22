@@ -89,6 +89,8 @@ namespace console
       switch (data->EventFlag)
       {
       case ImGuiInputTextFlags_CallbackHistory:
+        if (this_->input_history_.size() == 0)
+          return 0;
         if (this_->history_cursor_ == 0)
           this_->tmp_input_ = this_->input_;
 

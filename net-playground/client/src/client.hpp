@@ -1,6 +1,6 @@
 #pragma once
 
-#include <net/flat/tcp_adapter.h>
+#include <net/flat/tcp_adapter.hpp>
 #include <axgl/component.h>
 #include <proto/message.h>
 #include <common/proto.h>
