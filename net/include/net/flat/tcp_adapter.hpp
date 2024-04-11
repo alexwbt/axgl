@@ -1,6 +1,6 @@
 #pragma once
 
-#include "net/tcp_session.h"
+#include "net/tcp.h"
 
 #include <flatbuffers/flatbuffers.h>
 
