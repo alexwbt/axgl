@@ -7,7 +7,6 @@
 #include <queue>
 
 #include "net/asio.h"
-#include "net/namespace.h"
 
 NAMESPACE_NET
 
@@ -54,17 +53,6 @@ public:
   void handle_input(std::function<void(DataPtr)> handler);
 
   bool connected();
-};
-
-class IoContextComponent
-{
-protected:
-  std::shared_ptr<asio::io_context> io_context_;
-
-  IoContextComponent(std::shared_ptr<asio::io_context> io_context) :
-    io_context_(std::move(io_context)) {}
-
-  virtual ~IoContextComponent() {}
 };
 
 class Server : protected IoContextComponent
