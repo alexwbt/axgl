@@ -3,34 +3,14 @@ add_library(axgl)
 
 file(GLOB_RECURSE source_cpp_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/*.cpp")
 
-file(GLOB_RECURSE imgui_files "../_external/imgui/*.cpp")
-list(FILTER imgui_files EXCLUDE REGEX "backends|examples|misc")
-
-file(GLOB_RECURSE imgui_backend_files
-  "../_external/imgui/backends/imgui_impl_glfw.cpp"
-  "../_external/imgui/backends/imgui_impl_opengl3.cpp")
-
-  file(GLOB_RECURSE imgui_misc_files
-    "../_external/imgui/misc/cpp/*.cpp")
-
 target_sources(axgl
   PRIVATE
   ${source_cpp_files}
-
-  ${imgui_files}
-  ${imgui_backend_files}
-  ${imgui_misc_files}
 )
 
 target_include_directories(axgl
-  PRIVATE
-  ../_external/stb
   PUBLIC
   ./include
-  ../util/include
-  ../_external/imgui
-  ../_external/imgui/backends
-  ../_external/imgui/misc/cpp
 )
 
 target_link_libraries(axgl
@@ -41,6 +21,3 @@ target_link_libraries(axgl
   assimp
   spdlog
 )
-
-include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
-add_resource_dir(${CMAKE_CURRENT_SOURCE_DIR}/res)

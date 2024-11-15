@@ -18,12 +18,4 @@ add_subdirectory(_external/assimp)
 add_subdirectory(_external/spdlog)
 add_subdirectory(_external/flatbuffer)
 
-add_subdirectory(glad)
 add_subdirectory(axgl)
-add_subdirectory(proto)
-add_subdirectory(util)
-add_subdirectory(net)
-
-add_subdirectory(playground)
-add_subdirectory(net-playground)
-add_subdirectory(net-test)

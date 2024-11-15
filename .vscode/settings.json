@@ -1,24 +1,12 @@
 {
+  "files.autoSave": "off",
   "editor.tabSize": 2,
-  "cSpell.words": [
-    "ASSIMP",
-    "axgl",
-    "bitangent",
-    "cubemap",
-    "flatbuffers",
-    "gameloop",
-    "glfw",
-    "MESG",
-    "opengl",
-    "Parameteri",
-    "Perlin",
-    "Phong",
-    "skybox",
-    "spdlog",
-    "stbi"
-  ],
-  "cmake.buildDirectory": "${workspaceFolder}/_build",
-  "C_Cpp.formatting": "vcFormat",
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
+  },
   "files.associations": {
     "xiosbase": "cpp",
     "list": "cpp",
@@ -133,5 +121,35 @@
     "resumable": "cpp",
     "__std_stream": "cpp"
   },
-  "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false
+  "search.exclude": {
+    "_*/**": true,
+  },
+  "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false,
+  "C_Cpp.files.exclude": {
+    "_*/**": true,
+  },
+  "cSpell.words": [
+    "ASSIMP",
+    "axgl",
+    "bitangent",
+    "cubemap",
+    "flatbuffers",
+    "gameloop",
+    "glfw",
+    "MESG",
+    "opengl",
+    "Parameteri",
+    "Perlin",
+    "Phong",
+    "skybox",
+    "spdlog",
+    "stbi"
+  ],
+  "C_Cpp.formatting": "vcFormat",
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "newLine",
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "newLine",
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "newLine",
+  "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "newLine",
+  "cmake.buildDirectory": "${workspaceFolder}/_build"
 }
