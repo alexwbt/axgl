@@ -1,23 +1,7 @@
 
-add_library(axgl)
-
-file(GLOB_RECURSE source_cpp_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/*.cpp")
-
-target_sources(axgl
-  PRIVATE
-  ${source_cpp_files}
-)
+add_library(axgl INTERFACE)
 
 target_include_directories(axgl
-  PUBLIC
+  INTERFACE
   ./include
-)
-
-target_link_libraries(axgl
-  PUBLIC
-  glm
-  glfw
-  glad
-  assimp
-  spdlog
 )

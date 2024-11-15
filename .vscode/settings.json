@@ -121,13 +121,7 @@
     "resumable": "cpp",
     "__std_stream": "cpp"
   },
-  "search.exclude": {
-    "_*/**": true,
-  },
   "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false,
-  "C_Cpp.files.exclude": {
-    "_*/**": true,
-  },
   "cSpell.words": [
     "ASSIMP",
     "axgl",
@@ -151,5 +145,6 @@
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "newLine",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "newLine",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "newLine",
-  "cmake.buildDirectory": "${workspaceFolder}/_build"
+  "cmake.buildDirectory": "${workspaceFolder}/_build",
+  "C_Cpp.default.cppStandard": "c++20"
 }
