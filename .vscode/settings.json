@@ -119,7 +119,9 @@
     "string_view": "cpp",
     "shared_mutex": "cpp",
     "resumable": "cpp",
-    "__std_stream": "cpp"
+    "__std_stream": "cpp",
+    "execution": "cpp",
+    "memory_resource": "cpp"
   },
   "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false,
   "cSpell.words": [
@@ -135,6 +137,7 @@
     "Parameteri",
     "Perlin",
     "Phong",
+    "Renderable",
     "skybox",
     "spdlog",
     "stbi"
