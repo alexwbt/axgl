@@ -10,12 +10,12 @@ NAMESPACE_AXGL
 class Axgl final
 {
 private:
-  ServiceManager service_manager_;
+  ServiceManager services_;
 
 public:
   void run()
   {
-    service_manager_.initialize();
+    services_.initialize();
 
     constexpr int64_t kOneSecond = 1000000000;
     constexpr double kTimeStep = kOneSecond / 60.0;
@@ -23,7 +23,7 @@ public:
     auto start_time = std::chrono::high_resolution_clock::now();
     double delta_time = 0.0;
 
-    while (service_manager_.running())
+    while (services_.running())
     {
       auto now = std::chrono::high_resolution_clock::now();
       delta_time += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
@@ -33,20 +33,15 @@ public:
 
       while (delta_time >= 1)
       {
-        service_manager_.update();
+        services_.update();
         delta_time--;
       }
 
       if (should_update)
-        service_manager_.render();
+        services_.render();
     }
 
-    service_manager_.terminate();
-  }
-
-  auto create_window()
-  {
-
+    services_.terminate();
   }
 };
 
