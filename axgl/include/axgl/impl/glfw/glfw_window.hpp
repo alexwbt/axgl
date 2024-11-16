@@ -88,7 +88,11 @@ namespace glfw
           it = windows_.erase(it);
         }
         else
+        {
+          window->use();
+          window->swap_buffers();
           ++it;
+        }
       }
     }
 

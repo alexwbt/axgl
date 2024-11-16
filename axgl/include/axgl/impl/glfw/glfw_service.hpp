@@ -33,16 +33,6 @@ public:
   void show() override {}
 
   void close() override {}
-
-  std::shared_ptr<interface::Renderer> get_renderer() override
-  {
-    return nullptr;
-  }
-
-  std::shared_ptr<interface::Input> get_input() override
-  {
-    return nullptr;
-  }
 };
 
 class GlfwService : public interface::WindowService

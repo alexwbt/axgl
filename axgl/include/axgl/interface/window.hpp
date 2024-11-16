@@ -22,9 +22,6 @@ public:
   virtual void hide() = 0;
   virtual void show() = 0;
   virtual void close() = 0;
-
-  virtual std::shared_ptr<Renderer> get_renderer() = 0;
-  virtual std::shared_ptr<Input> get_input() = 0;
 };
 
 class WindowService : public Service

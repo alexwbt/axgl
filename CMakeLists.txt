@@ -20,4 +20,4 @@ add_subdirectory(_external/spdlog)
 add_subdirectory(_external/args)
 
 add_subdirectory(axgl)
-add_subdirectory(demo)
+add_subdirectory(opengl_demo)

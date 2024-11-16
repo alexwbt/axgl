@@ -1,15 +1,12 @@
 
 add_executable(demo_create_window)
 
-file(GLOB_RECURSE source_cpp_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "src/*.cpp")
-
 target_sources(demo_create_window
   PRIVATE
-  ${source_cpp_files}
+  "./main.cpp"
 )
 
 target_link_libraries(demo_create_window
   PRIVATE
   axgl
-  spdlog
 )
