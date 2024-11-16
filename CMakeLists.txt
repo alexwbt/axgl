@@ -13,9 +13,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 # add_subdirectory(_external/glm)
-# add_subdirectory(_external/glfw)
 # add_subdirectory(_external/assimp)
 # add_subdirectory(_external/flatbuffer)
+add_subdirectory(_external/glfw)
 add_subdirectory(_external/spdlog)
 add_subdirectory(_external/args)
 

@@ -3,7 +3,7 @@
 #include <vector>
 #include <stdint.h>
 
-#include "axgl/include.hpp"
+#include "axgl/namespace.hpp"
 
 NAMESPACE_AXGL_INTERFACE
 

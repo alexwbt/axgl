@@ -6,13 +6,13 @@
 #include <stdexcept>
 #include <unordered_map>
 
-#include "axgl/include.hpp"
+#include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/util/string.hpp"
 
 NAMESPACE_AXGL
 
-class ServiceManager final
+class ServiceManager
 {
 private:
   using ServicePtr = std::shared_ptr<interface::Service>;
@@ -21,6 +21,8 @@ private:
   std::unordered_map<std::string, ServicePtr> services_;
 
 public:
+  virtual ~ServiceManager() {}
+
   void register_service(const std::string& id, ServicePtr service)
   {
     if (services_.contains(id))
@@ -43,6 +45,12 @@ public:
       throw std::runtime_error(std::format("Service with id '{}' is required, but does not exist.", id));
 
     return services_[id];
+  }
+
+  template<typename ServiceType>
+  std::shared_ptr<ServiceType> get_service(const std::string& id)
+  {
+    return std::dynamic_pointer_cast<ServiceType>(get_service(id));
   }
 
   void initialize()
@@ -85,8 +93,8 @@ public:
     if (args.empty())
       return;
 
-    if (auto cs = dynamic_cast<interface::CommandService*>(get_service(args[0]).get()))
-      cs->exec(args);
+    if (auto service = get_service<interface::CommandService>(args[0]))
+      service->exec(args);
   }
 };
 

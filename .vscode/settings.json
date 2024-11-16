@@ -130,6 +130,7 @@
     "bitangent",
     "cubemap",
     "flatbuffers",
+    "Framebuffer",
     "gameloop",
     "glfw",
     "MESG",
@@ -148,6 +149,8 @@
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "newLine",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "newLine",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "newLine",
+  "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
+  "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
   "cmake.buildDirectory": "${workspaceFolder}/_build",
   "C_Cpp.default.cppStandard": "c++20"
 }

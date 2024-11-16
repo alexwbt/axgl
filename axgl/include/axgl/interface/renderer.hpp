@@ -1,6 +1,6 @@
 #pragma once
 
-#include "axgl/include.hpp"
+#include "axgl/namespace.hpp"
 
 NAMESPACE_AXGL_INTERFACE
 
