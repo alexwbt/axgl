@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "axgl/axgl.hpp"
 #include "axgl/namespace.hpp"
 #include "axgl/interface/realm/realm.hpp"
@@ -7,15 +9,11 @@
 
 NAMESPACE_AXGL_IMPL
 
-class DefaultMesh2D : public interface::Mesh2D
-{
-public:
-  void set_data(const std::vector<interface::Vertex2D>& data) {}
-  void set_indices(const std::vector<uint32_t>& indices) {}
-};
-
 class DefaultEntity : public interface::Entity
 {
+private:
+  std::vector<std::shared_ptr<interface::Component>> components_;
+
 public:
   void render() const override
   {
@@ -30,15 +28,21 @@ public:
 
 class DefaultRealm : public interface::Realm
 {
+private:
+  std::vector<std::shared_ptr<DefaultEntity>> entities_;
+
 public:
   void render() const override
   {
-
+    for (const auto& entity : entities_)
+      entity->render();
   }
 
   std::shared_ptr<interface::Entity> create_entity() override
   {
-    return std::make_shared<DefaultEntity>();
+    auto entity = std::make_shared<DefaultEntity>();
+    entities_.push_back(entity);
+    return entity;
   }
 };
 

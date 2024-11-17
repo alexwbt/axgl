@@ -24,13 +24,7 @@ int main()
     // realm
     auto realm = axgl.realm_service()->create_realm();
 
-    //
-    auto entity = realm->create_entity();
-
-    // triangle mesh
-    auto mesh = axgl.renderer_service()->create_mesh2d();
-
-    // generate vertices
+    // triangle vertices
     std::vector<axgl::interface::Vertex2D> vertices(3);
     double d = (2 * std::numbers::pi) / vertices.size();
     for (int i = 0; i < vertices.size(); i++)
@@ -39,7 +33,14 @@ int main()
       vertices[i].x = sin(r);
       vertices[i].y = cos(r);
     }
+
+    // triangle mesh
+    auto mesh = axgl.renderer_service()->create_mesh2d();
     mesh->set_data(vertices);
+
+    // triangle entity
+    auto entity = realm->create_entity();
+    entity->add_component(mesh);
 
     // start
     axgl.run();
