@@ -6,10 +6,10 @@ int main()
 {
   axgl::Axgl axgl;
 
-  // register glfw service
-  auto glfw = axgl.use_service<axgl::impl::GlfwService>();
+  // register window service
+  auto window_service = axgl.use_service<axgl::impl::GlfwWindowService>();
   // create window
-  auto window = glfw->create_window();
+  auto window = window_service->create_window();
   window->set_title("AXGL Window!");
 
   axgl.run();

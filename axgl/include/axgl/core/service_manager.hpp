@@ -15,15 +15,12 @@ NAMESPACE_AXGL
 class ServiceManager
 {
 private:
-  using ServicePtr = std::shared_ptr<interface::Service>;
-
-private:
-  std::unordered_map<std::string, ServicePtr> services_;
+  std::unordered_map<std::string, std::shared_ptr<interface::Service>> services_;
 
 public:
   virtual ~ServiceManager() {}
 
-  void register_service(const std::string& id, ServicePtr service)
+  void register_service(const std::string& id, std::shared_ptr<interface::Service> service)
   {
     if (services_.contains(id))
       throw std::runtime_error(std::format("Service with id '{}' already exists.", id));
@@ -39,18 +36,17 @@ public:
     services_.erase(id);
   }
 
-  ServicePtr get_service(const std::string& id)
+  template<typename ServiceType>
+  std::shared_ptr<ServiceType> get_service(const std::string& id) const
   {
     if (!services_.contains(id))
       throw std::runtime_error(std::format("Service with id '{}' is required, but does not exist.", id));
 
-    return services_[id];
-  }
+    auto service = std::dynamic_pointer_cast<ServiceType>(services_.at(id));
+    if (!service)
+      throw std::runtime_error(std::format("Service type '{}' is not supported.", typeid(ServiceType).name()));
 
-  template<typename ServiceType>
-  std::shared_ptr<ServiceType> get_service(const std::string& id)
-  {
-    return std::dynamic_pointer_cast<ServiceType>(get_service(id));
+    return service;
   }
 
   void initialize()

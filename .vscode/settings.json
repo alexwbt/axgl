@@ -121,7 +121,8 @@
     "resumable": "cpp",
     "__std_stream": "cpp",
     "execution": "cpp",
-    "memory_resource": "cpp"
+    "memory_resource": "cpp",
+    "numbers": "cpp"
   },
   "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false,
   "cSpell.words": [

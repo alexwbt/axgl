@@ -35,7 +35,7 @@ public:
   void close() override {}
 };
 
-class GlfwService : public interface::WindowService
+class GlfwWindowService : public interface::WindowService
 {
 public:
   void initialize() override {}
@@ -68,11 +68,11 @@ NAMESPACE_AXGL_IMPL_END
 NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<impl::GlfwService> Axgl::use_service<impl::GlfwService>()
+std::shared_ptr<impl::GlfwWindowService> Axgl::use_service()
 {
   glfw::Window::initialize();
 
-  auto glfw_service = std::make_shared<impl::GlfwService>();
+  auto glfw_service = std::make_shared<impl::GlfwWindowService>();
   register_service("window", glfw_service);
 
   return glfw_service;

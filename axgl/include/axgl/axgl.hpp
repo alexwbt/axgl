@@ -4,7 +4,8 @@
 
 #include "axgl/namespace.hpp"
 #include "axgl/interface/window.hpp"
-#include "axgl/interface/service.hpp"
+#include "axgl/interface/renderer.hpp"
+#include "axgl/interface/realm/realm.hpp"
 #include "axgl/core/service_manager.hpp"
 
 NAMESPACE_AXGL
@@ -49,6 +50,21 @@ public:
     throw std::runtime_error(
       std::format("Service type '{}' is not supported.",
         typeid(ServiceType).name()));
+  }
+
+  std::shared_ptr<interface::WindowService> window_service() const
+  {
+    return ServiceManager::get_service<interface::WindowService>("window");
+  }
+
+  std::shared_ptr<interface::RendererService> renderer_service() const
+  {
+    return ServiceManager::get_service<interface::RendererService>("renderer");
+  }
+
+  std::shared_ptr<interface::RealmService> realm_service() const
+  {
+    return ServiceManager::get_service<interface::RealmService>("realm");
   }
 };
 
