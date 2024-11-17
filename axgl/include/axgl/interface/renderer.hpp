@@ -6,17 +6,11 @@
 
 NAMESPACE_AXGL_INTERFACE
 
-class Renderable
-{
-public:
-  virtual void render() const = 0;
-};
-
 class Renderer
 {
 public:
   virtual ~Renderer() {}
-  virtual void render(const Renderable& renderable) const = 0;
+  virtual void render(const Component& component) const = 0;
 };
 
 class RendererService : public Service

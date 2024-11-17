@@ -3,18 +3,19 @@
 #include "axgl/axgl.hpp"
 #include "axgl/namespace.hpp"
 #include "axgl/interface/renderer.hpp"
+#include "axgl/interface/component/component.hpp"
 
 NAMESPACE_AXGL_IMPL
 
 class OpenglRenderer : public interface::Renderer
 {
 public:
-  void render(const interface::Renderable& renderable) const override
+  void render(const interface::Component& component) const override
   {
     // glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    renderable.render();
+    component.render();
   }
 };
 

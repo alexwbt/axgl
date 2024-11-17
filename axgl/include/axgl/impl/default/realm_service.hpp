@@ -4,8 +4,7 @@
 
 #include "axgl/axgl.hpp"
 #include "axgl/namespace.hpp"
-#include "axgl/interface/realm/realm.hpp"
-#include "axgl/interface/component/component.hpp"
+#include "axgl/interface/component/realm.hpp"
 
 NAMESPACE_AXGL_IMPL
 
@@ -15,6 +14,8 @@ private:
   std::vector<std::shared_ptr<interface::Component>> components_;
 
 public:
+  void update() override {}
+
   void render() const override
   {
 
@@ -32,6 +33,12 @@ private:
   std::vector<std::shared_ptr<DefaultEntity>> entities_;
 
 public:
+  void update() override
+  {
+    for (const auto& entity : entities_)
+      entity->update();
+  }
+
   void render() const override
   {
     for (const auto& entity : entities_)

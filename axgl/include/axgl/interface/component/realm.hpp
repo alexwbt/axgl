@@ -1,12 +1,12 @@
 #pragma once
 
 #include "axgl/namespace.hpp"
-#include "axgl/interface/renderer.hpp"
-#include "axgl/interface/realm/entity.hpp"
+#include "axgl/interface/service.hpp"
+#include "axgl/interface/component/entity.hpp"
 
 NAMESPACE_AXGL_INTERFACE
 
-class Realm : public Renderable
+class Realm : public Component
 {
 public:
   virtual ~Realm() {}

@@ -1,12 +1,13 @@
 #pragma once
 
+#include <memory>
+
 #include "axgl/namespace.hpp"
-#include "axgl/interface/renderer.hpp"
 #include "axgl/interface/component/component.hpp"
 
 NAMESPACE_AXGL_INTERFACE
 
-class Entity : public Renderable
+class Entity : public Component
 {
 public:
   virtual ~Entity() {}
