@@ -35,7 +35,7 @@ namespace opengl
     struct Shader final
     {
       GLenum type;
-      std::string source;
+      std::string source_code;
     };
 
   private:
@@ -46,19 +46,17 @@ namespace opengl
     {
       program_id_ = glCreateProgram();
 
-      const auto count = shaders.size();
-      auto shader_ids = new GLuint[count];
-
-      for (int i = 0; i < count; ++i)
+      std::vector<GLuint> shader_ids;
+      shader_ids.reserve(shaders.size());
+      // attach shaders
+      for (const auto& shader : shaders)
       {
-        //auto shader_code = util::read_text_file(shaders[i].source);
-        //if (shader_code.empty())
-        //  SPDLOG_ERROR("Failed to read file: {}", shaders[i].source);
-
-        shader_ids[i] = create_shader(shaders[i].source.c_str(), shaders[i].type);
-        glAttachShader(program_id_, shader_ids[i]);
+        auto shader_id = create_shader(shader.source_code.c_str(), shader.type);
+        glAttachShader(program_id_, shader_id);
+        shader_ids.push_back(shader_id);
       }
 
+      // link program
       glLinkProgram(program_id_);
 
       int success;
@@ -70,10 +68,9 @@ namespace opengl
         SPDLOG_CRITICAL("Failed to link shader program: {}", log);
       }
 
-      for (int i = 0; i < count; ++i)
-        glDeleteShader(shader_ids[i]);
-
-      delete[] shader_ids;
+      // delete shaders after linking program
+      for (auto shader_id : shader_ids)
+        glDeleteShader(shader_id);
     }
 
     virtual ~ShaderProgram()

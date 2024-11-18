@@ -14,8 +14,8 @@ NAMESPACE_AXGL_IMPL
 class OpenglRenderer : public interface::Renderer
 {
 private:
-  int clear_bit_ = GL_COLOR_BUFFER_BIT;
-  GLfloat clear_color_r_ = 1.0f;
+  int clear_bit_ = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+  GLfloat clear_color_r_ = 0.0f;
   GLfloat clear_color_g_ = 0.0f;
   GLfloat clear_color_b_ = 0.0f;
   GLfloat clear_color_a_ = 0.0f;
@@ -44,6 +44,7 @@ public:
     window_->use();
 
     // set glfw context
+    glfwWindowHint(GLFW_SAMPLES, 8);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -51,6 +52,15 @@ public:
     // initialize glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glFrontFace(GL_CW);
+
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
 };
 

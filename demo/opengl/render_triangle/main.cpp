@@ -31,10 +31,10 @@ int main()
 
     // triangle vertices
     std::vector<axgl::interface::Vertex2D> vertices(3);
-    double d = (2 * std::numbers::pi) / vertices.size();
+    float d = (2 * std::numbers::pi) / vertices.size();
     for (int i = 0; i < vertices.size(); i++)
     {
-      double r = i * d;
+      float r = i * d;
       vertices[i].x = sin(r);
       vertices[i].y = cos(r);
     }

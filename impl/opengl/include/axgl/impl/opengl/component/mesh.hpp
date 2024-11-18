@@ -8,14 +8,14 @@
 
 namespace opengl
 {
-  constexpr std::string_view MESH2D_VERTEX_SHADER_SOURCE =
+  constexpr const char* MESH2D_VERTEX_SHADER_SOURCE =
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
-  constexpr std::string_view MESH2D_FRAGMENT_SHADER_SOURCE =
+  constexpr const char* MESH2D_FRAGMENT_SHADER_SOURCE =
     "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
@@ -33,9 +33,13 @@ private:
   GLuint vbo_id_ = 0;
   GLuint ebo_id_ = 0;
 
-  opengl::ShaderProgram shader_({
-    {GL_VERTEX_SHADER, MESH2D_VERTEX_SHADER_SOURCE},
-    {GL_FRAGMENT_SHADER, MESH2D_FRAGMENT_SHADER_SOURCE} })
+  size_t vertices_size_;
+  size_t indices_size_;
+
+  opengl::ShaderProgram shader_{ {
+    { GL_VERTEX_SHADER, opengl::MESH2D_VERTEX_SHADER_SOURCE },
+    { GL_FRAGMENT_SHADER, opengl::MESH2D_FRAGMENT_SHADER_SOURCE }
+  } };
 
 public:
   OpenglMesh2D()
@@ -45,15 +49,26 @@ public:
 
   void update() override {}
 
-  void render() const override {}
+  void render() const override
+  {
+    shader_.use_program();
+
+    glBindVertexArray(vao_id_);
+    glDrawArrays(GL_TRIANGLES, 0, vertices_size_);
+  }
 
   void set_data(const std::vector<interface::Vertex2D>& data) override
   {
+    vertices_size_ = data.size();
+
     glBindVertexArray(vao_id_);
 
     glGenBuffers(1, &vbo_id_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
-    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(interface::Vertex2D), data.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(interface::Vertex2D), data.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_TRUE, sizeof(interface::Vertex2D), 0);
 
     glBindVertexArray(0);
   }

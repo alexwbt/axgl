@@ -9,8 +9,8 @@ NAMESPACE_AXGL_INTERFACE
 
 struct Vertex2D
 {
-  double x;
-  double y;
+  float x;
+  float y;
 };
 
 class Mesh2D : public Component
@@ -22,9 +22,9 @@ public:
 
 struct Vertex3D
 {
-  double x;
-  double y;
-  double z;
+  float x;
+  float y;
+  float z;
 };
 
 class Mesh3D : public Component

@@ -142,7 +142,9 @@
     "Renderable",
     "skybox",
     "spdlog",
-    "stbi"
+    "stbi",
+    "Shaderiv",
+    "Programiv"
   ],
   "C_Cpp.formatting": "vcFormat",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
