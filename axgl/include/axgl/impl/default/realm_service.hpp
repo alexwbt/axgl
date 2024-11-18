@@ -14,16 +14,21 @@ private:
   std::vector<std::shared_ptr<interface::Component>> components_;
 
 public:
-  void update() override {}
+  void update() override
+  {
+    for (const auto& comp : components_)
+      comp->update();
+  }
 
   void render() const override
   {
-
+    for (const auto& comp : components_)
+      comp->render();
   }
 
   void add_component(std::shared_ptr<interface::Component> component) override
   {
-
+    components_.push_back(std::move(component));
   }
 };
 
