@@ -21,8 +21,13 @@ int main()
     auto window = axgl.window_service()->create_window();
     window->set_title("Hello triangle!");
 
+    // renderer
+    auto renderer = axgl.renderer_service()->create_renderer();
+    renderer->set_window(window);
+
     // realm
     auto realm = axgl.realm_service()->create_realm();
+    realm->set_renderer(renderer);
 
     // triangle vertices
     std::vector<axgl::interface::Vertex2D> vertices(3);

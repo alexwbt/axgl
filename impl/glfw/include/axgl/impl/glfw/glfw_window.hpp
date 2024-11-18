@@ -5,6 +5,8 @@
 #include <string>
 
 #include <spdlog/spdlog.h>
+
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 namespace glfw
@@ -88,11 +90,7 @@ namespace glfw
           it = windows_.erase(it);
         }
         else
-        {
-          window->use();
-          window->swap_buffers();
           ++it;
-        }
       }
     }
 

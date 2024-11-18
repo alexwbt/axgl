@@ -4,6 +4,7 @@
 
 #include "axgl/axgl.hpp"
 #include "axgl/namespace.hpp"
+#include "axgl/interface/renderer.hpp"
 #include "axgl/interface/realm.hpp"
 
 NAMESPACE_AXGL_IMPL
@@ -36,6 +37,7 @@ class DefaultRealm : public interface::Realm
 {
 private:
   std::vector<std::shared_ptr<DefaultEntity>> entities_;
+  std::shared_ptr<interface::Renderer> renderer_;
 
 public:
   void update() override
@@ -46,8 +48,19 @@ public:
 
   void render() const override
   {
+    if (!renderer_) return;
+
+    renderer_->before_render();
+
     for (const auto& entity : entities_)
       entity->render();
+
+    renderer_->after_render();
+  }
+
+  void set_renderer(std::shared_ptr<interface::Renderer> renderer) override
+  {
+    renderer_ = std::move(renderer);
   }
 
   std::shared_ptr<interface::Entity> create_entity() override

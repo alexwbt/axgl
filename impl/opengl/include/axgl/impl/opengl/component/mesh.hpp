@@ -1,8 +1,8 @@
 #pragma once
 
-#include "axgl/axgl.hpp"
-#include "axgl/namespace.hpp"
-#include "axgl/interface/component/mesh.hpp"
+#include <axgl/axgl.hpp>
+#include <axgl/namespace.hpp>
+#include <axgl/interface/component/mesh.hpp>
 
 NAMESPACE_AXGL_IMPL
 

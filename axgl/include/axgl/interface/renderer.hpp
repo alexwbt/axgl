@@ -1,11 +1,10 @@
 #pragma once
 
-#include <format>
-#include <stdexcept>
+#include <memory>
 
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
-#include "axgl/interface/component/mesh.hpp"
+#include "axgl/interface/window.hpp"
 
 NAMESPACE_AXGL_INTERFACE
 
@@ -13,7 +12,9 @@ class Renderer
 {
 public:
   virtual ~Renderer() {}
-  virtual void render(const Component& component) const = 0;
+  virtual void before_render() = 0;
+  virtual void after_render() = 0;
+  virtual void set_window(std::shared_ptr<Window> window) = 0;
 };
 
 class RendererService : public Service

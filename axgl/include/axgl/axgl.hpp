@@ -4,8 +4,6 @@
 #include <stdexcept>
 
 #include "axgl/namespace.hpp"
-#include "axgl/interface/window.hpp"
-#include "axgl/interface/renderer.hpp"
 #include "axgl/interface/realm.hpp"
 #include "axgl/core/service_manager.hpp"
 

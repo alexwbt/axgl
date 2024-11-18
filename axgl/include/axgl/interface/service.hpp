@@ -15,6 +15,7 @@ public:
   virtual void update() = 0;
   virtual void render() = 0;
   virtual bool running() = 0;
+  virtual bool keep_alive() = 0;
 };
 
 class CommandService : public Service

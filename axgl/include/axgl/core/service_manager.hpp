@@ -23,7 +23,7 @@ public:
   void register_service(const std::string& id, std::shared_ptr<interface::Service> service)
   {
     if (services_.contains(id))
-      throw std::runtime_error(std::format("Service with id '{}' already exists.", id));
+      throw std::runtime_error(std::format("Trying to register service but service with id '{}' already exists.", id));
 
     services_.insert({ id, std::move(service) });
   }
@@ -31,7 +31,7 @@ public:
   void remove_service(const std::string& id)
   {
     if (!services_.contains(id))
-      throw std::runtime_error(std::format("Service with id '{}' does not exist.", id));
+      throw std::runtime_error(std::format("Trying to remove service but service with id '{}' does not exist.", id));
 
     services_.erase(id);
   }
@@ -44,7 +44,7 @@ public:
 
     auto service = std::dynamic_pointer_cast<ServiceType>(services_.at(id));
     if (!service)
-      throw std::runtime_error(std::format("Service type '{}' is not supported.", typeid(ServiceType).name()));
+      throw std::runtime_error(std::format("Service type '{}' is required, but is not supported.", typeid(ServiceType).name()));
 
     return service;
   }

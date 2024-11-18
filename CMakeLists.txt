@@ -20,6 +20,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 add_subdirectory(_external/glfw)
 add_subdirectory(_external/spdlog)
 
+# Internal Libraries
+add_subdirectory(lib/glad)
+
 # AXGL
 add_subdirectory(axgl)
 

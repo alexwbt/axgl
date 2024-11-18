@@ -6,7 +6,6 @@
 
 #include "axgl/namespace.hpp"
 #include "axgl/interface/input.hpp"
-#include "axgl/interface/renderer.hpp"
 #include "axgl/interface/service.hpp"
 
 NAMESPACE_AXGL_INTERFACE
@@ -22,6 +21,9 @@ public:
   virtual void hide() = 0;
   virtual void show() = 0;
   virtual void close() = 0;
+  // render
+  virtual void use() = 0;
+  virtual void swap_buffers() = 0;
 };
 
 class WindowService : public Service

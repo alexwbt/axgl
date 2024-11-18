@@ -1,9 +1,9 @@
 #pragma once
 
-#include "axgl/axgl.hpp"
-#include "axgl/namespace.hpp"
-#include "axgl/interface/window.hpp"
-#include "axgl/impl/glfw/glfw_window.hpp"
+#include <axgl/axgl.hpp>
+#include <axgl/namespace.hpp>
+#include <axgl/interface/window.hpp>
+#include <axgl/impl/glfw/glfw_window.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -33,6 +33,16 @@ public:
   void show() override {}
 
   void close() override {}
+
+  void use()
+  {
+    window_->use();
+  }
+
+  void swap_buffers()
+  {
+    window_->swap_buffers();
+  }
 };
 
 class GlfwWindowService : public interface::WindowService

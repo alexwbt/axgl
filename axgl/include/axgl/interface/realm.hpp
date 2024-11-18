@@ -3,6 +3,7 @@
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/renderer.hpp"
+#include "axgl/interface/component/component.hpp"
 
 NAMESPACE_AXGL_INTERFACE
 
@@ -21,6 +22,7 @@ public:
   virtual ~Realm() {}
   virtual void update() = 0;
   virtual void render() const = 0;
+  virtual void set_renderer(std::shared_ptr<Renderer> renderer) = 0;
   virtual std::shared_ptr<Entity> create_entity() = 0;
 };
 
