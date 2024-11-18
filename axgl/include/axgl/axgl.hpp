@@ -6,7 +6,7 @@
 #include "axgl/namespace.hpp"
 #include "axgl/interface/window.hpp"
 #include "axgl/interface/renderer.hpp"
-#include "axgl/interface/component/realm.hpp"
+#include "axgl/interface/realm.hpp"
 #include "axgl/core/service_manager.hpp"
 
 NAMESPACE_AXGL

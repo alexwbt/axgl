@@ -2,14 +2,25 @@
 
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
-#include "axgl/interface/component/entity.hpp"
+#include "axgl/interface/renderer.hpp"
 
 NAMESPACE_AXGL_INTERFACE
 
-class Realm : public Component
+class Entity
+{
+public:
+  virtual ~Entity() {}
+  virtual void update() = 0;
+  virtual void render() const = 0;
+  virtual void add_component(std::shared_ptr<Component> component) = 0;
+};
+
+class Realm
 {
 public:
   virtual ~Realm() {}
+  virtual void update() = 0;
+  virtual void render() const = 0;
   virtual std::shared_ptr<Entity> create_entity() = 0;
 };
 

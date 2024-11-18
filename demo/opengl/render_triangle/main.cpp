@@ -14,7 +14,7 @@ int main()
   {
     axgl::Axgl axgl;
     axgl.use_service<axgl::impl::GlfwWindowService>();
-    // axgl.use_service<axgl::impl::OpenglRendererService>();
+    axgl.use_service<axgl::impl::OpenglRendererService>();
     axgl.use_service<axgl::impl::DefaultRealmService>();
 
     // window
@@ -35,7 +35,7 @@ int main()
     }
 
     // triangle mesh
-    auto mesh = axgl.renderer_service()->create_mesh2d();
+    auto mesh = axgl::interface::Component::create_component<axgl::interface::Mesh2D>();
     mesh->set_data(vertices);
 
     // triangle entity

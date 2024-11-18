@@ -28,19 +28,9 @@ public:
   void render() override {}
   bool running() override { return false; }
 
-  std::shared_ptr<interface::Renderer> get_renderer() override
+  std::shared_ptr<interface::Renderer> create_renderer() override
   {
-    return nullptr;
-  }
-
-  std::shared_ptr<interface::Mesh2D> create_mesh2d() override
-  {
-    return nullptr;
-  }
-
-  std::shared_ptr<interface::Mesh3D> create_mesh3d() override
-  {
-    return nullptr;
+    return std::make_shared<OpenglRenderer>();
   }
 };
 
@@ -58,3 +48,6 @@ std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 }
 
 NAMESPACE_AXGL_END
+
+// component implementations
+#include "axgl/impl/opengl/component/mesh.hpp"

@@ -4,7 +4,7 @@
 
 #include "axgl/axgl.hpp"
 #include "axgl/namespace.hpp"
-#include "axgl/interface/component/realm.hpp"
+#include "axgl/interface/realm.hpp"
 
 NAMESPACE_AXGL_IMPL
 
