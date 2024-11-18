@@ -61,10 +61,9 @@ public:
   {
     vertices_size_ = data.size();
 
-    glGenBuffers(1, &vbo_id_);
-
     glBindVertexArray(vao_id_);
 
+    glGenBuffers(1, &vbo_id_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
     glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(interface::Vertex2D), data.data(), GL_STATIC_DRAW);
 
