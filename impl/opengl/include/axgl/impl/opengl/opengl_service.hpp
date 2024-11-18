@@ -58,11 +58,11 @@ class OpenglRendererService : public interface::RendererService
 {
 public:
   void initialize() override {}
-
   void terminate() override {}
   void update() override {}
   void render() override {}
-  bool running() override { return false; }
+  bool running() override { return true; }
+  bool keep_alive() override { return false; }
 
   std::shared_ptr<interface::Renderer> create_renderer() override
   {

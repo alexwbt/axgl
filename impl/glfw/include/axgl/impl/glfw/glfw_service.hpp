@@ -19,7 +19,8 @@ public:
 
   void set_title(const std::string& title) override
   {
-    window_->set_title(title);
+    if (!window_->is_destroyed())
+      window_->set_title(title);
   }
 
   void set_position(uint32_t x, uint32_t y) override {}
@@ -36,12 +37,14 @@ public:
 
   void use()
   {
-    window_->use();
+    if (!window_->is_destroyed())
+      window_->use();
   }
 
   void swap_buffers()
   {
-    window_->swap_buffers();
+    if (!window_->is_destroyed())
+      window_->swap_buffers();
   }
 };
 
@@ -65,6 +68,11 @@ public:
   bool running() override
   {
     return !glfw::Window::should_close_all();
+  }
+
+  bool keep_alive() override
+  {
+    return running();
   }
 
   std::shared_ptr<interface::Window> create_window() override

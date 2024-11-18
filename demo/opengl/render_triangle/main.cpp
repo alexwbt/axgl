@@ -41,7 +41,7 @@ int main()
 
     // triangle mesh
     auto mesh = axgl::interface::Component::create_component<axgl::interface::Mesh2D>();
-    mesh->set_data(vertices);
+    mesh->set_data(std::move(vertices));
 
     // triangle entity
     auto entity = realm->create_entity();

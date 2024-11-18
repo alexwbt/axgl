@@ -78,7 +78,7 @@ public:
   bool running()
   {
     for (const auto& entry : services_)
-      if (entry.second->running())
+      if (entry.second->keep_alive())
         return true;
     return false;
   }
