@@ -9,14 +9,14 @@
 namespace opengl
 {
   constexpr const char* MESH2D_VERTEX_SHADER_SOURCE =
-    "#version 330 core\n"
+    "#version 460 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
   constexpr const char* MESH2D_FRAGMENT_SHADER_SOURCE =
-    "#version 330 core\n"
+    "#version 460 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
@@ -61,9 +61,10 @@ public:
   {
     vertices_size_ = data.size();
 
+    glGenBuffers(1, &vbo_id_);
+
     glBindVertexArray(vao_id_);
 
-    glGenBuffers(1, &vbo_id_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
     glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(interface::Vertex2D), data.data(), GL_STATIC_DRAW);
 
