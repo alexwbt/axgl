@@ -43,14 +43,23 @@ std::vector<File> read_directory(const std::string& source)
   return files;
 }
 
-void write_files(const std::vector<File>& files, const std::string& target)
+void write_files(const std::vector<File>& files, const std::string& target, const std::string& ns)
 {
-  std::ofstream output_stream(target);
-  output_stream << "#include <span>" << std::endl;
-  output_stream << "#include <array>" << std::endl;
-  output_stream << "#include <string>" << std::endl;
-  output_stream << "#include <stdint.h>" << std::endl;
-  output_stream << "#include <unordered_map>" << std::endl;
+  std::ofstream header_output_stream(target + ".hpp");
+  header_output_stream << "#pragma once" << std::endl;
+  header_output_stream << "#include <span>" << std::endl;
+  header_output_stream << "#include <array>" << std::endl;
+  header_output_stream << "#include <string>" << std::endl;
+  header_output_stream << "#include <stdint.h>" << std::endl;
+  header_output_stream << "#include <unordered_map>" << std::endl;
+  if (!ns.empty()) header_output_stream << "namespace " << ns << " {" << std::endl;
+  header_output_stream << "extern const std::unordered_map<std::string, std::span<const uint8_t>> data;" << std::endl;
+  header_output_stream << "inline std::string get(const std::string& key) { return std::string(data.at(key).begin(), data.at(key).end()); }" << std::endl;
+  if (!ns.empty()) header_output_stream << "}" << std::endl;
+
+  std::ofstream output_stream(target + ".cpp");
+  output_stream << "#include " << std::filesystem::path(target + ".hpp").filename() << std::endl;
+  if (!ns.empty()) output_stream << "namespace " << ns << " {" << std::endl;
 
   for (const auto& file : files)
   {
@@ -68,13 +77,14 @@ void write_files(const std::vector<File>& files, const std::string& target)
     output_stream << "};" << std::endl;
   }
 
-  output_stream << "const std::unordered_map<std::string, const std::span<const uint8_t>> data = {" << std::endl;
+  output_stream << "const std::unordered_map<std::string, std::span<const uint8_t>> data = {" << std::endl;
   for (const auto& file : files)
     output_stream << std::format("{{\"{}\", d{}}},", file.key, file.key_hash) << std::endl;
-  output_stream << "};";
+  output_stream << "};" << std::endl;
+  if (!ns.empty()) output_stream << "}" << std::endl;
 }
 
-int embed_files(const std::string& source, const std::string& target)
+int embed_files(const std::string& source, const std::string& target, const std::string& ns)
 {
   if (!std::filesystem::is_directory(source))
   {
@@ -88,7 +98,7 @@ int embed_files(const std::string& source, const std::string& target)
   }
 
   const auto files = read_directory(source);
-  write_files(files, target);
+  write_files(files, target, ns);
 
   return 0;
 }
@@ -101,6 +111,7 @@ int main(int argc, char** argv)
 
   args::Positional<std::string> source(parser, "source", "The source directory to embed.", args::Options::Required);
   args::Positional<std::string> target(parser, "target", "The output cpp file.", args::Options::Required);
+  args::ValueFlag<std::string> ns(parser, "namespace", "Optional namespace.", { 'n', "namespace" });
 
   try { parser.ParseCLI(argc, argv); }
   catch (const args::Completion& e) { std::cout << e.what(); }
@@ -111,5 +122,5 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  return embed_files(args::get(source), args::get(target));
+  return embed_files(args::get(source), args::get(target), args::get(ns));
 }

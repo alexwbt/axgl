@@ -5,24 +5,7 @@
 #include <axgl/interface/component/mesh.hpp>
 
 #include "opengl/shader_program.hpp"
-
-namespace opengl
-{
-  constexpr const char* MESH2D_VERTEX_SHADER_SOURCE =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-  constexpr const char* MESH2D_FRAGMENT_SHADER_SOURCE =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\0";
-}
+#include "axgl_opengl_impl/res.hpp"
 
 NAMESPACE_AXGL_IMPL
 
@@ -37,8 +20,8 @@ private:
   size_t indices_size_;
 
   opengl::ShaderProgram shader_{ {
-    { GL_VERTEX_SHADER, opengl::MESH2D_VERTEX_SHADER_SOURCE },
-    { GL_FRAGMENT_SHADER, opengl::MESH2D_FRAGMENT_SHADER_SOURCE }
+    { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
+    { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs") }
   } };
 
 public:
