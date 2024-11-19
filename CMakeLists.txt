@@ -15,13 +15,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 # External Dependencies
 # add_subdirectory(_external/assimp)
 # add_subdirectory(_external/flatbuffer)
-# add_subdirectory(_external/args)
 add_subdirectory(_external/glm)
 add_subdirectory(_external/glfw)
+add_subdirectory(_external/args)
 add_subdirectory(_external/spdlog)
 
 # Internal Libraries
 add_subdirectory(lib/glad)
+add_subdirectory(lib/embedfile)
 
 # AXGL
 add_subdirectory(axgl)

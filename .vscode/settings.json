@@ -122,7 +122,8 @@
     "__std_stream": "cpp",
     "execution": "cpp",
     "memory_resource": "cpp",
-    "numbers": "cpp"
+    "numbers": "cpp",
+    "a": "cpp"
   },
   "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false,
   "cSpell.words": [
