@@ -1,15 +1,15 @@
 include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
 
-add_library(axgl_opengl_impl INTERFACE)
+add_library(axgl_opengl_impl)
 
 target_include_directories(axgl_opengl_impl
-  INTERFACE
+  PUBLIC
   ./include
   ${CMAKE_CURRENT_BINARY_DIR}/resources
 )
 
 target_link_libraries(axgl_opengl_impl
-  INTERFACE
+  PUBLIC
   axgl_glfw_impl
   glad
   glm

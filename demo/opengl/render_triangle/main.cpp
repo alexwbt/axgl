@@ -37,8 +37,6 @@ int main()
       float r = i * d;
       vertices[i].x = sin(r);
       vertices[i].y = cos(r);
-
-      SPDLOG_INFO("{} {}", vertices[i].x, vertices[i].y);
     }
 
     // triangle mesh

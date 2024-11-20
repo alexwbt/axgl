@@ -131,6 +131,7 @@
     "axgl",
     "bitangent",
     "cubemap",
+    "endfunction",
     "flatbuffers",
     "Framebuffer",
     "gameloop",
@@ -140,12 +141,12 @@
     "Parameteri",
     "Perlin",
     "Phong",
+    "Programiv",
     "Renderable",
+    "Shaderiv",
     "skybox",
     "spdlog",
-    "stbi",
-    "Shaderiv",
-    "Programiv"
+    "stbi"
   ],
   "C_Cpp.formatting": "vcFormat",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
