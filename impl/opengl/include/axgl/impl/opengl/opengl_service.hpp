@@ -43,11 +43,6 @@ public:
     window_ = std::move(window);
     window_->use();
 
-    // set glfw context
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
     // initialize glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
@@ -66,7 +61,15 @@ public:
 class OpenglRendererService : public interface::RendererService
 {
 public:
-  void initialize() override {}
+  void initialize() override
+  {
+    // set glfw context
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+  }
+
   void terminate() override {}
   void update() override {}
   void render() override {}
