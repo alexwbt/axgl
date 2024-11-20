@@ -131,6 +131,7 @@
     "axgl",
     "bitangent",
     "cubemap",
+    "embedfile",
     "endfunction",
     "flatbuffers",
     "Framebuffer",
