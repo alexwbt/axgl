@@ -16,12 +16,7 @@ public:
   virtual void render() = 0;
   virtual bool running() = 0;
   virtual bool keep_alive() = 0;
-};
-
-class CommandService : public Service
-{
-public:
-  virtual void exec(const std::vector<std::string>& args) = 0;
+  virtual void exec(const std::vector<std::string>& args) {}
 };
 
 NAMESPACE_AXGL_INTERFACE_END

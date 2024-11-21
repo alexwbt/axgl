@@ -104,7 +104,7 @@ public:
     if (args.empty())
       return;
 
-    if (auto service = get_service<interface::CommandService>(args[0]))
+    if (auto service = get_service<interface::Service>(args[0]))
       service->exec(args);
   }
 };
