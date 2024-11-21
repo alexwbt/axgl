@@ -16,7 +16,7 @@ struct Vertex2D
 class Mesh2D : public Component
 {
 public:
-  virtual void set_data(const std::vector<Vertex2D>& data) = 0;
+  virtual void set_vertices(const std::vector<Vertex2D>& vertices) = 0;
   virtual void set_indices(const std::vector<uint32_t>& indices) = 0;
 };
 
@@ -30,7 +30,7 @@ struct Vertex3D
 class Mesh3D : public Component
 {
 public:
-  virtual void set_data(const std::vector<Vertex3D>& data) = 0;
+  virtual void set_vertices(const std::vector<Vertex3D>& vertices) = 0;
   virtual void set_indices(const std::vector<uint32_t>& indices) = 0;
 };
 

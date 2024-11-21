@@ -50,15 +50,15 @@ public:
       glDrawArrays(GL_TRIANGLES, 0, vertices_size_);
   }
 
-  void set_data(const std::vector<interface::Vertex2D>& data) override
+  void set_vertices(const std::vector<interface::Vertex2D>& vertices) override
   {
-    vertices_size_ = data.size();
+    vertices_size_ = vertices.size();
 
     glBindVertexArray(vao_id_);
 
     glGenBuffers(1, &vbo_id_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
-    glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(interface::Vertex2D), data.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(interface::Vertex2D), vertices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_TRUE, sizeof(interface::Vertex2D), 0);

@@ -203,6 +203,16 @@ namespace glfw
       glfwSetWindowTitle(glfw_window_, title.c_str());
     }
 
+    void set_size(int width, int height)
+    {
+      glfwSetWindowSize(glfw_window_, width, height);
+    }
+
+    void set_position(int x, int y)
+    {
+      glfwSetWindowPos(glfw_window_, x, y);
+    }
+
     void set_input_mode(int mode, int value)
     {
       glfwSetInputMode(glfw_window_, mode, value);

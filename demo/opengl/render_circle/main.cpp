@@ -29,7 +29,7 @@ void circle_mesh(std::shared_ptr<axgl::interface::Mesh2D> mesh, uint32_t vert_co
   }
   vertices.push_back({ 0, 0 });
 
-  mesh->set_data(vertices);
+  mesh->set_vertices(vertices);
   mesh->set_indices(indices);
 }
 
@@ -45,6 +45,7 @@ int main()
     // window
     auto window = axgl.window_service()->create_window();
     window->set_title("Hello circle!");
+    window->set_size(800, 800);
 
     // renderer
     auto renderer = axgl.renderer_service()->create_renderer();

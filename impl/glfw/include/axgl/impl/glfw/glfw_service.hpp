@@ -23,9 +23,17 @@ public:
       window_->set_title(title);
   }
 
-  void set_position(uint32_t x, uint32_t y) override {}
+  void set_position(uint32_t x, uint32_t y) override
+  {
+    if (!window_->is_destroyed())
+      window_->set_position(x, y);
+  }
 
-  void set_size(uint32_t width, uint32_t height) override {}
+  void set_size(uint32_t width, uint32_t height) override
+  {
+    if (!window_->is_destroyed())
+      window_->set_size(width, height);
+  }
 
   void maximize() override {}
 
