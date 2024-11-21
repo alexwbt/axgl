@@ -11,10 +11,10 @@
 void circle_mesh(std::shared_ptr<axgl::interface::Mesh2D> mesh, uint32_t vert_count)
 {
   std::vector<axgl::interface::Vertex2D> vertices;
-  std::vector<uint32_t> indicies;
+  std::vector<uint32_t> indices;
 
   vertices.reserve(vert_count + 1);
-  indicies.reserve(vert_count * 3);
+  indices.reserve(vert_count * 3);
 
   float delta = (2 * std::numbers::pi) / vert_count;
   for (int i = 0; i < vert_count; ++i)
@@ -23,14 +23,14 @@ void circle_mesh(std::shared_ptr<axgl::interface::Mesh2D> mesh, uint32_t vert_co
     auto x = sin(r) * 0.5f;
     auto y = cos(r) * 0.5f;
     vertices.push_back({ x, y });
-    indicies.push_back(i);
-    indicies.push_back((i + 1) % vert_count);
-    indicies.push_back(vert_count);
+    indices.push_back(i);
+    indices.push_back((i + 1) % vert_count);
+    indices.push_back(vert_count);
   }
   vertices.push_back({ 0, 0 });
 
   mesh->set_data(vertices);
-  mesh->set_indices(indicies);
+  mesh->set_indices(indices);
 }
 
 int main()

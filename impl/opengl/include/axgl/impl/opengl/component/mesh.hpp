@@ -16,8 +16,8 @@ private:
   GLuint vbo_id_ = 0;
   GLuint ebo_id_ = 0;
 
-  size_t vertices_size_;
-  size_t indices_size_;
+  size_t vertices_size_ = 0;
+  size_t indices_size_ = 0;
 
   opengl::ShaderProgram shader_{ {
     { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
@@ -30,6 +30,13 @@ public:
     glGenVertexArrays(1, &vao_id_);
   }
 
+  ~OpenglMesh2D()
+  {
+    if (vao_id_ > 0) glDeleteVertexArrays(1, &vao_id_);
+    if (vbo_id_ > 0) glDeleteBuffers(1, &vbo_id_);
+    if (ebo_id_ > 0) glDeleteBuffers(1, &ebo_id_);
+  }
+
   void update() override {}
 
   void render() const override
@@ -37,7 +44,10 @@ public:
     shader_.use_program();
 
     glBindVertexArray(vao_id_);
-    glDrawArrays(GL_TRIANGLES, 0, vertices_size_);
+    if (indices_size_ > 0)
+      glDrawElements(GL_TRIANGLES, indices_size_, GL_UNSIGNED_INT, 0);
+    else
+      glDrawArrays(GL_TRIANGLES, 0, vertices_size_);
   }
 
   void set_data(const std::vector<interface::Vertex2D>& data) override
@@ -58,7 +68,15 @@ public:
 
   void set_indices(const std::vector<uint32_t>& indices) override
   {
+    indices_size_ = indices.size();
 
+    glBindVertexArray(vao_id_);
+
+    glGenBuffers(1, &ebo_id_);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id_);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size_ * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
+
+    glBindVertexArray(0);
   }
 };
 
