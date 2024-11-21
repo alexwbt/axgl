@@ -30,6 +30,7 @@ class RealmService : public Service
 {
 public:
   virtual std::shared_ptr<Realm> create_realm() = 0;
+  virtual void set_active_realm(std::shared_ptr<Realm> realm) = 0;
 };
 
 NAMESPACE_AXGL_INTERFACE_END

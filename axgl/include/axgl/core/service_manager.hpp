@@ -36,10 +36,25 @@ public:
     services_.erase(id);
   }
 
+  bool has_service(const std::string& id) const
+  {
+    return services_.contains(id);
+  }
+
+  template<typename ServiceType>
+  bool has_service_type(const std::string& id) const
+  {
+    if (!has_service(id))
+      return false;
+
+    const auto& service = std::dynamic_pointer_cast<ServiceType>(services_.at(id));
+    return service != nullptr;
+  }
+
   template<typename ServiceType>
   std::shared_ptr<ServiceType> get_service(const std::string& id) const
   {
-    if (!services_.contains(id))
+    if (!has_service(id))
       throw std::runtime_error(std::format("Service with id '{}' is required, but does not exist.", id));
 
     auto service = std::dynamic_pointer_cast<ServiceType>(services_.at(id));

@@ -12,20 +12,25 @@
 namespace glfw
 {
 
+  struct Size
+  {
+    int width;
+    int height;
+  };
+
+  struct EventListener
+  {
+    virtual ~EventListener() {}
+    virtual void on_key_down(int key) {}
+    virtual void on_key_up(int key) {}
+    virtual void on_mouse_down(int button) {}
+    virtual void on_mouse_up(int button) {}
+    virtual void on_mouse_move(double x, double y) {}
+    virtual void on_resize(int width, int height) {}
+  };
+
   class Window final
   {
-  public:
-    struct EventListener
-    {
-      virtual ~EventListener() {}
-      virtual void on_key_down(int key) {}
-      virtual void on_key_up(int key) {}
-      virtual void on_mouse_down(int button) {}
-      virtual void on_mouse_up(int button) {}
-      virtual void on_mouse_move(double x, double y) {}
-      virtual void on_resize(int width, int height) {}
-    };
-
   private:
     inline static bool initialized_ = false;
     inline static bool terminated_ = false;
@@ -214,6 +219,13 @@ namespace glfw
 
     void use() const { glfwMakeContextCurrent(glfw_window_); }
     void swap_buffers() const { glfwSwapBuffers(glfw_window_); }
+
+    Size get_size() const
+    {
+      Size size;
+      glfwGetFramebufferSize(glfw_window_, &size.width, &size.height);
+      return size;
+    }
 
   private:
     void destroy()

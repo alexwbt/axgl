@@ -35,16 +35,31 @@ public:
 
   void close() override {}
 
-  void use()
+  void use() const override
   {
     if (!window_->is_destroyed())
       window_->use();
   }
 
-  void swap_buffers()
+  void swap_buffers() const override
   {
     if (!window_->is_destroyed())
       window_->swap_buffers();
+  }
+
+  Size get_size() const override
+  {
+    auto size = window_->get_size();
+    return {
+      static_cast<uint32_t>(std::max(0, size.width)),
+      static_cast<uint32_t>(std::max(0, size.height))
+    };
+  }
+
+public:
+  auto glfw_window() const
+  {
+    return window_;
   }
 };
 

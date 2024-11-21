@@ -132,12 +132,15 @@
     "bitangent",
     "cubemap",
     "embedfile",
+    "endforeach",
     "endfunction",
+    "flatbuffer",
     "flatbuffers",
     "Framebuffer",
     "gameloop",
     "glfw",
     "MESG",
+    "MULTISAMPLE",
     "opengl",
     "Parameteri",
     "Perlin",
@@ -158,5 +161,6 @@
   "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
   "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
   "cmake.buildDirectory": "${workspaceFolder}/_build",
-  "C_Cpp.default.cppStandard": "c++20"
+  "C_Cpp.default.cppStandard": "c++20",
+  "auto-scroll.enabled": false
 }

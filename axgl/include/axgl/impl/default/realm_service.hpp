@@ -74,7 +74,7 @@ public:
 class DefaultRealmService : public interface::RealmService
 {
 private:
-  std::vector<std::shared_ptr<DefaultRealm>> realms_;
+  std::shared_ptr<DefaultRealm> realm_;
 
 public:
   void initialize() override {}
@@ -82,14 +82,14 @@ public:
 
   void update() override
   {
-    for (const auto& realm : realms_)
-      realm->update();
+    if (realm_)
+      realm_->update();
   }
 
   void render() override
   {
-    for (const auto& realm : realms_)
-      realm->render();
+    if (realm_)
+      realm_->render();
   }
 
   bool running() override { return true; }
@@ -97,9 +97,12 @@ public:
 
   std::shared_ptr<interface::Realm> create_realm() override
   {
-    auto realm = std::make_shared<DefaultRealm>();
-    realms_.push_back(realm);
-    return realm;
+    return realm_ = std::make_shared<DefaultRealm>();
+  }
+
+  void set_active_realm(std::shared_ptr<interface::Realm> realm) override
+  {
+    realm_ = dynamic_pointer_cast<DefaultRealm>(std::move(realm));
   }
 };
 
