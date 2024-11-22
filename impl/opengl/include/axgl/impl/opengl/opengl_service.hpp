@@ -114,4 +114,5 @@ std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 NAMESPACE_AXGL_END
 
 // component implementations
-#include "axgl/impl/opengl/component/mesh.hpp"
+#include "axgl/impl/opengl/component/mesh2d.hpp"
+#include "axgl/impl/opengl/component/mesh3d.hpp"

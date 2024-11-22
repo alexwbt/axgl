@@ -5,33 +5,25 @@
 #include "axgl/namespace.hpp"
 #include "axgl/interface/component/component.hpp"
 
-NAMESPACE_AXGL_INTERFACE
+#include <glm/glm.hpp>
 
-struct Vertex2D
-{
-  float x;
-  float y;
-};
+NAMESPACE_AXGL_INTERFACE
 
 class Mesh2D : public Component
 {
 public:
-  virtual void set_vertices(const std::vector<Vertex2D>& vertices) = 0;
+  virtual void set_vertices(const std::vector<glm::vec2>& vertices) = 0;
   virtual void set_indices(const std::vector<uint32_t>& indices) = 0;
-};
-
-struct Vertex3D
-{
-  float x;
-  float y;
-  float z;
+  virtual void set_colors(const std::vector<glm::vec3>& colors) = 0;
 };
 
 class Mesh3D : public Component
 {
 public:
-  virtual void set_vertices(const std::vector<Vertex3D>& vertices) = 0;
+  virtual void set_vertices(const std::vector<glm::vec3>& vertices) = 0;
   virtual void set_indices(const std::vector<uint32_t>& indices) = 0;
+  virtual void set_colors(const std::vector<glm::vec3>& colors) = 0;
+  virtual void set_normals(const std::vector<glm::vec3>& normals) = 0;
 };
 
 NAMESPACE_AXGL_INTERFACE_END

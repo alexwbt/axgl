@@ -7,6 +7,13 @@
 
 NAMESPACE_AXGL_INTERFACE
 
+// class Camera
+// {
+// public:
+//   virtual ~Camera() {}
+//   virtual void yaw(float yaw) = 0;
+// };
+
 class Entity
 {
 public:

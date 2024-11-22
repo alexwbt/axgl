@@ -31,7 +31,7 @@ int main()
 
     // triangle mesh
     auto mesh = axgl::interface::Component::create_component<axgl::interface::Mesh2D>();
-    mesh->set_vertices({ { 0.5f, -0.5f}, {-0.5f, -0.5f}, { 0.0f,  0.5f} });
+    mesh->set_vertices({ {0.5f, -0.5f}, {-0.5f, -0.5f}, {0.0f,  0.5f} });
 
     // triangle entity
     auto entity = realm->create_entity();

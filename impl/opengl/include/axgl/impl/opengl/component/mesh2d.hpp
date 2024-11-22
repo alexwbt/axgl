@@ -5,6 +5,8 @@
 #include <axgl/interface/component/mesh.hpp>
 
 #include "opengl/shader_program.hpp"
+#include "opengl/vertex_array_object.hpp"
+
 #include "axgl_opengl_impl/res.hpp"
 
 NAMESPACE_AXGL_IMPL
@@ -13,11 +15,15 @@ class OpenglMesh2D : public interface::Mesh2D
 {
 private:
   GLuint vao_id_ = 0;
-  GLuint vbo_id_ = 0;
-  GLuint ebo_id_ = 0;
 
-  size_t vertices_size_ = 0;
+  // element buffer
+  GLuint ebo_id_ = 0;
   size_t indices_size_ = 0;
+
+  // vertex positions buffer
+  GLuint vbo_id_ = 0;
+  size_t vertices_size_ = 0;
+
 
   opengl::ShaderProgram shader_{ {
     { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
@@ -28,13 +34,6 @@ public:
   OpenglMesh2D()
   {
     glGenVertexArrays(1, &vao_id_);
-  }
-
-  ~OpenglMesh2D()
-  {
-    if (vao_id_ > 0) glDeleteVertexArrays(1, &vao_id_);
-    if (vbo_id_ > 0) glDeleteBuffers(1, &vbo_id_);
-    if (ebo_id_ > 0) glDeleteBuffers(1, &ebo_id_);
   }
 
   void update() override {}
@@ -50,20 +49,20 @@ public:
       glDrawArrays(GL_TRIANGLES, 0, vertices_size_);
   }
 
-  void set_vertices(const std::vector<interface::Vertex2D>& vertices) override
+  void set_vertices(const std::vector<glm::vec2>& vertices) override
   {
     vertices_size_ = vertices.size();
 
+    if (vbo_id_ > 0) glDeleteBuffers(1, &vbo_id_);
+    glGenBuffers(1, &vbo_id_);
+
     glBindVertexArray(vao_id_);
 
-    glGenBuffers(1, &vbo_id_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
-    glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(interface::Vertex2D), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(glm::vec2), vertices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_TRUE, sizeof(interface::Vertex2D), 0);
-
-    glBindVertexArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0);
   }
 
   void set_indices(const std::vector<uint32_t>& indices) override
@@ -75,9 +74,10 @@ public:
     glGenBuffers(1, &ebo_id_);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id_);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size_ * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
-
-    glBindVertexArray(0);
   }
+
+  void set_colors(const std::vector<glm::vec3>& colors) override
+  {}
 };
 
 NAMESPACE_AXGL_IMPL_END

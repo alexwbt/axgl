@@ -10,7 +10,7 @@
 
 void circle_mesh(std::shared_ptr<axgl::interface::Mesh2D> mesh, uint32_t vert_count)
 {
-  std::vector<axgl::interface::Vertex2D> vertices;
+  std::vector<glm::vec2> vertices;
   std::vector<uint32_t> indices;
 
   vertices.reserve(vert_count + 1);
@@ -55,11 +55,11 @@ int main()
     auto realm = axgl.realm_service()->create_realm();
     realm->set_renderer(renderer);
 
-    // triangle mesh
+    // circle mesh
     auto mesh = axgl::interface::Component::create_component<axgl::interface::Mesh2D>();
     circle_mesh(mesh, 50);
 
-    // triangle entity
+    // circle entity
     auto entity = realm->create_entity();
     entity->add_component(mesh);
 
