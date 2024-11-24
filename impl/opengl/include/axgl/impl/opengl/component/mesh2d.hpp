@@ -14,16 +14,7 @@ NAMESPACE_AXGL_IMPL
 class OpenglMesh2D : public interface::Mesh2D
 {
 private:
-  GLuint vao_id_ = 0;
-
-  // element buffer
-  GLuint ebo_id_ = 0;
-  size_t indices_size_ = 0;
-
-  // vertex positions buffer
-  GLuint vbo_id_ = 0;
-  size_t vertices_size_ = 0;
-
+  opengl::VertexArrayObject vertex_array_;
 
   opengl::ShaderProgram shader_{ {
     { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
@@ -31,53 +22,34 @@ private:
   } };
 
 public:
-  OpenglMesh2D()
-  {
-    glGenVertexArrays(1, &vao_id_);
-  }
-
   void update() override {}
 
   void render() const override
   {
     shader_.use_program();
-
-    glBindVertexArray(vao_id_);
-    if (indices_size_ > 0)
-      glDrawElements(GL_TRIANGLES, indices_size_, GL_UNSIGNED_INT, 0);
-    else
-      glDrawArrays(GL_TRIANGLES, 0, vertices_size_);
+    vertex_array_.draw();
   }
 
   void set_vertices(const std::vector<glm::vec2>& vertices) override
   {
-    vertices_size_ = vertices.size();
-
-    if (vbo_id_ > 0) glDeleteBuffers(1, &vbo_id_);
-    glGenBuffers(1, &vbo_id_);
-
-    glBindVertexArray(vao_id_);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
-    glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(glm::vec2), vertices.data(), GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0);
+    std::vector<opengl::VertexAttribute> attributes{
+      { 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 }
+    };
+    vertex_array_.create_vertex_buffer<glm::vec2>(vertices, attributes);
   }
 
   void set_indices(const std::vector<uint32_t>& indices) override
   {
-    indices_size_ = indices.size();
-
-    glBindVertexArray(vao_id_);
-
-    glGenBuffers(1, &ebo_id_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id_);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size_ * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
+    vertex_array_.create_element_buffer(indices);
   }
 
   void set_colors(const std::vector<glm::vec3>& colors) override
-  {}
+  {
+    std::vector<opengl::VertexAttribute> attributes{
+      { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
+    };
+    vertex_array_.create_vertex_buffer<glm::vec3>(colors, attributes);
+  }
 };
 
 NAMESPACE_AXGL_IMPL_END

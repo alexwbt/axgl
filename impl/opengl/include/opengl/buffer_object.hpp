@@ -7,6 +7,32 @@
 
 namespace opengl
 {
+
+  class BufferObject
+  {
+  private:
+    GLuint id_;
+    size_t size_;
+
+  public:
+    template <typename DataType>
+    BufferObject(GLenum target, const std::span<const DataType>& data)
+    {
+      size_ = data.size();
+
+      glGenBuffers(1, &id_);
+      glBindBuffer(target, id_);
+      glBufferData(target, size_ * sizeof(DataType), data.data(), GL_STATIC_DRAW);
+    }
+
+    virtual ~BufferObject()
+    {
+      glDeleteBuffers(1, &id_);
+    }
+
+    size_t size() const { return size_; }
+  };
+
   struct VertexAttribute
   {
     GLint size;
@@ -16,40 +42,22 @@ namespace opengl
     const void* pointer;
   };
 
-  class BufferObject
-  {
-  private:
-    GLuint id_;
-    int size_;
-
-  public:
-    template <typename DataType>
-    BufferObject(GLenum target, GLenum usage, const std::span<DataType>& data)
-    {
-      size_ = data.size();
-
-      glGenBuffers(1, &id_);
-      glBindBuffer(target, id_);
-      glBufferData(target, size_ * sizeof(DataType), data.data(), usage);
-    }
-
-    virtual ~BufferObject()
-    {
-      glDeleteBuffers(1, &id_);
-    }
-  };
-
   class VertexBufferObject : public BufferObject
   {
+  private:
+    size_t attribute_size_;
+
   public:
     template <typename VertexType>
     VertexBufferObject(
-      const std::span<VertexType>& data,
-      const std::vector<VertexAttribute>& attributes,
-      GLenum usage = GL_STATIC_DRAW
-    ) : BufferObject(GL_ARRAY_BUFFER, usage, data),
+      const std::span<const VertexType>& data,
+      const std::span<const VertexAttribute>& attributes,
+      int offset = 0
+    ) :
+      BufferObject(GL_ARRAY_BUFFER, data),
+      attribute_size_(attributes.size())
     {
-      for (int i = 0; i < attributes.size(); ++i)
+      for (int i = 0; i < attribute_size_; ++i)
       {
         const auto& attr = attributes[i];
         glEnableVertexAttribArray(offset + i);
@@ -77,13 +85,15 @@ namespace opengl
         }
       }
     }
+
+    size_t attribute_size() const { return attribute_size_; }
   };
 
   class ElementBufferObject : public BufferObject
   {
   public:
-    ElementBufferObject(const std::span<uint32_t>& data, GLenum usage = GL_STATIC_DRAW)
-      : BufferObject(GL_ELEMENT_ARRAY_BUFFER, usage, data)
+    ElementBufferObject(const std::span<const uint32_t>& data)
+      : BufferObject(GL_ELEMENT_ARRAY_BUFFER, data)
     {}
   };
 
