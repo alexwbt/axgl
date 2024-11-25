@@ -12,83 +12,55 @@ NAMESPACE_AXGL_IMPL
 class OpenglMesh3D : public interface::Mesh3D
 {
 private:
-  GLuint vao_id_ = 0;
-  GLuint vbo_id_ = 0;
-  GLuint ebo_id_ = 0;
-
-  size_t vertices_size_ = 0;
-  size_t indices_size_ = 0;
+  std::shared_ptr<OpenglRenderer> renderer_;
 
   opengl::ShaderProgram shader_{ {
     { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs") },
     { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs") }
   } };
+  opengl::VertexArrayObject vertex_array_;
+  glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
 
 public:
-  OpenglMesh3D()
-  {
-    glGenVertexArrays(1, &vao_id_);
-  }
-
-  ~OpenglMesh3D()
-  {
-    if (vao_id_ > 0) glDeleteVertexArrays(1, &vao_id_);
-    if (vbo_id_ > 0) glDeleteBuffers(1, &vbo_id_);
-    if (ebo_id_ > 0) glDeleteBuffers(1, &ebo_id_);
-  }
+  OpenglMesh3D(std::shared_ptr<OpenglRenderer> renderer)
+    : renderer_(std::move(renderer))
+  {}
 
   void update() override {}
 
   void render() const override
   {
     shader_.use_program();
+    shader_.set_vec3("mesh_color", color_);
 
-    glBindVertexArray(vao_id_);
-    if (indices_size_ > 0)
-      glDrawElements(GL_TRIANGLES, indices_size_, GL_UNSIGNED_INT, 0);
-    else
-      glDrawArrays(GL_TRIANGLES, 0, vertices_size_);
+    vertex_array_.draw();
   }
 
   void set_vertices(const std::vector<glm::vec3>& vertices) override
   {
-    vertices_size_ = vertices.size();
-
-    glBindVertexArray(vao_id_);
-
-    glGenBuffers(1, &vbo_id_);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
-    glBufferData(GL_ARRAY_BUFFER, vertices_size_ * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0);
-
-    glBindVertexArray(0);
-  }
-
-  void set_indices(const std::vector<uint32_t>& indices) override
-  {
-    indices_size_ = indices.size();
-
-    glBindVertexArray(vao_id_);
-
-    glGenBuffers(1, &ebo_id_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id_);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size_ * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
-
-    glBindVertexArray(0);
-  }
-
-  void set_colors(const std::vector<glm::vec3>& colors) override
-  {
-
+    std::vector<opengl::VertexAttribute> attributes{
+      { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
+    };
+    vertex_array_.create_vertex_buffer<glm::vec3>(vertices, attributes);
   }
 
   void set_normals(const std::vector<glm::vec3>& normals) override
   {
-
+    std::vector<opengl::VertexAttribute> attributes{
+      { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
+    };
+    vertex_array_.create_vertex_buffer<glm::vec3>(normals, attributes);
   }
 
+  void set_indices(const std::vector<uint32_t>& indices) override
+  {
+    vertex_array_.create_element_buffer(indices);
+  }
+
+  void set_color(const glm::vec3& color) override
+  {
+    color_ = color;
+  }
 };
 
 NAMESPACE_AXGL_IMPL_END
@@ -96,9 +68,14 @@ NAMESPACE_AXGL_IMPL_END
 NAMESPACE_AXGL_INTERFACE
 
 template<>
-std::shared_ptr<Mesh3D> Component::create_component()
+std::shared_ptr<Mesh3D> Realm::create_component()
 {
-  return std::make_shared<impl::OpenglMesh3D>();
+  auto renderer = dynamic_pointer_cast<impl::OpenglRenderer>(get_renderer());
+  if (!renderer)
+    throw std::runtime_error("Failed to get renderer! "
+      "OpenglRenderer is required before creating OpenglMesh3D.");
+
+  return std::make_shared<impl::OpenglMesh3D>(renderer);
 }
 
 NAMESPACE_AXGL_INTERFACE_END

@@ -8,6 +8,7 @@
 
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
+#include <glm/glm.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -22,7 +23,8 @@ private:
 
   bool initialized_glad_ = false;
   std::shared_ptr<GlfwWindow> window_;
-  GlfwWindow::Size window_size_;
+  GLsizei window_width_ = 0;
+  GLsizei window_height_ = 0;
 
 public:
   void before_render() override
@@ -31,10 +33,11 @@ public:
     window_->use();
 
     const auto& size = window_->get_size();
-    if (size.width != window_size_.width || size.height != window_size_.height)
+    if (size.width != window_width_ || size.height != window_height_)
     {
-      window_size_ = size;
-      glViewport(0, 0, window_size_.width, window_size_.height);
+      window_width_ = size.width;
+      window_height_ = size.height;
+      glViewport(0, 0, window_width_, window_height_);
     }
 
     glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
@@ -63,13 +66,18 @@ public:
     initialized_glad_ = true;
 
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
+
+  glm::ivec2 viewport() const
+  {
+    return { window_width_, window_height_ };
   }
 };
 

@@ -1,8 +1,13 @@
 #version 330 core
 
-layout (location = 0) in vec3 pos;
+layout (location = 0) in vec2 pos;
+
+uniform float scale;
+uniform vec2 offset;
+uniform vec2 viewport;
 
 void main()
 {
-  gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
+  vec2 screen_pos = (pos * scale + offset) / viewport;
+  gl_Position = vec4(screen_pos, 0.0, 1.0);
 }

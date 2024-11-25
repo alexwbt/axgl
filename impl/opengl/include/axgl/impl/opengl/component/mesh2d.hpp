@@ -14,19 +14,32 @@ NAMESPACE_AXGL_IMPL
 class OpenglMesh2D : public interface::Mesh2D
 {
 private:
-  opengl::VertexArrayObject vertex_array_;
+  std::shared_ptr<OpenglRenderer> renderer_;
 
   opengl::ShaderProgram shader_{ {
     { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
     { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs") }
   } };
+  opengl::VertexArrayObject vertex_array_;
+  glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
+  glm::vec2 offset_{ 0.0f };
+  float scale_ = 1.0f;
 
 public:
+  OpenglMesh2D(std::shared_ptr<OpenglRenderer> renderer)
+    : renderer_(std::move(renderer))
+  {}
+
   void update() override {}
 
   void render() const override
   {
     shader_.use_program();
+    shader_.set_float("scale", scale_);
+    shader_.set_vec2("offset", offset_);
+    shader_.set_vec2("viewport", renderer_->viewport());
+    shader_.set_vec3("mesh_color", color_);
+
     vertex_array_.draw();
   }
 
@@ -43,12 +56,9 @@ public:
     vertex_array_.create_element_buffer(indices);
   }
 
-  void set_colors(const std::vector<glm::vec3>& colors) override
+  void set_color(const glm::vec3& color) override
   {
-    std::vector<opengl::VertexAttribute> attributes{
-      { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
-    };
-    vertex_array_.create_vertex_buffer<glm::vec3>(colors, attributes);
+    color_ = color;
   }
 };
 
@@ -57,9 +67,14 @@ NAMESPACE_AXGL_IMPL_END
 NAMESPACE_AXGL_INTERFACE
 
 template<>
-std::shared_ptr<Mesh2D> Component::create_component()
+std::shared_ptr<Mesh2D> Realm::create_component()
 {
-  return std::make_shared<impl::OpenglMesh2D>();
+  auto renderer = dynamic_pointer_cast<impl::OpenglRenderer>(get_renderer());
+  if (!renderer)
+    throw std::runtime_error("Failed to get renderer! "
+      "OpenglRenderer is required before creating OpenglMesh2D.");
+
+  return std::make_shared<impl::OpenglMesh2D>(renderer);
 }
 
 NAMESPACE_AXGL_INTERFACE_END

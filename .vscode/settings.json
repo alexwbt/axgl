@@ -7,6 +7,7 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports": "always"
   },
+  "editor.inlayHints.enabled": "offUnlessPressed",
   "files.associations": {
     "xiosbase": "cpp",
     "list": "cpp",
@@ -139,6 +140,8 @@
     "Framebuffer",
     "gameloop",
     "glfw",
+    "inout",
+    "Lsizei",
     "MESG",
     "MULTISAMPLE",
     "opengl",
@@ -162,7 +165,6 @@
   "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
   "cmake.buildDirectory": "${workspaceFolder}/_build",
   "C_Cpp.default.cppStandard": "c++20",
-  "auto-scroll.enabled": false,
   "webgl-glsl-editor.format.placeBracesOnSeparateLine": true,
   "webgl-glsl-editor.format.placeSpacesAroundBinaryOperators": true,
   "webgl-glsl-editor.format.placeSpacesAroundAssignmentOperators": true,

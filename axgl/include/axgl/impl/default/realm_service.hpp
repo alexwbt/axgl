@@ -58,16 +58,21 @@ public:
     renderer_->after_render();
   }
 
-  void set_renderer(std::shared_ptr<interface::Renderer> renderer) override
-  {
-    renderer_ = std::move(renderer);
-  }
-
   std::shared_ptr<interface::Entity> create_entity() override
   {
     auto entity = std::make_shared<DefaultEntity>();
     entities_.push_back(entity);
     return entity;
+  }
+
+  void set_renderer(std::shared_ptr<interface::Renderer> renderer) override
+  {
+    renderer_ = std::move(renderer);
+  }
+
+  std::shared_ptr<interface::Renderer> get_renderer() const override
+  {
+    return renderer_;
   }
 };
 

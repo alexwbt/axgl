@@ -30,8 +30,9 @@ int main()
     realm->set_renderer(renderer);
 
     // triangle mesh
-    auto mesh = axgl::interface::Component::create_component<axgl::interface::Mesh2D>();
-    mesh->set_vertices({ {0.5f, -0.5f}, {-0.5f, -0.5f}, {0.0f,  0.5f} });
+    auto mesh = realm->create_component<axgl::interface::Mesh2D>();
+    mesh->set_vertices({ {-450.0f, -300.0f}, {0.0f, 310.0f}, {450.0f, -300.0f} });
+    mesh->set_color({ 1.0, 0.5, 0.2 });
 
     // triangle entity
     auto entity = realm->create_entity();
