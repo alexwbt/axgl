@@ -81,9 +81,9 @@ public:
     glfw::Window::terminate();
   }
 
-  void update() override {}
+  void update(const interface::ServiceContext& context) override {}
 
-  void render() override
+  void render(const interface::ServiceContext& context) override
   {
     glfw::Window::update_all();
   }

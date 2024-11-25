@@ -2,9 +2,9 @@
 #include <numbers>
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/glfw/glfw_service.hpp>
 #include <axgl/impl/opengl/opengl_service.hpp>
-#include <axgl/impl/default/realm_service.hpp>
 
 #include <spdlog/spdlog.h>
 
@@ -30,7 +30,7 @@ int main()
     realm->set_renderer(renderer);
 
     // triangle mesh
-    auto mesh = realm->create_component<axgl::interface::Mesh2D>();
+    auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
     mesh->set_vertices({ {-450.0f, -300.0f}, {0.0f, 310.0f}, {450.0f, -300.0f} });
     mesh->set_color({ 1.0, 0.5, 0.2 });
 

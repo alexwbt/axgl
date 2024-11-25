@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "axgl/namespace.hpp"
-#include "axgl/interface/component/component.hpp"
+#include "axgl/interface/realm.hpp"
 
 #include <glm/glm.hpp>
 

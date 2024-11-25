@@ -14,8 +14,6 @@ NAMESPACE_AXGL_IMPL
 class OpenglMesh2D : public interface::Mesh2D
 {
 private:
-  std::shared_ptr<OpenglRenderer> renderer_;
-
   opengl::ShaderProgram shader_{ {
     { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
     { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs") }
@@ -26,18 +24,16 @@ private:
   float scale_ = 1.0f;
 
 public:
-  OpenglMesh2D(std::shared_ptr<OpenglRenderer> renderer)
-    : renderer_(std::move(renderer))
-  {}
+  void update(const interface::RealmContext& context) override {}
 
-  void update() override {}
-
-  void render() const override
+  void render(const interface::RealmContext& context) override
   {
+    auto renderer = dynamic_cast<OpenglRenderer*>(context.renderer);
+
     shader_.use_program();
     shader_.set_float("scale", scale_);
     shader_.set_vec2("offset", offset_);
-    shader_.set_vec2("viewport", renderer_->viewport());
+    shader_.set_vec2("viewport", renderer->viewport());
     shader_.set_vec3("mesh_color", color_);
 
     vertex_array_.draw();
@@ -64,17 +60,12 @@ public:
 
 NAMESPACE_AXGL_IMPL_END
 
-NAMESPACE_AXGL_INTERFACE
+NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<Mesh2D> Realm::create_component()
+std::shared_ptr<interface::Mesh2D> Axgl::create_component()
 {
-  auto renderer = dynamic_pointer_cast<impl::OpenglRenderer>(get_renderer());
-  if (!renderer)
-    throw std::runtime_error("Failed to get renderer! "
-      "OpenglRenderer is required before creating OpenglMesh2D.");
-
-  return std::make_shared<impl::OpenglMesh2D>(renderer);
+  return std::make_shared<impl::OpenglMesh2D>();
 }
 
-NAMESPACE_AXGL_INTERFACE_END
+NAMESPACE_AXGL_END

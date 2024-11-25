@@ -12,8 +12,6 @@ NAMESPACE_AXGL_IMPL
 class OpenglMesh3D : public interface::Mesh3D
 {
 private:
-  std::shared_ptr<OpenglRenderer> renderer_;
-
   opengl::ShaderProgram shader_{ {
     { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs") },
     { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs") }
@@ -22,13 +20,9 @@ private:
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
 
 public:
-  OpenglMesh3D(std::shared_ptr<OpenglRenderer> renderer)
-    : renderer_(std::move(renderer))
-  {}
+  void update(const interface::RealmContext& context) override {}
 
-  void update() override {}
-
-  void render() const override
+  void render(const interface::RealmContext& context) override
   {
     shader_.use_program();
     shader_.set_vec3("mesh_color", color_);
@@ -65,17 +59,12 @@ public:
 
 NAMESPACE_AXGL_IMPL_END
 
-NAMESPACE_AXGL_INTERFACE
+NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<Mesh3D> Realm::create_component()
+std::shared_ptr<interface::Mesh3D> Axgl::create_component()
 {
-  auto renderer = dynamic_pointer_cast<impl::OpenglRenderer>(get_renderer());
-  if (!renderer)
-    throw std::runtime_error("Failed to get renderer! "
-      "OpenglRenderer is required before creating OpenglMesh3D.");
-
-  return std::make_shared<impl::OpenglMesh3D>(renderer);
+  return std::make_shared<impl::OpenglMesh3D>();
 }
 
-NAMESPACE_AXGL_INTERFACE_END
+NAMESPACE_AXGL_END

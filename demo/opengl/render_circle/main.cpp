@@ -2,9 +2,9 @@
 #include <numbers>
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/glfw/glfw_service.hpp>
 #include <axgl/impl/opengl/opengl_service.hpp>
-#include <axgl/impl/default/realm_service.hpp>
 
 #include <spdlog/spdlog.h>
 
@@ -57,7 +57,7 @@ int main()
     realm->set_renderer(renderer);
 
     // circle mesh
-    auto mesh = realm->create_component<axgl::interface::Mesh2D>();
+    auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
     circle_mesh(mesh, 50, 400);
 
     // circle entity

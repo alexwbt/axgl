@@ -2,9 +2,9 @@
 #include <numbers>
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/glfw/glfw_service.hpp>
 #include <axgl/impl/opengl/opengl_service.hpp>
-#include <axgl/impl/default/realm_service.hpp>
 
 #include <spdlog/spdlog.h>
 
@@ -49,7 +49,7 @@ int main()
     realm->set_renderer(renderer);
 
     // cube mesh
-    auto mesh = realm->create_component<axgl::interface::Mesh3D>();
+    auto mesh = axgl.create_component<axgl::interface::Mesh3D>();
     mesh->set_vertices(cube_vertices);
     mesh->set_normals(cube_normals);
     mesh->set_color({ 1.0, 0.5, 0.2 });

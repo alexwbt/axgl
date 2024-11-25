@@ -3,7 +3,6 @@
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/interface/renderer.hpp>
-#include <axgl/interface/component/component.hpp>
 #include <axgl/impl/glfw/glfw_service.hpp>
 
 #include <glad/glad.h>
@@ -75,7 +74,7 @@ public:
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
 
-  glm::ivec2 viewport() const
+  glm::ivec2 viewport() const override
   {
     return { window_width_, window_height_ };
   }
@@ -86,8 +85,8 @@ class OpenglRendererService : public interface::RendererService
 public:
   void initialize() override {}
   void terminate() override {}
-  void update() override {}
-  void render() override {}
+  void update(const interface::ServiceContext& context) override {}
+  void render(const interface::ServiceContext& context) override {}
   bool running() override { return true; }
   bool keep_alive() override { return false; }
 

@@ -15,16 +15,22 @@ private:
   std::vector<std::shared_ptr<interface::Component>> components_;
 
 public:
-  void update() override
+  void update(const interface::RealmContext& context) override
   {
+    auto current_context = context;
+    current_context.entity = this;
+
     for (const auto& comp : components_)
-      comp->update();
+      comp->update(current_context);
   }
 
-  void render() const override
+  void render(const interface::RealmContext& context) override
   {
+    auto current_context = context;
+    current_context.entity = this;
+
     for (const auto& comp : components_)
-      comp->render();
+      comp->render(current_context);
   }
 
   void add_component(std::shared_ptr<interface::Component> component) override
@@ -40,20 +46,29 @@ private:
   std::shared_ptr<interface::Renderer> renderer_;
 
 public:
-  void update() override
+  void update(const interface::RealmContext& context) override
   {
+    interface::RealmContext current_context;
+    current_context.axgl = context.axgl;
+    current_context.realm = this;
+    current_context.renderer = renderer_.get();
+
     for (const auto& entity : entities_)
-      entity->update();
+      entity->update(current_context);
   }
 
-  void render() const override
+  void render(const interface::RealmContext& context) override
   {
     if (!renderer_) return;
+    interface::RealmContext current_context;
+    current_context.axgl = context.axgl;
+    current_context.realm = this;
+    current_context.renderer = renderer_.get();
 
     renderer_->before_render();
 
     for (const auto& entity : entities_)
-      entity->render();
+      entity->render(current_context);
 
     renderer_->after_render();
   }
@@ -69,11 +84,6 @@ public:
   {
     renderer_ = std::move(renderer);
   }
-
-  std::shared_ptr<interface::Renderer> get_renderer() const override
-  {
-    return renderer_;
-  }
 };
 
 class DefaultRealmService : public interface::RealmService
@@ -85,16 +95,16 @@ public:
   void initialize() override {}
   void terminate() override {}
 
-  void update() override
+  void update(const interface::ServiceContext& context) override
   {
     if (realm_)
-      realm_->update();
+      realm_->update({ context.axgl });
   }
 
-  void render() override
+  void render(const interface::ServiceContext& context) override
   {
     if (realm_)
-      realm_->render();
+      realm_->render({ context.axgl });
   }
 
   bool running() override { return true; }
