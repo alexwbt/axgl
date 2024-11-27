@@ -85,8 +85,8 @@ class OpenglRendererService : public interface::RendererService
 public:
   void initialize() override {}
   void terminate() override {}
-  void update(const interface::ServiceContext& context) override {}
-  void render(const interface::ServiceContext& context) override {}
+  void update() override {}
+  void render() override {}
   bool running() override { return true; }
   bool keep_alive() override { return false; }
 

@@ -24,16 +24,14 @@ private:
   float scale_ = 1.0f;
 
 public:
-  void update(const interface::RealmContext& context) override {}
+  void update() override {}
 
-  void render(const interface::RealmContext& context) override
+  void render() override
   {
-    auto renderer = dynamic_cast<OpenglRenderer*>(context.renderer);
-
     shader_.use_program();
     shader_.set_float("scale", scale_);
     shader_.set_vec2("offset", offset_);
-    shader_.set_vec2("viewport", renderer->viewport());
+    shader_.set_vec2("viewport", context()->renderer->viewport());
     shader_.set_vec3("mesh_color", color_);
 
     vertex_array_.draw();

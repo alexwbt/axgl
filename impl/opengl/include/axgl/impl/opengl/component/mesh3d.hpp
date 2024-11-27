@@ -20,9 +20,9 @@ private:
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
 
 public:
-  void update(const interface::RealmContext& context) override {}
+  void update() override {}
 
-  void render(const interface::RealmContext& context) override
+  void render() override
   {
     shader_.use_program();
     shader_.set_vec3("mesh_color", color_);
