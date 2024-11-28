@@ -8,9 +8,7 @@
 
 #include <spdlog/spdlog.h>
 
-void circle_mesh(
-  std::shared_ptr<axgl::interface::Mesh2D> mesh,
-  uint32_t vert_count, float radius)
+void circle_mesh(std::shared_ptr<axgl::interface::Mesh2D> mesh, uint32_t vert_count)
 {
   std::vector<glm::vec2> vertices;
   std::vector<uint32_t> indices;
@@ -22,17 +20,17 @@ void circle_mesh(
   for (int i = 0; i < vert_count; ++i)
   {
     auto r = i * delta;
-    auto x = sin(r) * radius;
-    auto y = cos(r) * radius;
-    vertices.push_back({ x, y });
+    vertices.push_back({ sin(r), cos(r) });
     indices.push_back(i);
     indices.push_back((i + 1) % vert_count);
     indices.push_back(vert_count);
   }
   vertices.push_back({ 0, 0 });
 
+  mesh->set_color({ 1.0f, 0.5f, 0.2f });
   mesh->set_vertices(vertices);
   mesh->set_indices(indices);
+  mesh->scale = 400.0f;
 }
 
 int main()
@@ -58,7 +56,7 @@ int main()
 
     // circle mesh
     auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
-    circle_mesh(mesh, 50, 400);
+    circle_mesh(mesh, 50);
 
     // circle entity
     auto entity = realm->create_entity();

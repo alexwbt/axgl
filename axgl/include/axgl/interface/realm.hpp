@@ -5,6 +5,7 @@
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/renderer.hpp"
+#include "axgl/interface/camera.hpp"
 #include "axgl/util/iterable.hpp"
 
 NAMESPACE_AXGL
@@ -15,25 +16,10 @@ NAMESPACE_AXGL_INTERFACE
 
 class Realm;
 class Entity;
-class RealmService;
+class Renderer;
+class Component;
 class RealmContext;
-
-class Component
-{
-private:
-  const RealmContext* context_;
-protected:
-  const RealmContext* context() { return context_; }
-
-public:
-  virtual ~Component() {}
-  virtual void update() = 0;
-  virtual void render() = 0;
-
-  friend class Realm;
-  friend class Entity;
-  friend class RealmService;
-};
+class RealmService;
 
 class RealmContextHolder
 {
@@ -45,14 +31,16 @@ private:
   friend struct RealmContext;
 };
 
-class Renderer;
 class RealmContext final
 {
 public:
   const Axgl* axgl;
   const Renderer* renderer;
   Realm* realm;
+  Camera* camera;
   Entity* entity;
+  float scale = 1.0f;
+  glm::vec3 position{ 0.0f };
 private:
   RealmContextHolder* holder_;
 public:
@@ -65,7 +53,10 @@ public:
     axgl = context->axgl;
     renderer = context->renderer;
     realm = context->realm;
+    camera = context->camera;
     entity = context->entity;
+    scale = context->scale;
+    position = context->position;
   }
   RealmContext(const RealmContext&) = delete;
   RealmContext& operator=(const RealmContext&) = delete;
@@ -75,6 +66,38 @@ public:
   {
     holder_->apply_context(nullptr);
   }
+};
+
+class Component
+{
+private:
+  const RealmContext* context_;
+protected:
+  const RealmContext* get_context() const { return context_; }
+
+public:
+  float scale = 1.0f;
+  glm::vec3 position{ 0.0f };
+
+  virtual ~Component() {}
+  virtual void update() = 0;
+  virtual void render() = 0;
+
+  float get_scale() const
+  {
+    if (context_) return context_->scale * scale;
+    return scale;
+  }
+
+  glm::vec3 get_position() const
+  {
+    if (context_) return context_->position + position;
+    return position;
+  }
+
+  friend class Realm;
+  friend class Entity;
+  friend class RealmService;
 };
 
 class Entity : public Component, public RealmContextHolder
@@ -96,11 +119,10 @@ class Realm : public Component, public RealmContextHolder
 {
 public:
   virtual ~Realm() {}
-
-  virtual std::shared_ptr<Entity> create_entity() = 0;
-  virtual util::Iterable<std::shared_ptr<Entity>> entities() const = 0;
-
   virtual void set_renderer(std::shared_ptr<Renderer> renderer) = 0;
+
+  virtual util::Iterable<std::shared_ptr<Entity>> entities() const = 0;
+  virtual std::shared_ptr<Entity> create_entity() = 0;
 
 private:
   void apply_context(const RealmContext* context) override

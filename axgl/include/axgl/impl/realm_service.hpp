@@ -14,11 +14,19 @@ class DefaultEntity : public interface::Entity
 private:
   std::vector<std::shared_ptr<interface::Component>> components_;
 
+private:
+  void init_context(interface::RealmContext& context)
+  {
+    context.entity = this;
+    context.scale *= scale;
+    context.position += position;
+  }
+
 public:
   void update() override
   {
-    interface::RealmContext current_context(this, context());
-    current_context.entity = this;
+    interface::RealmContext context(this, get_context());
+    init_context(context);
 
     for (const auto& comp : components_)
       comp->update();
@@ -26,8 +34,8 @@ public:
 
   void render() override
   {
-    interface::RealmContext current_context(this, context());
-    current_context.entity = this;
+    interface::RealmContext context(this, get_context());
+    init_context(context);
 
     for (const auto& comp : components_)
       comp->render();
@@ -49,14 +57,24 @@ class DefaultRealm : public interface::Realm
 private:
   std::vector<std::shared_ptr<DefaultEntity>> entities_;
   std::shared_ptr<interface::Renderer> renderer_;
+  interface::Camera camera_;
+
+private:
+  void init_context(interface::RealmContext& context)
+  {
+    context.axgl = get_context()->axgl;
+    context.realm = this;
+    context.renderer = renderer_.get();
+    context.camera = &camera_;
+    context.scale = scale;
+    context.position = position;
+  }
 
 public:
   void update() override
   {
-    interface::RealmContext current_context(this);
-    current_context.axgl = context()->axgl;
-    current_context.realm = this;
-    current_context.renderer = renderer_.get();
+    interface::RealmContext context(this);
+    init_context(context);
 
     for (const auto& entity : entities_)
       entity->update();
@@ -65,10 +83,8 @@ public:
   void render() override
   {
     if (!renderer_) return;
-    interface::RealmContext current_context(this);
-    current_context.axgl = context()->axgl;
-    current_context.realm = this;
-    current_context.renderer = renderer_.get();
+    interface::RealmContext context(this);
+    init_context(context);
 
     renderer_->before_render();
 
@@ -78,11 +94,9 @@ public:
     renderer_->after_render();
   }
 
-  std::shared_ptr<interface::Entity> create_entity() override
+  void set_renderer(std::shared_ptr<interface::Renderer> renderer) override
   {
-    auto entity = std::make_shared<DefaultEntity>();
-    entities_.push_back(entity);
-    return entity;
+    renderer_ = std::move(renderer);
   }
 
   util::Iterable<std::shared_ptr<interface::Entity>> entities() const override
@@ -90,9 +104,11 @@ public:
     return util::to_iterable_t<std::shared_ptr<interface::Entity>>(entities_);
   }
 
-  void set_renderer(std::shared_ptr<interface::Renderer> renderer) override
+  std::shared_ptr<interface::Entity> create_entity() override
   {
-    renderer_ = std::move(renderer);
+    auto entity = std::make_shared<DefaultEntity>();
+    entities_.push_back(entity);
+    return entity;
   }
 };
 
@@ -109,8 +125,8 @@ public:
   {
     if (!realm_) return;
 
-    interface::RealmContext current_context(this);
-    current_context.axgl = context()->axgl;
+    interface::RealmContext context(this);
+    context.axgl = get_context()->axgl;
 
     realm_->update();
   }
@@ -119,8 +135,8 @@ public:
   {
     if (!realm_) return;
 
-    interface::RealmContext current_context(this);
-    current_context.axgl = context()->axgl;
+    interface::RealmContext context(this);
+    context.axgl = get_context()->axgl;
 
     realm_->render();
   }

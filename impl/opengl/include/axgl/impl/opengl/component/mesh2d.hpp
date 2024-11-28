@@ -20,8 +20,6 @@ private:
   } };
   opengl::VertexArrayObject vertex_array_;
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
-  glm::vec2 offset_{ 0.0f };
-  float scale_ = 1.0f;
 
 public:
   void update() override {}
@@ -29,9 +27,9 @@ public:
   void render() override
   {
     shader_.use_program();
-    shader_.set_float("scale", scale_);
-    shader_.set_vec2("offset", offset_);
-    shader_.set_vec2("viewport", context()->renderer->viewport());
+    shader_.set_float("scale", get_scale());
+    shader_.set_vec2("offset", get_position());
+    shader_.set_vec2("viewport", get_context()->renderer->viewport());
     shader_.set_vec3("mesh_color", color_);
 
     vertex_array_.draw();

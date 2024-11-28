@@ -22,7 +22,7 @@ private:
   friend class ServiceContextHolder;
 
 protected:
-  const ServiceContext* context() { return context_; }
+  const ServiceContext* get_context() const { return context_; }
 
 public:
   virtual ~Service() {}
