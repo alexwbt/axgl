@@ -57,6 +57,7 @@ public:
     camera = context->camera;
     entity = context->entity;
     scale = context->scale;
+    rotation = context->rotation;
     position = context->position;
   }
   RealmContext(const RealmContext&) = delete;
@@ -78,6 +79,7 @@ protected:
 
 public:
   float scale = 1.0f;
+  glm::vec3 rotation{ 0.0f };
   glm::vec3 position{ 0.0f };
 
   virtual ~Component() {}
