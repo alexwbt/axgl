@@ -40,6 +40,7 @@ public:
   Camera* camera;
   Entity* entity;
   float scale = 1.0f;
+  glm::vec3 rotation{ 0.0f };
   glm::vec3 position{ 0.0f };
 private:
   RealmContextHolder* holder_;
@@ -87,6 +88,12 @@ public:
   {
     if (context_) return context_->scale * scale;
     return scale;
+  }
+
+  glm::vec3 get_rotation() const
+  {
+    if (context_) return context_->rotation + rotation;
+    return rotation;
   }
 
   glm::vec3 get_position() const
