@@ -22,3 +22,6 @@
 [submodule "_external/imgui"]
 	path = _external/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "_external/args"]
+	path = _external/args
+	url = https://github.com/Taywee/args.git

@@ -12,18 +12,24 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/_bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
+# External Dependencies
+# add_subdirectory(_external/assimp)
+# add_subdirectory(_external/flatbuffer)
 add_subdirectory(_external/glm)
 add_subdirectory(_external/glfw)
-add_subdirectory(_external/assimp)
+add_subdirectory(_external/args)
 add_subdirectory(_external/spdlog)
-add_subdirectory(_external/flatbuffer)
 
-add_subdirectory(glad)
+# Internal Libraries
+add_subdirectory(lib/glad)
+add_subdirectory(lib/embedfile)
+
+# AXGL
 add_subdirectory(axgl)
-add_subdirectory(proto)
-add_subdirectory(util)
-add_subdirectory(net)
 
-add_subdirectory(playground)
-add_subdirectory(net-playground)
-add_subdirectory(net-test)
+# Implementations
+add_subdirectory(impl/glfw)
+add_subdirectory(impl/opengl)
+
+# Demonstrations
+add_subdirectory(demo/opengl)

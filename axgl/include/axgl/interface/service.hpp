@@ -1,0 +1,82 @@
+#pragma once
+
+#include <memory>
+#include <vector>
+#include <unordered_map>
+
+#include "axgl/namespace.hpp"
+#include "axgl/util/iterable.hpp"
+
+NAMESPACE_AXGL
+class Axgl;
+NAMESPACE_AXGL_END
+
+NAMESPACE_AXGL_INTERFACE
+
+class ServiceContext;
+class ServiceContextHolder;
+class Service
+{
+private:
+  const ServiceContext* context_;
+  friend class ServiceContextHolder;
+
+protected:
+  const ServiceContext* get_context() const { return context_; }
+
+public:
+  virtual ~Service() {}
+  virtual void initialize() = 0;
+  virtual void terminate() = 0;
+  virtual void update() = 0;
+  virtual void render() = 0;
+  virtual bool running() = 0;
+  virtual bool keep_alive() = 0;
+  virtual void exec(const std::vector<std::string>& args) {}
+};
+
+class ServiceContextHolder
+{
+public:
+  virtual ~ServiceContextHolder() {}
+  virtual util::Iterable<std::shared_ptr<Service>> services() const = 0;
+
+private:
+  void apply_context(const ServiceContext* context)
+  {
+    for (const auto& service : services())
+      service->context_ = context;
+  }
+
+  friend class ServiceContext;
+};
+
+class ServiceContext
+{
+public:
+  Axgl* axgl;
+
+private:
+  ServiceContextHolder* holder_;
+
+public:
+  ServiceContext(ServiceContextHolder* holder) : holder_(holder)
+  {
+    holder_->apply_context(this);
+  }
+  ServiceContext(ServiceContextHolder* holder, const ServiceContext* context) : ServiceContext(holder)
+  {
+    axgl = context->axgl;
+  }
+  ServiceContext(const ServiceContext&) = delete;
+  ServiceContext& operator=(const ServiceContext&) = delete;
+  ServiceContext(ServiceContext&&) = delete;
+  ServiceContext& operator=(ServiceContext&&) = delete;
+
+  ~ServiceContext()
+  {
+    holder_->apply_context(nullptr);
+  }
+};
+
+NAMESPACE_AXGL_INTERFACE_END
