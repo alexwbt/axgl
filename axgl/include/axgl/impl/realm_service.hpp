@@ -38,10 +38,9 @@ public:
     components_.push_back(std::move(component));
   }
 
-  void apply_context(const interface::RealmContext* context) override
+  util::Iterable<std::shared_ptr<interface::Component>> components() const override
   {
-    for (const auto& comp : components_)
-      set_context(*comp, context);
+    return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
   }
 };
 
@@ -86,15 +85,14 @@ public:
     return entity;
   }
 
+  util::Iterable<std::shared_ptr<interface::Entity>> entities() const override
+  {
+    return util::to_iterable_t<std::shared_ptr<interface::Entity>>(entities_);
+  }
+
   void set_renderer(std::shared_ptr<interface::Renderer> renderer) override
   {
     renderer_ = std::move(renderer);
-  }
-
-  void apply_context(const interface::RealmContext* context) override
-  {
-    for (const auto& entity : entities_)
-      set_context(*entity, context);
   }
 };
 
@@ -135,9 +133,9 @@ public:
     return realm_ = std::make_shared<DefaultRealm>();
   }
 
-  void apply_context(const interface::RealmContext* context) override
+  std::shared_ptr<interface::Realm> get_active_realm() const override
   {
-    set_context(*realm_, context);
+    return realm_;
   }
 };
 

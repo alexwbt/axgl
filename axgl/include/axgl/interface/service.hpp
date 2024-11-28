@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "axgl/namespace.hpp"
+#include "axgl/util/iterable.hpp"
 
 NAMESPACE_AXGL
 class Axgl;
@@ -38,14 +39,13 @@ class ServiceContextHolder
 {
 public:
   virtual ~ServiceContextHolder() {}
+  virtual util::Iterable<std::shared_ptr<Service>> services() const = 0;
 
 private:
-  virtual void apply_context(const ServiceContext* context) = 0;
-
-protected:
-  void set_context(Service& service, const ServiceContext* context)
+  void apply_context(const ServiceContext* context)
   {
-    service.context_ = context;
+    for (const auto& service : services())
+      service->context_ = context;
   }
 
   friend class ServiceContext;

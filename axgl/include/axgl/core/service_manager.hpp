@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <ranges>
 #include <format>
 #include <stdexcept>
 #include <unordered_map>
@@ -18,10 +19,9 @@ private:
   std::unordered_map<std::string, std::shared_ptr<interface::Service>> services_;
 
 private:
-  void apply_context(const interface::ServiceContext* context)
+  util::Iterable<std::shared_ptr<interface::Service>> services() const override
   {
-    for (const auto& entry : services_)
-      set_context(*entry.second, context);
+    return util::to_iterable(std::views::values(services_));
   }
 
 public:

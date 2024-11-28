@@ -5,6 +5,7 @@
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/renderer.hpp"
+#include "axgl/util/iterable.hpp"
 
 NAMESPACE_AXGL
 class Axgl;
@@ -12,8 +13,10 @@ NAMESPACE_AXGL_END
 
 NAMESPACE_AXGL_INTERFACE
 
+class Realm;
+class Entity;
+class RealmService;
 class RealmContext;
-class RealmContextHolder;
 
 class Component
 {
@@ -27,7 +30,9 @@ public:
   virtual void update() = 0;
   virtual void render() = 0;
 
-  friend class RealmContextHolder;
+  friend class Realm;
+  friend class Entity;
+  friend class RealmService;
 };
 
 class RealmContextHolder
@@ -37,17 +42,9 @@ public:
 private:
   virtual void apply_context(const RealmContext* context) = 0;
 
-protected:
-  void set_context(Component& comp, const RealmContext* context)
-  {
-    comp.context_ = context;
-  }
-
   friend struct RealmContext;
 };
 
-class Realm;
-class Entity;
 class Renderer;
 class RealmContext final
 {
@@ -85,20 +82,46 @@ class Entity : public Component, public RealmContextHolder
 public:
   virtual ~Entity() {}
   virtual void add_component(std::shared_ptr<Component> component) = 0;
+  virtual util::Iterable<std::shared_ptr<Component>> components() const = 0;
+
+private:
+  void apply_context(const RealmContext* context) override
+  {
+    for (const auto& component : components())
+      component->context_ = context;
+  }
 };
 
 class Realm : public Component, public RealmContextHolder
 {
 public:
   virtual ~Realm() {}
+
   virtual std::shared_ptr<Entity> create_entity() = 0;
+  virtual util::Iterable<std::shared_ptr<Entity>> entities() const = 0;
+
   virtual void set_renderer(std::shared_ptr<Renderer> renderer) = 0;
+
+private:
+  void apply_context(const RealmContext* context) override
+  {
+    for (const auto& entity : entities())
+      entity->context_ = context;
+  }
 };
 
 class RealmService : public Service, public RealmContextHolder
 {
 public:
   virtual std::shared_ptr<Realm> create_realm() = 0;
+  virtual std::shared_ptr<Realm> get_active_realm() const = 0;
+
+private:
+  void apply_context(const RealmContext* context) override
+  {
+    if (auto realm = get_active_realm())
+      realm->context_ = context;
+  }
 };
 
 NAMESPACE_AXGL_INTERFACE_END

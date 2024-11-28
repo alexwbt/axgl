@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 namespace util
 {
 
@@ -24,7 +26,7 @@ namespace util
       virtual void next() = 0;
       virtual void assign(const IteratorWrapper* rhs) = 0;
 
-      virtual IteratorWrapper* clone() = 0;
+      virtual std::unique_ptr<IteratorWrapper> clone() const = 0;
     };
 
     template<typename Iterator>
@@ -49,18 +51,18 @@ namespace util
         iterator_ = static_cast<const Adaptor<Iterator>*>(rhs)->iterator_;
       }
 
-      IteratorWrapper* clone() override
+      std::unique_ptr<IteratorWrapper> clone() const override
       {
-        return new Adaptor<Iterator>(iterator_);
+        return std::make_unique<Adaptor<Iterator>>(iterator_);
       }
     };
 
   private:
-    IteratorWrapper* wrapper_;
+    std::unique_ptr<IteratorWrapper> wrapper_;
 
   public:
     AnyIterator() : wrapper_(nullptr) {}
-    AnyIterator(IteratorWrapper* wrapper) : wrapper_(wrapper) {}
+    AnyIterator(std::unique_ptr<IteratorWrapper> wrapper) : wrapper_(std::move(wrapper)) {}
     AnyIterator(const AnyIterator& other)
     {
       if (other.wrapper_)
@@ -68,22 +70,12 @@ namespace util
       else
         wrapper_ = nullptr;
     }
-    AnyIterator(AnyIterator&& other)
-    {
-      wrapper_ = other.wrapper_;
-      other.wrapper_ = nullptr;
-    }
-    ~AnyIterator()
-    {
-      if (wrapper_)
-        delete wrapper_;
-    }
 
     AnyIterator& operator++() { wrapper_->next(); return *this; }
     reference operator* () const { return wrapper_->current(); }
     pointer operator->() const { return &wrapper_->current(); }
-    bool operator==(const AnyIterator& rhs) const { return wrapper_->equal(rhs.wrapper_); }
-    bool operator!=(const AnyIterator& rhs) const { return !wrapper_->equal(rhs.wrapper_); }
+    bool operator==(const AnyIterator& rhs) const { return wrapper_->equal(rhs.wrapper_.get()); }
+    bool operator!=(const AnyIterator& rhs) const { return !(*this == rhs); }
   };
 
   template <typename ValueType>
@@ -118,12 +110,21 @@ namespace util
   };
 
   template <typename ValueType, typename ContainerType>
-  inline Iterable<ValueType> to_iterable(const ContainerType& data)
+  inline Iterable<ValueType> to_iterable_t(const ContainerType& data)
   {
+    using WrapperType = typename AnyIterator<ValueType>::template Adaptor<decltype(std::begin(data))>;
     return {
-      util::AnyIterator<ValueType>(new util::AnyIterator<ValueType>::Adaptor(std::begin(data))),
-      util::AnyIterator<ValueType>(new util::AnyIterator<ValueType>::Adaptor(std::end(data)))
+      AnyIterator<ValueType>(std::make_unique<WrapperType>(std::begin(data))),
+      AnyIterator<ValueType>(std::make_unique<WrapperType>(std::end(data)))
     };
+  }
+
+  template <typename ContainerType>
+  inline auto to_iterable(const ContainerType& data)
+    -> Iterable<typename std::decay<decltype(*std::begin(data))>::type>
+  {
+    using ValueType = typename std::decay<decltype(*std::begin(data))>::type;
+    return to_iterable_t<ValueType>(data);
   }
 
 }
