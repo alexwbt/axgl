@@ -13,7 +13,7 @@
 
 NAMESPACE_AXGL
 
-class ServiceManager : public interface::ServiceContextHolder
+class ServiceManager : public interface::ServiceContextProvider
 {
 private:
   std::unordered_map<std::string, std::shared_ptr<interface::Service>> services_;

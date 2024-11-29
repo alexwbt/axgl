@@ -9,13 +9,6 @@
 # - target: The name of the target that will use the embedded resources.
 # - source_dir: The directory containing the resource files to be embedded.
 #
-# The function:
-# 1. Creates an output directory for the resources.
-# 2. Gathers resource files from the specified source directory.
-# 3. Defines a custom target that embeds these resources.
-# 4. Ensures the specified target depends on the custom target.
-# 5. Adds the generated source file to the target and marks it as generated.
-#
 function(use_resource target source_dir)
   # Define the output directory for the resource files
   set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/resources/${target})
@@ -28,22 +21,22 @@ function(use_resource target source_dir)
   # Gather all resource files from the specified source directory
   file(GLOB_RECURSE RESOURCE_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${source_dir}/*")
 
-  # Define a custom target to embed the resource files
-  add_custom_target(
-    ${RESOURCE_TARGET}
-    VERBATIM
-    COMMENT "Embedding resource files for ${target}."
-    DEPENDS ${RESOURCE_FILES}  # Ensure the target depends on all resource files
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  # Add custom command and target
+  add_custom_command(
     COMMAND embedfile ${source_dir} ${OUTPUT_FILE} --namespace ${target}_${source_dir}
+    COMMENT "Embedding resource files for ${target}."
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT ${OUTPUT_FILE}.cpp ${OUTPUT_FILE}.hpp
+    DEPENDS embedfile ${RESOURCE_FILES}
+  )
+  add_custom_target(
+    ${RESOURCE_TARGET} ALL
+    DEPENDS ${OUTPUT_FILE}.cpp ${OUTPUT_FILE}.hpp
   )
 
-  # Ensure the main target depends on the custom resource target
+  # Make specified target depends on the custom target
   add_dependencies(${target} ${RESOURCE_TARGET})
 
-  # Add the generated source file to the target
+  # Add embedded resource file as source of specified target
   target_sources(${target} PRIVATE ${OUTPUT_FILE}.cpp)
-  
-  # Mark the generated source file to prevent recompilation
-  set_source_files_properties(${OUTPUT_FILE}.cpp PROPERTIES GENERATED TRUE)
 endfunction()

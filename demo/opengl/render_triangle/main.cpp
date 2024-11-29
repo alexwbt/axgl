@@ -28,12 +28,15 @@ int main()
     // realm
     auto realm = axgl.realm_service()->create_realm();
     realm->set_renderer(renderer);
+    //realm->camera.orthographic = true;
+    realm->camera.near_clip = -1;
+    realm->camera.far_clip = 100;
 
     // triangle mesh
     auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
     mesh->set_vertices({ {0.8f, -0.5f}, {-0.8f, -0.5f}, {0.0f, 0.5f} });
     mesh->set_color({ 1.0f, 0.5f, 0.2f });
-    mesh->scale = 400.0f;
+    mesh->scale = glm::vec3(400.0f);
 
     // triangle entity
     auto entity = realm->create_entity();

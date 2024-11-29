@@ -27,10 +27,10 @@ void circle_mesh(std::shared_ptr<axgl::interface::Mesh2D> mesh, uint32_t vert_co
   }
   vertices.push_back({ 0, 0 });
 
-  mesh->set_color({ 1.0f, 0.5f, 0.2f });
-  mesh->set_vertices(vertices);
   mesh->set_indices(indices);
-  mesh->scale = 400.0f;
+  mesh->set_vertices(vertices);
+  mesh->set_color({ 1.0f, 0.5f, 0.2f });
+  mesh->scale = glm::vec3(400.0f);
 }
 
 int main()

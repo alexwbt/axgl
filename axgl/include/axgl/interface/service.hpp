@@ -14,12 +14,12 @@ NAMESPACE_AXGL_END
 NAMESPACE_AXGL_INTERFACE
 
 class ServiceContext;
-class ServiceContextHolder;
+class ServiceContextProvider;
 class Service
 {
 private:
   const ServiceContext* context_;
-  friend class ServiceContextHolder;
+  friend class ServiceContextProvider;
 
 protected:
   const ServiceContext* get_context() const { return context_; }
@@ -35,14 +35,14 @@ public:
   virtual void exec(const std::vector<std::string>& args) {}
 };
 
-class ServiceContextHolder
+class ServiceContextProvider
 {
 public:
-  virtual ~ServiceContextHolder() {}
+  virtual ~ServiceContextProvider() {}
   virtual util::Iterable<std::shared_ptr<Service>> services() const = 0;
 
 private:
-  void apply_context(const ServiceContext* context)
+  void use_context(const ServiceContext* context)
   {
     for (const auto& service : services())
       service->context_ = context;
@@ -57,14 +57,14 @@ public:
   Axgl* axgl;
 
 private:
-  ServiceContextHolder* holder_;
+  ServiceContextProvider* provider_;
 
 public:
-  ServiceContext(ServiceContextHolder* holder) : holder_(holder)
+  ServiceContext(ServiceContextProvider* provider) : provider_(provider)
   {
-    holder_->apply_context(this);
+    provider_->use_context(this);
   }
-  ServiceContext(ServiceContextHolder* holder, const ServiceContext* context) : ServiceContext(holder)
+  ServiceContext(ServiceContextProvider* provider, const ServiceContext* context) : ServiceContext(provider)
   {
     axgl = context->axgl;
   }
@@ -75,7 +75,7 @@ public:
 
   ~ServiceContext()
   {
-    holder_->apply_context(nullptr);
+    provider_->use_context(nullptr);
   }
 };
 

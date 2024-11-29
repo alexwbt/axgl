@@ -1,12 +1,15 @@
 #pragma once
 
-#include <span>
-
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/renderer.hpp"
 #include "axgl/interface/camera.hpp"
 #include "axgl/util/iterable.hpp"
+
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 NAMESPACE_AXGL
 class Axgl;
@@ -21,12 +24,12 @@ class Component;
 class RealmContext;
 class RealmService;
 
-class RealmContextHolder
+class RealmContextProvider
 {
 public:
-  virtual ~RealmContextHolder() {}
+  virtual ~RealmContextProvider() {}
 private:
-  virtual void apply_context(const RealmContext* context) = 0;
+  virtual void use_context(const RealmContext* context) = 0;
 
   friend struct RealmContext;
 };
@@ -35,30 +38,24 @@ class RealmContext final
 {
 public:
   const Axgl* axgl;
-  const Renderer* renderer;
   Realm* realm;
-  Camera* camera;
   Entity* entity;
-  float scale = 1.0f;
-  glm::vec3 rotation{ 0.0f };
-  glm::vec3 position{ 0.0f };
+  glm::mat4 pv{ 1.0f };
+  glm::mat4 model{ 1.0f };
 private:
-  RealmContextHolder* holder_;
+  RealmContextProvider* provider_;
 public:
-  RealmContext(RealmContextHolder* holder) : holder_(holder)
+  RealmContext(RealmContextProvider* provider) : provider_(provider)
   {
-    holder_->apply_context(this);
+    provider_->use_context(this);
   }
-  RealmContext(RealmContextHolder* holder, const RealmContext* context) : RealmContext(holder)
+  RealmContext(RealmContextProvider* provider, const RealmContext* context) : RealmContext(provider)
   {
     axgl = context->axgl;
-    renderer = context->renderer;
     realm = context->realm;
-    camera = context->camera;
     entity = context->entity;
-    scale = context->scale;
-    rotation = context->rotation;
-    position = context->position;
+    pv = context->pv;
+    model = context->model;
   }
   RealmContext(const RealmContext&) = delete;
   RealmContext& operator=(const RealmContext&) = delete;
@@ -66,7 +63,7 @@ public:
   RealmContext& operator=(RealmContext&&) = delete;
   ~RealmContext()
   {
-    holder_->apply_context(nullptr);
+    provider_->use_context(nullptr);
   }
 };
 
@@ -78,7 +75,7 @@ protected:
   const RealmContext* get_context() const { return context_; }
 
 public:
-  float scale = 1.0f;
+  glm::vec3 scale{ 1.0f };
   glm::vec3 rotation{ 0.0f };
   glm::vec3 position{ 0.0f };
 
@@ -86,22 +83,13 @@ public:
   virtual void update() = 0;
   virtual void render() = 0;
 
-  float get_scale() const
+  glm::mat4 model() const
   {
-    if (context_) return context_->scale * scale;
-    return scale;
-  }
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), position)
+      * glm::toMat4(glm::quat(rotation)) * glm::scale(scale);
 
-  glm::vec3 get_rotation() const
-  {
-    if (context_) return context_->rotation + rotation;
-    return rotation;
-  }
-
-  glm::vec3 get_position() const
-  {
-    if (context_) return context_->position + position;
-    return position;
+    if (context_) return context_->model * model;
+    return model;
   }
 
   friend class Realm;
@@ -109,7 +97,7 @@ public:
   friend class RealmService;
 };
 
-class Entity : public Component, public RealmContextHolder
+class Entity : public Component, public RealmContextProvider
 {
 public:
   virtual ~Entity() {}
@@ -117,15 +105,18 @@ public:
   virtual util::Iterable<std::shared_ptr<Component>> components() const = 0;
 
 private:
-  void apply_context(const RealmContext* context) override
+  void use_context(const RealmContext* context) override
   {
     for (const auto& component : components())
       component->context_ = context;
   }
 };
 
-class Realm : public Component, public RealmContextHolder
+class Realm : public Component, public RealmContextProvider
 {
+public:
+  interface::Camera camera;
+
 public:
   virtual ~Realm() {}
   virtual void set_renderer(std::shared_ptr<Renderer> renderer) = 0;
@@ -134,21 +125,21 @@ public:
   virtual std::shared_ptr<Entity> create_entity() = 0;
 
 private:
-  void apply_context(const RealmContext* context) override
+  void use_context(const RealmContext* context) override
   {
     for (const auto& entity : entities())
       entity->context_ = context;
   }
 };
 
-class RealmService : public Service, public RealmContextHolder
+class RealmService : public Service, public RealmContextProvider
 {
 public:
   virtual std::shared_ptr<Realm> create_realm() = 0;
   virtual std::shared_ptr<Realm> get_active_realm() const = 0;
 
 private:
-  void apply_context(const RealmContext* context) override
+  void use_context(const RealmContext* context) override
   {
     if (auto realm = get_active_realm())
       realm->context_ = context;

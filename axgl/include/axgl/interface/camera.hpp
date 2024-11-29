@@ -16,6 +16,7 @@ public:
   float near_clip = 0.1f;
   float far_clip = 100.0f;
   glm::vec3 position{ 0.0f };
+  bool orthographic = false;
 
 private:
   glm::vec3 up_{ 0.0f };
@@ -27,11 +28,11 @@ private:
 public:
   Camera() { update(); }
 
-  const glm::vec3 up() { return up_; }
-  const glm::vec3 right() { return right_; }
-  const glm::vec3 front() { return front_; }
-  const glm::vec3 front_side() { return front_side_; }
-  const glm::mat4 view_matrix() { return view_matrix_; }
+  glm::vec3 up() const { return up_; }
+  glm::vec3 right() const { return right_; }
+  glm::vec3 front() const { return front_; }
+  glm::vec3 front_side() const { return front_side_; }
+  glm::mat4 view_matrix() const { return view_matrix_; }
 
   void update()
   {
@@ -51,6 +52,27 @@ public:
     up_ = glm::normalize(glm::cross(right_, front_));
 
     view_matrix_ = glm::lookAt(position, position + front_, up_);
+  }
+
+  glm::mat4 pv(glm::vec2 viewport) const
+  {
+    return orthographic ? orthographic_pv(viewport) : perspective_pv(viewport);
+  }
+
+private:
+  glm::mat4 perspective_pv(glm::vec2 viewport) const
+  {
+    float f = glm::radians(fov);
+    float r = viewport.x / viewport.y;
+    glm::mat4 projection = glm::perspective(f, r, near_clip, far_clip);
+    return projection * view_matrix();
+  }
+
+  glm::mat4 orthographic_pv(glm::vec2 viewport) const
+  {
+    glm::vec2 v = viewport * 0.5f;
+    glm::mat4 projection = glm::ortho(-v.x, v.x, v.y, -v.y, near_clip, far_clip);
+    return projection * view_matrix();
   }
 };
 

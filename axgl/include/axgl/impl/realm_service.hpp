@@ -18,8 +18,7 @@ private:
   void init_context(interface::RealmContext& context)
   {
     context.entity = this;
-    context.scale *= scale;
-    context.position += position;
+    context.model = model();
   }
 
 public:
@@ -57,17 +56,14 @@ class DefaultRealm : public interface::Realm
 private:
   std::vector<std::shared_ptr<DefaultEntity>> entities_;
   std::shared_ptr<interface::Renderer> renderer_;
-  interface::Camera camera_;
 
 private:
   void init_context(interface::RealmContext& context)
   {
     context.axgl = get_context()->axgl;
     context.realm = this;
-    context.renderer = renderer_.get();
-    context.camera = &camera_;
-    context.scale = scale;
-    context.position = position;
+    context.pv = camera.pv(renderer_->viewport());
+    context.model = model();
   }
 
 public:
@@ -83,10 +79,11 @@ public:
   void render() override
   {
     if (!renderer_) return;
-    interface::RealmContext context(this);
-    init_context(context);
 
     renderer_->before_render();
+
+    interface::RealmContext context(this);
+    init_context(context);
 
     for (const auto& entity : entities_)
       entity->render();
