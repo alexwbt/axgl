@@ -17,7 +17,7 @@
 
 NAMESPACE_AXGL
 
-class Axgl final : private ServiceManager
+class Axgl final : public ServiceManager
 {
 public:
   void run()

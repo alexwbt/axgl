@@ -69,9 +69,6 @@ public:
 
     renderer_->before_render();
 
-    camera.roll += 0.1f;
-    camera.update();
-
     interface::RealmContext context(this);
     context.axgl = get_context()->axgl;
     context.renderer = renderer_.get();

@@ -37,19 +37,16 @@ private:
 class RealmContext final
 {
 public:
-  const Axgl* axgl;
-  const Renderer* renderer;
-  Realm* realm;
-  Entity* entity;
+  const Axgl* axgl = nullptr;
+  const Renderer* renderer = nullptr;
+  Realm* realm = nullptr;
+  Entity* entity = nullptr;
   glm::mat4 pv{ 1.0f };
   glm::mat4 model{ 1.0f };
 private:
   RealmContextProvider* provider_;
 public:
-  RealmContext(RealmContextProvider* provider) : provider_(provider)
-  {
-    provider_->use_context(this);
-  }
+  RealmContext(RealmContextProvider* provider) : provider_(provider) { provider_->use_context(this); }
   RealmContext(RealmContextProvider* provider, const RealmContext* context) : RealmContext(provider)
   {
     axgl = context->axgl;
@@ -63,10 +60,7 @@ public:
   RealmContext& operator=(const RealmContext&) = delete;
   RealmContext(RealmContext&&) = delete;
   RealmContext& operator=(RealmContext&&) = delete;
-  ~RealmContext()
-  {
-    provider_->use_context(nullptr);
-  }
+  ~RealmContext() { provider_->use_context(nullptr); }
 };
 
 class Component

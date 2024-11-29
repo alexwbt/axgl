@@ -30,7 +30,7 @@ void circle_mesh(std::shared_ptr<axgl::interface::Mesh2D> mesh, uint32_t vert_co
   mesh->set_indices(indices);
   mesh->set_vertices(vertices);
   mesh->set_color({ 1.0f, 0.5f, 0.2f });
-  mesh->scale = glm::vec3(400.0f);
+  mesh->scale = glm::vec3(200.0f);
 }
 
 int main()
@@ -53,6 +53,9 @@ int main()
     // realm
     auto realm = axgl.realm_service()->create_realm();
     realm->set_renderer(renderer);
+    realm->camera.orthographic = true;
+    realm->camera.near_clip = -1;
+    realm->camera.far_clip = 1;
 
     // circle mesh
     auto mesh = axgl.create_component<axgl::interface::Mesh2D>();

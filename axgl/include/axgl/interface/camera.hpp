@@ -35,22 +35,19 @@ public:
   {
     auto yaw_radians = glm::radians(yaw);
     auto pitch_radians = glm::radians(pitch);
-    auto roll_radians = glm::radians(roll);
+    auto roll_radians = -glm::radians(roll);
 
     auto sin_yaw = glm::sin(yaw_radians);
     auto cos_yaw = glm::cos(yaw_radians);
     auto sin_pitch = glm::sin(pitch_radians);
     auto cos_pitch = glm::cos(pitch_radians);
 
-    constexpr glm::vec3 world_up = glm::vec3(0.0f, 1.0f, 0.0f);
-    constexpr glm::vec4 world_up_vec4 = glm::vec4(world_up, 1);
-
     front_ = glm::normalize(glm::vec3(sin_yaw * sin_pitch, cos_pitch, cos_yaw * sin_pitch));
 
-    auto right = glm::normalize(glm::cross(world_up, front_));
+    auto right = glm::normalize(glm::cross(glm::vec3(0, 1, 0), front_));
+    auto rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
 
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
-    up_ = glm::vec3(rotation * world_up_vec4);
+    up_ = glm::normalize(glm::vec3(rotation * glm::vec4(glm::cross(right, front_), 1)));
 
     view_matrix_ = glm::lookAt(position, position + front_, up_);
   }
