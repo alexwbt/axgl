@@ -26,6 +26,11 @@ private:
   GLsizei window_height_ = 0;
 
 public:
+  bool ready() override
+  {
+    return window_ && window_->ready();
+  }
+
   void before_render() override
   {
     if (!window_) return;

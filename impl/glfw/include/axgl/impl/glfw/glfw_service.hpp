@@ -43,6 +43,11 @@ public:
 
   void close() override {}
 
+  bool ready() const override
+  {
+    return !window_->is_destroyed();
+  }
+
   void use() const override
   {
     if (!window_->is_destroyed())

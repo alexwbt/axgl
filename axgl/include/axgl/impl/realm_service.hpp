@@ -14,18 +14,11 @@ class DefaultEntity : public interface::Entity
 private:
   std::vector<std::shared_ptr<interface::Component>> components_;
 
-private:
-  void init_context(interface::RealmContext& context)
-  {
-    context.entity = this;
-    context.model = model();
-  }
-
 public:
   void update() override
   {
     interface::RealmContext context(this, get_context());
-    init_context(context);
+    context.entity = this;
 
     for (const auto& comp : components_)
       comp->update();
@@ -34,7 +27,8 @@ public:
   void render() override
   {
     interface::RealmContext context(this, get_context());
-    init_context(context);
+    context.entity = this;
+    context.model = model();
 
     for (const auto& comp : components_)
       comp->render();
@@ -57,20 +51,13 @@ private:
   std::vector<std::shared_ptr<DefaultEntity>> entities_;
   std::shared_ptr<interface::Renderer> renderer_;
 
-private:
-  void init_context(interface::RealmContext& context)
-  {
-    context.axgl = get_context()->axgl;
-    context.realm = this;
-    context.pv = camera.pv(renderer_->viewport());
-    context.model = model();
-  }
-
 public:
   void update() override
   {
     interface::RealmContext context(this);
-    init_context(context);
+    context.axgl = get_context()->axgl;
+    context.renderer = renderer_.get();
+    context.realm = this;
 
     for (const auto& entity : entities_)
       entity->update();
@@ -78,12 +65,19 @@ public:
 
   void render() override
   {
-    if (!renderer_) return;
+    if (!renderer_ || !renderer_->ready()) return;
 
     renderer_->before_render();
 
+    camera.roll += 0.1f;
+    camera.update();
+
     interface::RealmContext context(this);
-    init_context(context);
+    context.axgl = get_context()->axgl;
+    context.renderer = renderer_.get();
+    context.realm = this;
+    context.pv = camera.pv(renderer_->viewport());
+    context.model = model();
 
     for (const auto& entity : entities_)
       entity->render();

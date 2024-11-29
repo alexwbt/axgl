@@ -12,7 +12,8 @@ class Camera final
 public:
   float fov = 80.0f;
   float yaw = 0.0f;
-  float pitch = 0.0f;
+  float pitch = 90.0f;
+  float roll = 0.0f;
   float near_clip = 0.1f;
   float far_clip = 100.0f;
   glm::vec3 position{ 0.0f };
@@ -20,47 +21,47 @@ public:
 
 private:
   glm::vec3 up_{ 0.0f };
-  glm::vec3 right_{ 0.0f };
   glm::vec3 front_{ 0.0f };
-  glm::vec3 front_side_{ 0.0f };
   glm::mat4 view_matrix_{ 0.0f };
 
 public:
   Camera() { update(); }
 
   glm::vec3 up() const { return up_; }
-  glm::vec3 right() const { return right_; }
   glm::vec3 front() const { return front_; }
-  glm::vec3 front_side() const { return front_side_; }
   glm::mat4 view_matrix() const { return view_matrix_; }
 
   void update()
   {
     auto yaw_radians = glm::radians(yaw);
     auto pitch_radians = glm::radians(pitch);
-    auto cos_yaw_radians = glm::cos(yaw_radians);
-    auto sin_yaw_radians = glm::sin(yaw_radians);
-    auto cos_pitch_radians = glm::cos(pitch_radians);
-    auto sin_pitch_radians = glm::sin(pitch_radians);
-    front_ = glm::normalize(glm::vec3(
-      cos_yaw_radians * cos_pitch_radians,
-      sin_pitch_radians,
-      sin_yaw_radians * cos_pitch_radians
-    ));
-    front_side_ = glm::normalize(glm::vec3(cos_yaw_radians, 0, sin_yaw_radians));
-    right_ = glm::normalize(glm::cross(front_, glm::vec3(0, 1, 0)));
-    up_ = glm::normalize(glm::cross(right_, front_));
+    auto roll_radians = glm::radians(roll);
+
+    auto sin_yaw = glm::sin(yaw_radians);
+    auto cos_yaw = glm::cos(yaw_radians);
+    auto sin_pitch = glm::sin(pitch_radians);
+    auto cos_pitch = glm::cos(pitch_radians);
+
+    constexpr glm::vec3 world_up = glm::vec3(0.0f, 1.0f, 0.0f);
+    constexpr glm::vec4 world_up_vec4 = glm::vec4(world_up, 1);
+
+    front_ = glm::normalize(glm::vec3(sin_yaw * sin_pitch, cos_pitch, cos_yaw * sin_pitch));
+
+    auto right = glm::normalize(glm::cross(world_up, front_));
+
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
+    up_ = glm::vec3(rotation * world_up_vec4);
 
     view_matrix_ = glm::lookAt(position, position + front_, up_);
   }
 
-  glm::mat4 pv(glm::vec2 viewport) const
+  glm::mat4 pv(const glm::vec2& viewport) const
   {
     return orthographic ? orthographic_pv(viewport) : perspective_pv(viewport);
   }
 
 private:
-  glm::mat4 perspective_pv(glm::vec2 viewport) const
+  glm::mat4 perspective_pv(const glm::vec2& viewport) const
   {
     float f = glm::radians(fov);
     float r = viewport.x / viewport.y;
@@ -68,7 +69,7 @@ private:
     return projection * view_matrix();
   }
 
-  glm::mat4 orthographic_pv(glm::vec2 viewport) const
+  glm::mat4 orthographic_pv(const glm::vec2& viewport) const
   {
     glm::vec2 v = viewport * 0.5f;
     glm::mat4 projection = glm::ortho(-v.x, v.x, v.y, -v.y, near_clip, far_clip);

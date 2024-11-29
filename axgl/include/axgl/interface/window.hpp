@@ -28,6 +28,7 @@ public:
   virtual void hide() = 0;
   virtual void show() = 0;
   virtual void close() = 0;
+  virtual bool ready() const = 0;
   // render
   virtual void use() const = 0;
   virtual void swap_buffers() const = 0;

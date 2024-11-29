@@ -14,6 +14,7 @@ class Renderer
 {
 public:
   virtual ~Renderer() {}
+  virtual bool ready() = 0;
   virtual void before_render() = 0;
   virtual void after_render() = 0;
   virtual void set_window(std::shared_ptr<Window> window) = 0;

@@ -38,6 +38,7 @@ class RealmContext final
 {
 public:
   const Axgl* axgl;
+  const Renderer* renderer;
   Realm* realm;
   Entity* entity;
   glm::mat4 pv{ 1.0f };
@@ -52,6 +53,7 @@ public:
   RealmContext(RealmContextProvider* provider, const RealmContext* context) : RealmContext(provider)
   {
     axgl = context->axgl;
+    renderer = context->renderer;
     realm = context->realm;
     entity = context->entity;
     pv = context->pv;
