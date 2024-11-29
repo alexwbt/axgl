@@ -106,9 +106,6 @@ private:
   std::shared_ptr<DefaultRealm> realm_;
 
 public:
-  void initialize() override {}
-  void terminate() override {}
-
   void update() override
   {
     if (!realm_) return;
@@ -128,9 +125,6 @@ public:
 
     realm_->render();
   }
-
-  bool running() override { return true; }
-  bool keep_alive() override { return false; }
 
   std::shared_ptr<interface::Realm> create_realm() override
   {

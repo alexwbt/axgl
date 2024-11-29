@@ -22,8 +22,6 @@ private:
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
 
 public:
-  void update() override {}
-
   void render() override
   {
     auto context = get_context();

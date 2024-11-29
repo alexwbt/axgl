@@ -18,14 +18,24 @@ private:
   } };
   opengl::VertexArrayObject vertex_array_;
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
+  float specular_ = 1.0f;
 
 public:
-  void update() override {}
-
   void render() override
   {
+    auto context = get_context();
+    glm::mat4 m = model();
+    glm::mat4 mvp = context->pv * m;
+
     shader_.use_program();
+    shader_.set_mat4("mvp", mvp);
+    shader_.set_mat4("model", m);
     shader_.set_vec3("mesh_color", color_);
+    shader_.set_float("mesh_specular", specular_);
+    shader_.set_vec3("camera_pos", context->realm->camera.position);
+    shader_.set_int("sun_lights_size", 0);
+    shader_.set_int("spot_lights_size", 0);
+    shader_.set_int("point_lights_size", 0);
 
     vertex_array_.draw();
   }

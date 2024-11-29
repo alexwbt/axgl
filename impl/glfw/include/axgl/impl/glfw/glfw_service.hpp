@@ -79,14 +79,10 @@ public:
 class GlfwWindowService : public interface::WindowService
 {
 public:
-  void initialize() override {}
-
   void terminate() override
   {
     glfw::Window::terminate();
   }
-
-  void update() override {}
 
   void render() override
   {

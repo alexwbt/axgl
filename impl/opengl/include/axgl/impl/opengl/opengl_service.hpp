@@ -69,9 +69,9 @@ public:
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
     initialized_glad_ = true;
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_BACK);
+    // glFrontFace(GL_CW);
   }
 
   glm::ivec2 viewport() const override
@@ -83,13 +83,6 @@ public:
 class OpenglRendererService : public interface::RendererService
 {
 public:
-  void initialize() override {}
-  void terminate() override {}
-  void update() override {}
-  void render() override {}
-  bool running() override { return true; }
-  bool keep_alive() override { return false; }
-
   std::shared_ptr<interface::Renderer> create_renderer() override
   {
     return std::make_shared<OpenglRenderer>();

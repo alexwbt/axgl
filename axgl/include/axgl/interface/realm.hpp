@@ -76,8 +76,8 @@ public:
   glm::vec3 position{ 0.0f };
 
   virtual ~Component() {}
-  virtual void update() = 0;
-  virtual void render() = 0;
+  virtual void update() {}
+  virtual void render() {}
 
   glm::mat4 model() const
   {

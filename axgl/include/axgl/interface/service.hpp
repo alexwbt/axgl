@@ -26,12 +26,12 @@ protected:
 
 public:
   virtual ~Service() {}
-  virtual void initialize() = 0;
-  virtual void terminate() = 0;
-  virtual void update() = 0;
-  virtual void render() = 0;
-  virtual bool running() = 0;
-  virtual bool keep_alive() = 0;
+  virtual void initialize() {}
+  virtual void terminate() {}
+  virtual void update() {}
+  virtual void render() {}
+  virtual bool running() { return true; }
+  virtual bool keep_alive() { return false; }
   virtual void exec(const std::vector<std::string>& args) {}
 };
 

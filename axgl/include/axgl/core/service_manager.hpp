@@ -71,42 +71,49 @@ public:
     return service;
   }
 
-  void initialize()
+  void initialize(Axgl* axgl)
   {
     interface::ServiceContext context(this);
+    context.axgl = axgl;
 
     for (const auto& entry : services_)
       entry.second->initialize();
   }
 
-  void terminate()
+  void terminate(Axgl* axgl)
   {
     interface::ServiceContext context(this);
+    context.axgl = axgl;
 
     for (const auto& entry : services_)
       entry.second->terminate();
   }
 
-  void update()
+  void update(Axgl* axgl)
   {
     interface::ServiceContext context(this);
+    context.axgl = axgl;
 
     for (const auto& entry : services_)
       if (entry.second->running())
         entry.second->update();
   }
 
-  void render()
+  void render(Axgl* axgl)
   {
     interface::ServiceContext context(this);
+    context.axgl = axgl;
 
     for (const auto& entry : services_)
       if (entry.second->running())
         entry.second->render();
   }
 
-  bool running()
+  bool running(Axgl* axgl)
   {
+    interface::ServiceContext context(this);
+    context.axgl = axgl;
+
     for (const auto& entry : services_)
       if (entry.second->keep_alive())
         return true;

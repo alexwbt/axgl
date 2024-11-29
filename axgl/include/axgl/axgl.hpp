@@ -22,7 +22,7 @@ class Axgl final : public ServiceManager
 public:
   void run()
   {
-    initialize();
+    initialize(this);
 
     constexpr int64_t kOneSecond = 1000000000;
     constexpr double kTimeStep = kOneSecond / 60.0;
@@ -30,7 +30,7 @@ public:
     auto start_time = std::chrono::high_resolution_clock::now();
     double delta_time = 0.0;
 
-    while (running())
+    while (running(this))
     {
       auto now = std::chrono::high_resolution_clock::now();
       delta_time += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
@@ -40,15 +40,15 @@ public:
 
       while (delta_time >= 1)
       {
-        update();
+        update(this);
         delta_time--;
       }
 
       if (should_update)
-        render();
+        render(this);
     }
 
-    terminate();
+    terminate(this);
   }
 
   template<typename ServiceType>
