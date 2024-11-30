@@ -69,9 +69,11 @@ public:
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
     initialized_glad_ = true;
 
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
-    // glFrontFace(GL_CW);
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
   }
 
   glm::ivec2 viewport() const override

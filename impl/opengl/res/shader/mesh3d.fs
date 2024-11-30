@@ -114,14 +114,14 @@ vec3 calc_point_light(PointLight light, vec3 view_dir)
 void main()
 {
   vec3 view_dir = normalize(camera_pos - vert_position);
-  vec3 result = vec3(10);
+  vec3 result = vec3(0);
 
   // sun lights
-  // for (int i = 0; i < sun_lights_size; i++) result += calc_sun_light(sun_lights[i], view_dir);
+  for (int i = 0; i < sun_lights_size; i++) result += calc_sun_light(sun_lights[i], view_dir);
   // spot lights
-  // for (int i = 0; i < spot_lights_size; i++) result += calc_spot_light(spot_lights[i], view_dir);
+  for (int i = 0; i < spot_lights_size; i++) result += calc_spot_light(spot_lights[i], view_dir);
   // point lights
-  // for (int i = 0; i < point_lights_size; i++) result += calc_point_light(point_lights[i], view_dir);
+  for (int i = 0; i < point_lights_size; i++) result += calc_point_light(point_lights[i], view_dir);
 
   FragColor = vec4(result * mesh_color, 1.0);
 }

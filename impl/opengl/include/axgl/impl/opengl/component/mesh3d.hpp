@@ -33,9 +33,14 @@ public:
     shader_.set_vec3("mesh_color", color_);
     shader_.set_float("mesh_specular", specular_);
     shader_.set_vec3("camera_pos", context->realm->camera.position);
-    shader_.set_int("sun_lights_size", 0);
-    shader_.set_int("spot_lights_size", 0);
+
     shader_.set_int("point_lights_size", 0);
+    shader_.set_int("spot_lights_size", 0);
+    shader_.set_int("sun_lights_size", 1);
+    shader_.set_vec3("sun_lights[0].direction", { 0.2f, -1.0f, 1.2f });
+    shader_.set_vec3("sun_lights[0].ambient", glm::vec3(0.3f));
+    shader_.set_vec3("sun_lights[0].diffuse", glm::vec3(1));
+    shader_.set_vec3("sun_lights[0].specular", glm::vec3(1));
 
     vertex_array_.draw();
   }

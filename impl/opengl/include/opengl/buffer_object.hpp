@@ -57,10 +57,11 @@ namespace opengl
       BufferObject(GL_ARRAY_BUFFER, data),
       attribute_size_(attributes.size())
     {
-      for (int i = 0; i < attribute_size_; ++i)
+      for (int i = 0; i < attribute_size_; i++)
       {
+        auto index = offset + i;
         const auto& attr = attributes[i];
-        glEnableVertexAttribArray(offset + i);
+        glEnableVertexAttribArray(index);
         switch (attr.type)
         {
         case GL_BYTE:
@@ -69,7 +70,7 @@ namespace opengl
         case GL_UNSIGNED_SHORT:
         case GL_INT:
         case GL_UNSIGNED_INT:
-          glVertexAttribIPointer(i, attr.size, attr.type, attr.stride, attr.pointer);
+          glVertexAttribIPointer(index, attr.size, attr.type, attr.stride, attr.pointer);
           break;
         case GL_HALF_FLOAT:
         case GL_FLOAT:
@@ -77,10 +78,10 @@ namespace opengl
         case GL_INT_2_10_10_10_REV:
         case GL_UNSIGNED_INT_2_10_10_10_REV:
         case GL_UNSIGNED_INT_10F_11F_11F_REV:
-          glVertexAttribPointer(i, attr.size, attr.type, attr.normalized, attr.stride, attr.pointer);
+          glVertexAttribPointer(index, attr.size, attr.type, attr.normalized, attr.stride, attr.pointer);
           break;
           // case GL_DOUBLE:
-          //   glVertexAttribLPointer(i, attr.size, attr.type, attr.normalized, attr.stride, attr.pointer);
+          //   glVertexAttribLPointer(index, attr.size, attr.type, attr.normalized, attr.stride, attr.pointer);
           //   break;
         }
       }
