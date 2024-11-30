@@ -68,7 +68,6 @@ private:
     shader_.set_int("point_lights_size", point_lights_size);
   }
 
-
 public:
   void render() override
   {
