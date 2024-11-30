@@ -4,6 +4,7 @@
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/renderer.hpp"
 #include "axgl/interface/camera.hpp"
+#include "axgl/interface/light.hpp"
 #include "axgl/util/iterable.hpp"
 
 #include <glm/gtx/transform.hpp>
@@ -112,6 +113,7 @@ class Realm : public Component, public RealmContextProvider
 {
 public:
   interface::Camera camera;
+  std::vector<interface::Light> lights;
 
 public:
   virtual ~Realm() {}

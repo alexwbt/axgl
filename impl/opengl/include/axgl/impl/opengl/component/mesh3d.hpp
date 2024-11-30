@@ -20,6 +20,55 @@ private:
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
   float specular_ = 1.0f;
 
+private:
+  void use_lights(const std::vector<interface::Light>& lights)
+  {
+    int sun_lights_size = 0;
+    int spot_lights_size = 0;
+    int point_lights_size = 0;
+
+    for (const auto& light : lights)
+    {
+      switch (light.type)
+      {
+      case interface::Light::SUN:
+        shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].direction", light.direction);
+        shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].ambient", light.color.ambient);
+        shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].diffuse", light.color.diffuse);
+        shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].specular", light.color.specular);
+        sun_lights_size++;
+        break;
+      case interface::Light::POINT:
+        shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].position", light.position);
+        shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].ambient", light.color.ambient);
+        shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].diffuse", light.color.diffuse);
+        shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].specular", light.color.specular);
+        shader_.set_float("point_lights[" + std::to_string(point_lights_size) + "].constant", light.strength.constant);
+        shader_.set_float("point_lights[" + std::to_string(point_lights_size) + "].linear", light.strength.linear);
+        shader_.set_float("point_lights[" + std::to_string(point_lights_size) + "].quadratic", light.strength.quadratic);
+        point_lights_size++;
+        break;
+      case interface::Light::SPOT:
+        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].direction", light.direction);
+        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].position", light.position);
+        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].ambient", light.color.ambient);
+        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].diffuse", light.color.diffuse);
+        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].specular", light.color.specular);
+        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].constant", light.strength.constant);
+        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].linear", light.strength.linear);
+        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].quadratic", light.strength.quadratic);
+        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].cutOff", light.cut_off);
+        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].outerCutOff", light.outer_cut_off);
+        spot_lights_size++;
+        break;
+      }
+    }
+    shader_.set_int("sun_lights_size", sun_lights_size);
+    shader_.set_int("spot_lights_size", spot_lights_size);
+    shader_.set_int("point_lights_size", point_lights_size);
+  }
+
+
 public:
   void render() override
   {
@@ -34,14 +83,8 @@ public:
     shader_.set_float("mesh_specular", specular_);
     shader_.set_vec3("camera_pos", context->realm->camera.position);
 
-    shader_.set_int("point_lights_size", 0);
-    shader_.set_int("spot_lights_size", 0);
-    shader_.set_int("sun_lights_size", 1);
-    shader_.set_vec3("sun_lights[0].direction", { 0.2f, -1.0f, 1.2f });
-    shader_.set_vec3("sun_lights[0].ambient", glm::vec3(0.3f));
-    shader_.set_vec3("sun_lights[0].diffuse", glm::vec3(1));
-    shader_.set_vec3("sun_lights[0].specular", glm::vec3(1));
-
+    use_lights(context->realm->lights);
+    
     vertex_array_.draw();
   }
 

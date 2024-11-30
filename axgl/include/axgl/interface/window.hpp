@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "axgl/namespace.hpp"
-#include "axgl/interface/input.hpp"
 #include "axgl/interface/service.hpp"
 
 NAMESPACE_AXGL_INTERFACE
