@@ -31,14 +31,14 @@ private:
     {
       switch (light.type)
       {
-      case interface::Light::SUN:
+      case (interface::Light::SUN):
         shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].direction", light.direction);
         shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].ambient", light.color.ambient);
         shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].diffuse", light.color.diffuse);
         shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].specular", light.color.specular);
         sun_lights_size++;
         break;
-      case interface::Light::POINT:
+      case (interface::Light::POINT):
         shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].position", light.position);
         shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].ambient", light.color.ambient);
         shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].diffuse", light.color.diffuse);
@@ -48,7 +48,7 @@ private:
         shader_.set_float("point_lights[" + std::to_string(point_lights_size) + "].quadratic", light.strength.quadratic);
         point_lights_size++;
         break;
-      case interface::Light::SPOT:
+      case (interface::Light::SPOT):
         shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].direction", light.direction);
         shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].position", light.position);
         shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].ambient", light.color.ambient);
@@ -84,7 +84,7 @@ public:
     shader_.set_vec3("camera_pos", context->realm->camera.position);
 
     use_lights(context->realm->lights);
-    
+
     vertex_array_.draw();
   }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdexcept>
+
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/renderer.hpp"
@@ -69,7 +71,14 @@ class Component
 private:
   const RealmContext* context_;
 protected:
-  const RealmContext* get_context() const { return context_; }
+  const RealmContext* get_context() const
+  {
+#ifdef AXGL_DEBUG
+    if (!context_)
+      throw std::runtime_error("RealmContext is not provided here.");
+#endif
+    return context_;
+  }
 
 public:
   glm::vec3 scale{ 1.0f };

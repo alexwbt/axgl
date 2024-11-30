@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <stdexcept>
 #include <unordered_map>
 
 #include "axgl/namespace.hpp"
@@ -22,7 +23,14 @@ private:
   friend class ServiceContextProvider;
 
 protected:
-  const ServiceContext* get_context() const { return context_; }
+  const ServiceContext* get_context() const
+  {
+#ifdef AXGL_DEBUG
+    if (!context_)
+      throw std::runtime_error("ServiceContext is not provided here.");
+#endif
+    return context_;
+  }
 
 public:
   virtual ~Service() {}
@@ -63,6 +71,10 @@ public:
   ServiceContext(ServiceContextProvider* provider) : provider_(provider)
   {
     provider_->use_context(this);
+  }
+  ServiceContext(ServiceContextProvider* provider, Axgl* axgl) : ServiceContext(provider)
+  {
+    this->axgl = axgl;
   }
   ServiceContext(ServiceContextProvider* provider, const ServiceContext* context) : ServiceContext(provider)
   {

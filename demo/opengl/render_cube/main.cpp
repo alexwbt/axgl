@@ -1,12 +1,9 @@
 
-#include <numbers>
-
+#define AXGL_DEBUG
 #include <axgl/axgl.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/glfw/glfw_service.hpp>
 #include <axgl/impl/opengl/opengl_service.hpp>
-
-#include <spdlog/spdlog.h>
 
 static std::vector<glm::vec3> cube_vertices = {
   glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f),
@@ -63,7 +60,7 @@ public:
 
     // light
     realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
-      axgl::interface::Light::Color{glm::vec3(0.3f), glm::vec3(1), glm::vec3(1)});
+      axgl::interface::Light::Color { glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
   }
 
   void update() override

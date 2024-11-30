@@ -61,20 +61,23 @@ public:
   template<typename ServiceType>
   std::shared_ptr<ServiceType> get_service(const std::string& id) const
   {
+#ifdef AXGL_DEBUG
     if (!has_service(id))
       throw std::runtime_error(std::format("Service with id '{}' is required, but does not exist.", id));
+#endif
 
     auto service = std::dynamic_pointer_cast<ServiceType>(services_.at(id));
+#ifdef AXGL_DEBUG
     if (!service)
       throw std::runtime_error(std::format("Service type '{}' is required, but is not supported.", typeid(ServiceType).name()));
+#endif
 
     return service;
   }
 
   void initialize(Axgl* axgl)
   {
-    interface::ServiceContext context(this);
-    context.axgl = axgl;
+    interface::ServiceContext context(this, axgl);
 
     for (const auto& entry : services_)
       entry.second->initialize();
@@ -82,8 +85,7 @@ public:
 
   void terminate(Axgl* axgl)
   {
-    interface::ServiceContext context(this);
-    context.axgl = axgl;
+    interface::ServiceContext context(this, axgl);
 
     for (const auto& entry : services_)
       entry.second->terminate();
@@ -91,8 +93,7 @@ public:
 
   void update(Axgl* axgl)
   {
-    interface::ServiceContext context(this);
-    context.axgl = axgl;
+    interface::ServiceContext context(this, axgl);
 
     for (const auto& entry : services_)
       if (entry.second->running())
@@ -101,8 +102,7 @@ public:
 
   void render(Axgl* axgl)
   {
-    interface::ServiceContext context(this);
-    context.axgl = axgl;
+    interface::ServiceContext context(this, axgl);
 
     for (const auto& entry : services_)
       if (entry.second->running())
@@ -111,8 +111,7 @@ public:
 
   bool running(Axgl* axgl)
   {
-    interface::ServiceContext context(this);
-    context.axgl = axgl;
+    interface::ServiceContext context(this, axgl);
 
     for (const auto& entry : services_)
       if (entry.second->keep_alive())
