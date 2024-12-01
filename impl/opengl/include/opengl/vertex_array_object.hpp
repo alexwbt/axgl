@@ -12,7 +12,7 @@ namespace opengl
   class VertexArrayObject final
   {
   private:
-    GLuint id_ = 0;
+    GLuint id_;
     std::vector<std::unique_ptr<const BufferObject>> buffer_objects_;
 
     size_t vertex_size_ = 0;

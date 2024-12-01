@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/interface/component/mesh.hpp>
@@ -35,7 +37,7 @@ public:
     vertex_array_.draw();
   }
 
-  void set_vertices(const std::vector<glm::vec2>& vertices) override
+  void set_vertices(const std::span<const glm::vec2>& vertices) override
   {
     std::vector<opengl::VertexAttribute> attributes{
       { 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 }
@@ -43,7 +45,15 @@ public:
     vertex_array_.create_vertex_buffer<glm::vec2>(vertices, attributes);
   }
 
-  void set_indices(const std::vector<uint32_t>& indices) override
+  void set_uv(const std::span<const glm::vec2>& uv) override
+  {
+    std::vector<opengl::VertexAttribute> attributes{
+      { 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 }
+    };
+    vertex_array_.create_vertex_buffer<glm::vec2>(uv, attributes);
+  }
+
+  void set_indices(const std::span<const uint32_t>& indices) override
   {
     vertex_array_.create_element_buffer(indices);
   }

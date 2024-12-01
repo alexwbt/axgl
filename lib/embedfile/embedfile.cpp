@@ -58,6 +58,7 @@ void write_files(const std::vector<File>& files, const std::string& target, cons
   if (!ns.empty()) header_output_stream << "}" << std::endl;
 
   std::ofstream output_stream(target + ".cpp");
+  output_stream << "#pragma warning(push, 0)" << std::endl;
   output_stream << "#include " << std::filesystem::path(target + ".hpp").filename() << std::endl;
   if (!ns.empty()) output_stream << "namespace " << ns << " {" << std::endl;
 
@@ -82,6 +83,7 @@ void write_files(const std::vector<File>& files, const std::string& target, cons
     output_stream << std::format("{{\"{}\", d{}}},", file.key, file.key_hash) << std::endl;
   output_stream << "};" << std::endl;
   if (!ns.empty()) output_stream << "}" << std::endl;
+  output_stream << "#pragma warning(pop)" << std::endl;
 }
 
 int embed_files(const std::string& source, const std::string& target, const std::string& ns)

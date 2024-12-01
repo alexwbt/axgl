@@ -29,7 +29,7 @@ int main()
 
   // triangle mesh
   auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
-  mesh->set_vertices({ {0.8f, -0.5f}, {-0.8f, -0.5f}, {0.0f, 0.5f} });
+  mesh->set_vertices(std::vector<glm::vec2>{ {0.8f, -0.5f}, { -0.8f, -0.5f }, { 0.0f, 0.5f } });
   mesh->set_color({ 1.0f, 0.5f, 0.2f });
   mesh->scale = glm::vec3(200.0f);
 

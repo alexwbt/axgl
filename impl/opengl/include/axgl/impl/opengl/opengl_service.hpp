@@ -5,11 +5,30 @@
 #include <axgl/interface/renderer.hpp>
 #include <axgl/impl/glfw/glfw_service.hpp>
 
+#include "opengl/texture.hpp"
+
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
 #include <glm/glm.hpp>
 
 NAMESPACE_AXGL_IMPL
+
+class Texture : public interface::Texture
+{
+private:
+  opengl::Texture texture_;
+
+public:
+  void load_2d_texture(std::span<const uint8_t> data) override
+  {
+    texture_.load_2d_texture(data);
+  }
+
+  void load_cubemap_texture(const std::array<std::span<const uint8_t>, kCubemapSize>& data) override
+  {
+    texture_.load_cubemap_texture(data);
+  }
+};
 
 class OpenglRenderer : public interface::Renderer
 {
@@ -79,6 +98,11 @@ public:
   glm::ivec2 viewport() const override
   {
     return { window_width_, window_height_ };
+  }
+
+  std::shared_ptr<interface::Texture> create_texture() override
+  {
+    return std::make_shared<Texture>();
   }
 };
 

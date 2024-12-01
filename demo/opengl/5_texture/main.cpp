@@ -27,10 +27,21 @@ int main()
   realm->camera.near_clip = -1;
   realm->camera.far_clip = 1;
 
-  // triangle mesh
+  // square mesh
   auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
-  //mesh->set_vertices();
-  //mesh->scale = glm::vec3(200.0f);
+  mesh->scale = glm::vec3(200.0f);
+  mesh->set_vertices(std::vector<glm::vec3>{
+    { 0.5f, 0.5f, 0.0f },
+    { 0.5f, -0.5f, 0.0f },
+    { -0.5f, -0.5f, 0.0f },
+    { -0.5f, 0.5f, 0.0f },
+  });
+  mesh->set_uv(std::vector<glm::vec2>{
+    { 1.0f, 1.0f },
+    { 1.0f, 0.0f },
+    { 0.0f, 0.0f },
+    { 0.0f, 1.0f },
+  });
 
   // triangle entity
   auto entity = realm->create_entity();

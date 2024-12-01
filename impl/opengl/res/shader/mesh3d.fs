@@ -41,6 +41,7 @@ struct PointLight
 
 in vec3 vert_position;
 in vec3 vert_normal;
+in vec2 vert_uv;
 
 uniform vec3 camera_pos;
 uniform vec3 mesh_color;

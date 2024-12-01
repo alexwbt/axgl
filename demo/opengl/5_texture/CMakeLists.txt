@@ -1,3 +1,4 @@
+include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
 
 add_executable(demo_opengl_texture)
 
@@ -10,3 +11,5 @@ target_link_libraries(demo_opengl_texture
   PRIVATE
   axgl_opengl_impl
 )
+
+use_resource(demo_opengl_texture res)

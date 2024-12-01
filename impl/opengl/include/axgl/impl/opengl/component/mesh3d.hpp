@@ -1,10 +1,14 @@
 #pragma once
 
+#include <vector>
+
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/interface/component/mesh.hpp>
 
 #include "opengl/shader_program.hpp"
+#include "opengl/vertex_array_object.hpp"
+
 #include "axgl_opengl_impl/res.hpp"
 
 NAMESPACE_AXGL_IMPL
@@ -87,7 +91,7 @@ public:
     vertex_array_.draw();
   }
 
-  void set_vertices(const std::vector<glm::vec3>& vertices) override
+  void set_vertices(const std::span<const glm::vec3>& vertices) override
   {
     std::vector<opengl::VertexAttribute> attributes{
       { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
@@ -95,7 +99,7 @@ public:
     vertex_array_.create_vertex_buffer<glm::vec3>(vertices, attributes);
   }
 
-  void set_normals(const std::vector<glm::vec3>& normals) override
+  void set_normals(const std::span<const glm::vec3>& normals) override
   {
     std::vector<opengl::VertexAttribute> attributes{
       { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
@@ -103,7 +107,15 @@ public:
     vertex_array_.create_vertex_buffer<glm::vec3>(normals, attributes);
   }
 
-  void set_indices(const std::vector<uint32_t>& indices) override
+  void set_uv(const std::span<const glm::vec2>& uv) override
+  {
+    std::vector<opengl::VertexAttribute> attributes{
+      { 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 }
+    };
+    vertex_array_.create_vertex_buffer<glm::vec2>(uv, attributes);
+  }
+
+  void set_indices(const std::span<const uint32_t>& indices) override
   {
     vertex_array_.create_element_buffer(indices);
   }
