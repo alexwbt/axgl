@@ -13,6 +13,13 @@ NAMESPACE_AXGL_INTERFACE
 class Texture
 {
 public:
+  enum Type
+  {
+    DIFFUSE,
+    SPECULAR,
+    NORMAL,
+    HEIGHT,
+  };
   static constexpr int kCubemapSize = 6;
   virtual ~Texture() {}
   virtual void load_2d_texture(std::span<const uint8_t> data) = 0;

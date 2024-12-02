@@ -4,6 +4,7 @@
 
 #include "axgl/namespace.hpp"
 #include "axgl/interface/realm.hpp"
+#include "axgl/interface/renderer.hpp"
 
 #include <glm/glm.hpp>
 
@@ -17,7 +18,8 @@ public:
 
   virtual void set_indices(const std::span<const uint32_t>& indices) = 0;
   virtual void set_color(const glm::vec3& color) = 0;
-  // virtual void set_texture(const std::span<const)
+
+  virtual void add_texture(Texture::Type type, std::shared_ptr<Texture> texture) = 0;
 };
 
 class Mesh3D : public Component
@@ -29,6 +31,8 @@ public:
 
   virtual void set_indices(const std::span<const uint32_t>& indices) = 0;
   virtual void set_color(const glm::vec3& color) = 0;
+
+  virtual void add_texture(Texture::Type type, std::shared_ptr<Texture> texture) = 0;
 };
 
 NAMESPACE_AXGL_INTERFACE_END

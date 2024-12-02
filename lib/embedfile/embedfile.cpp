@@ -78,7 +78,7 @@ void write_files(const std::vector<File>& files, const std::string& target, cons
     output_stream << "};" << std::endl;
   }
 
-  output_stream << "const std::unordered_map<std::string, std::span<const uint8_t>> data = {" << std::endl;
+  output_stream << "constexpr std::unordered_map<std::string, std::span<const uint8_t>> data = {" << std::endl;
   for (const auto& file : files)
     output_stream << std::format("{{\"{}\", d{}}},", file.key, file.key_hash) << std::endl;
   output_stream << "};" << std::endl;

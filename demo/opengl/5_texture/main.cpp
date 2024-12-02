@@ -31,20 +31,20 @@ int main()
 
   // square mesh
   auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
-  mesh->scale = glm::vec3(200.0f);
-  std::vector<glm::vec3> vertices{
-    { 0.5f, 0.5f, 0.0f },
-    { 0.5f, -0.5f, 0.0f },
-    { -0.5f, -0.5f, 0.0f },
-    { -0.5f, 0.5f, 0.0f },
-  };
-  mesh->set_vertices(vertices);
+  mesh->set_vertices(std::vector<glm::vec2>{
+    { 0.5f, 0.5f },
+    { 0.5f, -0.5f },
+    { -0.5f, -0.5f },
+    { -0.5f, 0.5f },
+  });
   mesh->set_uv(std::vector<glm::vec2>{
     { 1.0f, 1.0f },
     { 1.0f, 0.0f },
     { 0.0f, 0.0f },
     { 0.0f, 1.0f },
   });
+  mesh->set_indices(std::vector<uint32_t>{ 0, 1, 2, 0, 2, 3 });
+  mesh->scale = glm::vec3(200.0f);
 
   // triangle entity
   auto entity = realm->create_entity();
