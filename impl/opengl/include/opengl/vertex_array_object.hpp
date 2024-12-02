@@ -36,10 +36,11 @@ namespace opengl
     template <typename VertexType>
     void create_vertex_buffer(
       const std::span<const VertexType>& data,
-      const std::span<const VertexAttribute>& attributes)
+      const std::span<const VertexAttribute>& attributes,
+      int attributes_offset)
     {
       use();
-      auto buffer = std::make_unique<VertexBufferObject>(data, attributes, attribute_size_);
+      auto buffer = std::make_unique<VertexBufferObject>(data, attributes, attributes_offset);
 
       if (vertex_size_ > 0 && buffer->size() != vertex_size_)
         throw std::runtime_error("Size of all vertex buffer should be equal.");

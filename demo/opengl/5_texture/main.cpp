@@ -1,4 +1,6 @@
 
+#include <vector>
+
 #define AXGL_DEBUG
 #include <axgl/axgl.hpp>
 #include <axgl/impl/realm_service.hpp>
@@ -30,12 +32,13 @@ int main()
   // square mesh
   auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
   mesh->scale = glm::vec3(200.0f);
-  mesh->set_vertices(std::vector<glm::vec3>{
+  std::vector<glm::vec3> vertices{
     { 0.5f, 0.5f, 0.0f },
     { 0.5f, -0.5f, 0.0f },
     { -0.5f, -0.5f, 0.0f },
     { -0.5f, 0.5f, 0.0f },
-  });
+  };
+  mesh->set_vertices(vertices);
   mesh->set_uv(std::vector<glm::vec2>{
     { 1.0f, 1.0f },
     { 1.0f, 0.0f },

@@ -96,7 +96,7 @@ public:
     std::vector<opengl::VertexAttribute> attributes{
       { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
     };
-    vertex_array_.create_vertex_buffer<glm::vec3>(vertices, attributes);
+    vertex_array_.create_vertex_buffer<glm::vec3>(vertices, attributes, 0);
   }
 
   void set_normals(const std::span<const glm::vec3>& normals) override
@@ -104,7 +104,7 @@ public:
     std::vector<opengl::VertexAttribute> attributes{
       { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
     };
-    vertex_array_.create_vertex_buffer<glm::vec3>(normals, attributes);
+    vertex_array_.create_vertex_buffer<glm::vec3>(normals, attributes, 1);
   }
 
   void set_uv(const std::span<const glm::vec2>& uv) override
@@ -112,7 +112,7 @@ public:
     std::vector<opengl::VertexAttribute> attributes{
       { 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 }
     };
-    vertex_array_.create_vertex_buffer<glm::vec2>(uv, attributes);
+    vertex_array_.create_vertex_buffer<glm::vec2>(uv, attributes, 2);
   }
 
   void set_indices(const std::span<const uint32_t>& indices) override
