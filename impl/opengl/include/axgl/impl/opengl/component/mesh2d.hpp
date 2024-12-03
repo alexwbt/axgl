@@ -72,7 +72,7 @@ public:
     color_ = color;
   }
 
-  void add_texture(Texture::Type type, std::shared_ptr<interface::Texture> texture)
+  void add_texture(interface::Texture::Type type, std::shared_ptr<interface::Texture> texture) override
   {
     texture_ = std::dynamic_pointer_cast<Texture>(texture);
   }

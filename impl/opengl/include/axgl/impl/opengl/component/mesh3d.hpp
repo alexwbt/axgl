@@ -22,7 +22,12 @@ private:
   } };
   opengl::VertexArrayObject vertex_array_;
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
-  float specular_ = 1.0f;
+  float shininess_ = 1.0f;
+
+  std::shared_ptr<Texture> diffuse_texture_;
+  std::shared_ptr<Texture> specular_texture_;
+  std::shared_ptr<Texture> normal_texture_;
+  std::shared_ptr<Texture> height_texture_;
 
 private:
   void use_lights(const std::vector<interface::Light>& lights)
@@ -72,6 +77,19 @@ private:
     shader_.set_int("point_lights_size", point_lights_size);
   }
 
+  void use_texture(
+    int i,
+    const std::string& name,
+    const std::shared_ptr<Texture>& texture)
+  {
+    if (!texture) return;
+
+    glActiveTexture(GL_TEXTURE0 + i);
+    texture->use();
+    shader_.set_int(name + "_texture", i);
+    shader_.set_bool("use_" + name + "_texture", true);
+  }
+
 public:
   void render() override
   {
@@ -83,10 +101,15 @@ public:
     shader_.set_mat4("mvp", mvp);
     shader_.set_mat4("model", m);
     shader_.set_vec3("mesh_color", color_);
-    shader_.set_float("mesh_specular", specular_);
+    shader_.set_float("mesh_shininess", shininess_);
     shader_.set_vec3("camera_pos", context->realm->camera.position);
 
     use_lights(context->realm->lights);
+
+    use_texture(0, "diffuse", diffuse_texture_);
+    use_texture(1, "specular", specular_texture_);
+    use_texture(2, "normal", normal_texture_);
+    use_texture(3, "height", height_texture_);
 
     vertex_array_.draw();
   }
@@ -125,7 +148,17 @@ public:
     color_ = color;
   }
 
-  void add_texture(Texture::Type type, std::shared_ptr<interface::Texture> texture) {}
+  void add_texture(interface::Texture::Type type, std::shared_ptr<interface::Texture> texture) override
+  {
+    auto texture_ = std::dynamic_pointer_cast<Texture>(texture);
+    switch (type)
+    {
+    case (interface::Texture::DIFFUSE): diffuse_texture_ = std::move(texture_); break;
+    case (interface::Texture::SPECULAR): specular_texture_ = std::move(texture_); break;
+    case (interface::Texture::NORMAL): normal_texture_ = std::move(texture_); break;
+    case (interface::Texture::HEIGHT): height_texture_ = std::move(texture_); break;
+    }
+  }
 };
 
 NAMESPACE_AXGL_IMPL_END
