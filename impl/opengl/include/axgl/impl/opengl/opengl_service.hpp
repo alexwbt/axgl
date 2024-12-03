@@ -19,6 +19,11 @@ private:
   opengl::Texture texture_;
 
 public:
+  void use()
+  {
+    texture_.use();
+  }
+
   void load_2d_texture(std::span<const uint8_t> data) override
   {
     texture_.load_2d_texture(data);

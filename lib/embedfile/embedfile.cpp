@@ -54,7 +54,7 @@ void write_files(const std::vector<File>& files, const std::string& target, cons
   header_output_stream << "#include <unordered_map>" << std::endl;
   if (!ns.empty()) header_output_stream << "namespace " << ns << " {" << std::endl;
   header_output_stream << "extern const std::unordered_map<std::string, std::span<const uint8_t>> data;" << std::endl;
-  header_output_stream << "inline std::string get(const std::string& key) { return std::string(data.at(key).begin(), data.at(key).end()); }" << std::endl;
+  header_output_stream << "inline const std::span<const uint8_t>& get(const std::string& key) { return data.at(key); }" << std::endl;
   if (!ns.empty()) header_output_stream << "}" << std::endl;
 
   std::ofstream output_stream(target + ".cpp");
@@ -72,13 +72,13 @@ void write_files(const std::vector<File>& files, const std::string& target, cons
     buffer.resize(size);
     input_stream.read(buffer.data(), size);
 
-    output_stream << std::format("const std::array<uint8_t, {}> d{} = {{", buffer.size(), file.key_hash);
+    output_stream << std::format("constexpr std::array<uint8_t, {}> d{} = {{", buffer.size(), file.key_hash);
     for (char b : buffer)
       output_stream << static_cast<int>(b) << ",";
     output_stream << "};" << std::endl;
   }
 
-  output_stream << "constexpr std::unordered_map<std::string, std::span<const uint8_t>> data = {" << std::endl;
+  output_stream << "const std::unordered_map<std::string, std::span<const uint8_t>> data = {" << std::endl;
   for (const auto& file : files)
     output_stream << std::format("{{\"{}\", d{}}},", file.key, file.key_hash) << std::endl;
   output_stream << "};" << std::endl;

@@ -7,6 +7,8 @@
 #include <axgl/impl/glfw/glfw_service.hpp>
 #include <axgl/impl/opengl/opengl_service.hpp>
 
+#include "demo_opengl_texture/res.hpp"
+
 int main()
 {
   axgl::Axgl axgl;
@@ -16,7 +18,7 @@ int main()
 
   // window
   auto window = axgl.window_service()->create_window();
-  window->set_title("Hello triangle!");
+  window->set_title("Hello texture!");
 
   // renderer
   auto renderer = axgl.renderer_service()->create_renderer();
@@ -28,6 +30,10 @@ int main()
   realm->camera.orthographic = true;
   realm->camera.near_clip = -1;
   realm->camera.far_clip = 1;
+
+  // texture
+  auto texture = renderer->create_texture();
+  texture->load_2d_texture(demo_opengl_texture_res::get("container.png"));
 
   // square mesh
   auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
@@ -44,6 +50,7 @@ int main()
     { 0.0f, 1.0f },
   });
   mesh->set_indices(std::vector<uint32_t>{ 0, 1, 2, 0, 2, 3 });
+  mesh->add_texture(axgl::interface::Texture::DIFFUSE, texture);
   mesh->scale = glm::vec3(200.0f);
 
   // triangle entity

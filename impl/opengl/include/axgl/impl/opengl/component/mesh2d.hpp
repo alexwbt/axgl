@@ -22,6 +22,7 @@ private:
   } };
   opengl::VertexArrayObject vertex_array_;
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
+  std::shared_ptr<Texture> texture_;
 
 public:
   void render() override
@@ -33,6 +34,14 @@ public:
     shader_.use_program();
     shader_.set_mat4("mvp", mvp);
     shader_.set_vec3("mesh_color", color_);
+
+    if (texture_)
+    {
+      glActiveTexture(GL_TEXTURE0);
+      texture_->use();
+      shader_.set_int("mesh_texture", 0);
+      shader_.set_bool("use_texture", true);
+    }
 
     vertex_array_.draw();
   }
@@ -61,6 +70,11 @@ public:
   void set_color(const glm::vec3& color) override
   {
     color_ = color;
+  }
+
+  void add_texture(Texture::Type type, std::shared_ptr<interface::Texture> texture)
+  {
+    texture_ = std::dynamic_pointer_cast<Texture>(texture);
   }
 };
 

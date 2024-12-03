@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string_view>
 
 #include <glm/glm.hpp>
 #include <glad/glad.h>
@@ -11,12 +12,28 @@ namespace opengl
 
   class ShaderProgram
   {
-  private:
-    inline static GLuint create_shader(const char* code, GLenum type)
+  public:
+    struct Shader final
     {
-      GLuint id = glCreateShader(type);
+      GLenum type;
+      std::string_view source_code;
 
-      glShaderSource(id, 1, &code, NULL);
+      Shader(GLenum type, const std::string& data) :
+        type(type), source_code(data)
+      {}
+      Shader(GLenum type, const std::span<const uint8_t>& data) :
+        type(type), source_code(reinterpret_cast<const char*>(data.data()), data.size())
+      {}
+    };
+
+  private:
+    inline static GLuint create_shader(const Shader& shader)
+    {
+      GLuint id = glCreateShader(shader.type);
+
+      const GLchar* code = shader.source_code.data();
+      const GLint size = shader.source_code.size();
+      glShaderSource(id, 1, &code, &size);
 
       glCompileShader(id);
 
@@ -31,13 +48,6 @@ namespace opengl
       return id;
     }
 
-  public:
-    struct Shader final
-    {
-      GLenum type;
-      std::string source_code;
-    };
-
   private:
     GLuint program_id_;
 
@@ -51,7 +61,7 @@ namespace opengl
       // attach shaders
       for (const auto& shader : shaders)
       {
-        auto shader_id = create_shader(shader.source_code.c_str(), shader.type);
+        auto shader_id = create_shader(shader);
         glAttachShader(program_id_, shader_id);
         shader_ids.push_back(shader_id);
       }

@@ -39,4 +39,7 @@ function(use_resource target source_dir)
 
   # Add embedded resource file as source of specified target
   target_sources(${target} PRIVATE ${OUTPUT_FILE}.cpp)
+
+  # Add output to include directories
+  target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/resources)
 endfunction()

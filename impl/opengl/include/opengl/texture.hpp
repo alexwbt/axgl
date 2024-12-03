@@ -2,6 +2,7 @@
 
 #include <span>
 #include <array>
+#include <string>
 #include <stdint.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -57,13 +58,19 @@ namespace opengl
       glDeleteTextures(1, &id_);
     }
 
+    void use()
+    {
+      glBindTexture(target_, id_);
+    }
+
     void load_2d_texture(std::span<const uint8_t> data)
     {
-      if (id_ > 0 || target_ > 0)
+      if (target_ > 0)
       {
         SPDLOG_ERROR("Texture is already loaded.");
         return;
       }
+      target_ = GL_TEXTURE_2D;
 
       StbiImage texture(data);
       if (!texture.stbi_ptr)
@@ -72,27 +79,28 @@ namespace opengl
         return;
       }
 
-      glBindTexture(GL_TEXTURE_2D, id_);
+      glBindTexture(target_, id_);
 
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(target_, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(target_, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      glTexParameteri(target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-      glTexImage2D(GL_TEXTURE_2D, 0,
+      glTexImage2D(target_, 0,
         texture.format, texture.width, texture.height,
         0, texture.format, GL_UNSIGNED_BYTE, texture.stbi_ptr);
 
-      glGenerateMipmap(GL_TEXTURE_2D);
+      glGenerateMipmap(target_);
     }
 
     void load_cubemap_texture(const std::array<std::span<const uint8_t>, kCubemapSize>& data)
     {
-      if (id_ > 0 || target_ > 0)
+      if (target_ > 0)
       {
         SPDLOG_ERROR("Texture is already loaded.");
         return;
       }
+      target_ = GL_TEXTURE_CUBE_MAP;
 
       StbiImage texture[kCubemapSize] = {
         data[0], data[1], data[2],
@@ -107,13 +115,13 @@ namespace opengl
         }
       }
 
-      glBindTexture(GL_TEXTURE_CUBE_MAP, id_);
+      glBindTexture(target_, id_);
 
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+      glTexParameteri(target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(target_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(target_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(target_, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
       for (int i = 0; i < kCubemapSize; i++)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,

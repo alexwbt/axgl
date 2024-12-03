@@ -124,6 +124,8 @@ public:
   {
     color_ = color;
   }
+
+  void add_texture(Texture::Type type, std::shared_ptr<interface::Texture> texture) {}
 };
 
 NAMESPACE_AXGL_IMPL_END
