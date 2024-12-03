@@ -81,6 +81,11 @@ public:
   {
     return get_service<interface::RealmService>("realm");
   }
+
+  std::shared_ptr<interface::InputService> input_service() const
+  {
+    return get_service<interface::InputService>("input");
+  }
 };
 
 NAMESPACE_AXGL_END

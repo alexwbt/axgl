@@ -7,17 +7,12 @@
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
 
+#include <glm/glm.hpp>
+
 NAMESPACE_AXGL_INTERFACE
 
 class Window
 {
-public:
-  struct Size
-  {
-    uint32_t width;
-    uint32_t height;
-  };
-
 public:
   virtual ~Window() {}
   virtual void set_title(const std::string& title) = 0;
@@ -31,7 +26,7 @@ public:
   // render
   virtual void use() const = 0;
   virtual void swap_buffers() const = 0;
-  virtual Size get_size() const = 0;
+  virtual glm::ivec2 get_size() const = 0;
 };
 
 class WindowService : public Service

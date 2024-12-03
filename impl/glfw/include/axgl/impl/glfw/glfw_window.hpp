@@ -4,19 +4,13 @@
 #include <memory>
 #include <string>
 
-#include <spdlog/spdlog.h>
-
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <spdlog/spdlog.h>
+#include <glm/glm.hpp>
 
 namespace glfw
 {
-
-  struct Size
-  {
-    int width;
-    int height;
-  };
 
   struct EventListener
   {
@@ -230,11 +224,11 @@ namespace glfw
     void use() const { glfwMakeContextCurrent(glfw_window_); }
     void swap_buffers() const { glfwSwapBuffers(glfw_window_); }
 
-    Size get_size() const
+    glm::ivec2 get_size() const
     {
-      Size size;
-      glfwGetFramebufferSize(glfw_window_, &size.width, &size.height);
-      return size;
+      int width, height;
+      glfwGetFramebufferSize(glfw_window_, &width, &height);
+      return { width, height };
     }
 
   private:

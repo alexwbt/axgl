@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <stdexcept>
 
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
@@ -151,6 +152,13 @@ public:
   void add_texture(interface::Texture::Type type, std::shared_ptr<interface::Texture> texture) override
   {
     auto texture_ = std::dynamic_pointer_cast<Texture>(texture);
+    if (!texture_)
+#ifdef AXGL_DEBUG
+      throw std::runtime_error("The provided texture is not a valid opengl texture.");
+#else
+      return;
+#endif
+
     switch (type)
     {
     case (interface::Texture::DIFFUSE): diffuse_texture_ = std::move(texture_); break;

@@ -75,6 +75,10 @@ public:
   void add_texture(interface::Texture::Type type, std::shared_ptr<interface::Texture> texture) override
   {
     texture_ = std::dynamic_pointer_cast<Texture>(texture);
+#ifdef AXGL_DEBUG
+    if (!texture_)
+      throw std::runtime_error("The provided texture is not a valid opengl texture.");
+#endif
   }
 };
 

@@ -34,7 +34,7 @@ public:
 
     // window
     auto window = axgl->window_service()->create_window();
-    window->set_title("Hello cube!");
+    window->set_title("Hello input!");
 
     // renderer
     auto renderer = axgl->renderer_service()->create_renderer();
@@ -72,6 +72,7 @@ public:
 int main()
 {
   axgl::Axgl axgl;
+  axgl.use_service<axgl::impl::GlfwInputService>();
   axgl.use_service<axgl::impl::GlfwWindowService>();
   axgl.use_service<axgl::impl::OpenglRendererService>();
   axgl.use_service<axgl::impl::DefaultRealmService>();

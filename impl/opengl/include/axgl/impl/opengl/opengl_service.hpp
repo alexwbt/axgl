@@ -61,10 +61,10 @@ public:
     window_->use();
 
     const auto& size = window_->get_size();
-    if (size.width != window_width_ || size.height != window_height_)
+    if (size.x != window_width_ || size.y != window_height_)
     {
-      window_width_ = size.width;
-      window_height_ = size.height;
+      window_width_ = size.x;
+      window_height_ = size.y;
       glViewport(0, 0, window_width_, window_height_);
     }
 
@@ -80,11 +80,15 @@ public:
 
   void set_window(std::shared_ptr<interface::Window> window) override
   {
-    window_ = dynamic_pointer_cast<GlfwWindow>(std::move(window));
+    window_ = std::dynamic_pointer_cast<GlfwWindow>(std::move(window));
     if (!window_)
+#ifdef AXGL_DEBUG
       throw std::runtime_error(
         "The provided window is not a valid GlfwWindow instance. "
         "GlfwWindow is required for OpenglRenderer.");
+#else
+      return;
+#endif
 
     window_->use();
 
