@@ -1,7 +1,10 @@
 #pragma once
 
+#include <unordered_map>
+
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
+#include <axgl/interface/input.hpp>
 #include <axgl/interface/window.hpp>
 #include <axgl/impl/glfw/glfw_window.hpp>
 
@@ -105,6 +108,41 @@ public:
   }
 };
 
+class GlfwInputService : public interface::InputService
+{
+private:
+  std::unordered_map<uint32_t, interface::Input> inputs_;
+
+public:
+  void register_input(interface::Input input) override
+  {
+    inputs_.insert({ input.input_code, input });
+  }
+
+  uint32_t input_tick(uint32_t input_code) const override
+  {
+    return inputs_.at(input_code).ticks;
+  }
+
+  glm::ivec2 pointer_position() const override
+  {
+    return glm::ivec2(0);
+  }
+
+  glm::ivec2 pointer_delta() const override
+  {
+    return glm::ivec2(0);
+  }
+
+  void update() override
+  {
+    for (const auto& [input_code, input] : inputs_)
+    {
+
+    }
+  }
+};
+
 NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
@@ -118,6 +156,15 @@ std::shared_ptr<impl::GlfwWindowService> Axgl::use_service()
   register_service("window", glfw_service);
 
   return glfw_service;
+}
+
+template<>
+std::shared_ptr<impl::GlfwInputService> Axgl::use_service()
+{
+  auto input_service = std::make_shared<impl::GlfwInputService>();
+  register_service("input", input_service);
+
+  return input_service;
 }
 
 NAMESPACE_AXGL_END
