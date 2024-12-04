@@ -188,9 +188,11 @@ public:
   PointerSource source;
   glm::ivec2 position;
   glm::ivec2 delta;
+  uint32_t tick;
 
   Pointer(const std::string& name, PointerSource source) :
-    id(InputService::next_id()), name(name), source(source), position(0), delta(0)
+    id(InputService::next_id()), name(name), source(source),
+    position(0), delta(0), tick(0)
   {}
 };
 

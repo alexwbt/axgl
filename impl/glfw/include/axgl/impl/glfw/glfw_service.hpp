@@ -255,8 +255,11 @@ public:
   void set_cursor_mode(interface::CursorMode mode) override
   {
     if (!window_)
+#ifdef AXGL_DEBUG
+      throw std::runtime_error("GlfwWindow is not set.");
+#else
       return;
-
+#endif
     window_->use();
     using enum interface::CursorMode;
     switch (mode)

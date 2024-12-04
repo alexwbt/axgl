@@ -16,6 +16,8 @@
 #include "axgl/interface/realm.hpp"
 #include "axgl/util/string.hpp"
 
+#include <spdlog/spdlog.h>
+
 NAMESPACE_AXGL
 
 class Axgl final : public ServiceManager
@@ -23,33 +25,40 @@ class Axgl final : public ServiceManager
 public:
   void run()
   {
-    initialize(this);
-
-    constexpr int64_t kOneSecond = 1000000000;
-    constexpr double kTimeStep = kOneSecond / 60.0;
-
-    auto start_time = std::chrono::high_resolution_clock::now();
-    double delta_time = 0.0;
-
-    while (running(this))
+    try
     {
-      auto now = std::chrono::high_resolution_clock::now();
-      delta_time += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
-      start_time = now;
+      initialize(this);
 
-      auto should_update = delta_time >= 1;
+      constexpr int64_t kOneSecond = 1000000000;
+      constexpr double kTimeStep = kOneSecond / 60.0;
 
-      while (delta_time >= 1)
+      auto start_time = std::chrono::high_resolution_clock::now();
+      double delta_time = 0.0;
+
+      while (running(this))
       {
-        update(this);
-        delta_time--;
+        auto now = std::chrono::high_resolution_clock::now();
+        delta_time += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
+        start_time = now;
+
+        auto should_update = delta_time >= 1;
+
+        while (delta_time >= 1)
+        {
+          update(this);
+          delta_time--;
+        }
+
+        if (should_update)
+          render(this);
       }
 
-      if (should_update)
-        render(this);
+      terminate(this);
     }
-
-    terminate(this);
+    catch (const std::exception& e)
+    {
+      SPDLOG_ERROR(e.what());
+    }
   }
 
   template<typename ServiceType>

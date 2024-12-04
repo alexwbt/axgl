@@ -45,16 +45,12 @@ public:
     auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
 
-    // input
-    auto input = axgl->input_service();
-    input->set_window(window);
-    input->set_cursor_mode(axgl::interface::CursorMode::LOCKED);
-
     // camera
+    axgl->input_service()->set_window(window);
     realm->camera.position.z = -2;
     realm->camera.update();
     auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
-    camera_service->set_camera_mode(std::make_shared<axgl::impl::FreeCameraMode>());
+    camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
     // cube mesh
     auto mesh = axgl->create_component<axgl::interface::Mesh3D>();
