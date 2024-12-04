@@ -10,6 +10,7 @@
 #include "axgl/namespace.hpp"
 #include "axgl/core/service_manager.hpp"
 #include "axgl/interface/service.hpp"
+#include "axgl/interface/input.hpp"
 #include "axgl/interface/window.hpp"
 #include "axgl/interface/renderer.hpp"
 #include "axgl/interface/realm.hpp"

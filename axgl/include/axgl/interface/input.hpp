@@ -132,22 +132,66 @@ enum class InputSource
   KEY_MENU,
 };
 
-struct Input
+enum class PointerSource
 {
-  uint32_t id;
-  std::string name;
-  InputSource source;
-  uint32_t tick;
-  bool remove;
+  MOUSE_MOVE,
 };
 
+enum class CursorMode
+{
+  LOCKED,
+  NORMAL,
+};
+
+class Input;
+class Pointer;
 class InputService : public Service
 {
+private:
+  static uint32_t next_id()
+  {
+    static uint32_t next_id_ = 1;
+    return next_id_++;
+  }
+
 public:
   virtual void set_window(std::shared_ptr<Window> window) = 0;
   virtual void add_input(std::shared_ptr<Input> input) = 0;
-  virtual glm::ivec2 pointer_position() const = 0;
-  virtual glm::ivec2 pointer_delta() const = 0;
+  virtual void add_pointer(std::shared_ptr<Pointer> pointer) = 0;
+  virtual void remove_input(uint32_t id) = 0;
+  virtual void remove_pointer(uint32_t id) = 0;
+
+  virtual void set_cursor_mode(CursorMode mode) = 0;
+
+  friend class Input;
+  friend class Pointer;
+};
+
+class Input
+{
+public:
+  const uint32_t id;
+  std::string name;
+  InputSource source;
+  uint32_t tick;
+
+  Input(const std::string& name, InputSource source) :
+    id(InputService::next_id()), name(name), source(source), tick(0)
+  {}
+};
+
+class Pointer
+{
+public:
+  const uint32_t id;
+  std::string name;
+  PointerSource source;
+  glm::ivec2 position;
+  glm::ivec2 delta;
+
+  Pointer(const std::string& name, PointerSource source) :
+    id(InputService::next_id()), name(name), source(source), position(0), delta(0)
+  {}
 };
 
 NAMESPACE_AXGL_INTERFACE_END

@@ -9,7 +9,7 @@
 
 NAMESPACE_AXGL_IMPL
 
-class DefaultEntity : public interface::Entity
+class Entity : public interface::Entity
 {
 private:
   std::vector<std::shared_ptr<interface::Component>> components_;
@@ -45,10 +45,10 @@ public:
   }
 };
 
-class DefaultRealm : public interface::Realm
+class Realm : public interface::Realm
 {
 private:
-  std::vector<std::shared_ptr<DefaultEntity>> entities_;
+  std::vector<std::shared_ptr<Entity>> entities_;
   std::shared_ptr<interface::Renderer> renderer_;
 
 public:
@@ -94,16 +94,16 @@ public:
 
   std::shared_ptr<interface::Entity> create_entity() override
   {
-    auto entity = std::make_shared<DefaultEntity>();
+    auto entity = std::make_shared<Entity>();
     entities_.push_back(entity);
     return entity;
   }
 };
 
-class DefaultRealmService : public interface::RealmService
+class RealmService : public interface::RealmService
 {
 private:
-  std::shared_ptr<DefaultRealm> realm_;
+  std::shared_ptr<Realm> realm_;
 
 public:
   void update() override
@@ -128,7 +128,7 @@ public:
 
   std::shared_ptr<interface::Realm> create_realm() override
   {
-    return realm_ = std::make_shared<DefaultRealm>();
+    return realm_ = std::make_shared<Realm>();
   }
 
   std::shared_ptr<interface::Realm> get_active_realm() const override
@@ -142,9 +142,9 @@ NAMESPACE_AXGL_IMPL_END
 NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<impl::DefaultRealmService> Axgl::use_service()
+std::shared_ptr<impl::RealmService> Axgl::use_service()
 {
-  auto realm_service = std::make_shared<impl::DefaultRealmService>();
+  auto realm_service = std::make_shared<impl::RealmService>();
   register_service("realm", realm_service);
 
   return realm_service;

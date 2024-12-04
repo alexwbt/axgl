@@ -10,7 +10,7 @@ int main()
   axgl::Axgl axgl;
   axgl.use_service<axgl::impl::GlfwWindowService>();
   axgl.use_service<axgl::impl::OpenglRendererService>();
-  axgl.use_service<axgl::impl::DefaultRealmService>();
+  axgl.use_service<axgl::impl::RealmService>();
 
   // window
   auto window = axgl.window_service()->create_window();

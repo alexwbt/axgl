@@ -220,6 +220,12 @@ namespace glfw
     GLFWwindow* get_glfw_window() const { return glfw_window_; }
     bool is_destroyed() const { return destroyed_; }
     bool key_pressed(int key) const { return glfwGetKey(glfw_window_, key) == GLFW_PRESS; }
+    glm::ivec2 get_mouse_pos() const
+    {
+      double xpos, ypos;
+      glfwGetCursorPos(glfw_window_, &xpos, &ypos);
+      return { xpos, ypos };
+    }
 
     void use() const { glfwMakeContextCurrent(glfw_window_); }
     void swap_buffers() const { glfwSwapBuffers(glfw_window_); }

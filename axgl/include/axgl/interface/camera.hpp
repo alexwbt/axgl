@@ -22,6 +22,7 @@ public:
 private:
   glm::vec3 up_{ 0.0f };
   glm::vec3 front_{ 0.0f };
+  glm::vec3 horizontal_right_{ 0.0f };
   glm::mat4 view_matrix_{ 0.0f };
 
 public:
@@ -29,6 +30,7 @@ public:
 
   glm::vec3 up() const { return up_; }
   glm::vec3 front() const { return front_; }
+  glm::vec3 horizontal_right() const { return horizontal_right_; }
   glm::mat4 view_matrix() const { return view_matrix_; }
 
   void update()
@@ -44,10 +46,9 @@ public:
 
     front_ = glm::normalize(glm::vec3(sin_yaw * sin_pitch, cos_pitch, cos_yaw * sin_pitch));
 
-    auto right = glm::normalize(glm::cross(glm::vec3(0, 1, 0), front_));
     auto rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
-
-    up_ = glm::normalize(glm::vec3(rotation * glm::vec4(glm::cross(right, front_), 1)));
+    horizontal_right_ = glm::normalize(glm::cross(front_, glm::vec3(0, 1, 0)));
+    up_ = glm::normalize(glm::vec3(rotation * glm::vec4(glm::cross(horizontal_right_, front_), 1)));
 
     view_matrix_ = glm::lookAt(position, position + front_, up_);
   }
@@ -69,7 +70,7 @@ private:
   glm::mat4 orthographic_pv(const glm::vec2& viewport) const
   {
     glm::vec2 v = viewport * 0.5f;
-    glm::mat4 projection = glm::ortho(-v.x, v.x, v.y, -v.y, near_clip, far_clip);
+    glm::mat4 projection = glm::ortho(v.x, -v.x, -v.y, v.y, near_clip, far_clip);
     return projection * view_matrix();
   }
 };
