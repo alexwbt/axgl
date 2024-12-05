@@ -2,38 +2,17 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
+#include <axgl/util/string.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/impl/glfw/glfw_service.hpp>
-
-#include "opengl/texture.hpp"
+#include <axgl/impl/opengl/opengl_texture.hpp>
+#include <axgl/impl/opengl/opengl_material.hpp>
 
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
 #include <glm/glm.hpp>
 
 NAMESPACE_AXGL_IMPL
-
-class Texture : public interface::Texture
-{
-private:
-  opengl::Texture texture_;
-
-public:
-  void use()
-  {
-    texture_.use();
-  }
-
-  void load_2d_texture(std::span<const uint8_t> data) override
-  {
-    texture_.load_2d_texture(data);
-  }
-
-  void load_cubemap_texture(const std::array<std::span<const uint8_t>, kCubemapSize>& data) override
-  {
-    texture_.load_cubemap_texture(data);
-  }
-};
 
 class OpenglRenderer : public interface::Renderer
 {
@@ -108,11 +87,6 @@ public:
   {
     return { window_width_, window_height_ };
   }
-
-  std::shared_ptr<interface::Texture> create_texture() override
-  {
-    return std::make_shared<Texture>();
-  }
 };
 
 class OpenglRendererService : public interface::RendererService
@@ -121,6 +95,22 @@ public:
   std::shared_ptr<interface::Renderer> create_renderer() override
   {
     return std::make_shared<OpenglRenderer>();
+  }
+
+  std::shared_ptr<interface::Texture> create_texture() override
+  {
+    return std::make_shared<OpenglTexture>();
+  }
+
+  std::shared_ptr<interface::Material> create_material(const std::string& type) override
+  {
+    switch (util::hash_string(type))
+    {
+    case util::hash_string("2d"):
+      return std::make_shared<OpenglDefault2DMaterial>();
+    default:
+      return std::make_shared<OpenglDefaultMaterial>();
+    }
   }
 };
 
@@ -149,5 +139,4 @@ std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 NAMESPACE_AXGL_END
 
 // component implementations
-#include "axgl/impl/opengl/component/mesh2d.hpp"
-#include "axgl/impl/opengl/component/mesh3d.hpp"
+#include "axgl/impl/opengl/component/mesh.hpp"

@@ -1,34 +1,88 @@
 #pragma once
 
-#include <vector>
+#include <memory>
 #include <stdexcept>
 
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
+#include <axgl/interface/renderer.hpp>
 #include <axgl/interface/component/mesh.hpp>
+#include <axgl/impl/opengl/opengl_texture.hpp>
 
 #include "opengl/shader_program.hpp"
-#include "opengl/vertex_array_object.hpp"
 
 #include "axgl_opengl_impl/res.hpp"
 
 NAMESPACE_AXGL_IMPL
 
-class OpenglMesh3D : public interface::Mesh3D
+class OpenglMaterial : public interface::Material
+{
+public:
+  virtual void use(
+    const interface::RealmContext* context,
+    const interface::Mesh* mesh
+  ) = 0;
+};
+
+class OpenglDefaultMaterial : public OpenglMaterial
 {
 private:
   opengl::ShaderProgram shader_{ {
     { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs") },
     { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs") }
   } };
-  opengl::VertexArrayObject vertex_array_;
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
   float shininess_ = 1.0f;
 
-  std::shared_ptr<Texture> diffuse_texture_;
-  std::shared_ptr<Texture> specular_texture_;
-  std::shared_ptr<Texture> normal_texture_;
-  std::shared_ptr<Texture> height_texture_;
+  std::shared_ptr<OpenglTexture> diffuse_texture_;
+  std::shared_ptr<OpenglTexture> specular_texture_;
+  std::shared_ptr<OpenglTexture> normal_texture_;
+  std::shared_ptr<OpenglTexture> height_texture_;
+
+public:
+  void set_color(const glm::vec3& color) override
+  {
+    color_ = color;
+  }
+
+  void add_texture(std::shared_ptr<interface::Texture> texture) override
+  {
+    auto texture_ = std::dynamic_pointer_cast<OpenglTexture>(texture);
+    if (!texture_)
+#ifdef AXGL_DEBUG
+      throw std::runtime_error("The provided texture is not a valid opengl texture.");
+#else
+      return;
+#endif
+    using enum interface::Texture::Type;
+    switch (texture->type)
+    {
+    case DIFFUSE: diffuse_texture_ = std::move(texture_); break;
+    case SPECULAR: specular_texture_ = std::move(texture_); break;
+    case NORMAL: normal_texture_ = std::move(texture_); break;
+    case HEIGHT: height_texture_ = std::move(texture_); break;
+    }
+  }
+
+  void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
+  {
+    glm::mat4 model = mesh->model();
+    glm::mat4 mvp = context->pv * model;
+
+    shader_.use_program();
+    shader_.set_mat4("mvp", mvp);
+    shader_.set_mat4("model", model);
+    shader_.set_vec3("camera_pos", context->realm->camera.position);
+    shader_.set_vec3("mesh_color", color_);
+    shader_.set_float("mesh_shininess", shininess_);
+
+    use_lights(context->realm->lights);
+
+    use_texture(0, "diffuse", diffuse_texture_);
+    use_texture(1, "specular", specular_texture_);
+    use_texture(2, "normal", normal_texture_);
+    use_texture(3, "height", height_texture_);
+  }
 
 private:
   void use_lights(const std::vector<interface::Light>& lights)
@@ -81,7 +135,7 @@ private:
   void use_texture(
     int i,
     const std::string& name,
-    const std::shared_ptr<Texture>& texture)
+    const std::shared_ptr<OpenglTexture>& texture)
   {
     if (!texture) return;
 
@@ -90,58 +144,36 @@ private:
     shader_.set_int(name + "_texture", i);
     shader_.set_bool("use_" + name + "_texture", true);
   }
+};
+
+
+class OpenglDefault2DMaterial : public OpenglMaterial
+{
+private:
+  opengl::ShaderProgram shader_{ {
+    { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
+    { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs") }
+  } };
+  glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
+  std::shared_ptr<OpenglTexture> texture_;
 
 public:
-  void render() override
+  void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
   {
-    auto context = get_context();
-    glm::mat4 m = model();
-    glm::mat4 mvp = context->pv * m;
+    glm::mat4 model = mesh->model();
+    glm::mat4 mvp = context->pv * model;
 
     shader_.use_program();
     shader_.set_mat4("mvp", mvp);
-    shader_.set_mat4("model", m);
     shader_.set_vec3("mesh_color", color_);
-    shader_.set_float("mesh_shininess", shininess_);
-    shader_.set_vec3("camera_pos", context->realm->camera.position);
 
-    use_lights(context->realm->lights);
-
-    use_texture(0, "diffuse", diffuse_texture_);
-    use_texture(1, "specular", specular_texture_);
-    use_texture(2, "normal", normal_texture_);
-    use_texture(3, "height", height_texture_);
-
-    vertex_array_.draw();
-  }
-
-  void set_vertices(const std::span<const glm::vec3>& vertices) override
-  {
-    std::vector<opengl::VertexAttribute> attributes{
-      { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
-    };
-    vertex_array_.create_vertex_buffer<glm::vec3>(vertices, attributes, 0);
-  }
-
-  void set_normals(const std::span<const glm::vec3>& normals) override
-  {
-    std::vector<opengl::VertexAttribute> attributes{
-      { 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
-    };
-    vertex_array_.create_vertex_buffer<glm::vec3>(normals, attributes, 1);
-  }
-
-  void set_uv(const std::span<const glm::vec2>& uv) override
-  {
-    std::vector<opengl::VertexAttribute> attributes{
-      { 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 }
-    };
-    vertex_array_.create_vertex_buffer<glm::vec2>(uv, attributes, 2);
-  }
-
-  void set_indices(const std::span<const uint32_t>& indices) override
-  {
-    vertex_array_.create_element_buffer(indices);
+    if (texture_)
+    {
+      glActiveTexture(GL_TEXTURE0);
+      texture_->use();
+      shader_.set_int("mesh_texture", 0);
+      shader_.set_bool("use_texture", true);
+    }
   }
 
   void set_color(const glm::vec3& color) override
@@ -149,34 +181,14 @@ public:
     color_ = color;
   }
 
-  void add_texture(interface::Texture::Type type, std::shared_ptr<interface::Texture> texture) override
+  void add_texture(std::shared_ptr<interface::Texture> texture) override
   {
-    auto texture_ = std::dynamic_pointer_cast<Texture>(texture);
-    if (!texture_)
+    texture_ = std::dynamic_pointer_cast<OpenglTexture>(texture);
 #ifdef AXGL_DEBUG
+    if (!texture_)
       throw std::runtime_error("The provided texture is not a valid opengl texture.");
-#else
-      return;
 #endif
-
-    switch (type)
-    {
-    case (interface::Texture::DIFFUSE): diffuse_texture_ = std::move(texture_); break;
-    case (interface::Texture::SPECULAR): specular_texture_ = std::move(texture_); break;
-    case (interface::Texture::NORMAL): normal_texture_ = std::move(texture_); break;
-    case (interface::Texture::HEIGHT): height_texture_ = std::move(texture_); break;
-    }
   }
 };
 
 NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
-
-template<>
-std::shared_ptr<interface::Mesh3D> Axgl::create_component()
-{
-  return std::make_shared<impl::OpenglMesh3D>();
-}
-
-NAMESPACE_AXGL_END

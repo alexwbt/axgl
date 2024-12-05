@@ -14,7 +14,7 @@ public:
   float yaw = 0.0f;
   float pitch = 90.0f;
   float roll = 0.0f;
-  float near_clip = 0.1f;
+  float near_clip = 0.0001f;
   float far_clip = 100.0f;
   glm::vec3 position{ 0.0f };
   bool orthographic = false;

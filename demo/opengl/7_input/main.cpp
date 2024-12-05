@@ -38,7 +38,8 @@ public:
     window->set_title("Hello input!");
 
     // renderer
-    auto renderer = axgl->renderer_service()->create_renderer();
+    auto renderer_service = axgl->renderer_service();
+    auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
@@ -53,18 +54,24 @@ public:
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
     // cube mesh
-    auto mesh = axgl->create_component<axgl::interface::Mesh3D>();
+    auto mesh = axgl->create_component<axgl::interface::Mesh>();
     mesh->set_vertices(cube_vertices);
     mesh->set_normals(cube_normals);
-    mesh->set_color({ 1.0, 0.5, 0.2 });
+
+    // material
+    auto material = renderer_service->create_material("default");
+    material->set_color({ 1.0f, 0.5f, 0.2f });
+    mesh->set_material(material);
 
     // cube entity
     auto entity = realm->create_entity();
     entity->add_component(mesh);
 
     // light
-    realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
-      axgl::interface::Light::Color(glm::vec3(0.3f), glm::vec3(1), glm::vec3(1)));
+    realm->lights.emplace_back(
+      glm::vec3(0.2f, -1.0f, 1.2f),
+      axgl::interface::Light::Color(
+        glm::vec3(0.3f), glm::vec3(1), glm::vec3(1)));
   }
 
   void update() override

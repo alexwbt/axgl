@@ -37,7 +37,7 @@ static std::vector<glm::vec2> cube_uv = {
 class Application : public axgl::interface::Service
 {
 public:
-  std::shared_ptr<axgl::interface::Mesh3D> mesh;
+  std::shared_ptr<axgl::interface::Mesh> mesh;
 
   void initialize() override
   {
@@ -48,7 +48,8 @@ public:
     window->set_title("Hello textured cube!");
 
     // renderer
-    auto renderer = axgl->renderer_service()->create_renderer();
+    auto renderer_service = axgl->renderer_service();
+    auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
@@ -59,20 +60,28 @@ public:
     realm->camera.position.z = -2;
     realm->camera.update();
 
-    // diffuse texture
-    auto diffuse_texture = renderer->create_texture();
-    diffuse_texture->load_2d_texture(demo_opengl_textured_cube_res::get("container/diffuse.png"));
-    // specular texture
-    auto specular_texture = renderer->create_texture();
-    specular_texture->load_2d_texture(demo_opengl_textured_cube_res::get("container/specular.png"));
-
     // square mesh
-    mesh = axgl->create_component<axgl::interface::Mesh3D>();
+    mesh = axgl->create_component<axgl::interface::Mesh>();
     mesh->set_vertices(cube_vertices);
     mesh->set_normals(cube_normals);
     mesh->set_uv(cube_uv);
-    mesh->add_texture(axgl::interface::Texture::DIFFUSE, diffuse_texture);
-    mesh->add_texture(axgl::interface::Texture::SPECULAR, specular_texture);
+
+    // diffuse texture
+    auto diffuse_texture = renderer_service->create_texture();
+    diffuse_texture->load_texture(
+      axgl::interface::Texture::DIFFUSE,
+      demo_opengl_textured_cube_res::get("container/diffuse.png"));
+    // specular texture
+    auto specular_texture = renderer_service->create_texture();
+    specular_texture->load_texture(
+      axgl::interface::Texture::SPECULAR,
+      demo_opengl_textured_cube_res::get("container/specular.png"));
+
+    // material
+    auto material = renderer_service->create_material("default");
+    material->add_texture(diffuse_texture);
+    material->add_texture(specular_texture);
+    mesh->set_material(material);
 
     // cube entity
     auto entity = realm->create_entity();

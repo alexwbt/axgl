@@ -26,7 +26,7 @@ static std::vector<glm::vec3> cube_normals = {
 class Application : public axgl::interface::Service
 {
 public:
-  std::shared_ptr<axgl::interface::Mesh3D> mesh;
+  std::shared_ptr<axgl::interface::Mesh> mesh;
 
   void initialize() override
   {
@@ -37,7 +37,8 @@ public:
     window->set_title("Hello cube!");
 
     // renderer
-    auto renderer = axgl->renderer_service()->create_renderer();
+    auto renderer_service = axgl->renderer_service();
+    auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
@@ -49,10 +50,14 @@ public:
     realm->camera.update();
 
     // cube mesh
-    mesh = axgl->create_component<axgl::interface::Mesh3D>();
+    mesh = axgl->create_component<axgl::interface::Mesh>();
     mesh->set_vertices(cube_vertices);
     mesh->set_normals(cube_normals);
-    mesh->set_color({ 1.0, 0.5, 0.2 });
+
+    // material
+    auto material = renderer_service->create_material("default");
+    material->set_color({ 1.0f, 0.5f, 0.2f });
+    mesh->set_material(material);
 
     // cube entity
     auto entity = realm->create_entity();

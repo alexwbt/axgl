@@ -17,7 +17,8 @@ int main()
   window->set_title("Hello triangle!");
 
   // renderer
-  auto renderer = axgl.renderer_service()->create_renderer();
+  auto renderer_service = axgl.renderer_service();
+  auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
 
   // realm
@@ -28,10 +29,14 @@ int main()
   realm->camera.far_clip = 1;
 
   // triangle mesh
-  auto mesh = axgl.create_component<axgl::interface::Mesh2D>();
+  auto mesh = axgl.create_component<axgl::interface::Mesh>();
   mesh->set_vertices(std::vector<glm::vec2>{ {0.8f, -0.5f}, { -0.8f, -0.5f }, { 0.0f, 0.5f } });
-  mesh->set_color({ 1.0f, 0.5f, 0.2f });
   mesh->scale = glm::vec3(200.0f);
+
+  // material
+  auto material = renderer_service->create_material("2d");
+  material->set_color({ 1.0f, 0.5f, 0.2f });
+  mesh->set_material(material);
 
   // triangle entity
   auto entity = realm->create_entity();
