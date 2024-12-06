@@ -1,5 +1,6 @@
 #pragma once
 
+#include <format>
 #include <stdexcept>
 
 #include "axgl/namespace.hpp"
@@ -144,6 +145,14 @@ class RealmService : public Service, public RealmContextProvider
 public:
   virtual std::shared_ptr<Realm> create_realm() = 0;
   virtual std::shared_ptr<Realm> get_active_realm() const = 0;
+
+  template<typename ComponentType>
+  std::shared_ptr<ComponentType> create_component()
+  {
+    throw std::runtime_error(
+      std::format("Component type '{}' is not supported.",
+        typeid(ComponentType).name()));
+  }
 
 private:
   void use_context(const RealmContext* context) override

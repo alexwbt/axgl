@@ -48,14 +48,15 @@ int main()
   renderer->set_window(window);
 
   // realm
-  auto realm = axgl.realm_service()->create_realm();
+  auto realm_service = axgl.realm_service();
+  auto realm = realm_service->create_realm();
   realm->set_renderer(renderer);
   realm->camera.orthographic = true;
   realm->camera.near_clip = -1;
   realm->camera.far_clip = 1;
 
   // circle mesh
-  auto mesh = axgl.create_component<axgl::interface::Mesh>();
+  auto mesh = realm_service->create_component<axgl::interface::Mesh>();
   circle_mesh(mesh, 50);
 
   // material

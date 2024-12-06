@@ -27,7 +27,7 @@ static std::vector<glm::vec3> cube_normals = {
 class Application : public axgl::interface::Service
 {
 public:
-  // std::shared_ptr<axgl::interface::Mesh3D> mesh;
+  std::shared_ptr<axgl::interface::Mesh> mesh;
 
   void initialize() override
   {
@@ -43,6 +43,7 @@ public:
     renderer->set_window(window);
 
     // realm
+    auto realm_service = axgl->realm_service();
     auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
 
@@ -54,7 +55,7 @@ public:
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
     // cube mesh
-    auto mesh = axgl->create_component<axgl::interface::Mesh>();
+    mesh = realm_service->create_component<axgl::interface::Mesh>();
     mesh->set_vertices(cube_vertices);
     mesh->set_normals(cube_normals);
 
@@ -76,7 +77,7 @@ public:
 
   void update() override
   {
-    // mesh->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+    mesh->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
   }
 };
 

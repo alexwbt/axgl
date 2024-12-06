@@ -69,14 +69,6 @@ public:
         typeid(ServiceType).name()));
   }
 
-  template<typename ComponentType>
-  std::shared_ptr<ComponentType> create_component()
-  {
-    throw std::runtime_error(
-      std::format("Component type '{}' is not supported.",
-        typeid(ComponentType).name()));
-  }
-
   std::shared_ptr<interface::WindowService> window_service() const
   {
     return get_service<interface::WindowService>("window");

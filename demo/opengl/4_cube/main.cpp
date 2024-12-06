@@ -42,7 +42,8 @@ public:
     renderer->set_window(window);
 
     // realm
-    auto realm = axgl->realm_service()->create_realm();
+    auto realm_service = axgl->realm_service();
+    auto realm = realm_service->create_realm();
     realm->set_renderer(renderer);
 
     // camera
@@ -50,7 +51,7 @@ public:
     realm->camera.update();
 
     // cube mesh
-    mesh = axgl->create_component<axgl::interface::Mesh>();
+    mesh = realm_service->create_component<axgl::interface::Mesh>();
     mesh->set_vertices(cube_vertices);
     mesh->set_normals(cube_normals);
 

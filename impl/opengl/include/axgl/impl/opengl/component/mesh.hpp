@@ -5,6 +5,7 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
+#include <axgl/interface/realm.hpp>
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/opengl/opengl_material.hpp>
 
@@ -81,7 +82,7 @@ NAMESPACE_AXGL_IMPL_END
 NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<interface::Mesh> Axgl::create_component()
+std::shared_ptr<interface::Mesh> interface::RealmService::create_component()
 {
   return std::make_shared<impl::OpenglMesh>();
 }

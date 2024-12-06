@@ -22,14 +22,15 @@ int main()
   renderer->set_window(window);
 
   // realm
-  auto realm = axgl.realm_service()->create_realm();
+  auto realm_service = axgl.realm_service();
+  auto realm = realm_service->create_realm();
   realm->set_renderer(renderer);
   realm->camera.orthographic = true;
   realm->camera.near_clip = -1;
   realm->camera.far_clip = 1;
 
   // triangle mesh
-  auto mesh = axgl.create_component<axgl::interface::Mesh>();
+  auto mesh = realm_service->create_component<axgl::interface::Mesh>();
   mesh->set_vertices(std::vector<glm::vec2>{ {0.8f, -0.5f}, { -0.8f, -0.5f }, { 0.0f, 0.5f } });
   mesh->scale = glm::vec3(200.0f);
 

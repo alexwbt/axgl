@@ -26,6 +26,7 @@ int main()
   renderer->set_window(window);
 
   // realm
+  auto realm_service = axgl.realm_service();
   auto realm = axgl.realm_service()->create_realm();
   realm->set_renderer(renderer);
   realm->camera.orthographic = true;
@@ -33,7 +34,7 @@ int main()
   realm->camera.far_clip = 1;
 
   // square mesh
-  auto mesh = axgl.create_component<axgl::interface::Mesh>();
+  auto mesh = realm_service->create_component<axgl::interface::Mesh>();
   mesh->set_vertices(std::vector<glm::vec2>{
     { 0.5f, 0.5f },
     { 0.5f, -0.5f },
