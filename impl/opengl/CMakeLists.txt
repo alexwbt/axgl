@@ -11,7 +11,6 @@ target_include_directories(axgl_opengl_impl
 target_link_libraries(axgl_opengl_impl
   PUBLIC
   glad
-  assimp
   axgl_glfw_impl
 )
 

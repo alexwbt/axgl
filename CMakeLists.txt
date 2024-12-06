@@ -30,6 +30,7 @@ add_subdirectory(axgl)
 # Implementations
 add_subdirectory(impl/glfw)
 add_subdirectory(impl/opengl)
+add_subdirectory(impl/assimp)
 
 # Demonstrations
 add_subdirectory(demo/opengl)
