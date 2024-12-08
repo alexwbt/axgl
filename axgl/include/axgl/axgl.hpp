@@ -10,10 +10,11 @@
 #include "axgl/namespace.hpp"
 #include "axgl/core/service_manager.hpp"
 #include "axgl/interface/service.hpp"
-#include "axgl/interface/input.hpp"
 #include "axgl/interface/window.hpp"
 #include "axgl/interface/renderer.hpp"
 #include "axgl/interface/realm.hpp"
+#include "axgl/interface/input.hpp"
+#include "axgl/interface/model.hpp"
 #include "axgl/util/string.hpp"
 
 #include <spdlog/spdlog.h>
@@ -87,6 +88,11 @@ public:
   std::shared_ptr<interface::InputService> input_service() const
   {
     return get_service<interface::InputService>("input");
+  }
+
+  std::shared_ptr<interface::ModelService> model_service() const
+  {
+    return get_service<interface::ModelService>("model");
   }
 };
 

@@ -133,6 +133,8 @@ private:
       ai_material->GetTexture(ai_texture_type, i, &str);
 
       auto texture = renderer_service_->create_texture();
+
+      SPDLOG_INFO("texture: {}", str.C_Str());
       // texture->load_texture(texture_type, {});
       material->add_texture(texture);
     }

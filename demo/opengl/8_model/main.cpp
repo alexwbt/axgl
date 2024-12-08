@@ -7,6 +7,8 @@
 #include <axgl/impl/opengl/opengl_service.hpp>
 #include <axgl/impl/assimp/assimp_model.hpp>
 
+#include "demo_opengl_model/res.hpp"
+
 class Application : public axgl::interface::Service
 {
 public:
@@ -36,19 +38,10 @@ public:
     auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
-    // // cube mesh
-    // auto mesh = axgl->create_component<axgl::interface::Mesh>();
-    // mesh->set_vertices(cube_vertices);
-    // mesh->set_normals(cube_normals);
-
-    // // material
-    // auto material = renderer_service->create_material("default");
-    // material->set_color({ 1.0f, 0.5f, 0.2f });
-    // mesh->set_material(material);
-
-    // // cube entity
-    // auto entity = realm->create_entity();
-    // entity->add_component(mesh);
+    // entity
+    auto entity = realm->create_entity();
+    axgl->model_service()->load_model(entity,
+      demo_opengl_model_res::get("iphone.fbx"));
 
     // light
     realm->lights.emplace_back(
