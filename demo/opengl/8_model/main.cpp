@@ -3,6 +3,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
+#include <axgl/impl/resource_service.hpp>
 #include <axgl/impl/glfw/glfw_service.hpp>
 #include <axgl/impl/opengl/opengl_service.hpp>
 #include <axgl/impl/assimp/assimp_model.hpp>
@@ -27,6 +28,9 @@ public:
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
+    // resources
+    axgl->resource_service()->load_resources("res/", demo_opengl_model_res::data);
+
     // realm
     auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
@@ -40,8 +44,7 @@ public:
 
     // entity
     auto entity = realm->create_entity();
-    axgl->model_service()->load_model(entity,
-      demo_opengl_model_res::get("iphone.fbx"));
+    axgl->model_service()->load_model(entity, demo_opengl_model_res::get("forest.fbx"));
 
     // light
     realm->lights.emplace_back(
@@ -65,6 +68,7 @@ int main()
   axgl.use_service<axgl::impl::AssimpModelService>();
   axgl.use_service<axgl::impl::RealmService>();
   axgl.use_service<axgl::impl::CameraService>();
+  axgl.use_service<axgl::impl::ResourceService>();
   axgl.register_service("app", std::make_shared<Application>());
   axgl.run();
 }
