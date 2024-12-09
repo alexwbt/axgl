@@ -15,6 +15,7 @@ class Texture
 public:
   enum Type
   {
+    UNKNOWN,
     DIFFUSE,
     SPECULAR,
     NORMAL,

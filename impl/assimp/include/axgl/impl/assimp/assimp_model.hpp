@@ -104,18 +104,22 @@ private:
       mesh->set_uv(uv);
     }
 
-    std::vector<uint32_t> indices;
-    for (int i = 0; i < ai_mesh->mNumFaces; ++i)
-      for (int j = 0; j < ai_mesh->mFaces[i].mNumIndices; ++j)
-        indices.push_back(ai_mesh->mFaces[i].mIndices[j]);
-    mesh->set_indices(indices);
+    if (ai_mesh->HasFaces())
+    {
+      std::vector<uint32_t> indices;
+      for (int i = 0; i < ai_mesh->mNumFaces; ++i)
+        for (int j = 0; j < ai_mesh->mFaces[i].mNumIndices; ++j)
+          indices.push_back(ai_mesh->mFaces[i].mIndices[j]);
+      mesh->set_indices(indices);
+    }
 
     auto material = renderer_service_->create_material("default");
     aiMaterial* ai_material = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
-    load_textures(ai_material, aiTextureType_DIFFUSE, material, interface::Texture::DIFFUSE);
-    load_textures(ai_material, aiTextureType_SPECULAR, material, interface::Texture::SPECULAR);
-    load_textures(ai_material, aiTextureType_NORMALS, material, interface::Texture::NORMAL);
-    load_textures(ai_material, aiTextureType_HEIGHT, material, interface::Texture::HEIGHT);
+    for (int i = aiTextureType_DIFFUSE; i < aiTextureType_UNKNOWN; ++i)
+    {
+      auto type = static_cast<aiTextureType>(i);
+      load_textures(ai_material, type, material, map_texture_type(type));
+    }
     mesh->set_material(material);
 
     return mesh;
@@ -137,6 +141,35 @@ private:
       SPDLOG_INFO("texture: {}", str.C_Str());
       // texture->load_texture(texture_type, {});
       material->add_texture(texture);
+    }
+  }
+
+  interface::Texture::Type map_texture_type(aiTextureType ai_texture_type)
+  {
+    using enum interface::Texture::Type;
+    switch (ai_texture_type)
+    {
+    case aiTextureType_DIFFUSE: return DIFFUSE;
+    case aiTextureType_SPECULAR: return SPECULAR;
+      // case aiTextureType_AMBIENT: return AMBIENT;
+      // case aiTextureType_EMISSIVE: return EMISSIVE;
+    case aiTextureType_HEIGHT: return HEIGHT;
+    case aiTextureType_NORMALS: return NORMAL;
+      // case aiTextureType_SHININESS: return SHININESS;
+      // case aiTextureType_OPACITY: return OPACITY;
+      // case aiTextureType_DISPLACEMENT: return DISPLACEMENT;
+      // case aiTextureType_LIGHTMAP: return LIGHTMAP;
+      // case aiTextureType_REFLECTION: return REFLECTION;
+      // case aiTextureType_BASE_COLOR: return BASE_COLOR;
+      // case aiTextureType_NORMAL_CAMERA: return NORMAL_CAMERA;
+      // case aiTextureType_EMISSION_COLOR: return EMISSION_COLOR;
+      // case aiTextureType_METALNESS: return METALNESS;
+      // case aiTextureType_DIFFUSE_ROUGHNESS: return DIFFUSE_ROUGHNESS;
+      // case aiTextureType_AMBIENT_OCCLUSION: return AMBIENT_OCCLUSION;
+      // case aiTextureType_SHEEN: return SHEEN;
+      // case aiTextureType_CLEARCOAT: return CLEARCOAT;
+      // case aiTextureType_TRANSMISSION: return TRANSMISSION;
+    default: return UNKNOWN;
     }
   }
 };

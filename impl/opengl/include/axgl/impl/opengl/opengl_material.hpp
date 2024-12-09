@@ -9,6 +9,8 @@
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/opengl/opengl_texture.hpp>
 
+#include <spdlog/spdlog.h>
+
 #include "opengl/shader_program.hpp"
 
 #include "axgl_opengl_impl/res.hpp"
@@ -61,6 +63,9 @@ public:
     case SPECULAR: specular_texture_ = std::move(texture_); break;
     case NORMAL: normal_texture_ = std::move(texture_); break;
     case HEIGHT: height_texture_ = std::move(texture_); break;
+#ifdef AXGL_DEBUG
+    case UNKNOWN: SPDLOG_WARN("Adding texture with UNKNOWN type."); break;
+#endif
     }
   }
 
