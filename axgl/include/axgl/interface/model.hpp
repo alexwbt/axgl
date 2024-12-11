@@ -12,7 +12,7 @@ class ModelService : public Service
 {
 public:
   virtual void load_model(
-    std::shared_ptr<interface::Entity> entity,
+    std::shared_ptr<interface::Component> root,
     const std::span<const uint8_t> data) = 0;
 };
 

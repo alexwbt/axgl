@@ -21,6 +21,16 @@ private:
   std::shared_ptr<OpenglMaterial> material_;
 
 public:
+  void add_component(std::shared_ptr<interface::Component> component) override
+  {
+    impl::Component::add_component(std::move(component));
+  }
+
+  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
+  {
+    return impl::Component::get_components();
+  }
+
   void render() override
   {
     if (material_)

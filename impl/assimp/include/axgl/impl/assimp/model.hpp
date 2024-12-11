@@ -35,7 +35,7 @@ public:
   }
 
   void load_model(
-    std::shared_ptr<interface::Entity> entity,
+    std::shared_ptr<interface::Component> root,
     const std::span<const uint8_t> data) override
   {
     Assimp::Importer importer;
@@ -49,23 +49,23 @@ public:
     }
 #endif
 
-    process_node(entity, ai_scene->mRootNode, ai_scene);
+    process_node(root, ai_scene->mRootNode, ai_scene);
   }
 
 private:
   void process_node(
-    std::shared_ptr<interface::Entity> entity,
+    std::shared_ptr<interface::Component> root,
     aiNode* ai_node, const aiScene* ai_scene)
   {
     for (int i = 0; i < ai_node->mNumMeshes; ++i)
     {
       aiMesh* mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
-      entity->add_component(load_mesh(mesh, ai_scene));
+      root->add_component(load_mesh(mesh, ai_scene));
     }
 
     // add children node mesh
     for (int i = 0; i < ai_node->mNumChildren; ++i)
-      process_node(entity, ai_node->mChildren[i], ai_scene);
+      process_node(root, ai_node->mChildren[i], ai_scene);
   }
 
   std::shared_ptr<axgl::interface::Mesh> load_mesh(aiMesh* ai_mesh, const aiScene* ai_scene)

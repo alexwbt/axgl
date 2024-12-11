@@ -8,7 +8,6 @@
 
 #include "axgl/except.hpp"
 #include "axgl/namespace.hpp"
-#include "axgl/core/service_manager.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/window.hpp"
 #include "axgl/interface/renderer.hpp"
@@ -16,6 +15,7 @@
 #include "axgl/interface/realm.hpp"
 #include "axgl/interface/input.hpp"
 #include "axgl/interface/model.hpp"
+#include "axgl/impl/service_manager.hpp"
 #include "axgl/util/string.hpp"
 
 #include <spdlog/spdlog.h>
@@ -62,8 +62,8 @@ public:
 #ifdef AXGL_DEBUG
     } CPPTRACE_CATCH(const std::exception& e)
     {
-      SPDLOG_ERROR(e.what());
-      // cpptrace::from_current_exception().print();
+      SPDLOG_ERROR("Exception thrown: {}\n{}", e.what(),
+        cpptrace::from_current_exception().to_string(true));
     }
 #endif
   }

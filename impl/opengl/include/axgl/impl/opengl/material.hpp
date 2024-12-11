@@ -71,7 +71,7 @@ public:
 
   void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
   {
-    glm::mat4 model = mesh->model();
+    glm::mat4 model = mesh->get_model();
     glm::mat4 mvp = context->pv * model;
 
     shader_.use_program();
@@ -165,7 +165,7 @@ private:
 public:
   void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
   {
-    glm::mat4 model = mesh->model();
+    glm::mat4 model = mesh->get_model();
     glm::mat4 mvp = context->pv * model;
 
     shader_.use_program();

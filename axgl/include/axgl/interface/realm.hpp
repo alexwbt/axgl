@@ -40,7 +40,7 @@ protected:
 #endif
     return context_;
   }
-  virtual void use_context(const RealmContext* context)
+  void use_context(const RealmContext* context)
   {
     for (const auto& component : get_components())
     {
@@ -49,6 +49,18 @@ protected:
       component->use_context(context);
     }
   }
+  void clear_context()
+  {
+    for (const auto& component : get_components())
+    {
+      component->context_ = nullptr;
+      component->parent_ = nullptr;
+      component->clear_context();
+    }
+  }
+
+private:
+  glm::mat4 model_matrix_{ 1.0f };
 
 public:
   glm::vec3 scale{ 1.0f };
@@ -59,17 +71,20 @@ public:
   virtual void update() {}
   virtual void render() {}
 
+  void update_model_matrix()
+  {
+    model_matrix_ = glm::translate(glm::mat4(1.0f), position)
+      * glm::toMat4(glm::quat(rotation))
+      * glm::scale(scale);
+  }
+
+  glm::mat4 get_model() const
+  {
+    return parent_ ? parent_->model_matrix_ * model_matrix_ : model_matrix_;
+  }
+
   virtual void add_component(std::shared_ptr<Component> component) {}
   virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
-
-  // glm::mat4 model() const
-  // {
-  //   glm::mat4 model = glm::translate(glm::mat4(1.0f), position)
-  //     * glm::toMat4(glm::quat(rotation)) * glm::scale(scale);
-
-  //   if (context_) return context_->model * model;
-  //   return model;
-  // }
 
   friend class Realm;
   friend class RealmContext;
@@ -85,7 +100,10 @@ public:
 private:
   Component* provider_;
 public:
-  RealmContext(Component* provider) : provider_(provider) { provider_->use_context(this); }
+  RealmContext(Component* provider) : provider_(provider)
+  {
+    provider_->use_context(this);
+  }
   RealmContext(Component* provider, const RealmContext* context) : RealmContext(provider)
   {
     axgl = context->axgl;
@@ -97,7 +115,10 @@ public:
   RealmContext& operator=(const RealmContext&) = delete;
   RealmContext(RealmContext&&) = delete;
   RealmContext& operator=(RealmContext&&) = delete;
-  ~RealmContext() { provider_->use_context(nullptr); }
+  ~RealmContext()
+  {
+    provider_->clear_context();
+  }
 };
 
 class Realm : public Component
@@ -126,6 +147,8 @@ public:
     throw std::runtime_error(
       std::format("Component type '{}' is not supported.",
         typeid(ComponentType).name()));
+#else
+    return nullptr;
 #endif
   }
 };

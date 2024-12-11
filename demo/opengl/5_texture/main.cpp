@@ -33,6 +33,16 @@ int main()
   realm->camera.near_clip = -1;
   realm->camera.far_clip = 1;
 
+  // texture
+  auto texture = renderer_service->create_texture();
+  texture->load_texture(
+    axgl::interface::Texture::DIFFUSE,
+    demo_opengl_texture_res::get("container.png"));
+
+  // material
+  auto material = renderer_service->create_material("2d");
+  material->add_texture(texture);
+
   // square mesh
   auto mesh = realm_service->create_component<axgl::interface::Mesh>();
   mesh->set_vertices(std::vector<glm::vec2>{
@@ -48,19 +58,10 @@ int main()
     { 0.0f, 1.0f },
   });
   mesh->set_indices(std::vector<uint32_t>{ 0, 1, 2, 0, 2, 3 });
-  mesh->scale = glm::vec3(200.0f);
-  realm->add_component(mesh);
-
-  // texture
-  auto texture = renderer_service->create_texture();
-  texture->load_texture(
-    axgl::interface::Texture::DIFFUSE,
-    demo_opengl_texture_res::get("container.png"));
-
-  // material
-  auto material = renderer_service->create_material("2d");
-  material->add_texture(texture);
   mesh->set_material(material);
+  mesh->scale = glm::vec3(200.0f);
+  mesh->update_model_matrix();
+  realm->add_component(mesh);
 
   axgl.run();
 }

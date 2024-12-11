@@ -61,13 +61,6 @@ public:
     realm->camera.position.z = -2;
     realm->camera.update();
 
-    // square mesh
-    mesh = realm_service->create_component<axgl::interface::Mesh>();
-    mesh->set_vertices(cube_vertices);
-    mesh->set_normals(cube_normals);
-    mesh->set_uv(cube_uv);
-    realm->add_component(mesh);
-
     // diffuse texture
     auto diffuse_texture = renderer_service->create_texture();
     diffuse_texture->load_texture(
@@ -83,7 +76,14 @@ public:
     auto material = renderer_service->create_material("default");
     material->add_texture(diffuse_texture);
     material->add_texture(specular_texture);
+
+    // square mesh
+    mesh = realm_service->create_component<axgl::interface::Mesh>();
+    mesh->set_vertices(cube_vertices);
+    mesh->set_normals(cube_normals);
+    mesh->set_uv(cube_uv);
     mesh->set_material(material);
+    realm->add_component(mesh);
 
     // light
     realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
@@ -93,6 +93,7 @@ public:
   void update() override
   {
     mesh->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+    mesh->update_model_matrix();
   }
 };
 

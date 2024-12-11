@@ -99,6 +99,7 @@ class RealmService : public interface::RealmService, public interface::Component
 {
 private:
   std::shared_ptr<Realm> realm_;
+  std::vector<std::shared_ptr<Realm>> realms_;
 
 public:
   void update() override
@@ -131,11 +132,9 @@ public:
     return realm_;
   }
 
-private:
   util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
-    return util::to_iterable_t<std::shared_ptr<interface::Component>>(
-      std::vector<std::shared_ptr<Realm>>{realm_});
+    return util::to_iterable_t<std::shared_ptr<interface::Component>>(realms_);
   }
 };
 

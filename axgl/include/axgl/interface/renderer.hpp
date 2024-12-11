@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <memory>
 
 #include "axgl/namespace.hpp"
