@@ -2,6 +2,7 @@
 
 #include <format>
 
+#include "axgl/except.hpp"
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/renderer.hpp"
@@ -29,6 +30,7 @@ class Component
 {
 private:
   const RealmContext* context_;
+  const Component* parent_;
 protected:
   const RealmContext* get_context() const
   {
@@ -40,9 +42,12 @@ protected:
   }
   virtual void use_context(const RealmContext* context)
   {
-    context_ = context;
     for (const auto& component : get_components())
+    {
+      component->context_ = context;
+      component->parent_ = this;
       component->use_context(context);
+    }
   }
 
 public:

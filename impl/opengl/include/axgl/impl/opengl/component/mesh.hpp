@@ -3,16 +3,18 @@
 #include <vector>
 
 #include <axgl/axgl.hpp>
+#include <axgl/except.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/opengl/material.hpp>
+#include <axgl/impl/realm_service.hpp>
 
 #include "opengl/vertex_array_object.hpp"
 
 NAMESPACE_AXGL_IMPL
 
-class OpenglMesh : public interface::Mesh
+class OpenglMesh : public interface::Mesh, public impl::Component
 {
 private:
   opengl::VertexArrayObject vertex_array_;
@@ -23,7 +25,7 @@ public:
   {
     if (material_)
     {
-      auto context = get_context();
+      auto context = interface::Mesh::get_context();
       material_->use(context, this);
     }
     vertex_array_.draw();

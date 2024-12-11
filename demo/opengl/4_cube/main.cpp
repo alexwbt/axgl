@@ -54,15 +54,12 @@ public:
     mesh = realm_service->create_component<axgl::interface::Mesh>();
     mesh->set_vertices(cube_vertices);
     mesh->set_normals(cube_normals);
+    realm->add_component(mesh);
 
     // material
     auto material = renderer_service->create_material("default");
     material->set_color({ 1.0f, 0.5f, 0.2f });
     mesh->set_material(material);
-
-    // cube entity
-    auto entity = realm->create_entity();
-    entity->add_component(mesh);
 
     // light
     realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),

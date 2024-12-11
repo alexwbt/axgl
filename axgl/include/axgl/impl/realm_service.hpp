@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "axgl/axgl.hpp"
+#include "axgl/except.hpp"
 #include "axgl/namespace.hpp"
 #include "axgl/interface/renderer.hpp"
 #include "axgl/interface/realm.hpp"
@@ -48,7 +49,6 @@ public:
   void update() override
   {
     interface::RealmContext context(this);
-    context.axgl = get_context()->axgl;
     context.renderer = renderer_.get();
     context.realm = this;
 
@@ -63,11 +63,9 @@ public:
     renderer_->before_render();
 
     interface::RealmContext context(this);
-    context.axgl = get_context()->axgl;
     context.renderer = renderer_.get();
     context.realm = this;
     context.pv = camera.pv(renderer_->viewport());
-    context.model = model();
 
     for (const auto& entity : entities_)
       entity->render();

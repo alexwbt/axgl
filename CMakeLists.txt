@@ -19,6 +19,7 @@ add_subdirectory(_external/glfw)
 add_subdirectory(_external/args)
 add_subdirectory(_external/spdlog)
 add_subdirectory(_external/assimp)
+add_subdirectory(_external/cpptrace)
 
 # Internal Libraries
 add_subdirectory(lib/glad)

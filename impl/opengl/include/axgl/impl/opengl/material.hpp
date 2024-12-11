@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <axgl/axgl.hpp>
+#include <axgl/except.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/component/mesh.hpp>

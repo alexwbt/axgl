@@ -3,6 +3,7 @@
 #include <list>
 
 #include <axgl/axgl.hpp>
+#include <axgl/except.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/window.hpp>

@@ -58,15 +58,12 @@ int main()
   // circle mesh
   auto mesh = realm_service->create_component<axgl::interface::Mesh>();
   circle_mesh(mesh, 50);
+  realm->add_component(mesh);
 
   // material
   auto material = renderer_service->create_material("2d");
   material->set_color({ 1.0f, 0.5f, 0.2f });
   mesh->set_material(material);
-
-  // circle entity
-  auto entity = realm->create_entity();
-  entity->add_component(mesh);
 
   // start
   axgl.run();

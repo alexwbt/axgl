@@ -43,8 +43,8 @@ public:
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
     // entity
-    auto entity = realm->create_entity();
-    axgl->model_service()->load_model(entity, demo_opengl_model_res::get("forest.fbx"));
+    // auto entity = realm->create_entity();
+    // axgl->model_service()->load_model(entity, demo_opengl_model_res::get("forest.fbx"));
 
     // light
     realm->lights.emplace_back(

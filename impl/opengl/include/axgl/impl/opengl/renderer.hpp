@@ -1,6 +1,7 @@
 #pragma once
 
 #include <axgl/axgl.hpp>
+#include <axgl/except.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/util/string.hpp>
 #include <axgl/interface/renderer.hpp>

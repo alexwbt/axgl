@@ -66,6 +66,7 @@ public:
     mesh->set_vertices(cube_vertices);
     mesh->set_normals(cube_normals);
     mesh->set_uv(cube_uv);
+    realm->add_component(mesh);
 
     // diffuse texture
     auto diffuse_texture = renderer_service->create_texture();
@@ -83,10 +84,6 @@ public:
     material->add_texture(diffuse_texture);
     material->add_texture(specular_texture);
     mesh->set_material(material);
-
-    // cube entity
-    auto entity = realm->create_entity();
-    entity->add_component(mesh);
 
     // light
     realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),

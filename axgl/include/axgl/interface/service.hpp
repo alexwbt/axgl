@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "axgl/except.hpp"
 #include "axgl/namespace.hpp"
 #include "axgl/util/iterable.hpp"
 

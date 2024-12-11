@@ -49,6 +49,7 @@ int main()
   });
   mesh->set_indices(std::vector<uint32_t>{ 0, 1, 2, 0, 2, 3 });
   mesh->scale = glm::vec3(200.0f);
+  realm->add_component(mesh);
 
   // texture
   auto texture = renderer_service->create_texture();
@@ -60,10 +61,6 @@ int main()
   auto material = renderer_service->create_material("2d");
   material->add_texture(texture);
   mesh->set_material(material);
-
-  // triangle entity
-  auto entity = realm->create_entity();
-  entity->add_component(mesh);
 
   axgl.run();
 }

@@ -6,6 +6,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "axgl/except.hpp"
 #include "axgl/namespace.hpp"
 #include "axgl/core/service_manager.hpp"
 #include "axgl/interface/service.hpp"
@@ -26,40 +27,45 @@ class Axgl final : public ServiceManager
 public:
   void run()
   {
-    try
+#ifdef AXGL_DEBUG
+    CPPTRACE_TRY
     {
-      initialize(this);
+#endif
+    initialize(this);
 
-      constexpr int64_t kOneSecond = 1000000000;
-      constexpr double kTimeStep = kOneSecond / 60.0;
+    constexpr int64_t kOneSecond = 1000000000;
+    constexpr double kTimeStep = kOneSecond / 60.0;
 
-      auto start_time = std::chrono::high_resolution_clock::now();
-      double delta_time = 0.0;
+    auto start_time = std::chrono::high_resolution_clock::now();
+    double delta_time = 0.0;
 
-      while (running(this))
+    while (running(this))
+    {
+      auto now = std::chrono::high_resolution_clock::now();
+      delta_time += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
+      start_time = now;
+
+      auto should_update = delta_time >= 1;
+
+      while (delta_time >= 1)
       {
-        auto now = std::chrono::high_resolution_clock::now();
-        delta_time += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
-        start_time = now;
-
-        auto should_update = delta_time >= 1;
-
-        while (delta_time >= 1)
-        {
-          update(this);
-          delta_time--;
-        }
-
-        if (should_update)
-          render(this);
+        update(this);
+        delta_time--;
       }
 
-      terminate(this);
+      if (should_update)
+        render(this);
     }
-    catch (const std::exception& e)
+
+    terminate(this);
+
+#ifdef AXGL_DEBUG
+    } CPPTRACE_CATCH(const std::exception& e)
     {
       SPDLOG_ERROR(e.what());
+      // cpptrace::from_current_exception().print();
     }
+#endif
   }
 
   template<typename ServiceType>

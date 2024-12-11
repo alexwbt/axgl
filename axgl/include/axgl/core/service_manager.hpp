@@ -6,6 +6,7 @@
 #include <format>
 #include <unordered_map>
 
+#include "axgl/except.hpp"
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/util/string.hpp"

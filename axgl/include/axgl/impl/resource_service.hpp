@@ -1,5 +1,6 @@
 #pragma once
 
+#include "axgl/except.hpp"
 #include "axgl/namespace.hpp"
 #include "axgl/interface/resource.hpp"
 

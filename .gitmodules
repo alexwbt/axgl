@@ -25,3 +25,6 @@
 [submodule "_external/args"]
 	path = _external/args
 	url = https://github.com/Taywee/args.git
+[submodule "_external/cpptrace"]
+	path = _external/cpptrace
+	url = https://github.com/jeremy-rifkin/cpptrace.git
