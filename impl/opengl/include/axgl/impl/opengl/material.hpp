@@ -1,13 +1,12 @@
 #pragma once
 
 #include <memory>
-#include <stdexcept>
 
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/component/mesh.hpp>
-#include <axgl/impl/opengl/opengl_texture.hpp>
+#include <axgl/impl/opengl/texture.hpp>
 
 #include <spdlog/spdlog.h>
 

@@ -6,7 +6,8 @@
 #include <axgl/namespace.hpp>
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/window.hpp>
-#include <axgl/impl/glfw/glfw_window.hpp>
+
+#include "glfw/window.hpp"
 
 NAMESPACE_AXGL_IMPL
 

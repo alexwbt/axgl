@@ -4,9 +4,9 @@
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
 #include <axgl/impl/resource_service.hpp>
-#include <axgl/impl/glfw/glfw_service.hpp>
-#include <axgl/impl/opengl/opengl_service.hpp>
-#include <axgl/impl/assimp/assimp_model.hpp>
+#include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/opengl/renderer.hpp>
+#include <axgl/impl/assimp/model.hpp>
 
 #include "demo_opengl_model/res.hpp"
 

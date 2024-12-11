@@ -9,7 +9,7 @@
 
 NAMESPACE_AXGL_IMPL
 
-class Entity : public interface::Entity
+class Component : public interface::Component
 {
 private:
   std::vector<std::shared_ptr<interface::Component>> components_;
@@ -17,19 +17,12 @@ private:
 public:
   void update() override
   {
-    interface::RealmContext context(this, get_context());
-    context.entity = this;
-
     for (const auto& comp : components_)
       comp->update();
   }
 
   void render() override
   {
-    interface::RealmContext context(this, get_context());
-    context.entity = this;
-    context.model = model();
-
     for (const auto& comp : components_)
       comp->render();
   }
@@ -39,7 +32,7 @@ public:
     components_.push_back(std::move(component));
   }
 
-  util::Iterable<std::shared_ptr<interface::Component>> components() const override
+  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
   }
@@ -48,7 +41,7 @@ public:
 class Realm : public interface::Realm
 {
 private:
-  std::vector<std::shared_ptr<Entity>> entities_;
+  std::vector<std::shared_ptr<Component>> entities_;
   std::shared_ptr<interface::Renderer> renderer_;
 
 public:
@@ -87,20 +80,24 @@ public:
     renderer_ = std::move(renderer);
   }
 
-  util::Iterable<std::shared_ptr<interface::Entity>> entities() const override
+  void add_component(std::shared_ptr<interface::Component> component) override
   {
-    return util::to_iterable_t<std::shared_ptr<interface::Entity>>(entities_);
+    auto impl_component = std::dynamic_pointer_cast<Component>(component);
+#ifdef AXGL_DEBUG
+    if (!impl_component)
+      throw std::runtime_error("The provided component is not a valid Component instance.");
+#endif
+    if (impl_component)
+      entities_.push_back(std::move(impl_component));
   }
 
-  std::shared_ptr<interface::Entity> create_entity() override
+  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
-    auto entity = std::make_shared<Entity>();
-    entities_.push_back(entity);
-    return entity;
+    return util::to_iterable_t<std::shared_ptr<interface::Component>>(entities_);
   }
 };
 
-class RealmService : public interface::RealmService
+class RealmService : public interface::RealmService, public interface::Component
 {
 private:
   std::shared_ptr<Realm> realm_;
@@ -111,7 +108,7 @@ public:
     if (!realm_) return;
 
     interface::RealmContext context(this);
-    context.axgl = get_context()->axgl;
+    context.axgl = interface::RealmService::get_context()->axgl;
 
     realm_->update();
   }
@@ -121,7 +118,7 @@ public:
     if (!realm_) return;
 
     interface::RealmContext context(this);
-    context.axgl = get_context()->axgl;
+    context.axgl = interface::RealmService::get_context()->axgl;
 
     realm_->render();
   }
@@ -134,6 +131,13 @@ public:
   std::shared_ptr<interface::Realm> get_active_realm() const override
   {
     return realm_;
+  }
+
+private:
+  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
+  {
+    return util::to_iterable_t<std::shared_ptr<interface::Component>>(
+      std::vector<std::shared_ptr<Realm>>{realm_});
   }
 };
 

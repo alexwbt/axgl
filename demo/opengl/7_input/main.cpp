@@ -3,8 +3,8 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
-#include <axgl/impl/glfw/glfw_service.hpp>
-#include <axgl/impl/opengl/opengl_service.hpp>
+#include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/opengl/renderer.hpp>
 
 static std::vector<glm::vec3> cube_vertices = {
   glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f),

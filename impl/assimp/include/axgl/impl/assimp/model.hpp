@@ -1,7 +1,6 @@
 #pragma once
 
 #include <span>
-#include <stdexcept>
 
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>

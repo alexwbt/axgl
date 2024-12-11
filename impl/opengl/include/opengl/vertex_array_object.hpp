@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <memory>
-#include <stdexcept>
 
 #include "opengl/buffer_object.hpp"
 
@@ -42,8 +41,10 @@ namespace opengl
       use();
       auto buffer = std::make_unique<VertexBufferObject>(data, attributes, attributes_offset);
 
+#ifdef AXGL_DEBUG
       if (vertex_size_ > 0 && buffer->size() != vertex_size_)
         throw std::runtime_error("Size of all vertex buffer should be equal.");
+#endif
 
       vertex_size_ = buffer->size();
       attribute_size_ += buffer->attribute_size();

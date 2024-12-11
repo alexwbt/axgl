@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <vector>
-#include <stdexcept>
 #include <unordered_map>
 
 #include "axgl/namespace.hpp"

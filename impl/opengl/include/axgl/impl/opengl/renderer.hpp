@@ -4,9 +4,9 @@
 #include <axgl/namespace.hpp>
 #include <axgl/util/string.hpp>
 #include <axgl/interface/renderer.hpp>
-#include <axgl/impl/glfw/glfw_service.hpp>
-#include <axgl/impl/opengl/opengl_texture.hpp>
-#include <axgl/impl/opengl/opengl_material.hpp>
+#include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/opengl/texture.hpp>
+#include <axgl/impl/opengl/material.hpp>
 
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
@@ -121,8 +121,10 @@ NAMESPACE_AXGL
 template<>
 std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 {
+#ifdef AXGL_DEBUG
   if (!has_service_type<impl::GlfwWindowService>("window"))
     throw std::runtime_error("GlfwWindowService is missing, it is required for OpenglRendererService.");
+#endif
 
   // set glfw context
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

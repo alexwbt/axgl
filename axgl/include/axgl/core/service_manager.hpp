@@ -4,7 +4,6 @@
 #include <memory>
 #include <ranges>
 #include <format>
-#include <stdexcept>
 #include <unordered_map>
 
 #include "axgl/namespace.hpp"
@@ -29,17 +28,19 @@ public:
 
   void register_service(const std::string& id, std::shared_ptr<interface::Service> service)
   {
+#ifdef AXGL_DEBUG
     if (services_.contains(id))
       throw std::runtime_error(std::format("Trying to register service but service with id '{}' already exists.", id));
-
+#endif
     services_.insert({ id, std::move(service) });
   }
 
   void remove_service(const std::string& id)
   {
+#ifdef AXGL_DEBUG
     if (!services_.contains(id))
       throw std::runtime_error(std::format("Trying to remove service but service with id '{}' does not exist.", id));
-
+#endif
     services_.erase(id);
   }
 

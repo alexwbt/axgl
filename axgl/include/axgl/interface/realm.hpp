@@ -1,7 +1,6 @@
 #pragma once
 
 #include <format>
-#include <stdexcept>
 
 #include "axgl/namespace.hpp"
 #include "axgl/interface/service.hpp"
@@ -23,49 +22,8 @@ NAMESPACE_AXGL_INTERFACE
 
 class Realm;
 class Entity;
-class Renderer;
-class Component;
-class RealmContext;
 class RealmService;
-
-class RealmContextProvider
-{
-public:
-  virtual ~RealmContextProvider() {}
-private:
-  virtual void use_context(const RealmContext* context) = 0;
-
-  friend struct RealmContext;
-};
-
-class RealmContext final
-{
-public:
-  const Axgl* axgl = nullptr;
-  const Renderer* renderer = nullptr;
-  Realm* realm = nullptr;
-  Entity* entity = nullptr;
-  glm::mat4 pv{ 1.0f };
-  glm::mat4 model{ 1.0f };
-private:
-  RealmContextProvider* provider_;
-public:
-  RealmContext(RealmContextProvider* provider) : provider_(provider) { provider_->use_context(this); }
-  RealmContext(RealmContextProvider* provider, const RealmContext* context) : RealmContext(provider)
-  {
-    axgl = context->axgl;
-    renderer = context->renderer;
-    realm = context->realm;
-    entity = context->entity;
-    pv = context->pv;
-    model = context->model;
-  }
-  RealmContext(const RealmContext&) = delete;
-  RealmContext& operator=(const RealmContext&) = delete;
-  RealmContext(RealmContext&&) = delete;
-  RealmContext& operator=(RealmContext&&) = delete;
-  ~RealmContext() { provider_->use_context(nullptr); }
-};
+class RealmContext;
 
 class Component
 {
@@ -80,6 +38,12 @@ protected:
 #endif
     return context_;
   }
+  virtual void use_context(const RealmContext* context)
+  {
+    context_ = context;
+    for (const auto& component : get_components())
+      component->use_context(context);
+  }
 
 public:
   glm::vec3 scale{ 1.0f };
@@ -90,36 +54,48 @@ public:
   virtual void update() {}
   virtual void render() {}
 
-  glm::mat4 model() const
-  {
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), position)
-      * glm::toMat4(glm::quat(rotation)) * glm::scale(scale);
+  virtual void add_component(std::shared_ptr<Component> component) {}
+  virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
 
-    if (context_) return context_->model * model;
-    return model;
-  }
+  // glm::mat4 model() const
+  // {
+  //   glm::mat4 model = glm::translate(glm::mat4(1.0f), position)
+  //     * glm::toMat4(glm::quat(rotation)) * glm::scale(scale);
+
+  //   if (context_) return context_->model * model;
+  //   return model;
+  // }
 
   friend class Realm;
-  friend class Entity;
-  friend class RealmService;
+  friend class RealmContext;
 };
 
-class Entity : public Component, public RealmContextProvider
+class RealmContext final
 {
 public:
-  virtual ~Entity() {}
-  virtual void add_component(std::shared_ptr<Component> component) = 0;
-  virtual util::Iterable<std::shared_ptr<Component>> components() const = 0;
-
+  const Axgl* axgl = nullptr;
+  const Renderer* renderer = nullptr;
+  Realm* realm = nullptr;
+  glm::mat4 pv{ 1.0f };
 private:
-  void use_context(const RealmContext* context) override
+  Component* provider_;
+public:
+  RealmContext(Component* provider) : provider_(provider) { provider_->use_context(this); }
+  RealmContext(Component* provider, const RealmContext* context) : RealmContext(provider)
   {
-    for (const auto& component : components())
-      component->context_ = context;
+    axgl = context->axgl;
+    renderer = context->renderer;
+    realm = context->realm;
+    pv = context->pv;
   }
+  RealmContext(const RealmContext&) = delete;
+  RealmContext& operator=(const RealmContext&) = delete;
+  RealmContext(RealmContext&&) = delete;
+  RealmContext& operator=(RealmContext&&) = delete;
+  ~RealmContext() { provider_->use_context(nullptr); }
 };
 
-class Realm : public Component, public RealmContextProvider
+class Realm : public Component
 {
 public:
   interface::Camera camera;
@@ -129,18 +105,10 @@ public:
   virtual ~Realm() {}
   virtual void set_renderer(std::shared_ptr<Renderer> renderer) = 0;
 
-  virtual util::Iterable<std::shared_ptr<Entity>> entities() const = 0;
-  virtual std::shared_ptr<Entity> create_entity() = 0;
-
-private:
-  void use_context(const RealmContext* context) override
-  {
-    for (const auto& entity : entities())
-      entity->context_ = context;
-  }
+  friend class RealmService;
 };
 
-class RealmService : public Service, public RealmContextProvider
+class RealmService : public Service
 {
 public:
   virtual std::shared_ptr<Realm> create_realm() = 0;
@@ -149,16 +117,11 @@ public:
   template<typename ComponentType>
   std::shared_ptr<ComponentType> create_component()
   {
+#ifdef AXGL_DEBUG
     throw std::runtime_error(
       std::format("Component type '{}' is not supported.",
         typeid(ComponentType).name()));
-  }
-
-private:
-  void use_context(const RealmContext* context) override
-  {
-    if (auto realm = get_active_realm())
-      realm->context_ = context;
+#endif
   }
 };
 

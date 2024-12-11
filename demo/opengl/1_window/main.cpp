@@ -1,7 +1,7 @@
 
 #define AXGL_DEBUG
 #include <axgl/axgl.hpp>
-#include <axgl/impl/glfw/glfw_service.hpp>
+#include <axgl/impl/glfw/window.hpp>
 
 int main()
 {

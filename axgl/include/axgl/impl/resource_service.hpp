@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdexcept>
-
 #include "axgl/namespace.hpp"
 #include "axgl/interface/resource.hpp"
 

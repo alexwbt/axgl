@@ -4,7 +4,6 @@
 #include <string>
 #include <format>
 #include <memory>
-#include <stdexcept>
 #include <unordered_map>
 
 #include "axgl/namespace.hpp"
@@ -12,6 +11,7 @@
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/window.hpp"
 #include "axgl/interface/renderer.hpp"
+#include "axgl/interface/resource.hpp"
 #include "axgl/interface/realm.hpp"
 #include "axgl/interface/input.hpp"
 #include "axgl/interface/model.hpp"
@@ -65,9 +65,13 @@ public:
   template<typename ServiceType>
   std::shared_ptr<ServiceType> use_service()
   {
+#ifdef AXGL_DEBUG
     throw std::runtime_error(
       std::format("Service type '{}' is not supported.",
         typeid(ServiceType).name()));
+#else
+    return nullptr;
+#endif
   }
 
   std::shared_ptr<interface::WindowService> window_service() const
@@ -78,6 +82,11 @@ public:
   std::shared_ptr<interface::RendererService> renderer_service() const
   {
     return get_service<interface::RendererService>("renderer");
+  }
+
+  std::shared_ptr<interface::ResourceService> resource_service() const
+  {
+    return get_service<interface::ResourceService>("resource");
   }
 
   std::shared_ptr<interface::RealmService> realm_service() const

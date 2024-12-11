@@ -2,8 +2,8 @@
 #define AXGL_DEBUG
 #include <axgl/axgl.hpp>
 #include <axgl/impl/realm_service.hpp>
-#include <axgl/impl/glfw/glfw_service.hpp>
-#include <axgl/impl/opengl/opengl_service.hpp>
+#include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/opengl/renderer.hpp>
 
 int main()
 {

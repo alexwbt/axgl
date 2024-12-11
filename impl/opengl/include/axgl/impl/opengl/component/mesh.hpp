@@ -1,13 +1,12 @@
 #pragma once
 
 #include <vector>
-#include <stdexcept>
 
 #include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/component/mesh.hpp>
-#include <axgl/impl/opengl/opengl_material.hpp>
+#include <axgl/impl/opengl/material.hpp>
 
 #include "opengl/vertex_array_object.hpp"
 
