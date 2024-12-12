@@ -46,6 +46,7 @@ public:
     // load model
     auto model = realm_service->create_component<axgl::interface::Mesh>();
     axgl->model_service()->load_model(model, demo_opengl_model_res::get("gun.fbx"));
+    realm->add_component(model);
 
     // light
     realm->lights.emplace_back(

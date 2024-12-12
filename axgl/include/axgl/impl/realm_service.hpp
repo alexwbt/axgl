@@ -124,7 +124,9 @@ public:
 
   std::shared_ptr<interface::Realm> create_realm() override
   {
-    return realm_ = std::make_shared<Realm>();
+    realm_ = std::make_shared<Realm>();
+    realms_.push_back(realm_);
+    return realm_;
   }
 
   std::shared_ptr<interface::Realm> get_active_realm() const override
