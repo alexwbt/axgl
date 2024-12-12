@@ -29,9 +29,10 @@ public:
     renderer->set_window(window);
 
     // resources
-    axgl->resource_service()->load_resources("res/", demo_opengl_model_res::data);
+    // axgl->resource_service()->load_resources("res/", demo_opengl_model_res::data);
 
     // realm
+    auto realm_service = axgl->realm_service();
     auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
 
@@ -42,9 +43,9 @@ public:
     auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
-    // entity
-    // auto entity = realm->create_entity();
-    // axgl->model_service()->load_model(entity, demo_opengl_model_res::get("forest.fbx"));
+    // load model
+    auto model = realm_service->create_component<axgl::interface::Mesh>();
+    axgl->model_service()->load_model(model, demo_opengl_model_res::get("gun.fbx"));
 
     // light
     realm->lights.emplace_back(
