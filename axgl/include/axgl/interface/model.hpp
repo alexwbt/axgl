@@ -11,9 +11,7 @@ NAMESPACE_AXGL_INTERFACE
 class ModelService : public Service
 {
 public:
-  virtual void load_model(
-    std::shared_ptr<interface::Component> root,
-    const std::span<const uint8_t> data) = 0;
+  virtual void load_model(std::shared_ptr<interface::Component> root, const std::string& resource_key) = 0;
 };
 
 NAMESPACE_AXGL_INTERFACE_END

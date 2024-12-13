@@ -8,13 +8,9 @@
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/assimp/model.hpp>
 
-#include "demo_opengl_model/res.hpp"
-
 class Application : public axgl::interface::Service
 {
 public:
-  // std::shared_ptr<axgl::interface::Mesh3D> mesh;
-
   void initialize() override
   {
     auto axgl = get_context()->axgl;
@@ -29,7 +25,7 @@ public:
     renderer->set_window(window);
 
     // resources
-    // axgl->resource_service()->load_resources("res/", demo_opengl_model_res::data);
+    axgl->resource_service()->load_resources("E:/_workspace/axgl/demo/opengl/8_model/res/MP5.fbx");
 
     // realm
     auto realm_service = axgl->realm_service();
@@ -45,7 +41,7 @@ public:
 
     // load model
     auto model = realm_service->create_component<axgl::interface::Mesh>();
-    axgl->model_service()->load_model(model, demo_opengl_model_res::get("gun.fbx"));
+    axgl->model_service()->load_model(model, "E:/_workspace/axgl/demo/opengl/8_model/res/MP5.fbx");
     realm->add_component(model);
 
     // light
@@ -53,11 +49,6 @@ public:
       glm::vec3(0.2f, -1.0f, 1.2f),
       axgl::interface::Light::Color(
         glm::vec3(0.3f), glm::vec3(1), glm::vec3(1)));
-  }
-
-  void update() override
-  {
-    // mesh->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
   }
 };
 

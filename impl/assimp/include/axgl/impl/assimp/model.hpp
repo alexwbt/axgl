@@ -25,6 +25,7 @@ class AssimpModelService : public interface::ModelService
 private:
   std::shared_ptr<interface::RealmService> realm_service_;
   std::shared_ptr<interface::RendererService> renderer_service_;
+  std::shared_ptr<interface::ResourceService> resource_service_;
 
 public:
   void initialize() override
@@ -32,12 +33,13 @@ public:
     auto context = get_context();
     realm_service_ = context->axgl->realm_service();
     renderer_service_ = context->axgl->renderer_service();
+    resource_service_ = context->axgl->resource_service();
   }
 
-  void load_model(
-    std::shared_ptr<interface::Component> root,
-    const std::span<const uint8_t> data) override
+  void load_model(std::shared_ptr<interface::Component> root, const std::string& resource_key) override
   {
+    auto data = resource_service_->get_resource(resource_key);
+
     Assimp::Importer importer;
     const aiScene* ai_scene = importer.ReadFileFromMemory(data.data(), data.size(), 0);
 

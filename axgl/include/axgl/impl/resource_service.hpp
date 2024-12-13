@@ -4,14 +4,29 @@
 #include "axgl/namespace.hpp"
 #include "axgl/interface/resource.hpp"
 
+#include "axgl/util/file.hpp"
+
 NAMESPACE_AXGL_IMPL
 
 class ResourceService : public interface::ResourceService
 {
 private:
   std::unordered_map<std::string, std::span<const uint8_t>> resources_;
+  std::unordered_map<std::string, const std::vector<uint8_t>> resource_data_;
 
 public:
+  void load_resources(const std::string& path)
+  {
+    resource_data_.insert({ path, util::read_file(path) });
+    resources_[path] = resource_data_[path];
+  }
+
+  void unload_resource(const std::string& key)
+  {
+    resources_.erase(key);
+    resource_data_.erase(key);
+  }
+
   const std::span<const uint8_t>& get_resource(const std::string& key) override
   {
 #ifdef AXGL_DEBUG
@@ -21,12 +36,12 @@ public:
     return resources_.at(key);
   }
 
-  void load_resource(const std::string& key, std::span<const uint8_t> data) override
+  void load_resource_from_mem(const std::string& key, std::span<const uint8_t> data) override
   {
     resources_[key] = data;
   }
 
-  void load_resources(
+  void load_resources_from_mem(
     const std::string& key_prefix,
     const std::unordered_map<std::string, std::span<const uint8_t>>& resources
   ) override
