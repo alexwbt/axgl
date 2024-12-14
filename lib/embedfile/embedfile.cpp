@@ -109,7 +109,6 @@ int main(int argc, char** argv)
 {
   args::ArgumentParser parser("Embeds all files in a directory into a cpp file.");
   args::HelpFlag help(parser, "help", "Display the help menu.", { 'h', "help" });
-  args::CompletionFlag completion(parser, { "complete" });
 
   args::Positional<std::string> source(parser, "source", "The source directory to embed.", args::Options::Required);
   args::Positional<std::string> target(parser, "target", "The output cpp file.", args::Options::Required);

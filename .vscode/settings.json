@@ -131,6 +131,7 @@
     "ASSIMP",
     "axgl",
     "bitangent",
+    "bundlefile",
     "cpptrace",
     "cubemap",
     "embedfile",
