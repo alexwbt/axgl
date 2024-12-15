@@ -12,4 +12,4 @@ target_link_libraries(demo_opengl_textured_cube
   axgl_opengl_impl
 )
 
-use_resource(demo_opengl_textured_cube res)
+embed_resource(demo_opengl_textured_cube res)

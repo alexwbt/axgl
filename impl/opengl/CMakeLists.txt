@@ -14,4 +14,4 @@ target_link_libraries(axgl_opengl_impl
   axgl_glfw_impl
 )
 
-use_resource(axgl_opengl_impl res)
+embed_resource(axgl_opengl_impl res)

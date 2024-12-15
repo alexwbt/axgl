@@ -1,4 +1,4 @@
-# include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
+include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
 
 add_executable(demo_opengl_model)
 
@@ -13,4 +13,4 @@ target_link_libraries(demo_opengl_model
   axgl_assimp_impl
 )
 
-# use_resource(demo_opengl_model res)
+bundle_resource(demo_opengl_model res)

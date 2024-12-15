@@ -1,15 +1,15 @@
 #
 # Function to embed resource files into a target
-# 
+#
 # This function creates a custom target that embeds resource files
 # from a specified source directory into the specified target.
 # It generates a corresponding source file that includes these resources.
-# 
+#
 # Parameters:
 # - target: The name of the target that will use the embedded resources.
 # - source_dir: The directory containing the resource files to be embedded.
 #
-function(use_resource target source_dir)
+function(embed_resource target source_dir)
   # Define the output directory for the resource files
   set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/resources/${target})
   set(OUTPUT_FILE ${OUTPUT_DIR}/${source_dir})
@@ -42,4 +42,24 @@ function(use_resource target source_dir)
 
   # Add output to include directories
   target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/resources)
+endfunction()
+
+#
+# Function to bundle resource files into a binary file
+#
+function(bundle_resource target source_dir)
+  set(OUTPUT_FILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.bin)
+  set(RESOURCE_TARGET ${target}_resources_${source_dir})
+
+  file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  file(GLOB_RECURSE RESOURCE_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${source_dir}/*")
+
+  add_custom_target(
+    ${RESOURCE_TARGET}
+    VERBATIM
+    DEPENDS ${RESOURCE_FILES}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND flatc --cpp -o ${FBS_OUTPUT}/fbs --filename-suffix "" bundlefile.fbs
+  )
+  add_dependencies(${target} ${RESOURCE_TARGET})
 endfunction()

@@ -1,0 +1,15 @@
+
+namespace bundlefile;
+
+table File {
+  key: string;
+  data: [ubyte];
+}
+
+table Bundle {
+  files: [File];
+}
+
+file_identifier "BNDL";
+
+root_type Bundle;

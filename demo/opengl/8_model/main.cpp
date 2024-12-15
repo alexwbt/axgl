@@ -25,7 +25,7 @@ public:
     renderer->set_window(window);
 
     // resources
-    axgl->resource_service()->load_resources("E:/_workspace/axgl/demo/opengl/8_model/res/MP5.fbx");
+    // axgl->resource_service()->load_resources("E:/_workspace/axgl/demo/opengl/8_model/res/MP5.fbx");
 
     // realm
     auto realm_service = axgl->realm_service();

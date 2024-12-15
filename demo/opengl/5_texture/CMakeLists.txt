@@ -12,4 +12,4 @@ target_link_libraries(demo_opengl_texture
   axgl_opengl_impl
 )
 
-use_resource(demo_opengl_texture res)
+embed_resource(demo_opengl_texture res)

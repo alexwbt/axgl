@@ -15,16 +15,18 @@ private:
   std::unordered_map<std::string, const std::vector<uint8_t>> resource_data_;
 
 public:
-  void load_resources(const std::string& path)
+  void load_resource(const std::string& key, std::span<const uint8_t> data) override
   {
-    resource_data_.insert({ path, util::read_file(path) });
-    resources_[path] = resource_data_[path];
+    resources_[key] = data;
   }
 
-  void unload_resource(const std::string& key)
+  void load_resources(
+    const std::string& key_prefix,
+    const std::unordered_map<std::string, std::span<const uint8_t>>& resources
+  ) override
   {
-    resources_.erase(key);
-    resource_data_.erase(key);
+    for (const auto& [key, value] : resources)
+      resources_[key_prefix + key] = value;
   }
 
   const std::span<const uint8_t>& get_resource(const std::string& key) override
@@ -36,18 +38,10 @@ public:
     return resources_.at(key);
   }
 
-  void load_resource_from_mem(const std::string& key, std::span<const uint8_t> data) override
+  void unload_resource(const std::string& key) override
   {
-    resources_[key] = data;
-  }
-
-  void load_resources_from_mem(
-    const std::string& key_prefix,
-    const std::unordered_map<std::string, std::span<const uint8_t>>& resources
-  ) override
-  {
-    for (const auto& [key, value] : resources)
-      resources_[key_prefix + key] = value;
+    resources_.erase(key);
+    resource_data_.erase(key);
   }
 };
 

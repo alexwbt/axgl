@@ -131,6 +131,7 @@
     "ASSIMP",
     "axgl",
     "bitangent",
+    "BNDL",
     "bundlefile",
     "cpptrace",
     "cubemap",
@@ -139,6 +140,7 @@
     "endfunction",
     "flatbuffer",
     "flatbuffers",
+    "flatc",
     "Framebuffer",
     "gameloop",
     "glfw",
@@ -155,7 +157,8 @@
     "Shaderiv",
     "skybox",
     "spdlog",
-    "stbi"
+    "stbi",
+    "ubyte"
   ],
   "C_Cpp.formatting": "vcFormat",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
