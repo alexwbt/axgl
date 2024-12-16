@@ -4,7 +4,7 @@
 function(embed_resource target source_dir)
   set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/resources/${target})
   set(OUTPUT_FILE ${OUTPUT_DIR}/${source_dir})
-  set(RESOURCE_TARGET ${target}_resources_${source_dir})
+  set(RESOURCE_TARGET ${target}_resources)
 
   file(MAKE_DIRECTORY ${OUTPUT_DIR})
   file(GLOB_RECURSE RESOURCE_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${source_dir}/*")
@@ -30,7 +30,7 @@ endfunction()
 #
 function(bundle_resource target source_dir)
   set(OUTPUT_FILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}_${source_dir}.bin)
-  set(RESOURCE_TARGET ${target}_resources_${source_dir})
+  set(RESOURCE_TARGET ${target}_resources)
 
   file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
   file(GLOB_RECURSE RESOURCE_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${source_dir}/*")
@@ -53,23 +53,24 @@ endfunction()
 # Function to compile flatbuffers
 #
 function(compile_fbs target source_dir)
-  set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
-  set(FBS_TARGET ${target}_fbs_${source_dir})
+  set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers/${target})
+  set(FBS_TARGET ${target}_fbs)
 
   file(GLOB_RECURSE FBS_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${source_dir}/*.fbs")
 
   set(OUTPUT_FILES)
+
   foreach(item IN LISTS FBS_FILES)
     string(REPLACE ".fbs" "" base_name "${item}")
-    string(CONCAT new_item "${base_name}.h")
-    list(APPEND OUTPUT_FILES "${new_item}")
+    string(CONCAT new_item "${base_name}_fbs.h")
+    list(APPEND OUTPUT_FILES "${OUTPUT_DIR}/${new_item}")
   endforeach()
 
   add_custom_command(
-    COMMAND flatc --cpp -o ${FBS_OUTPUT}/fbs --filename-suffix "" ${FBS_FILES}
+    COMMAND flatc --cpp -o ${OUTPUT_DIR} --filename-suffix "_fbs" ${FBS_FILES}
     COMMENT "Compiling flatbuffers for ${target} to ${OUTPUT_DIR}"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS ${FBS_FILES}
+    DEPENDS flatbuffers flatc ${FBS_FILES}
     OUTPUT ${OUTPUT_FILES}
   )
   add_custom_target(
@@ -77,5 +78,5 @@ function(compile_fbs target source_dir)
     DEPENDS ${OUTPUT_FILES}
   )
   add_dependencies(${target} ${FBS_TARGET})
-  target_include_directories(${target} INTERFACE ${FBS_OUTPUT})
+  target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers)
 endfunction()

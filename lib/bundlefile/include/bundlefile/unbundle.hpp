@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <unordered_map>
 
-#include "fbs/bundlefile.h"
+#include "bundlefile/bundlefile_fbs.h"
 
 namespace bundlefile
 {

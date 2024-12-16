@@ -5,7 +5,7 @@
 #include <args.hxx>
 #include <spdlog/spdlog.h>
 
-#include "fbs/bundlefile.h"
+#include "bundlefile/bundlefile_fbs.h"
 
 struct File
 {
