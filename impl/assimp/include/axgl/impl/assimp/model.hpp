@@ -127,8 +127,13 @@ private:
     aiMaterial* ai_material = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
     for (int i = aiTextureType_DIFFUSE; i < aiTextureType_UNKNOWN; ++i)
     {
-      auto type = static_cast<aiTextureType>(i);
-      load_textures(ai_material, type, material, map_texture_type(type));
+      auto ai_texture_type = static_cast<aiTextureType>(i);
+      auto texture_type = map_texture_type(ai_texture_type);
+
+      if (texture_type == interface::Texture::UNKNOWN)
+        continue;
+
+      load_textures(ai_material, ai_texture_type, material, texture_type);
     }
     mesh->set_material(material);
 
@@ -141,16 +146,17 @@ private:
     std::shared_ptr<interface::Material> material,
     interface::Texture::Type texture_type)
   {
-    for (int i = 0; i < ai_material->GetTextureCount(ai_texture_type); ++i)
+    auto count = ai_material->GetTextureCount(ai_texture_type);
+    for (int i = 0; i < count; ++i)
     {
       aiString str;
       ai_material->GetTexture(ai_texture_type, i, &str);
 
-      auto texture = renderer_service_->create_texture();
+      // auto texture = renderer_service_->create_texture();
 
-      SPDLOG_INFO("texture: {}", str.C_Str());
+      // SPDLOG_INFO("texture: {}", str.C_Str());
       // texture->load_texture(texture_type, {});
-      material->add_texture(texture);
+      // material->add_texture(texture);
     }
   }
 

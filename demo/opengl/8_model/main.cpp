@@ -40,7 +40,7 @@ public:
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
     // load model
-    auto model = realm_service->create_component<axgl::interface::Mesh>();
+    auto model = realm_service->create_component<axgl::impl::Component>();
     axgl->model_service()->load_model(model, "backpack.obj");
     realm->add_component(model);
 

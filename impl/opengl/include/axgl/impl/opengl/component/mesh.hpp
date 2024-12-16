@@ -31,8 +31,15 @@ public:
     return impl::Component::get_components();
   }
 
+  void update() override
+  {
+    impl::Component::update();
+  }
+
   void render() override
   {
+    impl::Component::render();
+
     if (material_)
     {
       auto context = interface::Mesh::get_context();

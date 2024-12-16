@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "axgl/axgl.hpp"
 #include "axgl/except.hpp"
@@ -143,6 +144,12 @@ public:
 NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
+
+template<>
+std::shared_ptr<impl::Component> interface::RealmService::create_component()
+{
+  return std::make_shared<impl::Component>();
+}
 
 template<>
 std::shared_ptr<impl::RealmService> Axgl::use_service()
