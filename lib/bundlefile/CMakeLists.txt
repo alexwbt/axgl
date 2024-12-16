@@ -1,12 +1,6 @@
+include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
 
 set(FBS_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated)
-
-add_custom_target(
-  bundlefile_fbs_compile
-  VERBATIM
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMAND flatc --cpp -o ${FBS_OUTPUT}/fbs --filename-suffix "" bundlefile.fbs
-)
 
 add_library(bundlefile_fbs INTERFACE)
 target_include_directories(bundlefile_fbs
@@ -17,7 +11,7 @@ target_link_libraries(bundlefile_fbs
   INTERFACE
   flatbuffers
 )
-add_dependencies(bundlefile_fbs bundlefile_fbs_compile)
+compile_fbs(bundlefile_fbs .)
 
 add_executable(bundlefile bundlefile.cpp)
 target_link_libraries(bundlefile
@@ -26,4 +20,13 @@ target_link_libraries(bundlefile
   spdlog
   bundlefile_fbs
 )
-add_dependencies(bundlefile bundlefile_fbs)
+
+add_library(bundlefile_lib INTERFACE)
+target_include_directories(bundlefile_lib
+  INTERFACE
+  ./include
+)
+target_link_libraries(bundlefile_lib
+  INTERFACE
+  bundlefile_fbs
+)

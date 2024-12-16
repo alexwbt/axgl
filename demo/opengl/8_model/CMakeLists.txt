@@ -11,6 +11,7 @@ target_link_libraries(demo_opengl_model
   PRIVATE
   axgl_opengl_impl
   axgl_assimp_impl
+  axgl_bundlefile_impl
 )
 
 bundle_resource(demo_opengl_model res)

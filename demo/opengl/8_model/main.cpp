@@ -3,10 +3,10 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
-#include <axgl/impl/resource_service.hpp>
 #include <axgl/impl/glfw/window.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/assimp/model.hpp>
+#include <axgl/impl/bundlefile/resource.hpp>
 
 class Application : public axgl::interface::Service
 {
@@ -25,7 +25,7 @@ public:
     renderer->set_window(window);
 
     // resources
-    // axgl->resource_service()->load_resources("E:/_workspace/axgl/demo/opengl/8_model/res/MP5.fbx");
+    axgl->resource_service()->load_archive("demo_opengl_model_res.bin");
 
     // realm
     auto realm_service = axgl->realm_service();
@@ -41,7 +41,7 @@ public:
 
     // load model
     auto model = realm_service->create_component<axgl::interface::Mesh>();
-    axgl->model_service()->load_model(model, "E:/_workspace/axgl/demo/opengl/8_model/res/MP5.fbx");
+    axgl->model_service()->load_model(model, "backpack.obj");
     realm->add_component(model);
 
     // light
@@ -61,7 +61,7 @@ int main()
   axgl.use_service<axgl::impl::AssimpModelService>();
   axgl.use_service<axgl::impl::RealmService>();
   axgl.use_service<axgl::impl::CameraService>();
-  axgl.use_service<axgl::impl::ResourceService>();
+  axgl.use_service<axgl::impl::BundlefileResourceService>();
   axgl.register_service("app", std::make_shared<Application>());
   axgl.run();
 }

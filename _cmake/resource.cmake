@@ -21,7 +21,6 @@ function(embed_resource target source_dir)
     DEPENDS ${OUTPUT_FILE}.cpp ${OUTPUT_FILE}.hpp
   )
   add_dependencies(${target} ${RESOURCE_TARGET})
-
   target_sources(${target} PRIVATE ${OUTPUT_FILE}.cpp)
   target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/resources)
 endfunction()
@@ -40,7 +39,7 @@ function(bundle_resource target source_dir)
     COMMAND bundlefile ${source_dir} ${OUTPUT_FILE}
     COMMENT "Bundling resource files for ${target} to ${OUTPUT_FILE}"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS embedfile ${RESOURCE_FILES}
+    DEPENDS bundlefile ${RESOURCE_FILES}
     OUTPUT ${OUTPUT_FILE}
   )
   add_custom_target(
@@ -48,4 +47,35 @@ function(bundle_resource target source_dir)
     DEPENDS ${OUTPUT_FILE}
   )
   add_dependencies(${target} ${RESOURCE_TARGET})
+endfunction()
+
+#
+# Function to compile flatbuffers
+#
+function(compile_fbs target source_dir)
+  set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  set(FBS_TARGET ${target}_fbs_${source_dir})
+
+  file(GLOB_RECURSE FBS_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${source_dir}/*.fbs")
+
+  set(OUTPUT_FILES)
+  foreach(item IN LISTS FBS_FILES)
+    string(REPLACE ".fbs" "" base_name "${item}")
+    string(CONCAT new_item "${base_name}.h")
+    list(APPEND OUTPUT_FILES "${new_item}")
+  endforeach()
+
+  add_custom_command(
+    COMMAND flatc --cpp -o ${FBS_OUTPUT}/fbs --filename-suffix "" ${FBS_FILES}
+    COMMENT "Compiling flatbuffers for ${target} to ${OUTPUT_DIR}"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    DEPENDS ${FBS_FILES}
+    OUTPUT ${OUTPUT_FILES}
+  )
+  add_custom_target(
+    ${FBS_TARGET} ALL
+    DEPENDS ${OUTPUT_FILES}
+  )
+  add_dependencies(${target} ${FBS_TARGET})
+  target_include_directories(${target} INTERFACE ${FBS_OUTPUT})
 endfunction()

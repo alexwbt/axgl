@@ -9,6 +9,8 @@
 #include <axgl/interface/model.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
+#include <axgl/interface/resource.hpp>
+#include <axgl/interface/component/mesh.hpp>
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -17,6 +19,9 @@
 #include <spdlog/spdlog.h>
 #include <glm/glm.hpp>
 
+#ifndef DEFINED_COMPONENT_MESH
+#error Implementation of interface::Mesh must be defined before importing <axgl/impl/assimp/model.hpp>
+#endif
 
 NAMESPACE_AXGL_IMPL
 
@@ -41,7 +46,10 @@ public:
     auto data = resource_service_->get_resource(resource_key);
 
     Assimp::Importer importer;
-    const aiScene* ai_scene = importer.ReadFileFromMemory(data.data(), data.size(), 0);
+    const aiScene* ai_scene = importer.ReadFileFromMemory(data.data(), data.size(),
+      aiProcess_Triangulate |
+      aiProcess_GenSmoothNormals |
+      aiProcess_CalcTangentSpace);
 
 #ifdef AXGL_DEBUG
     if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode)

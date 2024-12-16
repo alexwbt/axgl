@@ -1,5 +1,5 @@
 
-namespace bundlefile;
+namespace fbs.bundlefile;
 
 table File {
   key: string;

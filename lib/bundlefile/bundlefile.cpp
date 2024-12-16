@@ -43,7 +43,7 @@ int write_files(const std::vector<File>& files, const std::string& target)
 {
   flatbuffers::FlatBufferBuilder builder;
 
-  std::vector<flatbuffers::Offset<bundlefile::File>> fbs_files;
+  std::vector<flatbuffers::Offset<fbs::bundlefile::File>> fbs_files;
   for (const auto& file : files)
   {
     std::ifstream input_stream(file.path, std::ios::binary | std::ios::ate);
@@ -55,16 +55,16 @@ int write_files(const std::vector<File>& files, const std::string& target)
 
     auto key_offset = builder.CreateString(file.key);
     auto data_offset = builder.CreateVector(file_data);
-    bundlefile::FileBuilder file_builder(builder);
+    fbs::bundlefile::FileBuilder file_builder(builder);
     file_builder.add_key(key_offset);
     file_builder.add_data(data_offset);
     fbs_files.push_back(file_builder.Finish());
   }
 
   auto fbs_files_offset = builder.CreateVector(fbs_files);
-  bundlefile::BundleBuilder bundle_builder(builder);
+  fbs::bundlefile::BundleBuilder bundle_builder(builder);
   bundle_builder.add_files(fbs_files_offset);
-  builder.Finish(bundle_builder.Finish(), bundlefile::BundleIdentifier());
+  builder.Finish(bundle_builder.Finish(), fbs::bundlefile::BundleIdentifier());
 
   std::ofstream output_stream(target, std::ios::binary);
   if (!output_stream)

@@ -68,13 +68,11 @@ void write_files(const std::vector<File>& files, const std::string& target, cons
     const auto size = input_stream.tellg();
     input_stream.seekg(0, std::ios::beg);
 
-    std::vector<char> buffer;
-    buffer.resize(size);
-    input_stream.read(buffer.data(), size);
+    std::vector<uint8_t> buffer(size);
+    input_stream.read(reinterpret_cast<char*>(buffer.data()), size);
 
     output_stream << std::format("constexpr std::array<uint8_t, {}> d{} = {{", buffer.size(), file.key_hash);
-    for (char b : buffer)
-      output_stream << static_cast<int>(b) << ",";
+    for (int b : buffer) output_stream << b << ",";
     output_stream << "};" << std::endl;
   }
 

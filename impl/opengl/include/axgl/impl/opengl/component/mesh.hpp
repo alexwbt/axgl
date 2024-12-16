@@ -92,6 +92,11 @@ NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
 
+#ifdef DEFINED_COMPONENT_MESH
+#error Multiple definition of interface::Mesh detected.
+#endif
+
+#define DEFINED_COMPONENT_MESH
 template<>
 std::shared_ptr<interface::Mesh> interface::RealmService::create_component()
 {
