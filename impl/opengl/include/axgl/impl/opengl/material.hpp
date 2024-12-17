@@ -47,7 +47,7 @@ public:
     color_ = color;
   }
 
-  void add_texture(std::shared_ptr<interface::Texture> texture) override
+  void add_texture(interface::TextureType type, std::shared_ptr<interface::Texture> texture) override
   {
     auto texture_ = std::dynamic_pointer_cast<OpenglTexture>(texture);
     if (!texture_)
@@ -56,8 +56,8 @@ public:
 #else
       return;
 #endif
-    using enum interface::Texture::Type;
-    switch (texture->type)
+    using enum interface::TextureType;
+    switch (type)
     {
     case DIFFUSE: diffuse_texture_ = std::move(texture_); break;
     case SPECULAR: specular_texture_ = std::move(texture_); break;
@@ -186,7 +186,7 @@ public:
     color_ = color;
   }
 
-  void add_texture(std::shared_ptr<interface::Texture> texture) override
+  void add_texture(interface::TextureType type, std::shared_ptr<interface::Texture> texture) override
   {
     texture_ = std::dynamic_pointer_cast<OpenglTexture>(texture);
 #ifdef AXGL_DEBUG

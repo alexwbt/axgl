@@ -63,19 +63,15 @@ public:
 
     // diffuse texture
     auto diffuse_texture = renderer_service->create_texture();
-    diffuse_texture->load_texture(
-      axgl::interface::Texture::DIFFUSE,
-      demo_opengl_textured_cube_res::get("container/diffuse.png"));
+    diffuse_texture->load_texture(demo_opengl_textured_cube_res::get("container/diffuse.png"));
     // specular texture
     auto specular_texture = renderer_service->create_texture();
-    specular_texture->load_texture(
-      axgl::interface::Texture::SPECULAR,
-      demo_opengl_textured_cube_res::get("container/specular.png"));
+    specular_texture->load_texture(demo_opengl_textured_cube_res::get("container/specular.png"));
 
     // material
     auto material = renderer_service->create_material("default");
-    material->add_texture(diffuse_texture);
-    material->add_texture(specular_texture);
+    material->add_texture(axgl::interface::TextureType::DIFFUSE, diffuse_texture);
+    material->add_texture(axgl::interface::TextureType::SPECULAR, specular_texture);
 
     // square mesh
     mesh = realm_service->create_component<axgl::interface::Mesh>();

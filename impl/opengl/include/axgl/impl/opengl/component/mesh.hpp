@@ -1,51 +1,53 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
-#include <axgl/axgl.hpp>
 #include <axgl/except.hpp>
 #include <axgl/namespace.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/component/mesh.hpp>
-#include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/realm_service.hpp>
 
+#include "axgl/impl/opengl/material.hpp"
 #include "opengl/vertex_array_object.hpp"
 
 NAMESPACE_AXGL_IMPL
 
-class OpenglMesh : public interface::Mesh, public impl::Component
+class OpenglMesh : public interface::Mesh
 {
 private:
+  impl::Component comp_impl_;
+
   opengl::VertexArrayObject vertex_array_;
   std::shared_ptr<OpenglMaterial> material_;
 
 public:
   void add_component(std::shared_ptr<interface::Component> component) override
   {
-    impl::Component::add_component(std::move(component));
+    comp_impl_.add_component(std::move(component));
   }
 
   util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
-    return impl::Component::get_components();
+    return comp_impl_.get_components();
   }
 
   void update() override
   {
-    impl::Component::update();
+    comp_impl_.update();
   }
 
   void render() override
   {
-    impl::Component::render();
-
     if (material_)
     {
       auto context = interface::Mesh::get_context();
       material_->use(context, this);
     }
     vertex_array_.draw();
+
+    comp_impl_.render();
   }
 
   void set_vertices(const std::span<const glm::vec3>& vertices) override
@@ -99,11 +101,7 @@ NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
 
-#ifdef DEFINED_COMPONENT_MESH
-#error Multiple definition of interface::Mesh detected.
-#endif
-
-#define DEFINED_COMPONENT_MESH
+#define AXGL_DEFINED_CREATE_COMPONENT_MESH
 template<>
 std::shared_ptr<interface::Mesh> interface::RealmService::create_component()
 {

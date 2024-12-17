@@ -1,14 +1,13 @@
 #pragma once
 
-#include <axgl/axgl.hpp>
 #include <axgl/namespace.hpp>
-#include <axgl/interface/renderer.hpp>
+#include <axgl/impl/assimp/texture.hpp>
 
 #include "opengl/texture.hpp"
 
 NAMESPACE_AXGL_IMPL
 
-class OpenglTexture : public interface::Texture
+class OpenglTexture : public AssimpTexture
 {
 private:
   opengl::Texture texture_;
@@ -19,10 +18,14 @@ public:
     texture_.use();
   }
 
-  void load_texture(Type type, std::span<const uint8_t> data) override
+  void load_texture(std::span<const uint8_t> data) override
   {
-    Texture::type = type;
-    texture_.load_2d_texture(data);
+    texture_.load_image_texture(data);
+  }
+
+  void load_texture(aiTexture* data) override
+  {
+    texture_.load_assimp_texture(data);
   }
 };
 

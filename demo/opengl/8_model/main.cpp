@@ -41,7 +41,7 @@ public:
 
     // load model
     auto model = realm_service->create_component<axgl::impl::Component>();
-    axgl->model_service()->load_model(model, "backpack.obj");
+    axgl->model_service()->load_model(model, "backpacke.assbin");
     realm->add_component(model);
 
     // light

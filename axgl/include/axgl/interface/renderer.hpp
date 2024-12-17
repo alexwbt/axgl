@@ -14,17 +14,17 @@ NAMESPACE_AXGL_INTERFACE
 class Texture
 {
 public:
-  enum Type
-  {
-    UNKNOWN,
-    DIFFUSE,
-    SPECULAR,
-    NORMAL,
-    HEIGHT,
-  };
-  Type type;
   virtual ~Texture() {}
-  virtual void load_texture(Type type, std::span<const uint8_t> data) = 0;
+  virtual void load_texture(std::span<const uint8_t> data) = 0;
+};
+
+enum class TextureType
+{
+  UNKNOWN,
+  DIFFUSE,
+  SPECULAR,
+  NORMAL,
+  HEIGHT,
 };
 
 class Material
@@ -32,7 +32,7 @@ class Material
 public:
   virtual ~Material() {}
   virtual void set_color(const glm::vec3& color) = 0;
-  virtual void add_texture(std::shared_ptr<Texture> texture) = 0;
+  virtual void add_texture(TextureType type, std::shared_ptr<Texture> texture) = 0;
 };
 
 class Renderer

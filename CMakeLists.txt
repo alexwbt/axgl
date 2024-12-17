@@ -23,6 +23,7 @@ add_subdirectory(_external/flatbuffer)
 
 # Internal Libraries
 add_subdirectory(lib/glad)
+add_subdirectory(lib/assbin)
 add_subdirectory(lib/embedfile)
 add_subdirectory(lib/bundlefile)
 

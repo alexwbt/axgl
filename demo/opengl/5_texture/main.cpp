@@ -35,13 +35,11 @@ int main()
 
   // texture
   auto texture = renderer_service->create_texture();
-  texture->load_texture(
-    axgl::interface::Texture::DIFFUSE,
-    demo_opengl_texture_res::get("container.png"));
+  texture->load_texture(demo_opengl_texture_res::get("container.png"));
 
   // material
   auto material = renderer_service->create_material("2d");
-  material->add_texture(texture);
+  material->add_texture(axgl::interface::TextureType::DIFFUSE, texture);
 
   // square mesh
   auto mesh = realm_service->create_component<axgl::interface::Mesh>();

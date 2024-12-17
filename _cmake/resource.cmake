@@ -59,7 +59,6 @@ function(compile_fbs target source_dir)
   file(GLOB_RECURSE FBS_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${source_dir}/*.fbs")
 
   set(OUTPUT_FILES)
-
   foreach(item IN LISTS FBS_FILES)
     string(REPLACE ".fbs" "" base_name "${item}")
     string(CONCAT new_item "${base_name}_fbs.h")

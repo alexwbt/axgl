@@ -6,8 +6,9 @@
 #include <axgl/util/string.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/impl/glfw/window.hpp>
-#include <axgl/impl/opengl/texture.hpp>
-#include <axgl/impl/opengl/material.hpp>
+
+#include "axgl/impl/opengl/texture.hpp"
+#include "axgl/impl/opengl/material.hpp"
 
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>

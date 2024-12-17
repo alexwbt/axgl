@@ -114,7 +114,11 @@ int main(int argc, char** argv)
 
   try { parser.ParseCLI(argc, argv); }
   catch (const args::Completion& e) { std::cout << e.what(); }
-  catch (const args::Help&) { std::cout << parser; }
+  catch (const args::Help&)
+  {
+    std::cout << parser;
+    return 0;
+  }
   catch (const args::Error& e)
   {
     SPDLOG_ERROR(e.what());

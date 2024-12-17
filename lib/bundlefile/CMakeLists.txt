@@ -18,5 +18,4 @@ target_include_directories(bundlefile_lib
 target_link_libraries(bundlefile_lib
   INTERFACE
   flatbuffers
-  bundlefile_fbs
 )
