@@ -34,14 +34,17 @@ public:
 
     // camera
     axgl->input_service()->set_window(window);
-    realm->camera.position.z = -2;
+    realm->camera.position.z = -20;
     realm->camera.update();
     auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
     // load model
     auto model = realm_service->create_component<axgl::impl::Component>();
-    axgl->model_service()->load_model(model, "backpacke.assbin");
+    axgl->model_service()->load_model(model, "backpack.assbin");
+    model->rotation = glm::vec3(0, 3.14159, 0);
+    model->scale = glm::vec3(10);
+    model->update_model_matrix();
     realm->add_component(model);
 
     // light

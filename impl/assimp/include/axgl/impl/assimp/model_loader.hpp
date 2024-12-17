@@ -19,8 +19,6 @@
 #include <axgl/interface/resource.hpp>
 #include <axgl/interface/component/mesh.hpp>
 
-#include "axgl/impl/assimp/texture.hpp"
-
 #ifndef AXGL_DEFINED_CREATE_COMPONENT_MESH
 #error Implementation of interface::Mesh must be defined before importing <axgl/impl/assimp/model.hpp>
 #endif
@@ -35,7 +33,7 @@ private:
   std::shared_ptr<interface::ResourceService> resource_service_;
 
   std::string resource_key_;
-  std::vector<std::shared_ptr<AssimpTexture>> embedded_textures_;
+  std::vector<std::shared_ptr<interface::Texture>> embedded_textures_;
 
 public:
   ModelLoader(
@@ -50,11 +48,9 @@ public:
     resource_service_(std::move(resource_service)),
     resource_key_(resource_key)
   {
-    const auto& data = resource_service_->get_resource(resource_key);
-
     Assimp::Importer importer;
+    const auto& data = resource_service_->get_resource(resource_key);
     const auto* ai_scene = importer.ReadFileFromMemory(data.data(), data.size(), 0);
-
 #ifdef AXGL_DEBUG
     if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode)
     {
@@ -62,33 +58,21 @@ public:
       throw std::runtime_error(importer.GetErrorString());
     }
 #endif
-
     if (ai_scene->HasTextures())
     {
       embedded_textures_.resize(ai_scene->mNumTextures);
       for (int i = 0; i < ai_scene->mNumTextures; ++i)
       {
-        embedded_textures_[i] = create_texture();
-        embedded_textures_[i]->load_texture(ai_scene->mTextures[i]);
+        embedded_textures_[i] = renderer_service_->create_texture();
+        embedded_textures_[i]->load_texture({
+          reinterpret_cast<uint8_t*>(ai_scene->mTextures[i]->pcData),
+          ai_scene->mTextures[i]->mWidth });
       }
     }
-
     process_node(root, ai_scene->mRootNode, ai_scene);
   }
 
 private:
-  std::shared_ptr<AssimpTexture> create_texture()
-  {
-    auto texture = std::dynamic_pointer_cast<AssimpTexture>(renderer_service_->create_texture());
-#ifdef AXGL_DEBUG
-    if (!texture)
-      throw std::runtime_error(
-        "Invalid renderer service texture type. "
-        "AssimpTexture must be supported when using AssimpModelService to load models.");
-#endif
-    return texture;
-  }
-
   void process_node(
     std::shared_ptr<interface::Component> root,
     aiNode* ai_node, const aiScene* ai_scene)
@@ -186,8 +170,6 @@ private:
         if (index < 0 || index > embedded_textures_.size())
           throw std::runtime_error("Invalid texture path.");
 #endif
-
-        SPDLOG_INFO("Embedded texture: {}", texture_path.C_Str());
         material->add_texture(texture_type, embedded_textures_[index]);
       }
       else
@@ -198,7 +180,6 @@ private:
         std::string path = (base_path.parent_path() / relative_path).string();
         std::ranges::replace(path, '\\', '/');
 
-        SPDLOG_INFO("External texture: {}", path);
         auto texture = renderer_service_->create_texture();
         texture->load_texture(resource_service_->get_resource(path));
         material->add_texture(texture_type, std::move(texture));

@@ -12,7 +12,6 @@ target_link_libraries(axgl_opengl_impl
   PUBLIC
   glad
   axgl_glfw_impl
-  axgl_assimp_impl
 )
 
 embed_resource(axgl_opengl_impl res)

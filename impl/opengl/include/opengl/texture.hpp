@@ -10,8 +10,6 @@
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
 
-#include <assimp/scene.h>
-
 namespace opengl
 {
 
@@ -77,42 +75,18 @@ namespace opengl
       StbiImage texture(data);
       if (!texture.stbi_ptr)
       {
-        SPDLOG_ERROR("Failed to load 2d texture.");
+        SPDLOG_ERROR("Failed to load texture image.");
         return;
       }
 
       glBindTexture(target_, id_);
-
       glTexParameteri(target_, GL_TEXTURE_WRAP_S, GL_REPEAT);
       glTexParameteri(target_, GL_TEXTURE_WRAP_T, GL_REPEAT);
       glTexParameteri(target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
       glTexParameteri(target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
       glTexImage2D(target_, 0,
         texture.format, texture.width, texture.height,
         0, texture.format, GL_UNSIGNED_BYTE, texture.stbi_ptr);
-
-      glGenerateMipmap(target_);
-    }
-
-    void load_assimp_texture(aiTexture* texture)
-    {
-      if (target_ > 0)
-      {
-        SPDLOG_ERROR("Texture is already loaded.");
-        return;
-      }
-      target_ = GL_TEXTURE_2D;
-
-      glBindTexture(target_, id_);
-
-      glTexParameteri(target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (texture->achFormatHint[0] & 0x01) ? GL_REPEAT : GL_CLAMP);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (texture->achFormatHint[0] & 0x01) ? GL_REPEAT : GL_CLAMP);
-
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture->mWidth, texture->mHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, texture->pcData);
-
       glGenerateMipmap(target_);
     }
 

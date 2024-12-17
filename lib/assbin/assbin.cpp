@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
   if (embed_textures)
   {
-    SPDLOG_INFO("Embedding texture data.");
+    SPDLOG_INFO("Embed textures: enabled");
     flag |= aiProcess_EmbedTextures;
   }
 
