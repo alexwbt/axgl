@@ -2,6 +2,7 @@
 
 #include "axgl/namespace.hpp"
 #include "axgl/interface/realm.hpp"
+#include "axgl/interface/renderer.hpp"
 
 NAMESPACE_AXGL_INTERFACE
 
@@ -32,7 +33,9 @@ public:
     float width = 0;
     float height = 0;
   };
-  struct Style
+  enum class TextAlign { BEGIN, CENTER, END };
+  enum class TextStyle { NORMAL, BOLD, ITALIC };
+  struct Properties
   {
     Vector origin;
     Vector offset;
@@ -42,8 +45,19 @@ public:
     Color background_color;
     bool hidden = false;
     bool block_cursor = false;
+    std::string content = "";
+    std::string font = "";
+    float font_size = 0;
+    Color text_color;
+    TextStyle text_style = NORMAL;
+    TextAlign horizontal_align = CENTER;
+    TextAlign vertical_align = CENTER;
+    std::shared_ptr<Texture> background_image;
   };
-  Style style;
+  Properties props;
+  Properties down;
+  Properties hover;
+  Properties focus;
 
   virtual void add_child(const std::string& id, std::shared_ptr<GuiElement> element) = 0;
   virtual void remove_child(const std::string& id) = 0;
@@ -53,45 +67,7 @@ public:
 
   virtual uint32_t down_tick() = 0;
   virtual bool hover() = 0;
-};
-
-class GuiText : public GuiElement
-{
-public:
-  enum class TextAlign { BEGIN, CENTER, END };
-  enum class TextStyle { NORMAL, BOLD, ITALIC };
-  struct Style
-  {
-    std::string text = "";
-    std::string font = "";
-    float font_size = 0;
-    TextStyle text_style = NORMAL;
-    TextAlign horizontal_align = CENTER;
-    TextAlign vertical_align = CENTER;
-    GuiElement::Color text_color;
-  };
-  Style text_style;
-};
-
-class GuiButton : public GuiElement
-{
-public:
-  GuiElement::Style hover_style;
-  GuiElement::Style down_style;
-
-  virtual void set_text(std::shared_ptr<GuiText> text) = 0;
-  virtual void set_text_hover(std::shared_ptr<GuiText> text) = 0;
-  virtual void set_text_down(std::shared_ptr<GuiText> text) = 0;
-};
-
-class GuiTextInput : public GuiElement
-{
-public:
-};
-
-class GuiImage : public GuiElement
-{
-public:
+  virtual bool focus() = 0;
 };
 
 NAMESPACE_AXGL_INTERFACE_END
