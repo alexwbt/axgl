@@ -13,7 +13,7 @@ struct File
   std::string key;
 };
 
-inline std::string entry_to_string(const std::filesystem::path& path)
+static std::string entry_to_string(const std::filesystem::path& path)
 {
   std::stringstream stream;
   for (const auto& e : path)
@@ -23,7 +23,7 @@ inline std::string entry_to_string(const std::filesystem::path& path)
   return value;
 }
 
-std::vector<File> read_directory(const std::string& source)
+static std::vector<File> read_directory(const std::string& source)
 {
   std::vector<File> files;
   std::hash<std::string> to_hash;
@@ -39,7 +39,7 @@ std::vector<File> read_directory(const std::string& source)
   return files;
 }
 
-int write_files(const std::vector<File>& files, const std::string& target)
+static int write_files(const std::vector<File>& files, const std::string& target)
 {
   flatbuffers::FlatBufferBuilder builder;
 
@@ -79,7 +79,7 @@ int write_files(const std::vector<File>& files, const std::string& target)
   return 0;
 }
 
-int bundle_files(const std::string& source, const std::string& target)
+static int bundle_files(const std::string& source, const std::string& target)
 {
   if (!std::filesystem::is_directory(source))
   {

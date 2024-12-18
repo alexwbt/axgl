@@ -16,7 +16,7 @@ struct File
   size_t key_hash;
 };
 
-inline std::string entry_to_string(const std::filesystem::path& path)
+static std::string entry_to_string(const std::filesystem::path& path)
 {
   std::stringstream stream;
   for (const auto& e : path)
@@ -26,7 +26,7 @@ inline std::string entry_to_string(const std::filesystem::path& path)
   return value;
 }
 
-std::vector<File> read_directory(const std::string& source)
+static std::vector<File> read_directory(const std::string& source)
 {
   std::vector<File> files;
   std::hash<std::string> to_hash;
@@ -43,7 +43,7 @@ std::vector<File> read_directory(const std::string& source)
   return files;
 }
 
-void write_files(const std::vector<File>& files, const std::string& target, const std::string& ns)
+static void write_files(const std::vector<File>& files, const std::string& target, const std::string& ns)
 {
   std::ofstream header_output_stream(target + ".hpp");
   header_output_stream << "#pragma once" << std::endl;
@@ -84,7 +84,7 @@ void write_files(const std::vector<File>& files, const std::string& target, cons
   output_stream << "#pragma warning(pop)" << std::endl;
 }
 
-int embed_files(const std::string& source, const std::string& target, const std::string& ns)
+static int embed_files(const std::string& source, const std::string& target, const std::string& ns)
 {
   if (!std::filesystem::is_directory(source))
   {

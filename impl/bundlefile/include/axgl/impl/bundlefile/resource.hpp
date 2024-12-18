@@ -24,6 +24,11 @@ public:
     resources_[key] = data;
   }
 
+  void load_resources(std::unordered_map<std::string, std::span<const uint8_t>> data) override
+  {
+    resources_.insert(data.begin(), data.end());
+  }
+
   void unload_resource(const std::string& key) override
   {
     resources_.erase(key);

@@ -1,2 +1,9 @@
-_build/
+bin/
+build/
+
 _bin/
+_build/
+
+.vs/
+out/
+CMakeSettings.json

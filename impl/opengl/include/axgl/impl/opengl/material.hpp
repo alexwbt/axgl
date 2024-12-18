@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <memory>
 
 #include <axgl/axgl.hpp>
@@ -45,6 +46,16 @@ public:
   void set_color(const glm::vec3& color) override
   {
     color_ = color;
+  }
+
+  void set_prop(const std::string& key, const std::string& value) override
+  {
+    if (key == "shininess")
+      shininess_ = std::stof(value);
+#ifdef AXGL_DEGUG
+    else
+      throw std::runtime_error("Invalid material prop key: " + key);
+#endif
   }
 
   void add_texture(interface::TextureType type, std::shared_ptr<interface::Texture> texture) override
@@ -163,6 +174,22 @@ private:
   std::shared_ptr<OpenglTexture> texture_;
 
 public:
+  void set_color(const glm::vec3& color) override
+  {
+    color_ = color;
+  }
+
+  void set_prop(const std::string& key, const std::string& value) override {}
+
+  void add_texture(interface::TextureType type, std::shared_ptr<interface::Texture> texture) override
+  {
+    texture_ = std::dynamic_pointer_cast<OpenglTexture>(texture);
+#ifdef AXGL_DEBUG
+    if (!texture_)
+      throw std::runtime_error("The provided texture is not a valid opengl texture.");
+#endif
+  }
+
   void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
   {
     glm::mat4 model = mesh->get_model();
@@ -179,20 +206,6 @@ public:
       shader_.set_int("mesh_texture", 0);
       shader_.set_bool("use_texture", true);
     }
-  }
-
-  void set_color(const glm::vec3& color) override
-  {
-    color_ = color;
-  }
-
-  void add_texture(interface::TextureType type, std::shared_ptr<interface::Texture> texture) override
-  {
-    texture_ = std::dynamic_pointer_cast<OpenglTexture>(texture);
-#ifdef AXGL_DEBUG
-    if (!texture_)
-      throw std::runtime_error("The provided texture is not a valid opengl texture.");
-#endif
   }
 };
 

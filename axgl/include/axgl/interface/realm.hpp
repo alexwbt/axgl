@@ -29,8 +29,8 @@ class RealmContext;
 class Component
 {
 private:
-  const RealmContext* context_;
-  const Component* parent_;
+  const RealmContext* context_ = nullptr;
+  const Component* parent_ = nullptr;
 protected:
   const RealmContext* get_context() const
   {

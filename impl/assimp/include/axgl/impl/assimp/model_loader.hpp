@@ -25,28 +25,35 @@
 
 NAMESPACE_AXGL_IMPL
 
+class AssimpModelService;
+
 class ModelLoader
 {
-private:
+  friend class AssimpModelService;
+
   std::shared_ptr<interface::RealmService> realm_service_;
   std::shared_ptr<interface::RendererService> renderer_service_;
   std::shared_ptr<interface::ResourceService> resource_service_;
 
   std::string resource_key_;
+  std::string material_type_;
   std::vector<std::shared_ptr<interface::Texture>> embedded_textures_;
 
-public:
+  interface::ModelService::ModelResources resources_;
+
   ModelLoader(
     std::shared_ptr<interface::RealmService> realm_service,
     std::shared_ptr<interface::RendererService> renderer_service,
     std::shared_ptr<interface::ResourceService> resource_service,
     std::shared_ptr<interface::Component> root,
-    const std::string& resource_key
+    const std::string& resource_key,
+    const std::string& material_type
   ) :
     realm_service_(std::move(realm_service)),
     renderer_service_(std::move(renderer_service)),
     resource_service_(std::move(resource_service)),
-    resource_key_(resource_key)
+    resource_key_(resource_key),
+    material_type_(material_type)
   {
     Assimp::Importer importer;
     const auto& data = resource_service_->get_resource(resource_key);
@@ -67,20 +74,21 @@ public:
         embedded_textures_[i]->load_texture({
           reinterpret_cast<uint8_t*>(ai_scene->mTextures[i]->pcData),
           ai_scene->mTextures[i]->mWidth });
+
+        resources_.textures.push_back(embedded_textures_[i]);
       }
     }
     process_node(root, ai_scene->mRootNode, ai_scene);
   }
 
-private:
   void process_node(
     std::shared_ptr<interface::Component> root,
     aiNode* ai_node, const aiScene* ai_scene)
   {
     for (int i = 0; i < ai_node->mNumMeshes; ++i)
     {
-      aiMesh* mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
-      root->add_component(load_mesh(mesh, ai_scene));
+      aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
+      root->add_component(load_mesh(ai_mesh, ai_scene));
     }
 
     // add children node mesh
@@ -91,6 +99,7 @@ private:
   std::shared_ptr<axgl::interface::Mesh> load_mesh(aiMesh* ai_mesh, const aiScene* ai_scene)
   {
     auto mesh = realm_service_->create_component<axgl::interface::Mesh>();
+    resources_.meshes.push_back(mesh);
 
     std::vector<glm::vec3> vertices;
     vertices.reserve(ai_mesh->mNumVertices);
@@ -133,7 +142,7 @@ private:
       mesh->set_indices(indices);
     }
 
-    auto material = renderer_service_->create_material("default");
+    auto material = renderer_service_->create_material(material_type_);
     aiMaterial* ai_material = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
     for (int i = aiTextureType_DIFFUSE; i < aiTextureType_UNKNOWN; ++i)
     {
@@ -146,6 +155,7 @@ private:
       load_textures(ai_material, ai_texture_type, material, texture_type);
     }
     mesh->set_material(material);
+    resources_.materials.push_back(material);
 
     return mesh;
   }
@@ -183,6 +193,7 @@ private:
         auto texture = renderer_service_->create_texture();
         texture->load_texture(resource_service_->get_resource(path));
         material->add_texture(texture_type, std::move(texture));
+        resources_.textures.push_back(texture);
       }
     }
   }

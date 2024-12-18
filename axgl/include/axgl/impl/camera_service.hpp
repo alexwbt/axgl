@@ -44,6 +44,8 @@ public:
 
   void update() override
   {
+    if (!camera_mode_)
+      return;
     auto realm = realm_service_->get_active_realm();
     camera_mode_->update(realm->camera);
   }

@@ -31,15 +31,17 @@ public:
     resource_service_ = context->axgl->resource_service();
   }
 
-  void load_model(std::shared_ptr<interface::Component> root, const std::string& resource_key) override
+  ModelResources load_model(std::shared_ptr<interface::Component> root, const std::string& resource_key) override
   {
     ModelLoader loader(
       realm_service_,
       renderer_service_,
       resource_service_,
       root,
-      resource_key
+      resource_key,
+      "default"
     );
+    return loader.resources_;
   }
 };
 

@@ -19,7 +19,7 @@ class ServiceContextProvider;
 class Service
 {
 private:
-  const ServiceContext* context_;
+  const ServiceContext* context_ = nullptr;
   friend class ServiceContextProvider;
 
 protected:
@@ -62,7 +62,7 @@ private:
 class ServiceContext
 {
 public:
-  Axgl* axgl;
+  Axgl* axgl = nullptr;
 
 private:
   ServiceContextProvider* provider_;

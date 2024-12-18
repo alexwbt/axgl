@@ -28,18 +28,18 @@ namespace util
   inline void ltrim(std::string& s)
   {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
-    {
-      return !std::isspace(ch);
-    }));
+      {
+        return !std::isspace(ch);
+      }));
   }
 
   // trim from end (in place)
   inline void rtrim(std::string& s)
   {
     s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch)
-    {
-      return !std::isspace(ch);
-    }).base(), s.end());
+      {
+        return !std::isspace(ch);
+      }).base(), s.end());
   }
 
   // trim from both ends (in place)
@@ -80,5 +80,15 @@ namespace util
     return hash_string(str.c_str());
   }
 
+  void string_to_vec3(const std::string& str, float& x, float& y, float& z) {
+    std::istringstream iss(str);
+    char comma;
+    if (!(iss >> x >> comma >> y >> comma >> z))
+    {
+      x = 0;
+      y = 0;
+      z = 0;
+    }
+  }
 
 }

@@ -1,4 +1,3 @@
-
 #define AXGL_DEBUG
 #include <axgl/axgl.hpp>
 #include <axgl/impl/realm_service.hpp>
@@ -8,24 +7,24 @@
 #include <axgl/impl/assimp/model.hpp>
 #include <axgl/impl/bundlefile/resource.hpp>
 
+#include "demo_opengl_gui/res.hpp"
+
 class Application : public axgl::interface::Service
 {
 public:
+
   void initialize() override
   {
     auto axgl = get_context()->axgl;
 
     // window
     auto window = axgl->window_service()->create_window();
-    window->set_title("Hello model!");
+    window->set_title("Hello gui!");
 
     // renderer
     auto renderer_service = axgl->renderer_service();
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
-
-    // resources
-    axgl->resource_service()->load_archive("demo_opengl_model_res.bin");
 
     // realm
     auto realm_service = axgl->realm_service();
@@ -33,25 +32,21 @@ public:
     realm->set_renderer(renderer);
 
     // camera
-    axgl->input_service()->set_window(window);
-    realm->camera.position.z = -20;
+    realm->camera.position.z = -2;
     realm->camera.update();
-    auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
-    camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
+    axgl->input_service()->set_window(window);
+    axgl->get_service<axgl::impl::CameraService>("camera")
+      ->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
-    // load model
-    auto model = realm_service->create_component<axgl::impl::Component>();
-    axgl->model_service()->load_model(model, "backpack.assbin");
-    model->rotation = glm::vec3(0, 3.14159, 0);
-    model->scale = glm::vec3(10);
-    model->update_model_matrix();
-    realm->add_component(model);
+    // grass block
+    auto block = realm_service->create_component<axgl::impl::Component>();
+    axgl->resource_service()->load_resources(demo_opengl_gui_res::data);
+    axgl->model_service()->load_model(block, "block.assbin");
+    realm->add_component(block);
 
     // light
-    realm->lights.emplace_back(
-      glm::vec3(0.2f, -1.0f, 1.2f),
-      axgl::interface::Light::Color(
-        glm::vec3(0.3f), glm::vec3(1), glm::vec3(1)));
+    realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
+      axgl::interface::Light::Color(glm::vec3(0.3f), glm::vec3(1), glm::vec3(0)));
   }
 };
 
