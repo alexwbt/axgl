@@ -28,6 +28,11 @@ public:
     comp_impl_.add_component(std::move(component));
   }
 
+  void remove_component(uint32_t id) override
+  {
+    comp_impl_.remove_component(id);
+  }
+
   util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
     return comp_impl_.get_components();

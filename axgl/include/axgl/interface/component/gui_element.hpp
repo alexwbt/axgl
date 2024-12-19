@@ -28,7 +28,7 @@ public:
     float x = 0;
     float y = 0;
   };
-  struct Dimension
+  struct Size
   {
     float width = 0;
     float height = 0;
@@ -37,32 +37,28 @@ public:
   enum class TextStyle { NORMAL, BOLD, ITALIC };
   struct Properties
   {
-    Vector origin;
-    Vector offset;
-    Dimension dimention;
-    Space padding;
-    Space margin;
-    Color background_color;
+    Vector origin, offset;
+    Size size, max_size, min_size;
+    Space padding, margin;
+    Color bg_color, fg_color;
     bool hidden = false;
     bool block_cursor = false;
     std::string content = "";
     std::string font = "";
     float font_size = 0;
-    Color text_color;
     TextStyle text_style = NORMAL;
     TextAlign horizontal_align = CENTER;
     TextAlign vertical_align = CENTER;
-    std::shared_ptr<Texture> background_image;
+    std::shared_ptr<Texture> bg_image;
   };
   Properties props;
   Properties down;
   Properties hover;
   Properties focus;
 
-  virtual void add_child(const std::string& id, std::shared_ptr<GuiElement> element) = 0;
-  virtual void remove_child(const std::string& id) = 0;
+  virtual void add_child(std::shared_ptr<GuiElement> element) = 0;
+  virtual void remove_child(uint32_t id) = 0;
 
-  virtual std::shared_ptr<GuiElement> get_child(const std::string& id) = 0;
   virtual util::Iterable<std::shared_ptr<GuiElement>> get_children() const = 0;
 
   virtual uint32_t down_tick() = 0;

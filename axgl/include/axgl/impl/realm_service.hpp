@@ -34,16 +34,36 @@ public:
     components_.push_back(std::move(component));
   }
 
+  void remove_component(uint32_t id) override
+  {
+    components_.erase(
+      std::remove_if(
+        components_.begin(),
+        components_.end(),
+        [id](const auto& c)
+        {
+          return c->get_id() == id;
+        }
+      ),
+      components_.end()
+    );
+  }
+
   util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
+  }
+
+  const std::vector<std::shared_ptr<interface::Component>>& get_components_vector() const
+  {
+    return components_;
   }
 };
 
 class Realm : public interface::Realm
 {
 private:
-  std::vector<std::shared_ptr<Component>> entities_;
+  impl::Component comp_impl_;
   std::shared_ptr<interface::Renderer> renderer_;
 
 public:
@@ -53,7 +73,7 @@ public:
     context.renderer = renderer_.get();
     context.realm = this;
 
-    for (const auto& entity : entities_)
+    for (const auto& entity : comp_impl_.get_components_vector())
       entity->update();
   }
 
@@ -68,7 +88,7 @@ public:
     context.realm = this;
     context.pv = camera.pv(renderer_->viewport());
 
-    for (const auto& entity : entities_)
+    for (const auto& entity : comp_impl_.get_components_vector())
       entity->render();
 
     renderer_->after_render();
@@ -87,12 +107,17 @@ public:
       throw std::runtime_error("The provided component is not a valid Component instance.");
 #endif
     if (impl_component)
-      entities_.push_back(std::move(impl_component));
+      comp_impl_.add_component(std::move(impl_component));
+  }
+
+  void remove_component(uint32_t id) override
+  {
+    comp_impl_.remove_component(id);
   }
 
   util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
-    return util::to_iterable_t<std::shared_ptr<interface::Component>>(entities_);
+    return comp_impl_.get_components();
   }
 };
 

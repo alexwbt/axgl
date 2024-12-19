@@ -144,3 +144,4 @@ NAMESPACE_AXGL_END
 
 // component implementations
 #include "axgl/impl/opengl/component/mesh.hpp"
+#include "axgl/impl/opengl/component/gui_element.hpp"

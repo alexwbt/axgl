@@ -1,6 +1,7 @@
 #pragma once
 
 #include <format>
+#include <stdint.h>
 
 #include "axgl/except.hpp"
 #include "axgl/namespace.hpp"
@@ -29,8 +30,14 @@ class RealmContext;
 class Component
 {
 private:
+  static uint32_t next_id()
+  {
+    static uint32_t next_id_ = 1;
+    return next_id_++;
+  }
   const RealmContext* context_ = nullptr;
   const Component* parent_ = nullptr;
+  const uint32_t id_ = next_id();
 protected:
   const RealmContext* get_context() const
   {
@@ -83,7 +90,14 @@ public:
     return parent_ ? parent_->model_matrix_ * model_matrix_ : model_matrix_;
   }
 
+  uint32_t get_id() const
+  {
+    return id_;
+  }
+
   virtual void add_component(std::shared_ptr<Component> component) {}
+  virtual void remove_component(uint32_t id) {}
+
   virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
 
   friend class Realm;
