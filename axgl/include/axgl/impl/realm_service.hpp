@@ -4,8 +4,7 @@
 #include <memory>
 
 #include "axgl/axgl.hpp"
-#include "axgl/except.hpp"
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/renderer.hpp"
 #include "axgl/interface/realm.hpp"
 
@@ -41,9 +40,9 @@ public:
         components_.begin(),
         components_.end(),
         [id](const auto& c)
-        {
-          return c->get_id() == id;
-        }
+    {
+      return c->get_id() == id;
+    }
       ),
       components_.end()
     );

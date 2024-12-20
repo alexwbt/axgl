@@ -1,7 +1,6 @@
 #pragma once
 
-#include <axgl/except.hpp>
-#include <axgl/namespace.hpp>
+#include <axgl/common.hpp>
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/realm_service.hpp>
 
@@ -70,19 +69,8 @@ public:
   }
 
   uint32_t down_tick() { return 0; }
-  bool hover() { return false; }
-  bool focus() { return false; }
+  bool hovering() { return false; }
+  bool focused() { return false; }
 };
 
 NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
-
-#define AXGL_DEFINED_CREATE_COMPONENT_MESH
-template<>
-std::shared_ptr<interface::GuiElement> interface::RealmService::create_component()
-{
-  return std::make_shared<impl::OpenglGuiElement>();
-}
-
-NAMESPACE_AXGL_END

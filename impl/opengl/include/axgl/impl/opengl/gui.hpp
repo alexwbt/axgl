@@ -1,7 +1,6 @@
 #pragma once
 
-#include <axgl/except.hpp>
-#include <axgl/namespace.hpp>
+#include <axgl/common.hpp>
 #include <axgl/interface/gui.hpp>
 
 NAMESPACE_AXGL_IMPL
@@ -19,17 +18,3 @@ public:
 };
 
 NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
-
-template<>
-std::shared_ptr<impl::OpenglGuiService> Axgl::use_service()
-{
-  // create opengl service
-  auto gui_service = std::make_shared<impl::OpenglGuiService>();
-  register_service("gui", gui_service);
-
-  return gui_service;
-}
-
-NAMESPACE_AXGL_END

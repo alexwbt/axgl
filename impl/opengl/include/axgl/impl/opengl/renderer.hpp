@@ -1,8 +1,7 @@
 #pragma once
 
 #include <axgl/axgl.hpp>
-#include <axgl/except.hpp>
-#include <axgl/namespace.hpp>
+#include <axgl/common.hpp>
 #include <axgl/util/string.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/impl/glfw/window.hpp>
@@ -106,42 +105,18 @@ public:
 
   std::shared_ptr<interface::Material> create_material(const std::string& type) override
   {
-    switch (util::hash_string(type))
-    {
-    case util::hash_string("2d"):
+    if (type == "2d")
       return std::make_shared<OpenglDefault2DMaterial>();
-    default:
+
+    if (type == "default")
       return std::make_shared<OpenglDefaultMaterial>();
-    }
+
+#ifdef AXGL_DEBUG
+    throw std::runtime_error("Unsupported material type: " + type);
+#else
+    return nullptr;
+#endif
   }
 };
 
 NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
-
-template<>
-std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
-{
-#ifdef AXGL_DEBUG
-  if (!has_service_type<impl::GlfwWindowService>("window"))
-    throw std::runtime_error("GlfwWindowService is missing, it is required for OpenglRendererService.");
-#endif
-
-  // set glfw context
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  // create opengl service
-  auto opengl_service = std::make_shared<impl::OpenglRendererService>();
-  register_service("renderer", opengl_service);
-
-  return opengl_service;
-}
-
-NAMESPACE_AXGL_END
-
-// component implementations
-#include "axgl/impl/opengl/component/mesh.hpp"
-#include "axgl/impl/opengl/component/gui_element.hpp"

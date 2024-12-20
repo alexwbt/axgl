@@ -2,7 +2,7 @@
 
 #include <span>
 
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/realm.hpp"
 #include "axgl/interface/renderer.hpp"
 

@@ -4,7 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include <axgl/namespace.hpp>
+#include <axgl/common.hpp>
 #include <axgl/interface/resource.hpp>
 
 #include <bundlefile/unbundle.hpp>
@@ -64,16 +64,3 @@ public:
 };
 
 NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
-
-template<>
-std::shared_ptr<impl::BundlefileResourceService> Axgl::use_service()
-{
-  auto resource_service = std::make_shared<impl::BundlefileResourceService>();
-  register_service("resource", resource_service);
-
-  return resource_service;
-}
-
-NAMESPACE_AXGL_END

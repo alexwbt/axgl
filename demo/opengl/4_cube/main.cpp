@@ -1,9 +1,9 @@
 
 #define AXGL_DEBUG
 #include <axgl/axgl.hpp>
+#include <axgl/impl/glfw.hpp>
+#include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
-#include <axgl/impl/glfw/window.hpp>
-#include <axgl/impl/opengl/renderer.hpp>
 
 static std::vector<glm::vec3> cube_vertices = {
   glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f),

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

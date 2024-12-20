@@ -1,9 +1,9 @@
 
 #define AXGL_DEBUG
 #include <axgl/axgl.hpp>
+#include <axgl/impl/glfw.hpp>
+#include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
-#include <axgl/impl/glfw/window.hpp>
-#include <axgl/impl/opengl/renderer.hpp>
 
 #include "demo_opengl_textured_cube/res.hpp"
 

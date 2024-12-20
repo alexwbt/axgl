@@ -1,11 +1,11 @@
 #define AXGL_DEBUG
 #include <axgl/axgl.hpp>
+#include <axgl/impl/glfw.hpp>
+#include <axgl/impl/opengl.hpp>
+#include <axgl/impl/assimp.hpp>
+#include <axgl/impl/bundlefile.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
-#include <axgl/impl/glfw/window.hpp>
-#include <axgl/impl/opengl/renderer.hpp>
-#include <axgl/impl/assimp/model.hpp>
-#include <axgl/impl/bundlefile/resource.hpp>
 
 #include "demo_opengl_gui/res.hpp"
 
@@ -47,6 +47,13 @@ public:
     // light
     realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
       axgl::interface::Light::Color(glm::vec3(0.3f), glm::vec3(1), glm::vec3(0)));
+
+    // gui
+    auto gui_service = axgl->gui_service();
+    auto page = realm_service->create_component<axgl::interface::GuiElement>();
+    auto text = realm_service->create_component<axgl::interface::GuiElement>();
+    gui_service->add_page(page);
+    page->add_child(text);
   }
 };
 

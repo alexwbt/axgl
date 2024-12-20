@@ -4,8 +4,7 @@
 #include <memory>
 
 #include <axgl/axgl.hpp>
-#include <axgl/except.hpp>
-#include <axgl/namespace.hpp>
+#include <axgl/common.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/opengl/texture.hpp>
@@ -52,7 +51,7 @@ public:
   {
     if (key == "shininess")
       shininess_ = std::stof(value);
-#ifdef AXGL_DEGUG
+#ifdef AXGL_DEBUG
     else
       throw std::runtime_error("Invalid material prop key: " + key);
 #endif

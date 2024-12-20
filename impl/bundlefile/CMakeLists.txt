@@ -8,5 +8,6 @@ target_include_directories(axgl_bundlefile_impl
 
 target_link_libraries(axgl_bundlefile_impl
   INTERFACE
+  axgl
   bundlefile_lib
 )

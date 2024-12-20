@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <axgl/namespace.hpp>
+#include <axgl/common.hpp>
 #include <axgl/interface/model.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
@@ -46,16 +46,3 @@ public:
 };
 
 NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
-
-template<>
-std::shared_ptr<impl::AssimpModelService> Axgl::use_service()
-{
-  auto service = std::make_shared<impl::AssimpModelService>();
-  register_service("model", service);
-
-  return service;
-}
-
-NAMESPACE_AXGL_END

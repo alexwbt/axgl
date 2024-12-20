@@ -1,12 +1,12 @@
 
 #define AXGL_DEBUG
 #include <axgl/axgl.hpp>
+#include <axgl/impl/glfw.hpp>
+#include <axgl/impl/opengl.hpp>
+#include <axgl/impl/assimp.hpp>
+#include <axgl/impl/bundlefile.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
-#include <axgl/impl/glfw/window.hpp>
-#include <axgl/impl/opengl/renderer.hpp>
-#include <axgl/impl/assimp/model.hpp>
-#include <axgl/impl/bundlefile/resource.hpp>
 
 class Application : public axgl::interface::Service
 {

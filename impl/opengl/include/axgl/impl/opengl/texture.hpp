@@ -1,6 +1,6 @@
 #pragma once
 
-#include <axgl/namespace.hpp>
+#include <axgl/common.hpp>
 #include <axgl/interface/renderer.hpp>
 
 #include "opengl/texture.hpp"

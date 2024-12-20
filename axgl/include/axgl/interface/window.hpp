@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/service.hpp"
 
 #include <glm/glm.hpp>

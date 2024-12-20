@@ -12,15 +12,14 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include <axgl/except.hpp>
-#include <axgl/namespace.hpp>
+#include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/resource.hpp>
 #include <axgl/interface/component/mesh.hpp>
 
 #ifndef AXGL_DEFINED_CREATE_COMPONENT_MESH
-#error Implementation of interface::Mesh must be defined before importing <axgl/impl/assimp/model.hpp>
+#error Implementation of interface::Mesh must be defined before using __FILE__
 #endif
 
 NAMESPACE_AXGL_IMPL

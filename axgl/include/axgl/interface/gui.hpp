@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/component/gui_element.hpp"
 
 NAMESPACE_AXGL_INTERFACE

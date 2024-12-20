@@ -3,7 +3,7 @@
 #include <memory>
 #include <stdint.h>
 
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/window.hpp"
 
 NAMESPACE_AXGL_INTERFACE

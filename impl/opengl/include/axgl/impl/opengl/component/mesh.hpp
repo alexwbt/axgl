@@ -3,8 +3,7 @@
 #include <vector>
 #include <memory>
 
-#include <axgl/except.hpp>
-#include <axgl/namespace.hpp>
+#include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/realm_service.hpp>
@@ -103,14 +102,3 @@ public:
 };
 
 NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
-
-#define AXGL_DEFINED_CREATE_COMPONENT_MESH
-template<>
-std::shared_ptr<interface::Mesh> interface::RealmService::create_component()
-{
-  return std::make_shared<impl::OpenglMesh>();
-}
-
-NAMESPACE_AXGL_END

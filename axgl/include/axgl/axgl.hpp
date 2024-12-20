@@ -6,8 +6,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "axgl/except.hpp"
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/window.hpp"
 #include "axgl/interface/renderer.hpp"
@@ -15,6 +14,8 @@
 #include "axgl/interface/realm.hpp"
 #include "axgl/interface/input.hpp"
 #include "axgl/interface/model.hpp"
+#include "axgl/interface/gui.hpp"
+
 #include "axgl/impl/service_manager.hpp"
 #include "axgl/util/string.hpp"
 
@@ -108,6 +109,11 @@ public:
   std::shared_ptr<interface::ModelService> model_service() const
   {
     return get_service<interface::ModelService>("model");
+  }
+
+  std::shared_ptr<interface::GuiService> gui_service() const
+  {
+    return get_service<interface::GuiService>("gui");
   }
 };
 

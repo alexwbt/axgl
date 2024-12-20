@@ -1,7 +1,7 @@
 #pragma once
 
 #include "axgl/axgl.hpp"
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/input.hpp"
 #include "axgl/interface/camera.hpp"
 #include "axgl/interface/service.hpp"

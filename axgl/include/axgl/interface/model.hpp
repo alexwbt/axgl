@@ -5,7 +5,7 @@
 #include <memory>
 #include <stdint.h>
 
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/realm.hpp"
 #include "axgl/interface/renderer.hpp"
 #include "axgl/interface/component/mesh.hpp"

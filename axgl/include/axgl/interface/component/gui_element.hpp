@@ -1,6 +1,6 @@
 #pragma once
 
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/realm.hpp"
 #include "axgl/interface/renderer.hpp"
 
@@ -46,9 +46,9 @@ public:
     std::string content = "";
     std::string font = "";
     float font_size = 0;
-    TextStyle text_style = NORMAL;
-    TextAlign horizontal_align = CENTER;
-    TextAlign vertical_align = CENTER;
+    TextStyle text_style = TextStyle::NORMAL;
+    TextAlign horizontal_align = TextAlign::CENTER;
+    TextAlign vertical_align = TextAlign::CENTER;
     std::shared_ptr<Texture> bg_image;
   };
   Properties props;
@@ -62,8 +62,8 @@ public:
   virtual util::Iterable<std::shared_ptr<GuiElement>> get_children() const = 0;
 
   virtual uint32_t down_tick() = 0;
-  virtual bool hover() = 0;
-  virtual bool focus() = 0;
+  virtual bool hovering() = 0;
+  virtual bool focused() = 0;
 };
 
 NAMESPACE_AXGL_INTERFACE_END

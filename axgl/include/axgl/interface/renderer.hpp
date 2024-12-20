@@ -3,7 +3,7 @@
 #include <span>
 #include <memory>
 
-#include "axgl/namespace.hpp"
+#include "axgl/common.hpp"
 #include "axgl/interface/service.hpp"
 #include "axgl/interface/window.hpp"
 
