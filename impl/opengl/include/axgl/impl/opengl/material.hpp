@@ -3,17 +3,16 @@
 #include <string>
 #include <memory>
 
+#include <spdlog/spdlog.h>
+
 #include <axgl/axgl.hpp>
 #include <axgl/common.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
-#include <spdlog/spdlog.h>
-
-#include "opengl/shader_program.hpp"
-
-#include "axgl_opengl_impl/res.hpp"
+#include <opengl/shader_program.hpp>
+#include <axgl_opengl_impl/res.hpp>
 
 NAMESPACE_AXGL_IMPL
 

@@ -4,7 +4,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include "opengl/buffer_object.hpp"
+#include <opengl/buffer_object.hpp>
 
 namespace opengl
 {

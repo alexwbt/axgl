@@ -4,7 +4,7 @@
 
 /* Service implementations */
 
-#include "axgl/impl/assimp/model.hpp"
+#include <axgl/impl/assimp/model.hpp>
 
 NAMESPACE_AXGL
 

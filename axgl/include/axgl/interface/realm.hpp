@@ -3,17 +3,17 @@
 #include <format>
 #include <stdint.h>
 
-#include "axgl/common.hpp"
-#include "axgl/interface/service.hpp"
-#include "axgl/interface/renderer.hpp"
-#include "axgl/interface/camera.hpp"
-#include "axgl/interface/light.hpp"
-#include "axgl/util/iterable.hpp"
-
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include <axgl/common.hpp>
+#include <axgl/interface/service.hpp>
+#include <axgl/interface/renderer.hpp>
+#include <axgl/interface/camera.hpp>
+#include <axgl/interface/light.hpp>
+#include <axgl/util/iterable.hpp>
 
 NAMESPACE_AXGL
 class Axgl;

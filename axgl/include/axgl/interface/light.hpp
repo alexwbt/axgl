@@ -1,8 +1,8 @@
 #pragma once
 
-#include "axgl/common.hpp"
-
 #include <glm/glm.hpp>
+
+#include <axgl/common.hpp>
 
 NAMESPACE_AXGL_INTERFACE
 

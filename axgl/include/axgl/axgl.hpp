@@ -6,20 +6,19 @@
 #include <memory>
 #include <unordered_map>
 
-#include "axgl/common.hpp"
-#include "axgl/interface/service.hpp"
-#include "axgl/interface/window.hpp"
-#include "axgl/interface/renderer.hpp"
-#include "axgl/interface/resource.hpp"
-#include "axgl/interface/realm.hpp"
-#include "axgl/interface/input.hpp"
-#include "axgl/interface/model.hpp"
-#include "axgl/interface/gui.hpp"
-
-#include "axgl/impl/service_manager.hpp"
-#include "axgl/util/string.hpp"
-
 #include <spdlog/spdlog.h>
+
+#include <axgl/common.hpp>
+#include <axgl/interface/service.hpp>
+#include <axgl/interface/window.hpp>
+#include <axgl/interface/renderer.hpp>
+#include <axgl/interface/resource.hpp>
+#include <axgl/interface/realm.hpp>
+#include <axgl/interface/input.hpp>
+#include <axgl/interface/model.hpp>
+#include <axgl/interface/gui.hpp>
+#include <axgl/impl/service_manager.hpp>
+#include <axgl/util/string.hpp>
 
 NAMESPACE_AXGL
 

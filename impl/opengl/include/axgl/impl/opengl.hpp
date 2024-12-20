@@ -2,10 +2,39 @@
 
 #include <axgl/axgl.hpp>
 
+/* Component implementations */
+
+#include <axgl/impl/opengl/component/mesh.hpp>
+#include <axgl/impl/opengl/component/gui_element.hpp>
+
+NAMESPACE_AXGL
+
+#ifdef AXGL_DEFINED_CREATE_COMPONENT_MESH
+#error Duplicate definition of component interface::Mesh
+#endif
+#define AXGL_DEFINED_CREATE_COMPONENT_MESH
+template<>
+std::shared_ptr<interface::Mesh> interface::RealmService::create_component()
+{
+  return std::make_shared<impl::OpenglMesh>();
+}
+
+#ifdef AXGL_DEFINED_CREATE_COMPONENT_GUI_ELEMENT
+#error Duplicate definition of component interface::GuiElement
+#endif
+#define AXGL_DEFINED_CREATE_COMPONENT_GUI_ELEMENT
+template<>
+std::shared_ptr<interface::GuiElement> interface::RealmService::create_component()
+{
+  return std::make_shared<impl::OpenglGuiElement>();
+}
+
+NAMESPACE_AXGL_END
+
 /* Service implementations */
 
-#include "axgl/impl/opengl/renderer.hpp"
-#include "axgl/impl/opengl/gui.hpp"
+#include <axgl/impl/opengl/renderer.hpp>
+#include <axgl/impl/opengl/gui.hpp>
 
 NAMESPACE_AXGL
 
@@ -37,38 +66,6 @@ std::shared_ptr<impl::OpenglGuiService> Axgl::use_service()
   register_service("gui", gui_service);
 
   return gui_service;
-}
-
-NAMESPACE_AXGL_END
-
-/* Component implementations */
-
-#include "axgl/impl/opengl/component/mesh.hpp"
-#include "axgl/impl/opengl/component/gui_element.hpp"
-
-NAMESPACE_AXGL
-
-
-/* Component definition */
-
-#ifdef AXGL_DEFINED_CREATE_COMPONENT_MESH
-#error Duplicate definition of component interface::Mesh
-#endif
-#define AXGL_DEFINED_CREATE_COMPONENT_MESH
-template<>
-std::shared_ptr<interface::Mesh> interface::RealmService::create_component()
-{
-  return std::make_shared<impl::OpenglMesh>();
-}
-
-#ifdef AXGL_DEFINED_CREATE_COMPONENT_GUI_ELEMENT
-#error Duplicate definition of component interface::GuiElement
-#endif
-#define AXGL_DEFINED_CREATE_COMPONENT_GUI_ELEMENT
-template<>
-std::shared_ptr<interface::GuiElement> interface::RealmService::create_component()
-{
-  return std::make_shared<impl::OpenglGuiElement>();
 }
 
 NAMESPACE_AXGL_END

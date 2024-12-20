@@ -1,17 +1,18 @@
 #pragma once
 
-#include <axgl/axgl.hpp>
-#include <axgl/common.hpp>
-#include <axgl/util/string.hpp>
-#include <axgl/interface/renderer.hpp>
-#include <axgl/impl/glfw/window.hpp>
+#include <memory>
 
-#include "axgl/impl/opengl/texture.hpp"
-#include "axgl/impl/opengl/material.hpp"
-
+#include <glm/glm.hpp>
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
-#include <glm/glm.hpp>
+
+#include <axgl/common.hpp>
+#include <axgl/interface/renderer.hpp>
+#include <axgl/impl/glfw/window.hpp>
+#include <axgl/util/string.hpp>
+
+#include <axgl/impl/opengl/texture.hpp>
+#include <axgl/impl/opengl/material.hpp>
 
 NAMESPACE_AXGL_IMPL
 

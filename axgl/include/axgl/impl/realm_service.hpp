@@ -3,10 +3,10 @@
 #include <vector>
 #include <memory>
 
-#include "axgl/axgl.hpp"
-#include "axgl/common.hpp"
-#include "axgl/interface/renderer.hpp"
-#include "axgl/interface/realm.hpp"
+#include <axgl/axgl.hpp>
+#include <axgl/common.hpp>
+#include <axgl/interface/renderer.hpp>
+#include <axgl/interface/realm.hpp>
 
 NAMESPACE_AXGL_IMPL
 

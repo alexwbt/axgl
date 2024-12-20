@@ -1,12 +1,12 @@
 #pragma once
 
 #include <list>
+#include <memory>
 
-#include <axgl/axgl.hpp>
 #include <axgl/common.hpp>
 #include <axgl/interface/window.hpp>
 
-#include "glfw/window.hpp"
+#include <glfw/window.hpp>
 
 NAMESPACE_AXGL_IMPL
 

@@ -8,19 +8,15 @@
 #include <cstdlib>
 #include <filesystem>
 
+#include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include <assimp/scene.h>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/resource.hpp>
 #include <axgl/interface/component/mesh.hpp>
-
-#ifndef AXGL_DEFINED_CREATE_COMPONENT_MESH
-#error Implementation of interface::Mesh must be defined before using __FILE__
-#endif
 
 NAMESPACE_AXGL_IMPL
 
@@ -194,8 +190,8 @@ class ModelLoader
         material->add_texture(texture_type, std::move(texture));
         resources_.textures.push_back(texture);
       }
+      }
     }
-  }
 
   interface::TextureType map_texture_type(aiTextureType ai_texture_type)
   {
@@ -225,6 +221,6 @@ class ModelLoader
     default: return UNKNOWN;
     }
   }
-};
+  };
 
 NAMESPACE_AXGL_IMPL_END

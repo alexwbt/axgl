@@ -7,7 +7,7 @@
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
 
-#include "demo_opengl_texture/res.hpp"
+#include <demo_opengl_texture/res.hpp>
 
 int main()
 {

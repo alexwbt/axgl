@@ -1,9 +1,9 @@
 #pragma once
 
-#include "axgl/common.hpp"
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include <axgl/common.hpp>
 
 NAMESPACE_AXGL_INTERFACE
 

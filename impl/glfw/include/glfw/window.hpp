@@ -1,8 +1,8 @@
 #pragma once
 
-#include <unordered_map>
-#include <memory>
 #include <string>
+#include <memory>
+#include <unordered_map>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>

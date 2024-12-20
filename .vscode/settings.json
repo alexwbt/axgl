@@ -126,7 +126,6 @@
     "numbers": "cpp",
     "a": "cpp"
   },
-  "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false,
   "cSpell.words": [
     "assbin",
     "ASSIMP",
@@ -161,7 +160,19 @@
     "stbi",
     "ubyte"
   ],
+  "cmake.buildDirectory": "${workspaceFolder}/_build",
+  "cmake.configureArgs": [
+    "-DGLFW_BUILD_DOCS=OFF",
+    "-DFLATBUFFERS_BUILD_TESTS=OFF",
+    "-DFLATBUFFERS_INSTALL=OFF",
+    "-DCPPTRACE_BUILD_TESTING=OFF",
+    "-DARGS_BUILD_EXAMPLE=OFF",
+    "-DARGS_BUILD_UNITTESTS=OFF",
+    "-DASSIMP_BUILD_TESTS=OFF",
+    "-DASSIMP_INSTALL=OFF",
+  ],
   "C_Cpp.formatting": "vcFormat",
+  "C_Cpp.default.cppStandard": "c++20",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "newLine",
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "newLine",
@@ -169,8 +180,7 @@
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "newLine",
   "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
   "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
-  "cmake.buildDirectory": "${workspaceFolder}/_build",
-  "C_Cpp.default.cppStandard": "c++20",
+  "C_Cpp.vcFormat.indent.lambdaBracesWhenParameter": false,
   "webgl-glsl-editor.format.placeBracesOnSeparateLine": true,
   "webgl-glsl-editor.format.placeSpacesAroundBinaryOperators": true,
   "webgl-glsl-editor.format.placeSpacesAroundAssignmentOperators": true,

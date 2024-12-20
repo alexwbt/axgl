@@ -5,7 +5,7 @@
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
 
-#include "demo_opengl_textured_cube/res.hpp"
+#include <demo_opengl_textured_cube/res.hpp>
 
 static std::vector<glm::vec3> cube_vertices = {
   glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f),

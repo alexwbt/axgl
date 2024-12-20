@@ -7,7 +7,7 @@
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
 
-#include "demo_opengl_gui/res.hpp"
+#include <demo_opengl_gui/res.hpp>
 
 class Application : public axgl::interface::Service
 {
@@ -50,9 +50,8 @@ public:
 
     // gui
     auto gui_service = axgl->gui_service();
-    auto page = realm_service->create_component<axgl::interface::GuiElement>();
-    auto text = realm_service->create_component<axgl::interface::GuiElement>();
-    gui_service->add_page(page);
+    auto page = gui_service->create_page();
+    auto text = gui_service->create_element();
     page->add_child(text);
   }
 };
@@ -65,6 +64,7 @@ int main()
   axgl.use_service<axgl::impl::GlfwInputService>();
   axgl.use_service<axgl::impl::GlfwWindowService>();
   axgl.use_service<axgl::impl::OpenglRendererService>();
+  axgl.use_service<axgl::impl::OpenglGuiService>();
   axgl.use_service<axgl::impl::AssimpModelService>();
   axgl.use_service<axgl::impl::BundlefileResourceService>();
   axgl.register_service("app", std::make_shared<Application>());

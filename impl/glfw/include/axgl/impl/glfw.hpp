@@ -2,8 +2,8 @@
 
 #include <axgl/axgl.hpp>
 
-#include "axgl/impl/glfw/window.hpp"
-#include "axgl/impl/glfw/input.hpp"
+#include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/glfw/input.hpp>
 
 /* Service implementations */
 

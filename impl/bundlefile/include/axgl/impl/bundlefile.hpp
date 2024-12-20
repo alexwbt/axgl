@@ -1,6 +1,7 @@
 #pragma once
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/bundlefile/resource.hpp>
 
 /* Service implementations */
 

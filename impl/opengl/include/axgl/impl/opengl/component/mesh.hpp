@@ -8,8 +8,8 @@
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/realm_service.hpp>
 
-#include "axgl/impl/opengl/material.hpp"
-#include "opengl/vertex_array_object.hpp"
+#include <axgl/impl/opengl/material.hpp>
+#include <opengl/vertex_array_object.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -98,6 +98,11 @@ public:
     if (!material_)
       throw std::runtime_error("The provided material is not a valid opengl material.");
 #endif
+  }
+
+  std::shared_ptr<interface::Material> get_material() const override
+  {
+    return material_;
   }
 };
 

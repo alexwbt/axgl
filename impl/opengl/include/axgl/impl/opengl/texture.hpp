@@ -3,7 +3,7 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/renderer.hpp>
 
-#include "opengl/texture.hpp"
+#include <opengl/texture.hpp>
 
 NAMESPACE_AXGL_IMPL
 

@@ -13,9 +13,9 @@ private:
   std::shared_ptr<interface::Mesh> quad_mesh_;
 
 public:
-  OpenglGuiElement(std::shared_ptr<interface::Mesh> quad_mesh) :
-    quad_mesh_(quad_mesh)
-  {}
+  // OpenglGuiElement(std::shared_ptr<interface::Mesh> quad_mesh) :
+  //   quad_mesh_(quad_mesh)
+  // {}
 
   void add_component(std::shared_ptr<interface::Component> component) override
   {
@@ -52,7 +52,9 @@ public:
 
   util::Iterable<std::shared_ptr<interface::GuiElement>> get_children() const override
   {
-    return util::to_iterable_t<std::shared_ptr<interface::GuiElement>>(comp_impl_.get_components_vector());
+    throw std::runtime_error("Not implemented");
+    // const auto& children = comp_impl_.get_component_vector();
+    // return util::to_iterable(children);
   }
 
   void update() override

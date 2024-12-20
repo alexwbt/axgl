@@ -2,16 +2,20 @@
 
 #include <memory>
 
+#include <glm/glm.hpp>
+#include <spdlog/spdlog.h>
+
 #include <axgl/common.hpp>
 #include <axgl/interface/model.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/resource.hpp>
 
-#include <spdlog/spdlog.h>
-#include <glm/glm.hpp>
+#ifndef AXGL_DEFINED_CREATE_COMPONENT_MESH
+#error Implementation of interface::Mesh must be defined before using __FILE__
+#endif
 
-#include "axgl/impl/assimp/model_loader.hpp"
+#include "./model_loader.hpp"
 
 NAMESPACE_AXGL_IMPL
 
