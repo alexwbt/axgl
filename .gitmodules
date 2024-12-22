@@ -28,3 +28,6 @@
 [submodule "_external/cpptrace"]
 	path = _external/cpptrace
 	url = https://github.com/jeremy-rifkin/cpptrace.git
+[submodule "_external/freetype"]
+	path = _external/freetype
+	url = https://github.com/freetype/freetype.git

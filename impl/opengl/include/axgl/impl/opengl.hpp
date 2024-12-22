@@ -35,6 +35,7 @@ NAMESPACE_AXGL_END
 
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/opengl/gui.hpp>
+#include <axgl/impl/opengl/font.hpp>
 
 NAMESPACE_AXGL
 
@@ -61,8 +62,9 @@ std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 template<>
 std::shared_ptr<impl::OpenglGuiService> Axgl::use_service()
 {
-  // create opengl service
+  auto font_service = std::make_shared<impl::OpenglFontService>();
   auto gui_service = std::make_shared<impl::OpenglGuiService>();
+  register_service("font", font_service);
   register_service("gui", gui_service);
 
   return gui_service;

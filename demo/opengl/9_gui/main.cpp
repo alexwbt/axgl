@@ -12,7 +12,6 @@
 class Application : public axgl::interface::Service
 {
 public:
-
   void initialize() override
   {
     auto axgl = get_context()->axgl;
@@ -52,6 +51,7 @@ public:
     auto gui_service = axgl->gui_service();
     auto page = gui_service->create_page();
     auto text = gui_service->create_element();
+    text->props.content = "hello world";
     page->add_child(text);
   }
 };

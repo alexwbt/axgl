@@ -142,6 +142,7 @@
     "flatbuffers",
     "flatc",
     "Framebuffer",
+    "freetype",
     "gameloop",
     "glfw",
     "inout",

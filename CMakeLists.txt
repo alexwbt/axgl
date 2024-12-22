@@ -19,6 +19,7 @@ add_subdirectory(_external/args)
 add_subdirectory(_external/spdlog)
 add_subdirectory(_external/assimp)
 add_subdirectory(_external/cpptrace)
+add_subdirectory(_external/freetype)
 add_subdirectory(_external/flatbuffer)
 
 # Internal Libraries
