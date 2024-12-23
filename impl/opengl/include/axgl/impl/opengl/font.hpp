@@ -31,6 +31,14 @@ public:
     if (FT_New_Memory_Face(library_, buffer.data(), buffer.size(), 0, &faces_[name]))
       throw std::runtime_error("Failed to load fontface " + name);
   }
+
+  void terminate() override
+  {
+    for (const auto& face : faces_)
+      FT_Done_Face(face.second);
+
+    FT_Done_FreeType(library_);
+  }
 };
 
 NAMESPACE_AXGL_IMPL_END

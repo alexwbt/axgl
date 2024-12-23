@@ -58,9 +58,24 @@ namespace opengl
       glDeleteTextures(1, &id_);
     }
 
-    void use()
+    void use() const
     {
       glBindTexture(target_, id_);
+    }
+
+    void set_parameteri(GLenum param, GLint value) const
+    {
+      glTexParameteri(target_, param, value);
+    }
+    
+    void generate_mipmap() const
+    {
+      glGenerateMipmap(target_);
+    }
+
+    void set_target(GLuint target)
+    {
+      target_ = target;
     }
 
     void load_image_texture(std::span<const uint8_t> data)
@@ -79,15 +94,10 @@ namespace opengl
         return;
       }
 
-      glBindTexture(target_, id_);
-      glTexParameteri(target_, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(target_, GL_TEXTURE_WRAP_T, GL_REPEAT);
-      glTexParameteri(target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      glTexParameteri(target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      use();
       glTexImage2D(target_, 0,
         texture.format, texture.width, texture.height,
         0, texture.format, GL_UNSIGNED_BYTE, texture.stbi_ptr);
-      glGenerateMipmap(target_);
     }
 
     void load_cubemap_texture(const std::array<std::span<const uint8_t>, kCubemapSize>& data)
