@@ -106,7 +106,6 @@ public:
 class RealmContext final
 {
 public:
-  const Axgl* axgl = nullptr;
   const Renderer* renderer = nullptr;
   Realm* realm = nullptr;
   glm::mat4 pv{ 1.0f };
@@ -115,14 +114,11 @@ private:
 public:
   RealmContext(Component* provider) : provider_(provider)
   {
+#ifdef AXGL_DEBUG
+    if (!provider)
+      throw std::runtime_error("RealmContext must be initialized with provider.");
+#endif
     provider_->use_context(this);
-  }
-  RealmContext(Component* provider, const RealmContext* context) : RealmContext(provider)
-  {
-    axgl = context->axgl;
-    renderer = context->renderer;
-    realm = context->realm;
-    pv = context->pv;
   }
   RealmContext(const RealmContext&) = delete;
   RealmContext& operator=(const RealmContext&) = delete;

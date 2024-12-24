@@ -36,14 +36,8 @@ public:
   void remove_component(uint32_t id) override
   {
     components_.erase(
-      std::remove_if(
-        components_.begin(),
-        components_.end(),
-        [id](const auto& c)
-    {
-      return c->get_id() == id;
-    }
-      ),
+      std::remove_if(components_.begin(), components_.end(),
+        [id](const auto& c) { return c->get_id() == id; }),
       components_.end()
     );
   }
@@ -72,8 +66,7 @@ public:
     context.renderer = renderer_.get();
     context.realm = this;
 
-    for (const auto& entity : comp_impl_.get_components_vector())
-      entity->update();
+    comp_impl_.update();
   }
 
   void render() override
@@ -87,8 +80,7 @@ public:
     context.realm = this;
     context.pv = camera.pv(renderer_->viewport());
 
-    for (const auto& entity : comp_impl_.get_components_vector())
-      entity->render();
+    comp_impl_.render();
 
     renderer_->after_render();
   }
@@ -120,7 +112,7 @@ public:
   }
 };
 
-class RealmService : public interface::RealmService, public interface::Component
+class RealmService : public interface::RealmService
 {
 private:
   std::shared_ptr<Realm> realm_;
@@ -131,18 +123,12 @@ public:
   {
     if (!realm_) return;
 
-    interface::RealmContext context(this);
-    context.axgl = interface::RealmService::get_context()->axgl;
-
     realm_->update();
   }
 
   void render() override
   {
     if (!realm_) return;
-
-    interface::RealmContext context(this);
-    context.axgl = interface::RealmService::get_context()->axgl;
 
     realm_->render();
   }
@@ -157,11 +143,6 @@ public:
   std::shared_ptr<interface::Realm> get_active_realm() const override
   {
     return realm_;
-  }
-
-  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
-  {
-    return util::to_iterable_t<std::shared_ptr<interface::Component>>(realms_);
   }
 };
 

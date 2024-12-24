@@ -57,7 +57,7 @@ namespace opengl
       FT_Done_Face(face_);
     }
 
-    void create_text(const std::string& value)
+    void create_text(const std::string& value) const
     {
       struct Character
       {
