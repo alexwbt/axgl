@@ -31,3 +31,6 @@
 [submodule "_external/freetype"]
 	path = _external/freetype
 	url = https://github.com/freetype/freetype.git
+[submodule "_external/utfcpp"]
+	path = _external/utfcpp
+	url = https://github.com/nemtrif/utfcpp.git

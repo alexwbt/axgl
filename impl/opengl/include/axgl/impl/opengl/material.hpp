@@ -160,7 +160,6 @@ private:
   }
 };
 
-
 class OpenglDefault2DMaterial : public OpenglMaterial
 {
 private:
