@@ -102,6 +102,11 @@ public:
   {
     return std::make_shared<GlfwWindow>(glfw::Window::create(800, 600, ""));
   }
+
+  void set_window_hint(int hint, int value) const
+  {
+    glfw::Window::glfw_window_hint(hint, value);
+  }
 };
 
 NAMESPACE_AXGL_IMPL_END

@@ -67,6 +67,11 @@ namespace glfw
       terminated_ = true;
     }
 
+    inline static void glfw_window_hint(int hint, int value)
+    {
+      glfwWindowHint(hint, value);
+    }
+
     inline static bool should_close_all()
     {
       for (const auto& [glfw_window, window] : windows_)

@@ -159,7 +159,8 @@
     "skybox",
     "spdlog",
     "stbi",
-    "ubyte"
+    "ubyte",
+    "utfcpp"
   ],
   "cmake.buildDirectory": "${workspaceFolder}/_build",
   "cmake.configureArgs": [

@@ -39,6 +39,18 @@ namespace opengl
     }
   };
 
+  struct RawTextureParam
+  {
+    GLint level;
+    GLint internalformat;
+    GLsizei width;
+    GLsizei height;
+    GLint border;
+    GLenum format;
+    GLenum type;
+    const void* pixels;
+  };
+
   class Texture final
   {
   private:
@@ -67,15 +79,25 @@ namespace opengl
     {
       glTexParameteri(target_, param, value);
     }
-    
+
     void generate_mipmap() const
     {
       glGenerateMipmap(target_);
     }
 
-    void set_target(GLuint target)
+    void load_raw_texture_2d(const RawTextureParam& param)
     {
-      target_ = target;
+      if (target_ > 0)
+      {
+        SPDLOG_ERROR("Texture is already loaded.");
+        return;
+      }
+      target_ = GL_TEXTURE_2D;
+
+      use();
+      glTexImage2D(target_, param.level,
+        param.internalformat, param.width, param.height,
+        param.border, param.format, param.type, param.pixels);
     }
 
     void load_image_texture(std::span<const uint8_t> data)

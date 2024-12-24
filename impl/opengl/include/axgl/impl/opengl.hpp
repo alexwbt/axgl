@@ -48,9 +48,10 @@ std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 #endif
 
   // set glfw context
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  auto window_service = get_service<impl::GlfwWindowService>("window");
+  window_service->set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  window_service->set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  window_service->set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   // create opengl service
   auto opengl_service = std::make_shared<impl::OpenglRendererService>();
