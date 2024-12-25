@@ -34,3 +34,6 @@
 [submodule "_external/utfcpp"]
 	path = _external/utfcpp
 	url = https://github.com/nemtrif/utfcpp.git
+[submodule "_external/tracy"]
+	path = _external/tracy
+	url = https://github.com/wolfpld/tracy.git

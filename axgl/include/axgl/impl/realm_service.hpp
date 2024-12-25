@@ -62,6 +62,8 @@ private:
 public:
   void update() override
   {
+    ZoneScopedN("Realm Update");
+
     interface::RealmContext context(this);
     context.renderer = renderer_.get();
     context.realm = this;
@@ -71,6 +73,8 @@ public:
 
   void render() override
   {
+    ZoneScopedN("Realm Render");
+
     if (!renderer_ || !renderer_->ready()) return;
 
     renderer_->before_render();

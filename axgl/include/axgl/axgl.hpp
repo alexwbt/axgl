@@ -41,6 +41,8 @@ public:
 
     while (running(this))
     {
+      ZoneScopedN("Main Loop");
+
       auto now = std::chrono::high_resolution_clock::now();
       delta_time += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
       start_time = now;
@@ -49,12 +51,16 @@ public:
 
       while (delta_time >= 1)
       {
+        ZoneScopedN("Update");
         update(this);
         delta_time--;
       }
 
       if (should_update)
+      {
+        ZoneScopedN("Render");
         render(this);
+      }
     }
 
     terminate(this);

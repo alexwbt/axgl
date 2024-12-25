@@ -11,10 +11,16 @@
 #define NAMESPACE_AXGL_IMPL NAMESPACE_AXGL namespace impl {
 #define NAMESPACE_AXGL_IMPL_END } NAMESPACE_AXGL_END
 
-/* Exceptions */
+/* Debug */
 
 #ifdef AXGL_DEBUG
+
 #include <stdexcept>
 #include <cpptrace/cpptrace.hpp>
 #include <cpptrace/from_current.hpp>
+
+#define TRACY_ENABLE
+
 #endif
+
+#include <tracy/Tracy.hpp>

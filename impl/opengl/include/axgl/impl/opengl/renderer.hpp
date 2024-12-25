@@ -38,8 +38,9 @@ public:
 
   void before_render() override
   {
+    ZoneScopedN("Renderer Before Render");
+
     if (!window_) return;
-    window_->use();
 
     const auto& size = window_->get_size();
     if (size.x != window_width_ || size.y != window_height_)
@@ -55,6 +56,8 @@ public:
 
   void after_render() override
   {
+    ZoneScopedN("Renderer Swap Buffers");
+
     if (!window_) return;
     window_->swap_buffers();
   }

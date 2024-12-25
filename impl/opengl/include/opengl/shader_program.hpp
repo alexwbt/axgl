@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string_view>
+#include <unordered_map>
 
 #include <glm/glm.hpp>
 #include <glad/glad.h>
@@ -50,6 +51,7 @@ namespace opengl
 
   private:
     GLuint program_id_;
+    std::unordered_map<std::string, GLuint> uniform_locations_;
 
   public:
     ShaderProgram(const std::vector<Shader>& shaders)
@@ -89,19 +91,29 @@ namespace opengl
     }
 
   public:
-    void set_bool(const std::string& name, bool value) const { glUniform1i(glGetUniformLocation(program_id_, name.c_str()), (int)value); }
-    void set_int(const std::string& name, int value) const { glUniform1i(glGetUniformLocation(program_id_, name.c_str()), value); }
-    void set_float(const std::string& name, float value) const { glUniform1f(glGetUniformLocation(program_id_, name.c_str()), value); }
-    void set_vec2(const std::string& name, const glm::vec2& value) const { glUniform2fv(glGetUniformLocation(program_id_, name.c_str()), 1, &value[0]); }
-    void set_vec2(const std::string& name, float x, float y) const { glUniform2f(glGetUniformLocation(program_id_, name.c_str()), x, y); }
-    void set_vec3(const std::string& name, const glm::vec3& value) const { glUniform3fv(glGetUniformLocation(program_id_, name.c_str()), 1, &value[0]); }
-    void set_vec3(const std::string& name, float x, float y, float z) const { glUniform3f(glGetUniformLocation(program_id_, name.c_str()), x, y, z); }
-    void set_vec4(const std::string& name, const glm::vec4& value) const { glUniform4fv(glGetUniformLocation(program_id_, name.c_str()), 1, &value[0]); }
-    void set_vec4(const std::string& name, float x, float y, float z, float w) const { glUniform4f(glGetUniformLocation(program_id_, name.c_str()), x, y, z, w); }
-    void set_mat2(const std::string& name, const glm::mat2& mat) const { glUniformMatrix2fv(glGetUniformLocation(program_id_, name.c_str()), 1, GL_FALSE, &mat[0][0]); }
-    void set_mat3(const std::string& name, const glm::mat3& mat) const { glUniformMatrix3fv(glGetUniformLocation(program_id_, name.c_str()), 1, GL_FALSE, &mat[0][0]); }
-    void set_mat4(const std::string& name, const glm::mat4& mat) const { glUniformMatrix4fv(glGetUniformLocation(program_id_, name.c_str()), 1, GL_FALSE, &mat[0][0]); }
+    void set_bool(const std::string& name, bool value) { glUniform1i(get_uniform_location(name), (int)value); }
+    void set_int(const std::string& name, int value) { glUniform1i(get_uniform_location(name), value); }
+    void set_float(const std::string& name, float value) { glUniform1f(get_uniform_location(name), value); }
+    void set_vec2(const std::string& name, const glm::vec2& value) { glUniform2fv(get_uniform_location(name), 1, &value[0]); }
+    void set_vec2(const std::string& name, float x, float y) { glUniform2f(get_uniform_location(name), x, y); }
+    void set_vec3(const std::string& name, const glm::vec3& value) { glUniform3fv(get_uniform_location(name), 1, &value[0]); }
+    void set_vec3(const std::string& name, float x, float y, float z) { glUniform3f(get_uniform_location(name), x, y, z); }
+    void set_vec4(const std::string& name, const glm::vec4& value) { glUniform4fv(get_uniform_location(name), 1, &value[0]); }
+    void set_vec4(const std::string& name, float x, float y, float z, float w) { glUniform4f(get_uniform_location(name), x, y, z, w); }
+    void set_mat2(const std::string& name, const glm::mat2& mat) { glUniformMatrix2fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]); }
+    void set_mat3(const std::string& name, const glm::mat3& mat) { glUniformMatrix3fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]); }
+    void set_mat4(const std::string& name, const glm::mat4& mat) { glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]); }
 
+  private:
+    GLuint get_uniform_location(const std::string& name)
+    {
+      if (!uniform_locations_.contains(name))
+        uniform_locations_[name] = glGetUniformLocation(program_id_, name.c_str());
+
+      return uniform_locations_[name];
+    }
+
+  public:
     void use_program() const { glUseProgram(program_id_); }
   };
 
