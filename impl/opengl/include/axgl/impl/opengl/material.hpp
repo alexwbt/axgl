@@ -11,8 +11,7 @@
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
-#include <opengl/shader_program.hpp>
-#include <axgl_opengl_impl/res.hpp>
+#include <opengl/static_shaders.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -28,10 +27,7 @@ public:
 class OpenglDefaultMaterial : public OpenglMaterial
 {
 private:
-  opengl::ShaderProgram shader_{ {
-    { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs") },
-    { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs") }
-  } };
+  opengl::ShaderProgram& shader_ = opengl::StaticShaders::instance().mesh_3d();
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
   float shininess_ = 1.0f;
 
@@ -163,10 +159,7 @@ private:
 class OpenglDefault2DMaterial : public OpenglMaterial
 {
 private:
-  opengl::ShaderProgram shader_{ {
-    { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
-    { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs") }
-  } };
+  opengl::ShaderProgram& shader_ = opengl::StaticShaders::instance().mesh_2d();
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
   std::shared_ptr<OpenglTexture> texture_;
 

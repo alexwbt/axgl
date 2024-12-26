@@ -13,7 +13,7 @@
 namespace opengl
 {
 
-  class StbiImage
+  class StbiImage final
   {
   public:
     stbi_uc* stbi_ptr;
@@ -32,23 +32,15 @@ namespace opengl
       default: format = GL_RGB;
       }
     }
+    StbiImage(const StbiImage&) = delete;
+    StbiImage& operator=(const StbiImage&) = delete;
+    StbiImage(StbiImage&&) = delete;
+    StbiImage& operator=(StbiImage&&) = delete;
 
     ~StbiImage()
     {
       stbi_image_free(stbi_ptr);
     }
-  };
-
-  struct RawTextureParam
-  {
-    GLint level;
-    GLint internalformat;
-    GLsizei width;
-    GLsizei height;
-    GLint border;
-    GLenum format;
-    GLenum type;
-    const void* pixels;
   };
 
   class Texture final
@@ -57,17 +49,46 @@ namespace opengl
     GLuint id_ = 0;
     GLuint target_ = 0;
 
-    static constexpr int kCubemapSize = 6;
-
   public:
     Texture()
     {
       glGenTextures(1, &id_);
     }
 
+    Texture(const Texture&) = delete;
+    Texture& operator=(const Texture&) = delete;
+
+    Texture(Texture&& other)
+    {
+      id_ = other.id_;
+      other.id_ = 0;
+      target_ = other.target_;
+      other.target_ = 0;
+    }
+    Texture& operator=(Texture&& other)
+    {
+      if (this != &other)
+      {
+        if (id_ > 0)
+          glDeleteTextures(1, &id_);
+
+        id_ = other.id_;
+        other.id_ = 0;
+        target_ = other.target_;
+        other.target_ = 0;
+      }
+      return *this;
+    }
+
     ~Texture()
     {
-      glDeleteTextures(1, &id_);
+      if (id_ > 0)
+        glDeleteTextures(1, &id_);
+    }
+
+    GLuint get_id() const
+    {
+      return id_;
     }
 
     void use() const
@@ -85,7 +106,15 @@ namespace opengl
       glGenerateMipmap(target_);
     }
 
-    void load_raw_texture_2d(const RawTextureParam& param)
+    void load_texture(
+      GLint level,
+      GLint internalformat,
+      GLsizei width,
+      GLsizei height,
+      GLint border,
+      GLenum format,
+      GLenum type,
+      const void* pixels)
     {
       if (target_ > 0)
       {
@@ -95,20 +124,13 @@ namespace opengl
       target_ = GL_TEXTURE_2D;
 
       use();
-      glTexImage2D(target_, param.level,
-        param.internalformat, param.width, param.height,
-        param.border, param.format, param.type, param.pixels);
+      glTexImage2D(target_, level,
+        internalformat, width, height,
+        border, format, type, pixels);
     }
 
     void load_image_texture(std::span<const uint8_t> data)
     {
-      if (target_ > 0)
-      {
-        SPDLOG_ERROR("Texture is already loaded.");
-        return;
-      }
-      target_ = GL_TEXTURE_2D;
-
       StbiImage texture(data);
       if (!texture.stbi_ptr)
       {
@@ -116,13 +138,13 @@ namespace opengl
         return;
       }
 
-      use();
-      glTexImage2D(target_, 0,
-        texture.format, texture.width, texture.height,
+      load_texture(
+        0, texture.format,
+        texture.width, texture.height,
         0, texture.format, GL_UNSIGNED_BYTE, texture.stbi_ptr);
     }
 
-    void load_cubemap_texture(const std::array<std::span<const uint8_t>, kCubemapSize>& data)
+    void load_cubemap_texture(const std::array<std::span<const uint8_t>, 6>& data)
     {
       if (target_ > 0)
       {
@@ -131,11 +153,11 @@ namespace opengl
       }
       target_ = GL_TEXTURE_CUBE_MAP;
 
-      StbiImage texture[kCubemapSize] = {
+      StbiImage texture[6] = {
         data[0], data[1], data[2],
         data[3], data[4], data[5],
       };
-      for (int i = 0; i < kCubemapSize; i++)
+      for (int i = 0; i < 6; i++)
       {
         if (!texture[i].stbi_ptr)
         {
@@ -144,15 +166,14 @@ namespace opengl
         }
       }
 
-      glBindTexture(target_, id_);
+      use();
+      set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      set_parameteri(GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-      glTexParameteri(target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(target_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(target_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      glTexParameteri(target_, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-      for (int i = 0; i < kCubemapSize; i++)
+      for (int i = 0; i < 6; i++)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
           texture[i].format, texture[i].width, texture[i].height,
           0, texture[i].format, GL_UNSIGNED_BYTE, texture[i].stbi_ptr);

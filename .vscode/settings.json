@@ -124,7 +124,12 @@
     "execution": "cpp",
     "memory_resource": "cpp",
     "numbers": "cpp",
-    "a": "cpp"
+    "a": "cpp",
+    "barrier": "cpp",
+    "latch": "cpp",
+    "semaphore": "cpp",
+    "syncstream": "cpp",
+    "valarray": "cpp"
   },
   "cSpell.words": [
     "assbin",

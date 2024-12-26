@@ -13,6 +13,7 @@ namespace opengl
   {
   private:
     GLuint id_;
+    GLenum usage_;
     std::vector<std::unique_ptr<const BufferObject>> buffer_objects_;
 
     size_t vertex_size_ = 0;
@@ -20,27 +21,67 @@ namespace opengl
     size_t attribute_size_ = 0;
 
   public:
-    VertexArrayObject()
+    VertexArrayObject(GLenum usage = GL_STATIC_DRAW)
+      : usage_(usage)
     {
       glGenVertexArrays(1, &id_);
+    }
+    VertexArrayObject(const VertexArrayObject&) = delete;
+    VertexArrayObject& operator=(const VertexArrayObject&) = delete;
+
+    VertexArrayObject(VertexArrayObject&& other)
+    {
+      id_ = other.id_;
+      other.id_ = 0;
+      usage_ = other.usage_;
+      other.usage_ = 0;
+      vertex_size_ = other.vertex_size_;
+      other.vertex_size_ = 0;
+      element_size_ = other.element_size_;
+      other.element_size_ = 0;
+      attribute_size_ = other.attribute_size_;
+      other.attribute_size_ = 0;
+      buffer_objects_ = std::move(other.buffer_objects_);
+    }
+    VertexArrayObject& operator=(VertexArrayObject&& other)
+    {
+      if (this != &other)
+      {
+        buffer_objects_.clear();
+        if (id_ > 0)
+          glDeleteVertexArrays(1, &id_);
+
+        id_ = other.id_;
+        other.id_ = 0;
+        usage_ = other.usage_;
+        other.usage_ = 0;
+        vertex_size_ = other.vertex_size_;
+        other.vertex_size_ = 0;
+        element_size_ = other.element_size_;
+        other.element_size_ = 0;
+        attribute_size_ = other.attribute_size_;
+        other.attribute_size_ = 0;
+        buffer_objects_ = std::move(other.buffer_objects_);
+      }
+      return *this;
     }
 
     ~VertexArrayObject()
     {
-      for (auto& buffer_object : buffer_objects_)
-        buffer_object.reset();
-
-      glDeleteVertexArrays(1, &id_);
+      buffer_objects_.clear();
+      if (id_ > 0)
+        glDeleteVertexArrays(1, &id_);
     }
 
     template <typename VertexType>
-    void create_vertex_buffer(
+    int create_vertex_buffer(
       const std::span<const VertexType>& data,
       const std::span<const VertexAttribute>& attributes,
       int attributes_offset)
     {
       use();
-      auto buffer = std::make_unique<VertexBufferObject>(data, attributes, attributes_offset);
+      auto buffer = std::make_unique<VertexBufferObject>(data, usage_);
+      buffer->set_attributes(attributes, attributes_offset);
 
       if (vertex_size_ > 0 && buffer->size() != vertex_size_)
         throw std::runtime_error("Size of all vertex buffer should be equal.");
@@ -48,15 +89,24 @@ namespace opengl
       vertex_size_ = buffer->size();
       attribute_size_ += buffer->attribute_size();
       buffer_objects_.push_back(std::move(buffer));
+
+      return buffer_objects_.size() - 1;
     }
 
-    void create_element_buffer(const std::span<const uint32_t>& data)
+    int create_element_buffer(const std::span<const uint32_t>& data)
     {
       use();
-      auto buffer = std::make_unique<ElementBufferObject>(data);
+      auto buffer = std::make_unique<ElementBufferObject>(data, usage_);
 
       element_size_ = buffer->size();
       buffer_objects_.push_back(std::move(buffer));
+
+      return buffer_objects_.size() - 1;
+    }
+
+    const BufferObject& get_buffer_object()
+    {
+
     }
 
     void draw() const

@@ -27,8 +27,6 @@ private:
 
   bool initialized_glad_ = false;
   std::shared_ptr<GlfwWindow> window_;
-  GLsizei window_width_ = 0;
-  GLsizei window_height_ = 0;
 
 public:
   bool ready() override
@@ -40,23 +38,29 @@ public:
   {
     ZoneScopedN("Renderer Before Render");
 
-    if (!window_) return;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    const auto& size = window_->get_size();
-    if (size.x != window_width_ || size.y != window_height_)
-    {
-      window_width_ = size.x;
-      window_height_ = size.y;
-      glViewport(0, 0, window_width_, window_height_);
-    }
+    if (!window_) return;
+    auto size = window_->get_size();
+    glViewport(0, 0, size.x, size.y);
 
     glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
     glClear(clear_bit_);
+
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
   }
 
   void after_render() override
   {
-    ZoneScopedN("Renderer Swap Buffers");
+    ZoneScopedN("Renderer After Render");
+
+    glDisable(GL_MULTISAMPLE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
 
     if (!window_) return;
     window_->swap_buffers();
@@ -80,17 +84,11 @@ public:
     if (!initialized_glad_ && !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
     initialized_glad_ = true;
-
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
   }
 
   glm::ivec2 viewport() const override
   {
-    return { window_width_, window_height_ };
+    return window_->get_size();
   }
 };
 

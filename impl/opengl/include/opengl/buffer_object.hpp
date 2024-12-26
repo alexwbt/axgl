@@ -16,18 +16,44 @@ namespace opengl
 
   public:
     template <typename DataType>
-    BufferObject(GLenum target, const std::span<const DataType>& data)
+    BufferObject(GLenum target, const std::span<const DataType>& data, GLenum usage)
     {
       size_ = data.size();
 
       glGenBuffers(1, &id_);
       glBindBuffer(target, id_);
-      glBufferData(target, size_ * sizeof(DataType), data.data(), GL_STATIC_DRAW);
+      glBufferData(target, size_ * sizeof(DataType), data.data(), usage);
+    }
+
+    BufferObject(const BufferObject&) = delete;
+    BufferObject& operator=(const BufferObject&) = delete;
+
+    BufferObject(BufferObject&& other)
+    {
+      id_ = other.id_;
+      size_ = other.size_;
+      other.id_ = 0;
+      other.size_ = 0;
+    }
+    BufferObject& operator=(BufferObject&& other)
+    {
+      if (this != &other)
+      {
+        if (id_ > 0)
+          glDeleteBuffers(1, &id_);
+
+        id_ = other.id_;
+        size_ = other.size_;
+        other.id_ = 0;
+        other.size_ = 0;
+      }
+      return *this;
     }
 
     virtual ~BufferObject()
     {
-      glDeleteBuffers(1, &id_);
+      if (id_ > 0)
+        glDeleteBuffers(1, &id_);
     }
 
     size_t size() const { return size_; }
@@ -42,24 +68,34 @@ namespace opengl
     const void* pointer;
   };
 
-  class VertexBufferObject : public BufferObject
+  class VertexBufferObject final : public BufferObject
   {
   private:
-    size_t attribute_size_;
+    size_t attribute_size_ = 0;
 
   public:
     template <typename VertexType>
-    VertexBufferObject(
-      const std::span<const VertexType>& data,
+    VertexBufferObject(const std::span<const VertexType>& data, GLenum usage)
+      : BufferObject(GL_ARRAY_BUFFER, data, usage)
+    {}
+
+    VertexBufferObject(const VertexBufferObject&) = delete;
+    VertexBufferObject& operator=(const VertexBufferObject&) = delete;
+
+    void set_attributes(
       const std::span<const VertexAttribute>& attributes,
-      int offset = 0
-    ) :
-      BufferObject(GL_ARRAY_BUFFER, data),
-      attribute_size_(attributes.size())
+      int attribute_offset = 0)
     {
+      if (attribute_size_ > 0)
+      {
+        SPDLOG_ERROR("Attributes are already set.");
+        return;
+      }
+
+      attribute_size_ = attributes.size();
       for (int i = 0; i < attribute_size_; i++)
       {
-        auto index = offset + i;
+        auto index = attribute_offset + i;
         const auto& attr = attributes[i];
         glEnableVertexAttribArray(index);
         switch (attr.type)
@@ -90,12 +126,15 @@ namespace opengl
     size_t attribute_size() const { return attribute_size_; }
   };
 
-  class ElementBufferObject : public BufferObject
+  class ElementBufferObject final : public BufferObject
   {
   public:
-    ElementBufferObject(const std::span<const uint32_t>& data)
-      : BufferObject(GL_ELEMENT_ARRAY_BUFFER, data)
+    ElementBufferObject(const std::span<const uint32_t>& data, GLenum usage)
+      : BufferObject(GL_ELEMENT_ARRAY_BUFFER, data, usage)
     {}
+
+    ElementBufferObject(const ElementBufferObject&) = delete;
+    ElementBufferObject& operator=(const ElementBufferObject&) = delete;
   };
 
 }
