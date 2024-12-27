@@ -29,7 +29,7 @@ namespace opengl
     VertexArrayObject(const VertexArrayObject&) = delete;
     VertexArrayObject& operator=(const VertexArrayObject&) = delete;
 
-    VertexArrayObject(VertexArrayObject&& other)
+    VertexArrayObject(VertexArrayObject&& other) noexcept
     {
       id_ = other.id_;
       other.id_ = 0;
@@ -43,7 +43,7 @@ namespace opengl
       other.attribute_size_ = 0;
       buffer_objects_ = std::move(other.buffer_objects_);
     }
-    VertexArrayObject& operator=(VertexArrayObject&& other)
+    VertexArrayObject& operator=(VertexArrayObject&& other) noexcept
     {
       if (this != &other)
       {

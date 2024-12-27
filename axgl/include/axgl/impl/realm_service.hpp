@@ -19,7 +19,24 @@ public:
   void update() override
   {
     for (const auto& comp : components_)
+    {
+      if (comp->tick == 0)
+        comp->on_create();
+
       comp->update();
+      ++comp->tick;
+    }
+
+    components_.erase(
+      std::remove_if(components_.begin(), components_.end(),
+        [](const auto& c)
+        {
+          if (c->should_remove)
+            c->on_remove();
+          return c->should_remove;
+        }),
+      components_.end()
+    );
   }
 
   void render() override
@@ -35,21 +52,19 @@ public:
 
   void remove_component(uint32_t id) override
   {
-    components_.erase(
-      std::remove_if(components_.begin(), components_.end(),
-        [id](const auto& c) { return c->get_id() == id; }),
-      components_.end()
-    );
+    for (const auto& comp : components_)
+    {
+      if (comp->get_id() == id)
+      {
+        comp->should_remove = true;
+        break;
+      }
+    }
   }
 
   util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
-  }
-
-  const std::vector<std::shared_ptr<interface::Component>>& get_components_vector() const
-  {
-    return components_;
   }
 };
 
@@ -65,6 +80,7 @@ public:
     ZoneScopedN("Realm Update");
 
     interface::RealmContext context(this);
+    context.axgl = get_context()->axgl;
     context.renderer = renderer_.get();
     context.realm = this;
 
@@ -80,6 +96,7 @@ public:
     renderer_->before_render();
 
     interface::RealmContext context(this);
+    context.axgl = get_context()->axgl;
     context.renderer = renderer_.get();
     context.realm = this;
     context.pv = camera.pv(renderer_->viewport());
@@ -96,13 +113,7 @@ public:
 
   void add_component(std::shared_ptr<interface::Component> component) override
   {
-    auto impl_component = std::dynamic_pointer_cast<Component>(component);
-#ifdef AXGL_DEBUG
-    if (!impl_component)
-      throw std::runtime_error("The provided component is not a valid Component instance.");
-#endif
-    if (impl_component)
-      comp_impl_.add_component(std::move(impl_component));
+    comp_impl_.add_component(std::move(component));
   }
 
   void remove_component(uint32_t id) override
@@ -127,6 +138,8 @@ public:
   {
     if (!realm_) return;
 
+    interface::RealmContext context(this);
+    context.axgl = get_context()->axgl;
     realm_->update();
   }
 
@@ -134,6 +147,8 @@ public:
   {
     if (!realm_) return;
 
+    interface::RealmContext context(this);
+    context.axgl = get_context()->axgl;
     realm_->render();
   }
 
@@ -147,6 +162,18 @@ public:
   std::shared_ptr<interface::Realm> get_active_realm() const override
   {
     return realm_;
+  }
+
+  void set_active_realm(std::shared_ptr<interface::Realm> realm) override
+  {
+    auto realm_impl = std::dynamic_pointer_cast<Realm>(realm);
+#ifdef AXGL_DEBUG
+    if (!realm_impl)
+      throw std::runtime_error(
+        "Failed to set active realm. "
+        "Default Realm is required for default RealmService");
+#endif
+    realm_ = std::move(realm_impl);
   }
 };
 

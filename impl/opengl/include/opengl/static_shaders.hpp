@@ -19,7 +19,7 @@ namespace opengl
     StaticShaders& operator=(const StaticShaders&&) = delete;
 
     ShaderProgram& mesh_2d() { return mesh_2d_; }
-    ShaderProgram& mesh_3d() { return mesh_3d_; } 
+    ShaderProgram& mesh_3d() { return mesh_3d_; }
 
   private:
     ShaderProgram mesh_2d_{ {

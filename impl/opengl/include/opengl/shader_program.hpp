@@ -21,12 +21,10 @@ namespace opengl
 
       Shader(GLenum type, const std::string& data) :
         type(type), source_code(data)
-      {
-      }
+      {}
       Shader(GLenum type, const std::span<const uint8_t>& data) :
         type(type), source_code(reinterpret_cast<const char*>(data.data()), data.size())
-      {
-      }
+      {}
     };
 
   private:
@@ -87,12 +85,12 @@ namespace opengl
     ShaderProgram(const ShaderProgram&) = delete;
     ShaderProgram& operator=(const ShaderProgram&) = delete;
 
-    ShaderProgram(ShaderProgram&& other)
+    ShaderProgram(ShaderProgram&& other) noexcept
     {
       program_id_ = other.program_id_;
       other.program_id_ = 0;
     }
-    ShaderProgram& operator=(ShaderProgram&& other)
+    ShaderProgram& operator=(ShaderProgram&& other) noexcept
     {
       if (this != &other)
       {
@@ -135,7 +133,10 @@ namespace opengl
     }
 
   public:
-    void use_program() const { glUseProgram(program_id_); }
+    void use_program() const
+    {
+      glUseProgram(program_id_);
+    }
   };
 
 }

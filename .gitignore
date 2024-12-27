@@ -1,9 +1,11 @@
 bin/
-build/
-
 _bin/
+
+build/
 _build/
 
-.vs/
 out/
+_out/
+
+.vs/
 CMakeSettings.json

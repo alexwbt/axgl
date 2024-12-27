@@ -28,14 +28,14 @@ namespace opengl
     BufferObject(const BufferObject&) = delete;
     BufferObject& operator=(const BufferObject&) = delete;
 
-    BufferObject(BufferObject&& other)
+    BufferObject(BufferObject&& other) noexcept
     {
       id_ = other.id_;
       size_ = other.size_;
       other.id_ = 0;
       other.size_ = 0;
     }
-    BufferObject& operator=(BufferObject&& other)
+    BufferObject& operator=(BufferObject&& other) noexcept
     {
       if (this != &other)
       {

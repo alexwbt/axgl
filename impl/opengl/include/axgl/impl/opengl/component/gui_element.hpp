@@ -3,6 +3,7 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/realm_service.hpp>
+#include <axgl/impl/opengl/text.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -10,12 +11,18 @@ class OpenglGuiElement : public interface::GuiElement
 {
 private:
   impl::Component comp_impl_;
-  std::shared_ptr<interface::Mesh> quad_mesh_;
+
+  std::shared_ptr<OpenglTextService> text_service_;
+  std::shared_ptr<opengl::Texture> content_text_texture_;
 
 public:
-  // OpenglGuiElement(std::shared_ptr<interface::Mesh> quad_mesh) :
-  //   quad_mesh_(quad_mesh)
-  // {}
+  void on_create() override
+  {
+    auto context = get_context();
+    text_service_ = context->axgl->get_service<OpenglTextService>("text");
+
+    content_text_texture_ = text_service_->render_text(props.content, props.font, props.font_size);
+  }
 
   void add_component(std::shared_ptr<interface::Component> component) override
   {
@@ -24,8 +31,7 @@ public:
     if (!element)
       throw std::runtime_error(
         "Invalid child component type. "
-        "Children of GuiElement must also be GuiElement."
-      );
+        "Children of GuiElement must also be GuiElement.");
 #endif
     comp_impl_.add_component(std::move(component));
   }
@@ -59,14 +65,27 @@ public:
 
   void update() override
   {
-    quad_mesh_->scale = glm::vec3(props.size.width, props.size.height, 1);
-    quad_mesh_->get_material()->set_color({ props.bg_color.r, props.bg_color.g, props.bg_color.b });
-
     comp_impl_.update();
   }
 
   void render() override
   {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    auto& shader = opengl::StaticShaders::instance().mesh_2d();
+    shader.use_program();
+    //shader.set_mat4("mvp", mat);
+
+    glActiveTexture(GL_TEXTURE0);
+    content_text_texture_->use();
+    shader.set_int("mesh_texture", 0);
+    shader.set_bool("use_texture", true);
+
+    opengl::StaticVAOs::instance().quad().draw();
+
+    glDisable(GL_BLEND);
+
     comp_impl_.render();
   }
 

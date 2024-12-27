@@ -19,31 +19,10 @@
 #include <opengl/static_vaos.hpp>
 #include <opengl/static_shaders.hpp>
 
-#define FOR_EACH_UTF8_CHAR(str, c)                        \
-uint32_t c;                                               \
-for (                                                     \
-auto _utf8_char_iterator_ = str.begin(), end = str.end(); \
-_utf8_char_iterator_ != end;                              \
-c = utf8::next(_utf8_char_iterator_, end)                 \
-)
-
 namespace opengl
 {
 
   class FontCollection;
-
-  //class Text
-  //{
-  //private:
-  //  VertexArrayObject quad_vao_;
-  //  Texture text_texture_;
-
-  //public:
-  //  Text(const std::string& value)
-  //  {
-  //    
-  //  }
-  //};
 
   class Character
   {
@@ -99,12 +78,12 @@ namespace opengl
     Font(const Font&) = delete;
     Font& operator=(const Font&) = delete;
 
-    Font(Font&& other)
+    Font(Font&& other) noexcept
     {
       face_ = other.face_;
       other.face_ = nullptr;
     }
-    Font& operator=(Font&& other)
+    Font& operator=(Font&& other) noexcept
     {
       if (this != &other)
       {
@@ -123,7 +102,7 @@ namespace opengl
         FT_Done_Face(face_);
     }
 
-    void create_text(const std::string& value, uint32_t size) const
+    Texture render_text(const std::string& value, uint32_t size) const
     {
       std::unordered_map<uint32_t, Character> chars;
       uint32_t total_width = 0;
@@ -176,6 +155,10 @@ namespace opengl
         StaticVAOs::instance().quad().draw();
         mat = glm::translate(mat, glm::vec3(chars[c].advance_x, 0, 0));
       }
+
+      glDisable(GL_BLEND);
+
+      return texture;
     }
   };
 
@@ -194,13 +177,13 @@ namespace opengl
     FontCollection(const FontCollection&) = delete;
     FontCollection& operator=(const FontCollection&) = delete;
 
-    FontCollection(FontCollection&& other)
+    FontCollection(FontCollection&& other) noexcept
     {
       fonts_ = std::move(other.fonts_);
       library_ = other.library_;
       other.library_ = nullptr;
     }
-    FontCollection& operator=(FontCollection&& other)
+    FontCollection& operator=(FontCollection&& other) noexcept
     {
       if (this != &other)
       {
@@ -237,6 +220,17 @@ namespace opengl
     void unload_font(const std::string& name)
     {
       fonts_.erase(name);
+    }
+
+    Texture render_text(
+      const std::string& value,
+      const std::string& font,
+      uint32_t size) const
+    {
+      if (!fonts_.contains(font))
+        throw std::runtime_error("FontCollection does not contain font: " + font);
+
+      return fonts_.at(font)->render_text(value, size);
     }
   };
 

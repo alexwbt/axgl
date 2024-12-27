@@ -9,13 +9,28 @@ NAMESPACE_AXGL_IMPL
 class OpenglTextService : public interface::Service
 {
 private:
+  opengl::FontCollection font_collection_;
+
 public:
-  void initialize() override
+  void load_font(const std::string& name, std::span<const uint8_t> data, int index = 0)
   {
+    font_collection_.load_font(name, data, index);
   }
 
-  void terminate() override
+  void unload_font(const std::string& name)
   {
+    font_collection_.unload_font(name);
+  }
+
+  std::shared_ptr<opengl::Texture> render_text(
+    const std::string& value,
+    const std::string& font,
+    uint32_t size) const
+  {
+    auto texture = font_collection_.render_text(value, font, size);
+    auto texture_ptr = std::make_shared<opengl::Texture>();
+    *texture_ptr = std::move(texture);
+    return texture_ptr;
   }
 };
 

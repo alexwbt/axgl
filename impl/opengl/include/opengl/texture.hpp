@@ -48,6 +48,8 @@ namespace opengl
   private:
     GLuint id_ = 0;
     GLuint target_ = 0;
+    GLsizei width_ = 0;
+    GLsizei height_ = 0;
 
   public:
     Texture()
@@ -58,14 +60,14 @@ namespace opengl
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
 
-    Texture(Texture&& other)
+    Texture(Texture&& other) noexcept
     {
       id_ = other.id_;
       other.id_ = 0;
       target_ = other.target_;
       other.target_ = 0;
     }
-    Texture& operator=(Texture&& other)
+    Texture& operator=(Texture&& other) noexcept
     {
       if (this != &other)
       {
@@ -122,6 +124,9 @@ namespace opengl
         return;
       }
       target_ = GL_TEXTURE_2D;
+
+      width_ = width;
+      height_ = height;
 
       use();
       glTexImage2D(target_, level,

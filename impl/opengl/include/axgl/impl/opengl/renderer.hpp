@@ -37,33 +37,33 @@ public:
   void before_render() override
   {
     ZoneScopedN("Renderer Before Render");
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
     if (!window_) return;
-    auto size = window_->get_size();
-    glViewport(0, 0, size.x, size.y);
-
-    glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
-    glClear(clear_bit_);
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CW);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    auto size = window_->get_size();
+    glViewport(0, 0, size.x, size.y);
+
+    glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
+    glClear(clear_bit_);
   }
 
   void after_render() override
   {
     ZoneScopedN("Renderer After Render");
+    if (!window_) return;
+
+    window_->swap_buffers();
 
     glDisable(GL_MULTISAMPLE);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-
-    if (!window_) return;
-    window_->swap_buffers();
   }
 
   void set_window(std::shared_ptr<interface::Window> window) override

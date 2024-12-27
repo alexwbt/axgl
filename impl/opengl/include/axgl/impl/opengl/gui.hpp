@@ -20,7 +20,7 @@ private:
   std::vector<std::shared_ptr<interface::GuiElement>> pages_;
 
 public:
-  void initialize()
+  void initialize() override
   {
     auto context = get_context();
     realm_service_ = context->axgl->realm_service();

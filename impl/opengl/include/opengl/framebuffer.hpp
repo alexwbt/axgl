@@ -20,12 +20,12 @@ namespace opengl
     Framebuffer(const Framebuffer&) = delete;
     Framebuffer& operator=(const Framebuffer&) = delete;
 
-    Framebuffer(Framebuffer&& other)
+    Framebuffer(Framebuffer&& other) noexcept
     {
       id_ = other.id_;
       other.id_ = 0;
     }
-    Framebuffer& operator=(Framebuffer&& other)
+    Framebuffer& operator=(Framebuffer&& other) noexcept
     {
       if (this != &other)
       {

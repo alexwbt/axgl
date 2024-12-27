@@ -21,11 +21,11 @@ public:
   void load_texture(std::span<const uint8_t> data) override
   {
     texture_.load_image_texture(data);
-    // texture_.set_parameteri(GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // texture_.set_parameteri(GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // texture_.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // texture_.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // texture_.generate_mipmap();
+    texture_.set_parameteri(GL_TEXTURE_WRAP_S, GL_REPEAT);
+    texture_.set_parameteri(GL_TEXTURE_WRAP_T, GL_REPEAT);
+    texture_.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    texture_.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    texture_.generate_mipmap();
   }
 };
 
