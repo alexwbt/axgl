@@ -21,7 +21,8 @@ public:
     auto context = get_context();
     text_service_ = context->axgl->get_service<OpenglTextService>("text");
 
-    content_text_texture_ = text_service_->render_text(props.content, props.font, props.font_size);
+    if (!props.content.empty())
+      content_text_texture_ = text_service_->render_text(props.content, props.font, props.font_size);
   }
 
   void add_component(std::shared_ptr<interface::Component> component) override
@@ -70,21 +71,25 @@ public:
 
   void render() override
   {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto& shader = opengl::StaticShaders::instance().mesh_2d();
-    shader.use_program();
-    //shader.set_mat4("mvp", mat);
+    if (content_text_texture_)
+    {
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glActiveTexture(GL_TEXTURE0);
-    content_text_texture_->use();
-    shader.set_int("mesh_texture", 0);
-    shader.set_bool("use_texture", true);
+      auto& shader = opengl::StaticShaders::instance().mesh_2d();
+      shader.use_program();
+      //shader.set_mat4("mvp", mat);
 
-    opengl::StaticVAOs::instance().quad().draw();
+      glActiveTexture(GL_TEXTURE0);
+      content_text_texture_->use();
+      shader.set_int("mesh_texture", 0);
+      shader.set_bool("use_texture", true);
 
-    glDisable(GL_BLEND);
+      opengl::StaticVAOs::instance().quad().draw();
+
+      glDisable(GL_BLEND);
+    }
 
     comp_impl_.render();
   }

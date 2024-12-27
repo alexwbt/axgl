@@ -137,23 +137,29 @@ namespace opengl
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
       auto& shader = StaticShaders::instance().mesh_2d();
-      shader.use_program();
-      glActiveTexture(GL_TEXTURE0);
-      shader.set_int("mesh_texture", 0);
-      shader.set_bool("use_texture", true);
 
       glm::vec2 v = glm::vec2(total_width, size) * 0.5f;
-      glm::mat4 mat = glm::ortho(v.x, -v.x, -v.y, v.y);
+      glm::mat4 projection = glm::ortho(v.x, -v.x, -v.y, v.y);
+      glm::vec3 translate{ 0 };
+      glm::vec3 scale{ 1 };
 
       for (auto it = value.begin(), end = value.end(); it != end;)
       {
         uint32_t c = utf8::next(it, end);
 
+        shader.use_program();
+        glActiveTexture(GL_TEXTURE0);
         chars[c].texture.use();
-        shader.set_mat4("mvp", mat);
+        shader.set_int("mesh_texture", 0);
+        shader.set_bool("use_texture", true);
+        scale.x = chars[c].width;
+        scale.y = chars[c].height;
+        auto model = glm::translate(glm::mat4(1.0f), translate) * glm::scale(scale);
+        shader.set_mat4("mvp", projection * model);
 
         StaticVAOs::instance().quad().draw();
-        mat = glm::translate(mat, glm::vec3(chars[c].advance_x, 0, 0));
+
+        translate.x += chars[c].advance_x;
       }
 
       glDisable(GL_BLEND);

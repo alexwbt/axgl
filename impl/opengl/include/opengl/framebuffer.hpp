@@ -51,7 +51,8 @@ namespace opengl
 
     void attach_texture(GLuint attachment, const Texture& texture) const
     {
-      glNamedFramebufferTexture(id_, GL_COLOR_ATTACHMENT0 + attachment, texture.get_id(), 0);
+      use();
+      glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment, texture.get_id(), 0);
     }
 
     void set_draw_buffers(const std::vector<GLuint> attachments) const
@@ -60,9 +61,10 @@ namespace opengl
       for (int i = 0; i < attachments.size(); i++)
         buffers[i] = GL_COLOR_ATTACHMENT0 + attachments[i];
 
-      glNamedFramebufferDrawBuffers(id_, buffers.size(), buffers.data());
+      use();
+      glDrawBuffers(buffers.size(), buffers.data());
 
-      if (glCheckNamedFramebufferStatus(id_, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         SPDLOG_ERROR("Framebuffer status is incomplete.");
     }
   };
