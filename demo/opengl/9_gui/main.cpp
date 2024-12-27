@@ -1,4 +1,3 @@
-#define AXGL_DEBUG
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>

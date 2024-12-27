@@ -9,3 +9,6 @@ _out/
 
 .vs/
 CMakeSettings.json
+
+log/
+_log/

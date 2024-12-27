@@ -19,8 +19,6 @@
 #include <cpptrace/cpptrace.hpp>
 #include <cpptrace/from_current.hpp>
 
-#define TRACY_ENABLE
-
 #endif
 
 #include <tracy/Tracy.hpp>
