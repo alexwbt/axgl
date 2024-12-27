@@ -1,6 +1,6 @@
 #! /bin/bash
 
-BUILD_TYPE=${1:-Release}
+BUILD_TYPE=${1:-Debug}
 VALID_OPTIONS=("Debug" "Release" "RelWithDebInfo" "MinSizeRel")
 
 validate_input() {
