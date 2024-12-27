@@ -62,7 +62,7 @@ public:
 
     // light
     realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
-      axgl::interface::Light::Color(glm::vec3(0.3f), glm::vec3(1), glm::vec3(1)));
+      axgl::interface::Light::Color { glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
   }
 
   void update() override

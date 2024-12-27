@@ -1,8 +1,15 @@
-cmake_minimum_required(VERSION 3.0...3.28)
+cmake_minimum_required(VERSION 3.12)
 project(axgl VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/_bin)
+
+option(AXGL_DEBUG "Enable AXGL_DEBUG" ON)
+message("AXGL_DEBUG: ${AXGL_DEBUG}")
+
+if(AXGL_DEBUG)
+  add_compile_definitions(AXGL_DEBUG)
+endif()
 
 # External Dependencies
 add_subdirectory(_external/glm)
