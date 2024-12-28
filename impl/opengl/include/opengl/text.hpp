@@ -105,7 +105,8 @@ namespace opengl
     Texture render_text(const std::string& value, uint32_t size) const
     {
       std::unordered_map<uint32_t, Character> chars;
-      uint32_t total_width = 0;
+      uint32_t width = 0;
+      uint32_t height = 0;
 
       FT_Set_Pixel_Sizes(face_, 0, size);
 
@@ -121,45 +122,54 @@ namespace opengl
           continue;
         }
         chars[c].load(face_);
-        total_width += chars[c].width;
+
+        width += chars[c].width;
+        if (chars[c].height > height)
+          height = chars[c].height;
       }
 
       Texture texture;
-      texture.load_texture(0, GL_RGB, total_width, size, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+      texture.load_texture(0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+      texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
       Framebuffer framebuffer;
       framebuffer.attach_texture(0, texture);
       framebuffer.set_draw_buffers({ 0 });
       framebuffer.use();
-      glViewport(0, 0, total_width, size);
+      glViewport(0, 0, width, height);
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-      auto& shader = StaticShaders::instance().mesh_2d();
+      glActiveTexture(GL_TEXTURE0);
+      auto& shader = StaticShaders::instance().text();
+      shader.use_program();
+      shader.set_int("text_texture", 0);
+      shader.set_vec3("text_color", glm::vec3(1));
 
-      glm::vec2 v = glm::vec2(total_width, size) * 0.5f;
-      glm::mat4 projection = glm::ortho(v.x, -v.x, -v.y, v.y);
-      glm::vec3 translate{ 0 };
-      glm::vec3 scale{ 1 };
+      glm::mat4 projection = glm::ortho(
+        static_cast<float>(width), 0.0f,
+        0.0f, static_cast<float>(height));
+      glm::vec3 translate(0);
+      glm::vec3 scale(1);
 
       for (auto it = value.begin(), end = value.end(); it != end;)
       {
         uint32_t c = utf8::next(it, end);
 
-        shader.use_program();
-        glActiveTexture(GL_TEXTURE0);
         chars[c].texture.use();
-        shader.set_int("mesh_texture", 0);
-        shader.set_bool("use_texture", true);
         scale.x = chars[c].width;
         scale.y = chars[c].height;
-        auto model = glm::translate(glm::mat4(1.0f), translate) * glm::scale(scale);
+        glm::vec3 offset(chars[c].bearing_x, chars[c].bearing_y - chars[c].height, 0);
+        auto model = glm::translate(glm::mat4(1.0f), translate + offset) * glm::scale(scale);
         shader.set_mat4("mvp", projection * model);
 
         StaticVAOs::instance().quad().draw();
 
-        translate.x += chars[c].advance_x;
+        translate.x += chars[c].advance_x >> 6;
       }
 
       glDisable(GL_BLEND);

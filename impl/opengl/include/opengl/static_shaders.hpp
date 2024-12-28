@@ -20,6 +20,7 @@ namespace opengl
 
     ShaderProgram& mesh_2d() { return mesh_2d_; }
     ShaderProgram& mesh_3d() { return mesh_3d_; }
+    ShaderProgram& text() { return text_; }
 
   private:
     ShaderProgram mesh_2d_{ {
@@ -29,6 +30,10 @@ namespace opengl
     ShaderProgram mesh_3d_{ {
       { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs") },
       { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs") }
+    } };
+    ShaderProgram text_{ {
+      { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
+      { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs") }
     } };
 
     StaticShaders() {}
