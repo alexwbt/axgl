@@ -1,14 +1,4 @@
-bin/
-_bin/
-
-build/
-_build/
-
-out/
-_out/
-
 .vs/
-CMakeSettings.json
-
-log/
 _log/
+_bin/
+_build/

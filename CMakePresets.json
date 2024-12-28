@@ -45,7 +45,7 @@
     {
       "name": "debug",
       "configurePreset": "debug",
-      "configuration": "Release"
+      "configuration": "Debug"
     },
     {
       "name": "release",
