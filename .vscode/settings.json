@@ -38,6 +38,7 @@
   "webgl-glsl-editor.format.placeSpacesInsideBrackets": false,
   "webgl-glsl-editor.format.favorFloatingSuffix": true,
   "files.associations": {
+    "*.wasm": "wat",
     "xiosbase": "cpp",
     "list": "cpp",
     "memory": "cpp",
@@ -158,7 +159,8 @@
     "latch": "cpp",
     "semaphore": "cpp",
     "syncstream": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "__memory": "cpp"
   },
   "cSpell.words": [
     "assbin",

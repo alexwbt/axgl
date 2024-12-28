@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <memory>
-#include <ranges>
 #include <format>
 #include <unordered_map>
 
@@ -15,38 +15,46 @@ NAMESPACE_AXGL
 class ServiceManager : public interface::ServiceContextProvider
 {
 private:
-  std::unordered_map<std::string, std::shared_ptr<interface::Service>> services_;
+  std::vector<std::shared_ptr<interface::Service>> services_;
+  std::unordered_map<std::string, std::shared_ptr<interface::Service>> service_map_;
 
 private:
   util::Iterable<std::shared_ptr<interface::Service>> services() const override
   {
-    return util::to_iterable(std::views::values(services_));
+    return util::to_iterable(services_);
   }
 
 public:
   virtual ~ServiceManager() {}
 
+  bool has_service(const std::string& id) const
+  {
+    return service_map_.contains(id);
+  }
+
   void register_service(const std::string& id, std::shared_ptr<interface::Service> service)
   {
 #ifdef AXGL_DEBUG
-    if (services_.contains(id))
+    if (has_service(id))
       throw std::runtime_error(std::format("Trying to register service but service with id '{}' already exists.", id));
 #endif
-    services_.insert({ id, std::move(service) });
+    service_map_.insert({ id, service });
+    services_.push_back(std::move(service));
   }
 
   void remove_service(const std::string& id)
   {
 #ifdef AXGL_DEBUG
-    if (!services_.contains(id))
+    if (!has_service(id))
       throw std::runtime_error(std::format("Trying to remove service but service with id '{}' does not exist.", id));
 #endif
-    services_.erase(id);
-  }
-
-  bool has_service(const std::string& id) const
-  {
-    return services_.contains(id);
+    services_.erase(
+      std::remove_if(
+        services_.begin(), services_.end(),
+        [&](const auto& ptr) { return ptr == service_map_[id]; }),
+      services_.end()
+    );
+    service_map_.erase(id);
   }
 
   template<typename ServiceType>
@@ -55,7 +63,7 @@ public:
     if (!has_service(id))
       return false;
 
-    const auto& service = std::dynamic_pointer_cast<ServiceType>(services_.at(id));
+    const auto& service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(id));
     return service != nullptr;
   }
 
@@ -67,7 +75,7 @@ public:
       throw std::runtime_error(std::format("Service with id '{}' is required, but does not exist.", id));
 #endif
 
-    auto service = std::dynamic_pointer_cast<ServiceType>(services_.at(id));
+    auto service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(id));
 #ifdef AXGL_DEBUG
     if (!service)
       throw std::runtime_error(std::format("Service type '{}' is required, but is not supported.", typeid(ServiceType).name()));
@@ -79,43 +87,38 @@ public:
   void initialize(Axgl* axgl)
   {
     interface::ServiceContext context(this, axgl);
-
-    for (const auto& entry : services_)
-      entry.second->initialize();
+    for (const auto& service : services_)
+      service->initialize();
   }
 
   void terminate(Axgl* axgl)
   {
     interface::ServiceContext context(this, axgl);
-
-    for (const auto& entry : services_)
-      entry.second->terminate();
+    for (const auto& service : services_)
+      service->terminate();
   }
 
   void update(Axgl* axgl)
   {
     interface::ServiceContext context(this, axgl);
-
-    for (const auto& entry : services_)
-      if (entry.second->running())
-        entry.second->update();
+    for (const auto& service : services_)
+      if (service->running())
+        service->update();
   }
 
   void render(Axgl* axgl)
   {
     interface::ServiceContext context(this, axgl);
-
-    for (const auto& entry : services_)
-      if (entry.second->running())
-        entry.second->render();
+    for (const auto& service : services_)
+      if (service->running())
+        service->render();
   }
 
   bool running(Axgl* axgl)
   {
     interface::ServiceContext context(this, axgl);
-
-    for (const auto& entry : services_)
-      if (entry.second->keep_alive())
+    for (const auto& service : services_)
+      if (service->keep_alive())
         return true;
     return false;
   }

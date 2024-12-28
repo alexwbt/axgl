@@ -145,7 +145,7 @@ private:
   }
 
 public:
-  void set_window(std::shared_ptr<interface::Window> window)
+  void set_window(std::shared_ptr<interface::Window> window) override
   {
     window_ = dynamic_pointer_cast<GlfwWindow>(window);
 #ifdef AXGL_DEBUG

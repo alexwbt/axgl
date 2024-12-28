@@ -94,9 +94,9 @@ public:
     comp_impl_.render();
   }
 
-  uint32_t down_tick() { return 0; }
-  bool hovering() { return false; }
-  bool focused() { return false; }
+  uint32_t down_tick() override { return 0; }
+  bool hovering() override { return false; }
+  bool focused() override { return false; }
 };
 
 NAMESPACE_AXGL_IMPL_END

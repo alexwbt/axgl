@@ -104,10 +104,10 @@ namespace opengl
       return buffer_objects_.size() - 1;
     }
 
-    const BufferObject& get_buffer_object()
-    {
+    // const BufferObject& get_buffer_object()
+    // {
 
-    }
+    // }
 
     void draw() const
     {
