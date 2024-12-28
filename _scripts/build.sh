@@ -36,9 +36,9 @@ else
 fi
 
 cmake \
-  -B $DIR/../_build \
-  -DAXGL_DEBUG=${AXGL_DEBUG} \
+  -B $DIR/../_build/${BUILD_TYPE} \
   -DTRACY_ENABLE=${AXGL_DEBUG} \
+  -DAXGL_DEBUG=${AXGL_DEBUG} \
   -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
   -DFLATBUFFERS_BUILD_TESTS=OFF \
   -DCPPTRACE_BUILD_TESTING=OFF \
@@ -56,6 +56,6 @@ echo "########## Starting cmake build ($BUILD_TYPE)" | tee -a $LOG_FILE | tee -a
 echo "##########" | tee -a $LOG_FILE | tee -a $ARCHIVE_LOG_FILE
 
 cmake \
-  --build $DIR/../_build \
+  --build $DIR/../_build/${BUILD_TYPE} \
   --config $BUILD_TYPE |
   tee -a $LOG_FILE | tee -a $ARCHIVE_LOG_FILE

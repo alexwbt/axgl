@@ -1,0 +1,56 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 19,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "debug",
+      "binaryDir": "_build/Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "TRACY_ENABLE": "ON",
+        "AXGL_DEBUG": "ON",
+        "FLATBUFFERS_BUILD_TESTS": "OFF",
+        "CPPTRACE_BUILD_TESTING": "OFF",
+        "ARGS_BUILD_UNITTESTS": "OFF",
+        "FLATBUFFERS_INSTALL": "OFF",
+        "ARGS_BUILD_EXAMPLE": "OFF",
+        "ASSIMP_BUILD_TESTS": "OFF",
+        "GLFW_BUILD_DOCS": "OFF",
+        "ASSIMP_INSTALL": "OFF"
+      }
+    },
+    {
+      "name": "release",
+      "binaryDir": "_build/Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "TRACY_ENABLE": "OFF",
+        "AXGL_DEBUG": "OFF",
+        "FLATBUFFERS_BUILD_TESTS": "OFF",
+        "CPPTRACE_BUILD_TESTING": "OFF",
+        "ARGS_BUILD_UNITTESTS": "OFF",
+        "FLATBUFFERS_INSTALL": "OFF",
+        "ARGS_BUILD_EXAMPLE": "OFF",
+        "ASSIMP_BUILD_TESTS": "OFF",
+        "GLFW_BUILD_DOCS": "OFF",
+        "ASSIMP_INSTALL": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "configuration": "Release"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "configuration": "Release"
+    }
+  ]
+}
