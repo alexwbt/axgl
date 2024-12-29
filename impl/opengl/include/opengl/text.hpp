@@ -3,6 +3,7 @@
 #include <span>
 #include <memory>
 #include <stdint.h>
+#include <algorithm>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -27,31 +28,38 @@ namespace opengl
   class Character
   {
     Texture texture;
-    uint32_t width = 0;
-    uint32_t height = 0;
-    uint32_t bearing_x = 0;
-    uint32_t bearing_y = 0;
-    uint32_t advance_x = 0;
-    uint32_t advance_y = 0;
+    glm::ivec2 size{ 0 };
+    glm::ivec2 offset{ 0 };
+    glm::ivec2 advance{ 0 };
 
-    void load(FT_Face face)
+    void load(FT_Face face, bool vertical)
     {
+      const auto& glyph = face->glyph;
+      const auto& bitmap = glyph->bitmap;
+
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
       texture.load_texture(
         0, GL_RED,
-        static_cast<GLint>(face->glyph->bitmap.width),
-        static_cast<GLint>(face->glyph->bitmap.rows),
-        0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+        static_cast<GLint>(bitmap.width),
+        static_cast<GLint>(bitmap.rows),
+        0, GL_RED, GL_UNSIGNED_BYTE, bitmap.buffer);
       texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      width = face->glyph->bitmap.width;
-      height = face->glyph->bitmap.rows;
-      bearing_x = face->glyph->bitmap_left;
-      bearing_y = face->glyph->bitmap_top;
-      advance_x = face->glyph->advance.x;
-      advance_y = face->glyph->advance.y;
+
+      size.x = texture.get_width();
+      size.y = texture.get_height();
+      offset.x = glyph->bitmap_left;
+      offset.y = glyph->bitmap_top;
+      advance.x = glyph->advance.x >> 6;
+      advance.y = glyph->advance.y >> 6;
+      
+      SPDLOG_INFO(
+        "size({},{}) "
+        "offset({},{}) "
+        "advance({},{}) ",
+        size.x, size.y, offset.x, offset.y, advance.x, advance.y);
     }
 
     friend class Font;
@@ -102,14 +110,15 @@ namespace opengl
         FT_Done_Face(face_);
     }
 
-    Texture render_text(const std::string& value, uint32_t size) const
+    Texture render_text(const std::string& value, uint32_t size, bool vertical = false) const
     {
       std::unordered_map<uint32_t, Character> chars;
-      uint32_t width = 0;
-      uint32_t height = 0;
 
       FT_Set_Pixel_Sizes(face_, 0, size);
 
+      int width = 0;
+      int height = 0;
+      glm::ivec2 max_offset(0);
       for (auto it = value.begin(), end = value.end(); it != end;)
       {
         uint32_t c = utf8::next(it, end);
@@ -121,11 +130,21 @@ namespace opengl
           SPDLOG_ERROR("Failed to load char '{}'", c);
           continue;
         }
-        chars[c].load(face_);
+        SPDLOG_INFO("{}", (char)c);
+        chars[c].load(face_, vertical);
 
-        width += chars[c].width;
-        if (chars[c].height > height)
-          height = chars[c].height;
+        if (vertical)
+        {
+          width = std::max(width, chars[c].size.x);
+          height += chars[c].advance.y;
+          max_offset.x = std::max(max_offset.x, chars[c].offset.x);
+        }
+        else
+        {
+          width += chars[c].advance.x;
+          height = std::max(height, chars[c].size.y);
+          max_offset.y = std::max(max_offset.y, chars[c].offset.y);
+        }
       }
 
       Texture texture;
@@ -151,25 +170,28 @@ namespace opengl
       shader.set_vec3("text_color", glm::vec3(1));
 
       glm::mat4 projection = glm::ortho(
-        static_cast<float>(width), 0.0f,
+        0.0f, static_cast<float>(width),
         0.0f, static_cast<float>(height));
-      glm::vec3 translate(0);
-      glm::vec3 scale(1);
+      glm::vec3 advance(0);
 
       for (auto it = value.begin(), end = value.end(); it != end;)
       {
         uint32_t c = utf8::next(it, end);
 
         chars[c].texture.use();
-        scale.x = chars[c].width;
-        scale.y = chars[c].height;
-        glm::vec3 offset(chars[c].bearing_x, chars[c].bearing_y - chars[c].height, 0);
-        auto model = glm::translate(glm::mat4(1.0f), translate + offset) * glm::scale(scale);
+
+        // this part is horizontal only for now
+        glm::vec3 scale(chars[c].size, 1);
+        glm::vec3 offset(chars[c].offset.x, chars[c].offset.y - chars[c].size.y/* + (max_offset.y - height)*/, 0);
+        auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
         shader.set_mat4("mvp", projection * model);
 
         StaticVAOs::instance().quad().draw();
 
-        translate.x += chars[c].advance_x >> 6;
+        if (vertical)
+          advance.y += chars[c].advance.y;
+        else
+          advance.x += chars[c].advance.x;
       }
 
       glDisable(GL_BLEND);
@@ -236,6 +258,11 @@ namespace opengl
     void unload_font(const std::string& name)
     {
       fonts_.erase(name);
+    }
+
+    bool has_font(const std::string& name) const
+    {
+      return fonts_.contains(name);
     }
 
     Texture render_text(

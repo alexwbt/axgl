@@ -53,10 +53,15 @@ public:
     bundles_.erase(path);
   }
 
+  bool has_resource(const std::string& key) const override
+  {
+    return resources_.contains(key);
+  }
+
   const std::span<const uint8_t>& get_resource(const std::string& key) override
   {
 #ifdef AXGL_DEBUG
-    if (!resources_.contains(key))
+    if (!has_resource(key))
       throw std::runtime_error("Resource service does not contain resource: " + key);
 #endif
     return resources_.at(key);

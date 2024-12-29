@@ -93,6 +93,16 @@ namespace opengl
       return id_;
     }
 
+    GLsizei get_width() const
+    {
+      return width_;
+    }
+
+    GLsizei get_height() const
+    {
+      return height_;
+    }
+
     void use() const
     {
       glBindTexture(target_, id_);

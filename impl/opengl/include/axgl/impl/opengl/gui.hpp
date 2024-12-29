@@ -6,6 +6,8 @@
 #include <axgl/interface/gui.hpp>
 #include <axgl/interface/realm.hpp>
 
+#include <axgl_opengl_impl/res.hpp>
+
 #ifndef AXGL_DEFINED_CREATE_COMPONENT_GUI_ELEMENT
 #error Implementation of interface::GuiElement must be defined before using __FILE__
 #endif

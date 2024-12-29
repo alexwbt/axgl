@@ -40,8 +40,8 @@ namespace opengl
         glm::vec4{ 1, 1, 1, 0 }
       };
       std::array<VertexAttribute, 2> attributes{
-        opengl::VertexAttribute{ 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 },
-        opengl::VertexAttribute{ 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 }
+        opengl::VertexAttribute{ 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0 },
+        opengl::VertexAttribute{ 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)offsetof(glm::vec4, z) }
       };
       quad_.create_vertex_buffer<glm::vec4>(vertices, attributes, 0);
     }

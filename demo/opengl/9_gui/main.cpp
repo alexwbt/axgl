@@ -24,6 +24,10 @@ public:
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
+    // resources
+    auto resource_service = axgl->resource_service();
+    resource_service->load_resources(demo_opengl_gui_res::data);
+
     // realm
     auto realm_service = axgl->realm_service();
     auto realm = axgl->realm_service()->create_realm();
@@ -38,7 +42,6 @@ public:
 
     // grass block
     //auto block = realm_service->create_component<axgl::impl::Component>();
-    //axgl->resource_service()->load_resources(demo_opengl_gui_res::data);
     //axgl->model_service()->load_model(block, "block.assbin");
     //realm->add_component(block);
 
@@ -47,14 +50,11 @@ public:
       axgl::interface::Light::Color { glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
 
     // gui
-    auto text_service = axgl->get_service<axgl::impl::OpenglTextService>("text");
-    text_service->load_font("roboto", demo_opengl_gui_res::get("roboto-thin.ttf"));
-
     auto gui_service = axgl->gui_service();
     auto page = gui_service->create_page();
     auto text = gui_service->create_element();
     text->props.font = "roboto";
-    text->props.content = "hello world";
+    text->props.content = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;";
     text->props.font_size = 48;
     page->add_child(text);
     realm->add_component(page);

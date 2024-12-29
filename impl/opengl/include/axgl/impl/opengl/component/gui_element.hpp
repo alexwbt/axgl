@@ -1,5 +1,9 @@
 #pragma once
 
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <axgl/common.hpp>
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/realm_service.hpp>
@@ -11,18 +15,30 @@ class OpenglGuiElement : public interface::GuiElement
 {
 private:
   impl::Component comp_impl_;
-
-  std::shared_ptr<OpenglTextService> text_service_;
   std::shared_ptr<opengl::Texture> content_text_texture_;
 
 public:
   void on_create() override
   {
-    auto context = get_context();
-    text_service_ = context->axgl->get_service<OpenglTextService>("text");
-
     if (!props.content.empty())
-      content_text_texture_ = text_service_->render_text(props.content, props.font, props.font_size);
+    {
+      auto context = get_context();
+      auto text_service = context->axgl->get_service<OpenglTextService>("text");
+
+      if (!text_service->has_font(props.font))
+      {
+        auto resource_service = context->axgl->resource_service();
+        auto resource_key = "font/" + props.font + ".ttf";
+#ifdef AXGL_DEBUG
+        if (!resource_service->has_resource(resource_key))
+          throw std::runtime_error("Required font not found: " + resource_key);
+#endif
+        text_service->load_font(props.font,
+          resource_service->get_resource(resource_key));
+      }
+
+      content_text_texture_ = text_service->render_text(props.content, props.font, props.font_size);
+    }
   }
 
   void add_component(std::shared_ptr<interface::Component> component) override
@@ -71,6 +87,12 @@ public:
 
   void render() override
   {
+    auto context = get_context();
+    auto viewport = context->renderer->viewport();
+
+    glm::mat4 projection = glm::ortho(
+      static_cast<float>(viewport.x), 0.0f,
+      0.0f, static_cast<float>(viewport.y));
 
     if (content_text_texture_)
     {
@@ -79,7 +101,12 @@ public:
 
       auto& shader = opengl::StaticShaders::instance().mesh_2d();
       shader.use_program();
-      //shader.set_mat4("mvp", mat);
+
+      auto model = glm::scale(glm::vec3(
+        content_text_texture_->get_width(),
+        content_text_texture_->get_height(),
+        1));
+      shader.set_mat4("mvp", projection * model);
 
       glActiveTexture(GL_TEXTURE0);
       content_text_texture_->use();

@@ -57,7 +57,7 @@ public:
   void set_vertices(const std::span<const glm::vec3>& vertices) override
   {
     std::array<opengl::VertexAttribute, 1> attributes{
-      opengl::VertexAttribute{ 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
+      opengl::VertexAttribute{ 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0 }
     };
     vertex_array_.create_vertex_buffer<glm::vec3>(vertices, attributes, 0);
   }
@@ -65,7 +65,7 @@ public:
   void set_vertices(const std::span<const glm::vec2>& vertices) override
   {
     std::array<opengl::VertexAttribute, 1> attributes{
-      opengl::VertexAttribute{ 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 }
+      opengl::VertexAttribute{ 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0 }
     };
     vertex_array_.create_vertex_buffer<glm::vec2>(vertices, attributes, 0);
   }
@@ -73,7 +73,7 @@ public:
   void set_normals(const std::span<const glm::vec3>& normals) override
   {
     std::array<opengl::VertexAttribute, 1> attributes{
-      opengl::VertexAttribute{ 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), 0 }
+      opengl::VertexAttribute{ 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0 }
     };
     vertex_array_.create_vertex_buffer<glm::vec3>(normals, attributes, 1);
   }
@@ -81,7 +81,7 @@ public:
   void set_uv(const std::span<const glm::vec2>& uv) override
   {
     std::array<opengl::VertexAttribute, 1> attributes{
-      opengl::VertexAttribute{ 2, GL_FLOAT, GL_TRUE, sizeof(glm::vec2), 0 }
+      opengl::VertexAttribute{ 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0 }
     };
     vertex_array_.create_vertex_buffer<glm::vec2>(uv, attributes, 2);
   }

@@ -12,13 +12,26 @@ private:
   opengl::FontCollection font_collection_;
 
 public:
+  bool has_font(const std::string& name) const
+  {
+    return font_collection_.has_font(name);
+  }
+
   void load_font(const std::string& name, std::span<const uint8_t> data, int index = 0)
   {
+#ifdef AXGL_DEBUG
+    if (font_collection_.has_font(name))
+      throw std::runtime_error("Font already exists: " + name);
+#endif
     font_collection_.load_font(name, data, index);
   }
 
   void unload_font(const std::string& name)
   {
+#ifdef AXGL_DEBUG
+    if (!font_collection_.has_font(name))
+      throw std::runtime_error("Font does not exist: " + name);
+#endif
     font_collection_.unload_font(name);
   }
 
