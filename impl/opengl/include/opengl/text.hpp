@@ -2,6 +2,7 @@
 
 #include <span>
 #include <memory>
+#include <format>
 #include <stdint.h>
 #include <algorithm>
 #include <stdexcept>
@@ -23,9 +24,26 @@
 namespace opengl
 {
 
-  class FontCollection;
+  class Font;
+  class TextRenderer;
 
-  class Character
+  struct TextOptions final
+  {
+    uint32_t size = 0;
+    bool vertical = false;
+  };
+
+  struct Text final
+  {
+    Texture texture;
+    glm::vec2 offset{ 0 };
+
+    Text() = default;
+    Text(const Text&) noexcept = delete;
+    Text& operator=(const Text&) = delete;
+  };
+
+  class Character final
   {
     Texture texture;
     glm::ivec2 size{ 0 };
@@ -40,8 +58,8 @@ namespace opengl
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
       texture.load_texture(
         0, GL_RED,
-        static_cast<GLint>(bitmap.width),
-        static_cast<GLint>(bitmap.rows),
+        static_cast<GLsizei>(bitmap.width),
+        static_cast<GLsizei>(bitmap.rows),
         0, GL_RED, GL_UNSIGNED_BYTE, bitmap.buffer);
       texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -51,18 +69,13 @@ namespace opengl
       size.x = texture.get_width();
       size.y = texture.get_height();
       offset.x = glyph->bitmap_left;
-      offset.y = glyph->bitmap_top;
+      offset.y = glyph->bitmap_top - size.y;
       advance.x = glyph->advance.x >> 6;
       advance.y = glyph->advance.y >> 6;
-      
-      SPDLOG_INFO(
-        "size({},{}) "
-        "offset({},{}) "
-        "advance({},{}) ",
-        size.x, size.y, offset.x, offset.y, advance.x, advance.y);
     }
 
     friend class Font;
+    friend class TextRenderer;
   };
 
   class Font final
@@ -110,118 +123,45 @@ namespace opengl
         FT_Done_Face(face_);
     }
 
-    Texture render_text(const std::string& value, uint32_t size, bool vertical = false) const
+    void load_char(Character& character, uint32_t code, const TextOptions& options) const
     {
-      std::unordered_map<uint32_t, Character> chars;
-
-      FT_Set_Pixel_Sizes(face_, 0, size);
-
-      int width = 0;
-      int height = 0;
-      glm::ivec2 max_offset(0);
-      for (auto it = value.begin(), end = value.end(); it != end;)
+      FT_Set_Pixel_Sizes(face_, 0, options.size);
+      if (FT_Load_Char(face_, code, FT_LOAD_RENDER))
       {
-        uint32_t c = utf8::next(it, end);
-        if (chars.contains(c))
-          continue;
-
-        if (FT_Load_Char(face_, c, FT_LOAD_RENDER))
-        {
-          SPDLOG_ERROR("Failed to load char '{}'", c);
-          continue;
-        }
-        SPDLOG_INFO("{}", (char)c);
-        chars[c].load(face_, vertical);
-
-        if (vertical)
-        {
-          width = std::max(width, chars[c].size.x);
-          height += chars[c].advance.y;
-          max_offset.x = std::max(max_offset.x, chars[c].offset.x);
-        }
-        else
-        {
-          width += chars[c].advance.x;
-          height = std::max(height, chars[c].size.y);
-          max_offset.y = std::max(max_offset.y, chars[c].offset.y);
-        }
+        SPDLOG_ERROR("Failed to load char {}", code);
+        return;
       }
+      character.load(face_, options.vertical);
+    }
 
-      Texture texture;
-      texture.load_texture(0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-      texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-      Framebuffer framebuffer;
-      framebuffer.attach_texture(0, texture);
-      framebuffer.set_draw_buffers({ 0 });
-      framebuffer.use();
-      glViewport(0, 0, width, height);
-
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-      glActiveTexture(GL_TEXTURE0);
-      auto& shader = StaticShaders::instance().text();
-      shader.use_program();
-      shader.set_int("text_texture", 0);
-      shader.set_vec3("text_color", glm::vec3(1));
-
-      glm::mat4 projection = glm::ortho(
-        0.0f, static_cast<float>(width),
-        0.0f, static_cast<float>(height));
-      glm::vec3 advance(0);
-
-      for (auto it = value.begin(), end = value.end(); it != end;)
-      {
-        uint32_t c = utf8::next(it, end);
-
-        chars[c].texture.use();
-
-        // this part is horizontal only for now
-        glm::vec3 scale(chars[c].size, 1);
-        glm::vec3 offset(chars[c].offset.x, chars[c].offset.y - chars[c].size.y/* + (max_offset.y - height)*/, 0);
-        auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
-        shader.set_mat4("mvp", projection * model);
-
-        StaticVAOs::instance().quad().draw();
-
-        if (vertical)
-          advance.y += chars[c].advance.y;
-        else
-          advance.x += chars[c].advance.x;
-      }
-
-      glDisable(GL_BLEND);
-
-      return texture;
+    bool has_char(uint32_t code) const
+    {
+      return FT_Get_Char_Index(face_, code) > 0;
     }
   };
 
-  class FontCollection final
+  class TextRenderer final
   {
   private:
     FT_Library library_;
     std::unordered_map<std::string, std::unique_ptr<Font>> fonts_;
 
   public:
-    FontCollection()
+    TextRenderer()
     {
       if (FT_Init_FreeType(&library_))
         throw std::runtime_error("Failed to initialize freetype library.");
     }
-    FontCollection(const FontCollection&) = delete;
-    FontCollection& operator=(const FontCollection&) = delete;
+    TextRenderer(const TextRenderer&) = delete;
+    TextRenderer& operator=(const TextRenderer&) = delete;
 
-    FontCollection(FontCollection&& other) noexcept
+    TextRenderer(TextRenderer&& other) noexcept
     {
       fonts_ = std::move(other.fonts_);
       library_ = other.library_;
       other.library_ = nullptr;
     }
-    FontCollection& operator=(FontCollection&& other) noexcept
+    TextRenderer& operator=(TextRenderer&& other) noexcept
     {
       if (this != &other)
       {
@@ -236,7 +176,7 @@ namespace opengl
       return *this;
     }
 
-    ~FontCollection()
+    ~TextRenderer()
     {
       fonts_.clear();
       if (library_)
@@ -265,15 +205,104 @@ namespace opengl
       return fonts_.contains(name);
     }
 
-    Texture render_text(
-      const std::string& value,
-      const std::string& font,
-      uint32_t size) const
+    int get_renderable_font(const std::vector<std::string>& font, uint32_t c) const
     {
-      if (!fonts_.contains(font))
-        throw std::runtime_error("FontCollection does not contain font: " + font);
+      for (int i = 0; i < font.size(); ++i)
+        if (has_font(font[i]) && fonts_.at(font[i])->has_char(c))
+          return i;
+      return -1;
+    }
 
-      return fonts_.at(font)->render_text(value, size);
+    Text render_text(
+      const std::string& value,
+      const std::vector<std::string>& font,
+      TextOptions options) const
+    {
+      std::unordered_map<uint32_t, Character> chars;
+
+      int width = 0;
+      int height = 0;
+      glm::ivec2 min_offset(0);
+      for (auto it = value.begin(), end = value.end(); it != end;)
+      {
+        uint32_t c = utf8::next(it, end);
+        if (!chars.contains(c))
+        {
+          int f = get_renderable_font(font, c);
+          if (f < 0)
+          {
+            SPDLOG_ERROR("Unrenderable char: {} (decimal code point)", c);
+            continue;
+          }
+          fonts_.at(font[f])->load_char(chars[c], c, options);
+        }
+
+        if (options.vertical)
+        {
+          width = std::max(width, chars[c].size.x);
+          height += chars[c].advance.y;
+        }
+        else
+        {
+          width += chars[c].advance.x;
+          height = std::max(height, chars[c].size.y);
+        }
+        min_offset.x = std::min(min_offset.x, chars[c].offset.x);
+        min_offset.y = std::min(min_offset.y, chars[c].offset.y);
+      }
+      width -= min_offset.x;
+      height -= min_offset.y;
+
+      Text text;
+      text.texture.load_texture(0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+      text.texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      text.texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      text.texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      text.texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+      Framebuffer framebuffer;
+      framebuffer.attach_texture(0, text.texture);
+      framebuffer.set_draw_buffers({ 0 });
+      framebuffer.use();
+      glViewport(0, 0, width, height);
+
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+      glActiveTexture(GL_TEXTURE0);
+      auto& shader = StaticShaders::instance().text();
+      shader.use_program();
+      shader.set_int("text_texture", 0);
+      shader.set_vec3("text_color", glm::vec3(1));
+
+      glm::mat4 projection = glm::ortho(
+        0.0f, static_cast<float>(width),
+        0.0f, static_cast<float>(height));
+      glm::vec3 advance(0);
+
+      for (auto it = value.begin(), end = value.end(); it != end;)
+      {
+        uint32_t c = utf8::next(it, end);
+        if (!chars.contains(c))
+          continue;
+
+        chars[c].texture.use();
+        glm::vec3 scale(chars[c].size, 1);
+        glm::vec3 offset(chars[c].offset - min_offset, 0);
+        auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
+        shader.set_mat4("mvp", projection * model);
+
+        StaticVAOs::instance().quad().draw();
+
+        if (options.vertical)
+          advance.y += chars[c].advance.y;
+        else
+          advance.x += chars[c].advance.x;
+      }
+
+      glDisable(GL_BLEND);
+
+      return text;
     }
   };
 

@@ -27,6 +27,11 @@ public:
     texture_.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     texture_.generate_mipmap();
   }
+
+  void overwrite_texture(opengl::Texture texture)
+  {
+    texture_ = std::move(texture);
+  }
 };
 
 NAMESPACE_AXGL_IMPL_END

@@ -53,8 +53,10 @@ public:
     auto gui_service = axgl->gui_service();
     auto page = gui_service->create_page();
     auto text = gui_service->create_element();
-    text->props.font = "roboto";
-    text->props.content = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;";
+    text->props.font = "arial,noto-tc";
+    text->props.content = (const char*)
+      u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
+      u8"林聲瓜內屋和早兩汗公更冒草肉拍多抓冰：得晚貫是包世紅浪几同肖南沒秋加：追福雄。歌文、真前習交；木木停內。";
     text->props.font_size = 48;
     page->add_child(text);
     realm->add_component(page);

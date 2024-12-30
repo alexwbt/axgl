@@ -8,6 +8,9 @@
 #include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/opengl/text.hpp>
+#include <axgl/impl/opengl/texture.hpp>
+#include <axgl/impl/opengl/material.hpp>
+#include <axgl/util/string.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -15,7 +18,8 @@ class OpenglGuiElement : public interface::GuiElement
 {
 private:
   impl::Component comp_impl_;
-  std::shared_ptr<opengl::Texture> content_text_texture_;
+  std::shared_ptr<opengl::Text> content_text_;
+  std::shared_ptr<interface::Material> material_;
 
 public:
   void on_create() override
@@ -25,19 +29,31 @@ public:
       auto context = get_context();
       auto text_service = context->axgl->get_service<OpenglTextService>("text");
 
-      if (!text_service->has_font(props.font))
+      auto font = util::split(props.font, ',');
+      for (const auto& f : font)
       {
-        auto resource_service = context->axgl->resource_service();
-        auto resource_key = "font/" + props.font + ".ttf";
+        if (!text_service->has_font(f))
+        {
+          auto resource_service = context->axgl->resource_service();
+          auto resource_key = "font/" + f + ".ttf";
 #ifdef AXGL_DEBUG
-        if (!resource_service->has_resource(resource_key))
-          throw std::runtime_error("Required font not found: " + resource_key);
+          if (!resource_service->has_resource(resource_key))
+            throw std::runtime_error("Required font not found: " + resource_key);
 #endif
-        text_service->load_font(props.font,
-          resource_service->get_resource(resource_key));
+          text_service->load_font(f, resource_service->get_resource(resource_key));
+        }
       }
 
-      content_text_texture_ = text_service->render_text(props.content, props.font, props.font_size);
+      opengl::TextOptions options{ .size = static_cast<uint32_t>(props.font_size) };
+      //content_text_ = text_service->render_text(props.content, font, options);
+
+      auto texture = std::make_shared<OpenglTexture>();
+      
+
+      auto renderer_service = context->axgl->renderer_service();
+      material_ = renderer_service->create_material("2d");
+      material_->add_texture(axgl::interface::TextureType::DIFFUSE, texture);
+      material_->set_color({ 1.0f, 0.5f, 0.2f });
     }
   }
 
@@ -90,28 +106,10 @@ public:
     auto context = get_context();
     auto viewport = context->renderer->viewport();
 
-    glm::mat4 projection = glm::ortho(
-      static_cast<float>(viewport.x), 0.0f,
-      0.0f, static_cast<float>(viewport.y));
-
-    if (content_text_texture_)
+    if (content_text_)
     {
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-      auto& shader = opengl::StaticShaders::instance().mesh_2d();
-      shader.use_program();
-
-      auto model = glm::scale(glm::vec3(
-        content_text_texture_->get_width(),
-        content_text_texture_->get_height(),
-        1));
-      shader.set_mat4("mvp", projection * model);
-
-      glActiveTexture(GL_TEXTURE0);
-      content_text_texture_->use();
-      shader.set_int("mesh_texture", 0);
-      shader.set_bool("use_texture", true);
 
       opengl::StaticVAOs::instance().quad().draw();
 
