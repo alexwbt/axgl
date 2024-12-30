@@ -5,7 +5,6 @@
 /* Component implementations */
 
 #include <axgl/impl/opengl/component/mesh.hpp>
-#include <axgl/impl/opengl/component/gui_element.hpp>
 
 NAMESPACE_AXGL
 
@@ -18,6 +17,12 @@ std::shared_ptr<interface::Mesh> interface::RealmService::create_component()
 {
   return std::make_shared<impl::OpenglMesh>();
 }
+
+NAMESPACE_AXGL_END
+
+#include <axgl/impl/opengl/component/gui_element.hpp>
+
+NAMESPACE_AXGL
 
 #ifdef AXGL_DEFINED_CREATE_COMPONENT_GUI_ELEMENT
 #error Duplicate definition of component interface::GuiElement

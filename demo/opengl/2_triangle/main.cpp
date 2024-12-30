@@ -24,9 +24,11 @@ int main()
   auto realm_service = axgl.realm_service();
   auto realm = realm_service->create_realm();
   realm->set_renderer(renderer);
-  realm->camera.orthographic = true;
-  realm->camera.near_clip = -1;
-  realm->camera.far_clip = 1;
+  //realm->camera.orthographic = true;
+  //realm->camera.near_clip = -1;
+  //realm->camera.far_clip = 1;
+  realm->camera.position.z = -2;
+  realm->camera.update();
 
   // material
   auto material = renderer_service->create_material("2d");
@@ -36,7 +38,7 @@ int main()
   auto mesh = realm_service->create_component<axgl::interface::Mesh>();
   mesh->set_vertices(std::vector<glm::vec2>{ {0.8f, -0.5f}, { -0.8f, -0.5f }, { 0.0f, 0.5f } });
   mesh->set_material(material);
-  mesh->scale = glm::vec3(200.0f);
+  //mesh->scale = glm::vec3(200.0f);
   mesh->update_model_matrix();
   realm->add_component(mesh);
 

@@ -18,10 +18,16 @@ class OpenglMesh : public interface::Mesh
 private:
   impl::Component comp_impl_;
 
-  opengl::VertexArrayObject vertex_array_;
+  int attribute_offset_ = 0;
   std::shared_ptr<OpenglMaterial> material_;
+  std::shared_ptr<opengl::VertexArrayObject> vertex_array_;
 
 public:
+  OpenglMesh()
+  {
+    vertex_array_ = std::make_shared<opengl::VertexArrayObject>();
+  }
+
   void add_component(std::shared_ptr<interface::Component> component) override
   {
     comp_impl_.add_component(std::move(component));
@@ -46,10 +52,10 @@ public:
   {
     if (material_)
     {
-      auto context = interface::Mesh::get_context();
+      auto context = get_context();
       material_->use(context, this);
     }
-    vertex_array_.draw();
+    vertex_array_->draw();
 
     comp_impl_.render();
   }
@@ -59,7 +65,7 @@ public:
     std::array<opengl::VertexAttribute, 1> attributes{
       opengl::VertexAttribute{ 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0 }
     };
-    vertex_array_.create_vertex_buffer<glm::vec3>(vertices, attributes, 0);
+    vertex_array_->create_vertex_buffer<glm::vec3>(vertices, attributes, attribute_offset_++);
   }
 
   void set_vertices(const std::span<const glm::vec2>& vertices) override
@@ -67,7 +73,7 @@ public:
     std::array<opengl::VertexAttribute, 1> attributes{
       opengl::VertexAttribute{ 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0 }
     };
-    vertex_array_.create_vertex_buffer<glm::vec2>(vertices, attributes, 0);
+    vertex_array_->create_vertex_buffer<glm::vec2>(vertices, attributes, attribute_offset_++);
   }
 
   void set_normals(const std::span<const glm::vec3>& normals) override
@@ -75,7 +81,7 @@ public:
     std::array<opengl::VertexAttribute, 1> attributes{
       opengl::VertexAttribute{ 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0 }
     };
-    vertex_array_.create_vertex_buffer<glm::vec3>(normals, attributes, 1);
+    vertex_array_->create_vertex_buffer<glm::vec3>(normals, attributes, attribute_offset_++);
   }
 
   void set_uv(const std::span<const glm::vec2>& uv) override
@@ -83,12 +89,12 @@ public:
     std::array<opengl::VertexAttribute, 1> attributes{
       opengl::VertexAttribute{ 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0 }
     };
-    vertex_array_.create_vertex_buffer<glm::vec2>(uv, attributes, 2);
+    vertex_array_->create_vertex_buffer<glm::vec2>(uv, attributes, attribute_offset_++);
   }
 
   void set_indices(const std::span<const uint32_t>& indices) override
   {
-    vertex_array_.create_element_buffer(indices);
+    vertex_array_->create_element_buffer(indices);
   }
 
   void set_material(std::shared_ptr<interface::Material> material) override
@@ -103,6 +109,11 @@ public:
   std::shared_ptr<interface::Material> get_material() const override
   {
     return material_;
+  }
+
+  void replace_vao(std::shared_ptr<opengl::VertexArrayObject> vertex_array)
+  {
+    vertex_array_ = std::move(vertex_array);
   }
 };
 

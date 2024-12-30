@@ -47,8 +47,8 @@ public:
     front_ = glm::normalize(glm::vec3(sin_yaw * sin_pitch, cos_pitch, cos_yaw * sin_pitch));
 
     auto rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
-    horizontal_right_ = glm::normalize(glm::cross(front_, glm::vec3(0, 1, 0)));
-    up_ = glm::normalize(glm::vec3(rotation * glm::vec4(glm::cross(horizontal_right_, front_), 1)));
+    horizontal_right_ = glm::normalize(glm::cross(front_, glm::vec3(0, -1, 0)));
+    up_ = glm::normalize(glm::vec3(rotation * glm::vec4(glm::cross(front_, horizontal_right_), 1)));
 
     view_matrix_ = glm::lookAt(position, position + front_, up_);
   }

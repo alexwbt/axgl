@@ -14,6 +14,7 @@ uniform mat4 model;
 void main()
 {
   gl_Position = mvp * vec4(position, 1.0);
+  gl_Position.x = -gl_Position.x;
 
   vert_position = vec3(model * vec4(position, 1.0));
   vert_normal = normalize(mat3(transpose(inverse(model))) * normal);

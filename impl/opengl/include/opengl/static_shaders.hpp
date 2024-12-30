@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include <memory>
 #include <opengl/shader_program.hpp>
 #include <axgl_opengl_impl/res.hpp>
 
@@ -8,7 +10,7 @@ namespace opengl
 
   class StaticShaders {
   public:
-    static StaticShaders& instance() {
+    static const StaticShaders& instance() {
       static StaticShaders instance_;
       return instance_;
     }
@@ -18,25 +20,30 @@ namespace opengl
     StaticShaders(const StaticShaders&&) = delete;
     StaticShaders& operator=(const StaticShaders&&) = delete;
 
-    ShaderProgram& mesh_2d() { return mesh_2d_; }
-    ShaderProgram& mesh_3d() { return mesh_3d_; }
-    ShaderProgram& text() { return text_; }
+    std::shared_ptr<ShaderProgram> mesh_2d() const { return mesh_2d_; }
+    std::shared_ptr<ShaderProgram> mesh_3d() const { return mesh_3d_; }
+    std::shared_ptr<ShaderProgram> text() const { return text_; }
 
   private:
-    ShaderProgram mesh_2d_{ {
-      { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
-      { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs") }
-    } };
-    ShaderProgram mesh_3d_{ {
-      { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs") },
-      { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs") }
-    } };
-    ShaderProgram text_{ {
-      { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
-      { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs") }
-    } };
+    std::shared_ptr<ShaderProgram> mesh_2d_;
+    std::shared_ptr<ShaderProgram> mesh_3d_;
+    std::shared_ptr<ShaderProgram> text_;
 
-    StaticShaders() {}
+    StaticShaders()
+    {
+      mesh_2d_ = std::make_shared<ShaderProgram>(std::vector<ShaderProgram::Shader>{
+        { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
+        { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs") }
+      });
+      mesh_3d_ = std::make_shared<ShaderProgram>(std::vector<ShaderProgram::Shader>{
+        { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs") },
+        { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs") }
+      });
+      text_ = std::make_shared<ShaderProgram>(std::vector<ShaderProgram::Shader>{
+        { GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs") },
+        { GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs") }
+      });
+    }
   };
 
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <glm/glm.hpp>
 #include <opengl/vertex_array_object.hpp>
 
@@ -19,10 +20,10 @@ namespace opengl
     StaticVAOs(const StaticVAOs&&) = delete;
     StaticVAOs& operator=(const StaticVAOs&&) = delete;
 
-    const VertexArrayObject& quad() const { return quad_; }
+    std::shared_ptr<VertexArrayObject> quad() const { return quad_; }
 
   private:
-    VertexArrayObject quad_;
+    std::shared_ptr<VertexArrayObject> quad_;
 
     StaticVAOs()
     {
@@ -43,7 +44,8 @@ namespace opengl
         opengl::VertexAttribute{ 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), 0 },
         opengl::VertexAttribute{ 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void*)offsetof(glm::vec4, z) }
       };
-      quad_.create_vertex_buffer<glm::vec4>(vertices, attributes, 0);
+      quad_ = std::make_shared<VertexArrayObject>();
+      quad_->create_vertex_buffer<glm::vec4>(vertices, attributes, 0);
     }
   };
 

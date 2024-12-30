@@ -27,7 +27,7 @@ public:
 class OpenglDefaultMaterial : public OpenglMaterial
 {
 private:
-  opengl::ShaderProgram& shader_ = opengl::StaticShaders::instance().mesh_3d();
+  std::shared_ptr<opengl::ShaderProgram> shader_ = opengl::StaticShaders::instance().mesh_3d();
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
   float shininess_ = 1.0f;
 
@@ -79,12 +79,12 @@ public:
     glm::mat4 model = mesh->get_model();
     glm::mat4 mvp = context->pv * model;
 
-    shader_.use_program();
-    shader_.set_mat4("mvp", mvp);
-    shader_.set_mat4("model", model);
-    shader_.set_vec3("camera_pos", context->realm->camera.position);
-    shader_.set_vec3("mesh_color", color_);
-    shader_.set_float("mesh_shininess", shininess_);
+    shader_->use_program();
+    shader_->set_mat4("mvp", mvp);
+    shader_->set_mat4("model", model);
+    shader_->set_vec3("camera_pos", context->realm->camera.position);
+    shader_->set_vec3("mesh_color", color_);
+    shader_->set_float("mesh_shininess", shininess_);
 
     use_lights(context->realm->lights);
 
@@ -106,40 +106,40 @@ private:
       switch (light.type)
       {
       case (interface::Light::SUN):
-        shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].direction", light.direction);
-        shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].ambient", light.color.ambient);
-        shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].diffuse", light.color.diffuse);
-        shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].specular", light.color.specular);
+        shader_->set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].direction", light.direction);
+        shader_->set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].ambient", light.color.ambient);
+        shader_->set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].diffuse", light.color.diffuse);
+        shader_->set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].specular", light.color.specular);
         sun_lights_size++;
         break;
       case (interface::Light::POINT):
-        shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].position", light.position);
-        shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].ambient", light.color.ambient);
-        shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].diffuse", light.color.diffuse);
-        shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].specular", light.color.specular);
-        shader_.set_float("point_lights[" + std::to_string(point_lights_size) + "].constant", light.strength.constant);
-        shader_.set_float("point_lights[" + std::to_string(point_lights_size) + "].linear", light.strength.linear);
-        shader_.set_float("point_lights[" + std::to_string(point_lights_size) + "].quadratic", light.strength.quadratic);
+        shader_->set_vec3("point_lights[" + std::to_string(point_lights_size) + "].position", light.position);
+        shader_->set_vec3("point_lights[" + std::to_string(point_lights_size) + "].ambient", light.color.ambient);
+        shader_->set_vec3("point_lights[" + std::to_string(point_lights_size) + "].diffuse", light.color.diffuse);
+        shader_->set_vec3("point_lights[" + std::to_string(point_lights_size) + "].specular", light.color.specular);
+        shader_->set_float("point_lights[" + std::to_string(point_lights_size) + "].constant", light.strength.constant);
+        shader_->set_float("point_lights[" + std::to_string(point_lights_size) + "].linear", light.strength.linear);
+        shader_->set_float("point_lights[" + std::to_string(point_lights_size) + "].quadratic", light.strength.quadratic);
         point_lights_size++;
         break;
       case (interface::Light::SPOT):
-        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].direction", light.direction);
-        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].position", light.position);
-        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].ambient", light.color.ambient);
-        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].diffuse", light.color.diffuse);
-        shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].specular", light.color.specular);
-        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].constant", light.strength.constant);
-        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].linear", light.strength.linear);
-        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].quadratic", light.strength.quadratic);
-        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].cutOff", light.cut_off);
-        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].outerCutOff", light.outer_cut_off);
+        shader_->set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].direction", light.direction);
+        shader_->set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].position", light.position);
+        shader_->set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].ambient", light.color.ambient);
+        shader_->set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].diffuse", light.color.diffuse);
+        shader_->set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].specular", light.color.specular);
+        shader_->set_float("spot_lights[" + std::to_string(spot_lights_size) + "].constant", light.strength.constant);
+        shader_->set_float("spot_lights[" + std::to_string(spot_lights_size) + "].linear", light.strength.linear);
+        shader_->set_float("spot_lights[" + std::to_string(spot_lights_size) + "].quadratic", light.strength.quadratic);
+        shader_->set_float("spot_lights[" + std::to_string(spot_lights_size) + "].cutOff", light.cut_off);
+        shader_->set_float("spot_lights[" + std::to_string(spot_lights_size) + "].outerCutOff", light.outer_cut_off);
         spot_lights_size++;
         break;
       }
     }
-    shader_.set_int("sun_lights_size", sun_lights_size);
-    shader_.set_int("spot_lights_size", spot_lights_size);
-    shader_.set_int("point_lights_size", point_lights_size);
+    shader_->set_int("sun_lights_size", sun_lights_size);
+    shader_->set_int("spot_lights_size", spot_lights_size);
+    shader_->set_int("point_lights_size", point_lights_size);
   }
 
   void use_texture(
@@ -151,15 +151,15 @@ private:
 
     glActiveTexture(GL_TEXTURE0 + i);
     texture->use();
-    shader_.set_int(name + "_texture", i);
-    shader_.set_bool("use_" + name + "_texture", true);
+    shader_->set_int(name + "_texture", i);
+    shader_->set_bool("use_" + name + "_texture", true);
   }
 };
 
 class OpenglDefault2DMaterial : public OpenglMaterial
 {
 private:
-  opengl::ShaderProgram& shader_ = opengl::StaticShaders::instance().mesh_2d();
+  std::shared_ptr<opengl::ShaderProgram> shader_ = opengl::StaticShaders::instance().mesh_2d();
   glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
   std::shared_ptr<OpenglTexture> texture_;
 
@@ -185,16 +185,16 @@ public:
     glm::mat4 model = mesh->get_model();
     glm::mat4 mvp = context->pv * model;
 
-    shader_.use_program();
-    shader_.set_mat4("mvp", mvp);
-    shader_.set_vec3("mesh_color", color_);
+    shader_->use_program();
+    shader_->set_mat4("mvp", mvp);
+    shader_->set_vec3("mesh_color", color_);
 
     if (texture_)
     {
       glActiveTexture(GL_TEXTURE0);
       texture_->use();
-      shader_.set_int("mesh_texture", 0);
-      shader_.set_bool("use_texture", true);
+      shader_->set_int("mesh_texture", 0);
+      shader_->set_bool("use_texture", true);
     }
   }
 };

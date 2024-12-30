@@ -36,11 +36,8 @@ namespace opengl
   struct Text final
   {
     Texture texture;
+    glm::ivec2 size{ 0 };
     glm::vec2 offset{ 0 };
-
-    Text() = default;
-    Text(const Text&) noexcept = delete;
-    Text& operator=(const Text&) = delete;
   };
 
   class Character final
@@ -213,10 +210,12 @@ namespace opengl
       return -1;
     }
 
-    Text render_text(
+    void render_text(
+      Text& target,
       const std::string& value,
       const std::vector<std::string>& font,
-      TextOptions options) const
+      TextOptions options
+    ) const
     {
       std::unordered_map<uint32_t, Character> chars;
 
@@ -253,15 +252,15 @@ namespace opengl
       width -= min_offset.x;
       height -= min_offset.y;
 
-      Text text;
-      text.texture.load_texture(0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-      text.texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      text.texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      text.texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      text.texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      target.size = glm::ivec2(width, height);
+      target.texture.load_texture(0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+      target.texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      target.texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      target.texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      target.texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
       Framebuffer framebuffer;
-      framebuffer.attach_texture(0, text.texture);
+      framebuffer.attach_texture(0, target.texture);
       framebuffer.set_draw_buffers({ 0 });
       framebuffer.use();
       glViewport(0, 0, width, height);
@@ -270,13 +269,13 @@ namespace opengl
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
       glActiveTexture(GL_TEXTURE0);
-      auto& shader = StaticShaders::instance().text();
-      shader.use_program();
-      shader.set_int("text_texture", 0);
-      shader.set_vec3("text_color", glm::vec3(1));
+      auto shader = StaticShaders::instance().text();
+      shader->use_program();
+      shader->set_int("text_texture", 0);
+      shader->set_vec3("text_color", glm::vec3(1));
 
       glm::mat4 projection = glm::ortho(
-        0.0f, static_cast<float>(width),
+        static_cast<float>(width), 0.0f,
         0.0f, static_cast<float>(height));
       glm::vec3 advance(0);
 
@@ -290,9 +289,9 @@ namespace opengl
         glm::vec3 scale(chars[c].size, 1);
         glm::vec3 offset(chars[c].offset - min_offset, 0);
         auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
-        shader.set_mat4("mvp", projection * model);
+        shader->set_mat4("mvp", projection * model);
 
-        StaticVAOs::instance().quad().draw();
+        StaticVAOs::instance().quad()->draw();
 
         if (options.vertical)
           advance.y += chars[c].advance.y;
@@ -301,8 +300,6 @@ namespace opengl
       }
 
       glDisable(GL_BLEND);
-
-      return text;
     }
   };
 

@@ -6,10 +6,7 @@
 
 #include <axgl/common.hpp>
 #include <axgl/interface/component/mesh.hpp>
-#include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/opengl/text.hpp>
-#include <axgl/impl/opengl/texture.hpp>
-#include <axgl/impl/opengl/material.hpp>
 #include <axgl/util/string.hpp>
 
 NAMESPACE_AXGL_IMPL
@@ -18,8 +15,7 @@ class OpenglGuiElement : public interface::GuiElement
 {
 private:
   impl::Component comp_impl_;
-  std::shared_ptr<opengl::Text> content_text_;
-  std::shared_ptr<interface::Material> material_;
+  std::shared_ptr<interface::Mesh> content_text_;
 
 public:
   void on_create() override
@@ -45,15 +41,9 @@ public:
       }
 
       opengl::TextOptions options{ .size = static_cast<uint32_t>(props.font_size) };
-      //content_text_ = text_service->render_text(props.content, font, options);
+      content_text_ = text_service->create_text(props.content, font, options);
 
-      auto texture = std::make_shared<OpenglTexture>();
-      
-
-      auto renderer_service = context->axgl->renderer_service();
-      material_ = renderer_service->create_material("2d");
-      material_->add_texture(axgl::interface::TextureType::DIFFUSE, texture);
-      material_->set_color({ 1.0f, 0.5f, 0.2f });
+      comp_impl_.add_component(content_text_);
     }
   }
 
@@ -92,8 +82,6 @@ public:
   util::Iterable<std::shared_ptr<interface::GuiElement>> get_children() const override
   {
     throw std::runtime_error("Not implemented");
-    // const auto& children = comp_impl_.get_component_vector();
-    // return util::to_iterable(children);
   }
 
   void update() override
@@ -103,19 +91,6 @@ public:
 
   void render() override
   {
-    auto context = get_context();
-    auto viewport = context->renderer->viewport();
-
-    if (content_text_)
-    {
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-      opengl::StaticVAOs::instance().quad().draw();
-
-      glDisable(GL_BLEND);
-    }
-
     comp_impl_.render();
   }
 

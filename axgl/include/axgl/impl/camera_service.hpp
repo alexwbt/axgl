@@ -124,7 +124,7 @@ public:
       return;
 
     if (pointer_->tick > 1 && pointer_->delta.x != 0)
-      camera.yaw -= pointer_->delta.x * view_movement_speed_;
+      camera.yaw += pointer_->delta.x * view_movement_speed_;
 
     if (pointer_->tick > 1 && pointer_->delta.y != 0)
       camera.pitch = std::min(std::max(

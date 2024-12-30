@@ -1,4 +1,4 @@
-#include <axgl/axgl.hpp>
+ï»¿#include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/assimp.hpp>
@@ -56,8 +56,11 @@ public:
     text->props.font = "arial,noto-tc";
     text->props.content = (const char*)
       u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
-      u8"ªLÁn¥Ê¤º«Î©M¦­¨â¦½¤½§ó«_¯ó¦×©ç¦h§ì¦B¡G±o±ß³e¬O¥]¥@¬õ®ö¤L¦P¨v«n¨S¬î¥[¡G°lºÖ¶¯¡Cºq¤å¡B¯u«e²ß¥æ¡F¤ì¤ì°±¤º¡C";
+      u8"è’™æ²™æ–°æ›¸ç« ç¯€è«–ï¼›é™„ã€å„ªåƒ¹ã€‘é›»å½±æ”¾æ˜ ã€‚å­¸æ ¡å•†åº—ï¼šåƒæ‰‹è—ä¼Žç™¾ç§‘å…¨æ›¸ã€Šé•·å±‹é½‹æ¢¶åœ°å¯ºå¤§æ€¥å¹³ç”ºåœ°å€å¤§æ‘ã€‹ã€‚";
     text->props.font_size = 48;
+    text->scale = glm::vec3(10);
+    text->update_model_matrix();
+
     page->add_child(text);
     realm->add_component(page);
   }
