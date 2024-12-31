@@ -42,7 +42,6 @@ public:
     // load model
     auto model = realm_service->create_component<axgl::impl::Component>();
     axgl->model_service()->load_model(model, "backpack.assbin");
-    model->rotation = glm::vec3(0, 3.14159, 0);
     model->scale = glm::vec3(10);
     model->update_model_matrix();
     realm->add_component(model);
