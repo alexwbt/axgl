@@ -1,11 +1,11 @@
-
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/assimp.hpp>
-#include <axgl/impl/bundlefile.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
+#include <axgl/impl/resource_service.hpp>
+#include <axgl/impl/bundlefile_service.hpp>
 
 class Application : public axgl::interface::Service
 {
@@ -23,9 +23,6 @@ public:
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
-    // resources
-    axgl->resource_service()->load_archive("demo_opengl_model_res.bin");
-
     // realm
     auto realm_service = axgl->realm_service();
     auto realm = axgl->realm_service()->create_realm();
@@ -37,6 +34,10 @@ public:
     realm->camera.update();
     auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
+
+    // load bundlefile
+    auto bundlefile_service = axgl->get_service<axgl::impl::BundlefileService>("bundlefile");
+    bundlefile_service->load_bundlefile("demo_opengl_model_res.bin");
 
     // load model
     auto model = realm_service->create_component<axgl::impl::Component>();
@@ -57,11 +58,12 @@ int main()
   axgl::Axgl axgl;
   axgl.use_service<axgl::impl::RealmService>();
   axgl.use_service<axgl::impl::CameraService>();
+  axgl.use_service<axgl::impl::ResourceService>();
+  axgl.use_service<axgl::impl::BundlefileService>();
   axgl.use_service<axgl::impl::GlfwInputService>();
   axgl.use_service<axgl::impl::GlfwWindowService>();
   axgl.use_service<axgl::impl::OpenglRendererService>();
   axgl.use_service<axgl::impl::AssimpModelService>();
-  axgl.use_service<axgl::impl::BundlefileResourceService>();
   axgl.register_service("app", std::make_shared<Application>());
   axgl.run();
 }

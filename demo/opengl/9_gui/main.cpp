@@ -1,10 +1,9 @@
 ﻿#include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
-#include <axgl/impl/assimp.hpp>
-#include <axgl/impl/bundlefile.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
+#include <axgl/impl/resource_service.hpp>
 
 #include <demo_opengl_gui/res.hpp>
 
@@ -66,12 +65,11 @@ int main()
   axgl::Axgl axgl;
   axgl.use_service<axgl::impl::RealmService>();
   axgl.use_service<axgl::impl::CameraService>();
+  axgl.use_service<axgl::impl::ResourceService>();
   axgl.use_service<axgl::impl::GlfwInputService>();
   axgl.use_service<axgl::impl::GlfwWindowService>();
   axgl.use_service<axgl::impl::OpenglRendererService>();
   axgl.use_service<axgl::impl::OpenglGuiService>();
-  axgl.use_service<axgl::impl::AssimpModelService>();
-  axgl.use_service<axgl::impl::BundlefileResourceService>();
   axgl.register_service("app", std::make_shared<Application>());
   axgl.run();
 }
