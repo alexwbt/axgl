@@ -82,9 +82,9 @@ int main(int argc, char** argv)
     "Embed texture data to output binary file.",
     { "embed-texture" });
 
-  args::Flag flip_uv(parser, "flip uv",
-    "Flips all UV coordinates along the y-axis and adjusts material settings and bitangents accordingly.",
-    { "flip-uv" });
+  args::Flag left_handed(parser, "left handed",
+    "Convert data to left-handed coordinate system.",
+    { "left-handed" });
 
   try { parser.ParseCLI(argc, argv); }
   catch (const args::Completion& e) { std::cout << e.what(); }
@@ -99,27 +99,13 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  unsigned int flag =
-    aiProcess_CalcTangentSpace |
-    aiProcess_JoinIdenticalVertices |
-    aiProcess_Triangulate |
-    aiProcess_GenSmoothNormals |
-    aiProcess_PreTransformVertices |
-    aiProcess_ValidateDataStructure |
-    aiProcess_RemoveRedundantMaterials |
-    aiProcess_GenUVCoords |
-    aiProcess_TransformUVCoords |
-    aiProcess_FixInfacingNormals |
-    aiProcess_FindDegenerates |
-    aiProcess_FindInvalidData |
-    aiProcess_OptimizeMeshes |
-    aiProcess_FlipWindingOrder;
+  unsigned int flag = aiProcessPreset_TargetRealtime_MaxQuality;
 
   if (embed_textures)
     flag |= aiProcess_EmbedTextures;
 
-  if (flip_uv)
-    flag |= aiProcess_FlipUVs;
+  if (left_handed)
+    flag |= aiProcess_ConvertToLeftHanded;
 
   return convert(args::get(source), args::get(target), flag);
 }
