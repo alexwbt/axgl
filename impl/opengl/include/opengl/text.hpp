@@ -276,7 +276,7 @@ namespace opengl
 
       glm::mat4 projection = glm::ortho(
         static_cast<float>(width), 0.0f,
-        0.0f, static_cast<float>(height));
+        static_cast<float>(height), 0.0f);
       glm::vec3 advance(0);
 
       for (auto it = value.begin(), end = value.end(); it != end;)
