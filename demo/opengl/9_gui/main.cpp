@@ -41,9 +41,9 @@ public:
       ->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
 
     // grass block
-    //auto block = realm_service->create_component<axgl::impl::Component>();
-    //axgl->model_service()->load_model(block, "block.assbin");
-    //realm->add_component(block);
+    auto block = realm_service->create_component<axgl::impl::Component>();
+    axgl->model_service()->load_model(block, "block.assbin");
+    realm->add_component(block);
 
     // light
     realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),

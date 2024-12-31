@@ -37,7 +37,7 @@ public:
   {
     auto yaw_radians = glm::radians(yaw);
     auto pitch_radians = glm::radians(pitch);
-    auto roll_radians = -glm::radians(roll);
+    auto roll_radians = glm::radians(roll);
 
     auto sin_yaw = glm::sin(yaw_radians);
     auto cos_yaw = glm::cos(yaw_radians);
@@ -70,7 +70,7 @@ private:
   glm::mat4 orthographic_pv(const glm::vec2& viewport) const
   {
     glm::vec2 v = viewport * 0.5f;
-    glm::mat4 projection = glm::ortho(v.x, -v.x, -v.y, v.y, near_clip, far_clip);
+    glm::mat4 projection = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
     return projection * view_matrix();
   }
 };
