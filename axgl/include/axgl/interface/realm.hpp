@@ -197,6 +197,13 @@ public:
     else if (realm_service_)
       realm_service_->clear_context();
   }
+  void copy(const RealmContext* context)
+  {
+    axgl = context->axgl;
+    renderer = context->renderer;
+    realm = context->realm;
+    pv = context->pv;
+  }
 };
 
 NAMESPACE_AXGL_INTERFACE_END

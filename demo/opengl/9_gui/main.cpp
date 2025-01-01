@@ -52,8 +52,6 @@ public:
       u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
       u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。";
     text->props.font_size = 48;
-    text->scale = glm::vec3(10);
-    text->update_model_matrix();
 
     page->add_child(text);
     realm->add_component(page);

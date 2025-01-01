@@ -96,7 +96,7 @@ public:
 #endif
     mesh->replace_vao(opengl::StaticVAOs::instance().quad());
     mesh->set_material(material);
-    mesh->scale = glm::vec3(glm::normalize(glm::vec2(text.size)), 1);
+    mesh->scale = glm::vec3(text.size, 1);
     mesh->update_model_matrix();
 
     return mesh;

@@ -15,38 +15,9 @@ class OpenglGuiElement : public interface::GuiElement
 {
 private:
   impl::Component comp_impl_;
-  std::shared_ptr<interface::Mesh> content_text_;
+  uint32_t content_text_id_ = 0;
 
 public:
-  void on_create() override
-  {
-    if (!props.content.empty())
-    {
-      auto context = get_context();
-      auto text_service = context->axgl->get_service<OpenglTextService>("text");
-
-      auto font = util::split(props.font, ',');
-      for (const auto& f : font)
-      {
-        if (!text_service->has_font(f))
-        {
-          auto resource_service = context->axgl->resource_service();
-          auto resource_key = "font/" + f + ".ttf";
-#ifdef AXGL_DEBUG
-          if (!resource_service->has_resource(resource_key))
-            throw std::runtime_error("Required font not found: " + resource_key);
-#endif
-          text_service->load_font(f, resource_service->get_resource(resource_key));
-        }
-      }
-
-      opengl::TextOptions options{ .size = static_cast<uint32_t>(props.font_size) };
-      content_text_ = text_service->create_text(props.content, font, options);
-
-      comp_impl_.add_component(content_text_);
-    }
-  }
-
   void add_component(std::shared_ptr<interface::Component> component) override
   {
     auto element = std::dynamic_pointer_cast<interface::GuiElement>(component);
@@ -84,6 +55,11 @@ public:
     throw std::runtime_error("Not implemented");
   }
 
+  void on_create() override
+  {
+    update_content_text();
+  }
+
   void update() override
   {
     comp_impl_.update();
@@ -91,12 +67,61 @@ public:
 
   void render() override
   {
+    auto current_context = get_context();
+    auto viewport = glm::vec2(current_context->renderer->viewport());
+
+    interface::RealmContext context(this);
+    context.copy(current_context);
+    context.pv = glm::ortho(viewport.x, 0.0f, 0.0f, viewport.y);
+
     comp_impl_.render();
   }
 
   uint32_t down_tick() override { return 0; }
   bool hovering() override { return false; }
   bool focused() override { return false; }
+
+public:
+  void update_content_text()
+  {
+    if (content_text_id_ > 0)
+    {
+      comp_impl_.remove_component(content_text_id_);
+      content_text_id_ = 0;
+    }
+
+    if (props.content.empty())
+      return;
+
+    auto context = get_context();
+    auto text_service = context->axgl->get_service<OpenglTextService>("text");
+
+    auto font = util::split(props.font, ',');
+    for (const auto& f : font)
+    {
+      if (!text_service->has_font(f))
+      {
+        auto resource_service = context->axgl->resource_service();
+        auto resource_key = "font/" + f + ".ttf";
+#ifdef AXGL_DEBUG
+        if (!resource_service->has_resource(resource_key))
+          throw std::runtime_error("Required font not found: " + resource_key);
+#endif
+        text_service->load_font(f, resource_service->get_resource(resource_key));
+      }
+    }
+
+    opengl::TextOptions options{ .size = static_cast<uint32_t>(props.font_size) };
+    auto text = text_service->create_text(props.content, font, options);
+    content_text_id_ = text->get_id();
+    comp_impl_.add_component(text);
+  }
+};
+
+class OpenglGuiPage : public OpenglGuiElement
+{
+public:
+  
 };
 
 NAMESPACE_AXGL_IMPL_END
