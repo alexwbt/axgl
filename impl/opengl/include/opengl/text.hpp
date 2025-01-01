@@ -272,7 +272,7 @@ namespace opengl
       auto shader = StaticShaders::instance().text();
       shader->use_program();
       shader->set_int("text_texture", 0);
-      shader->set_vec3("text_color", glm::vec3(1));
+      shader->set_vec4("text_color", glm::vec4(1));
 
       glm::mat4 projection = glm::ortho(
         static_cast<float>(width), 0.0f,

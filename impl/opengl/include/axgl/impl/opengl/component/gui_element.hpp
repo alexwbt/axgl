@@ -14,50 +14,23 @@ NAMESPACE_AXGL_IMPL
 class OpenglGuiElement : public interface::GuiElement
 {
 private:
+  std::shared_ptr<interface::RealmService> realm_service_;
+  std::shared_ptr<interface::RendererService> renderer_service_;
+
   impl::Component comp_impl_;
+
   uint32_t content_text_id_ = 0;
-
+  uint32_t background_mesh_id_ = 0;
+  
 public:
-  void add_component(std::shared_ptr<interface::Component> component) override
-  {
-    auto element = std::dynamic_pointer_cast<interface::GuiElement>(component);
-#ifdef AXGL_DEBUG
-    if (!element)
-      throw std::runtime_error(
-        "Invalid child component type. "
-        "Children of GuiElement must also be GuiElement.");
-#endif
-    comp_impl_.add_component(std::move(component));
-  }
-
-  void remove_component(uint32_t id) override
-  {
-    comp_impl_.remove_component(id);
-  }
-
-  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
-  {
-    return comp_impl_.get_components();
-  }
-
-  void add_child(std::shared_ptr<interface::GuiElement> element) override
-  {
-    add_component(std::move(element));
-  }
-
-  void remove_child(uint32_t id) override
-  {
-    remove_component(id);
-  }
-
-  util::Iterable<std::shared_ptr<interface::GuiElement>> get_children() const override
-  {
-    throw std::runtime_error("Not implemented");
-  }
-
   void on_create() override
   {
+    auto context = get_context();
+    realm_service_ = context->axgl->realm_service();
+    renderer_service_ = context->axgl->renderer_service();
+
     update_content_text();
+    update_background_mesh();
   }
 
   void update() override
@@ -111,17 +84,78 @@ public:
       }
     }
 
-    opengl::TextOptions options{ .size = static_cast<uint32_t>(props.font_size) };
-    auto text = text_service->create_text(props.content, font, options);
+    auto text = text_service->create_text(props.content, font,
+      { .size = static_cast<uint32_t>(props.font_size) });
     content_text_id_ = text->get_id();
     comp_impl_.add_component(text);
+  }
+
+  void update_background_mesh()
+  {
+    std::shared_ptr<interface::Mesh> background_mesh;
+
+    if (background_mesh_id_ == 0)
+    {
+      background_mesh = realm_service_->create_component<interface::Mesh>();
+      background_mesh_id_ = background_mesh->get_id();
+      comp_impl_.add_component(background_mesh);
+
+      auto material = renderer_service_->create_material("2d");
+      background_mesh->set_material(material);
+    }
+
+    background_mesh = std::dynamic_pointer_cast<interface::Mesh>(
+      comp_impl_.get_component(background_mesh_id_));
+#ifdef AXGL_DEBUG
+    if (!background_mesh)
+      throw std::runtime_error("Failed to get background mesh of OpenglGuiElement.");
+#endif
+    background_mesh->scale = glm::vec3(props.size, 1);
+    background_mesh->position = glm::vec3(props.origin + props.offset, 0);
+    background_mesh->get_material()->set_color(props.bg_color);
+  }
+
+public:
+  void add_component(std::shared_ptr<interface::Component> component) override
+  {
+    comp_impl_.add_component(std::move(component));
+  }
+
+  void remove_component(uint32_t id) override
+  {
+    comp_impl_.remove_component(id);
+  }
+
+  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
+  {
+    return comp_impl_.get_components();
+  }
+
+  std::shared_ptr<interface::Component> get_component(uint32_t id) const override
+  {
+    return comp_impl_.get_component(id);
+  }
+
+  void add_child(std::shared_ptr<interface::GuiElement> element) override
+  {
+    add_component(std::move(element));
+  }
+
+  void remove_child(uint32_t id) override
+  {
+    remove_component(id);
+  }
+
+  util::Iterable<std::shared_ptr<interface::GuiElement>> get_children() const override
+  {
+    throw std::runtime_error("Not implemented");
   }
 };
 
 class OpenglGuiPage : public OpenglGuiElement
 {
 public:
-  
+
 };
 
 NAMESPACE_AXGL_IMPL_END

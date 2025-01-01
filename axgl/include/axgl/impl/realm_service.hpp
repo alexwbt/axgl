@@ -66,6 +66,14 @@ public:
   {
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
   }
+
+  std::shared_ptr<interface::Component> get_component(uint32_t id) const override
+  {
+    for (const auto& comp : components_)
+      if (comp->get_id() == id)
+        return comp;
+    return nullptr;
+  }
 };
 
 class Realm : public interface::Realm
@@ -124,6 +132,11 @@ public:
   util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
     return comp_impl_.get_components();
+  }
+
+  std::shared_ptr<interface::Component> get_component(uint32_t id) const override
+  {
+    return comp_impl_.get_component(id);
   }
 };
 

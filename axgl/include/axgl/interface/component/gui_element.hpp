@@ -9,38 +9,14 @@ NAMESPACE_AXGL_INTERFACE
 class GuiElement : public Component
 {
 public:
-  struct Color
-  {
-    float r = 1;
-    float g = 1;
-    float b = 1;
-    float a = 1;
-  };
-  struct Space
-  {
-    float top = 0;
-    float down = 0;
-    float left = 0;
-    float right = 0;
-  };
-  struct Vector
-  {
-    float x = 0;
-    float y = 0;
-  };
-  struct Size
-  {
-    float width = 0;
-    float height = 0;
-  };
   enum class TextAlign { BEGIN, CENTER, END };
   enum class TextStyle { NORMAL, BOLD, ITALIC };
   struct Properties
   {
-    Vector origin, offset;
-    Size size, max_size, min_size;
-    Space padding, margin;
-    Color bg_color, fg_color;
+    glm::vec2 origin{ 0 }, offset{ 0 };
+    glm::vec2 size{ 0 }, max_size{ 0 }, min_size{ 0 };
+    glm::vec4 padding{ 0 }, margin{ 0 };
+    glm::vec4 bg_color{ 0 }, fg_color{ 0 };
     bool hidden = false;
     bool block_cursor = false;
     std::string content = "";

@@ -55,7 +55,7 @@ public:
 
     // material
     auto material = renderer_service->create_material("default");
-    material->set_color({ 1.0f, 0.5f, 0.2f });
+    material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
     // cube mesh
     mesh = realm_service->create_component<axgl::interface::Mesh>();

@@ -43,6 +43,11 @@ public:
     return comp_impl_.get_components();
   }
 
+  std::shared_ptr<interface::Component> get_component(uint32_t id) const override
+  {
+    return comp_impl_.get_component(id);
+  }
+
   void update() override
   {
     comp_impl_.update();

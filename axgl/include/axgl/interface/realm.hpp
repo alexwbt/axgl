@@ -69,6 +69,7 @@ public:
   virtual void remove_component(uint32_t id) {}
 
   virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
+  virtual std::shared_ptr<Component> get_component(uint32_t id) const { return nullptr; }
 
 private:
   static uint32_t next_id()

@@ -31,7 +31,7 @@ class Material
 {
 public:
   virtual ~Material() {}
-  virtual void set_color(const glm::vec3& color) = 0;
+  virtual void set_color(const glm::vec4& color) = 0;
   virtual void set_prop(const std::string& key, const std::string& value) = 0;
   virtual void add_texture(TextureType type, std::shared_ptr<Texture> texture) = 0;
 };

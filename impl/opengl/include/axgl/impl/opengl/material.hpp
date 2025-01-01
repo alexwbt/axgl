@@ -28,7 +28,7 @@ class OpenglDefaultMaterial : public OpenglMaterial
 {
 private:
   std::shared_ptr<opengl::ShaderProgram> shader_ = opengl::StaticShaders::instance().mesh_3d();
-  glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
+  glm::vec4 color_{ 1.0f, 1.0f, 1.0f, 1.0f };
   float shininess_ = 1.0f;
 
   std::shared_ptr<OpenglTexture> diffuse_texture_;
@@ -37,7 +37,7 @@ private:
   std::shared_ptr<OpenglTexture> height_texture_;
 
 public:
-  void set_color(const glm::vec3& color) override
+  void set_color(const glm::vec4& color) override
   {
     color_ = color;
   }
@@ -83,7 +83,7 @@ public:
     shader_->set_mat4("mvp", mvp);
     shader_->set_mat4("model", model);
     shader_->set_vec3("camera_pos", context->realm->camera.position);
-    shader_->set_vec3("mesh_color", color_);
+    shader_->set_vec4("mesh_color", color_);
     shader_->set_float("mesh_shininess", shininess_);
 
     use_lights(context->realm->lights);
@@ -160,11 +160,11 @@ class OpenglDefault2DMaterial : public OpenglMaterial
 {
 private:
   std::shared_ptr<opengl::ShaderProgram> shader_ = opengl::StaticShaders::instance().mesh_2d();
-  glm::vec3 color_{ 1.0f, 1.0f, 1.0f };
+  glm::vec4 color_{ 1.0f, 1.0f, 1.0f, 1.0f };
   std::shared_ptr<OpenglTexture> texture_;
 
 public:
-  void set_color(const glm::vec3& color) override
+  void set_color(const glm::vec4& color) override
   {
     color_ = color;
   }
@@ -187,7 +187,7 @@ public:
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);
-    shader_->set_vec3("mesh_color", color_);
+    shader_->set_vec3("mesh_color", glm::vec3(color_));
 
     if (texture_)
     {

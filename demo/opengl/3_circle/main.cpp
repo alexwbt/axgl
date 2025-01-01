@@ -57,7 +57,7 @@ int main()
 
   // material
   auto material = renderer_service->create_material("2d");
-  material->set_color({ 1.0f, 0.5f, 0.2f });
+  material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
   // circle mesh
   auto mesh = realm_service->create_component<axgl::interface::Mesh>();
