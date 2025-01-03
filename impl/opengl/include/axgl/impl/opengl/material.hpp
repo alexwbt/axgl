@@ -187,7 +187,7 @@ public:
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);
-    shader_->set_vec3("mesh_color", glm::vec3(color_));
+    shader_->set_vec4("mesh_color", color_);
 
     if (texture_)
     {
