@@ -49,10 +49,10 @@ int main()
     { -0.5f, 0.5f },
   });
   mesh->set_uv(std::vector<glm::vec2>{
-    { 1.0f, 0.0f },
     { 1.0f, 1.0f },
-    { 0.0f, 1.0f },
+    { 1.0f, 0.0f },
     { 0.0f, 0.0f },
+    { 0.0f, 1.0f },
   });
   mesh->set_indices(std::vector<uint32_t>{ 0, 1, 2, 0, 2, 3 });
   mesh->set_material(material);

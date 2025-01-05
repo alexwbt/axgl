@@ -5,9 +5,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <axgl/common.hpp>
-#include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/opengl/text.hpp>
+#include <axgl/impl/opengl/component/mesh.hpp>
 #include <axgl/util/string.hpp>
+
+#include <opengl/static_vaos.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -92,11 +94,12 @@ public:
 
   void update_background_mesh()
   {
-    std::shared_ptr<interface::Mesh> background_mesh;
+    std::shared_ptr<OpenglMesh> background_mesh;
 
     if (background_mesh_id_ == 0)
     {
-      background_mesh = realm_service_->create_component<interface::Mesh>();
+      background_mesh = realm_service_->create_component_impl<interface::Mesh, OpenglMesh>();
+      background_mesh->replace_vao(opengl::StaticVAOs::instance().quad());
       background_mesh_id_ = background_mesh->get_id();
       comp_impl_.add_component(background_mesh);
 
@@ -104,7 +107,7 @@ public:
       background_mesh->set_material(material);
     }
 
-    background_mesh = std::dynamic_pointer_cast<interface::Mesh>(
+    background_mesh = std::dynamic_pointer_cast<OpenglMesh>(
       comp_impl_.get_component(background_mesh_id_));
 #ifdef AXGL_DEBUG
     if (!background_mesh)

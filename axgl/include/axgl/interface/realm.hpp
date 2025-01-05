@@ -145,6 +145,20 @@ public:
 #endif
   }
 
+  template<typename ComponentType, typename ComponentImplType>
+  std::shared_ptr<ComponentImplType> create_component_impl()
+  {
+    auto comp = create_component<ComponentType>();
+    auto comp_impl = std::dynamic_pointer_cast<ComponentImplType>(comp);
+#ifdef AXGL_DEBUG
+    if (!comp_impl)
+      throw std::runtime_error(
+        std::format("Component implementation '{}' is not supported.",
+          typeid(ComponentType).name()));
+#endif
+    return comp_impl;
+  }
+
 private:
   void use_context(RealmContext* context) const
   {

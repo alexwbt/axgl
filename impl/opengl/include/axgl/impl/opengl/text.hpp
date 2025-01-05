@@ -80,20 +80,10 @@ public:
     *texture_ptr = std::move(text.texture);
     texture->replace_texture(std::move(texture_ptr));
 
-    auto material = std::dynamic_pointer_cast<OpenglMaterial>(
-      renderer_service_->create_material("2d"));
-#ifdef AXGL_DEBUG
-    if (!material)
-      throw std::runtime_error("OpenglMaterial is required to use OpenglTextService.");
-#endif
-    material->add_texture(axgl::interface::TextureType::DIFFUSE, texture);
+    auto material = renderer_service_->create_material("2d");
+    material->add_texture(interface::TextureType::DIFFUSE, texture);
 
-    auto mesh = std::dynamic_pointer_cast<OpenglMesh>(
-      realm_service_->create_component<axgl::interface::Mesh>());
-#ifdef AXGL_DEBUG
-    if (!mesh)
-      throw std::runtime_error("OpenglMesh is required to use OpenglTextService.");
-#endif
+    auto mesh = realm_service_->create_component_impl<interface::Mesh, OpenglMesh>();
     mesh->replace_vao(opengl::StaticVAOs::instance().quad());
     mesh->set_material(material);
     mesh->scale = glm::vec3(text.size, 1);
