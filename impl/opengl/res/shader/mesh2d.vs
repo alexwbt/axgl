@@ -13,5 +13,5 @@ void main()
   gl_Position.x = -gl_Position.x;
 
   vert_uv = uv;
-  vert_uv.y = -vert_uv.y;
+  vert_uv.y = 1 - vert_uv.y;
 }

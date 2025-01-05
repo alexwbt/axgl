@@ -115,6 +115,7 @@ public:
 #endif
     background_mesh->scale = glm::vec3(props.size, 1);
     background_mesh->position = glm::vec3(props.origin + props.offset, 0);
+    background_mesh->update_model_matrix();
     background_mesh->get_material()->set_color(props.bg_color);
   }
 

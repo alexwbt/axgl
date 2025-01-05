@@ -274,10 +274,11 @@ namespace opengl
       shader->set_int("text_texture", 0);
       shader->set_vec4("text_color", glm::vec4(1));
 
+      glm::vec3 advance(0);
       glm::mat4 projection = glm::ortho(
         static_cast<float>(width), 0.0f,
         static_cast<float>(height), 0.0f);
-      glm::vec3 advance(0);
+      auto quad = StaticVAOs::instance().quad();
 
       for (auto it = value.begin(), end = value.end(); it != end;)
       {
@@ -291,7 +292,7 @@ namespace opengl
         auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
         shader->set_mat4("mvp", projection * model);
 
-        StaticVAOs::instance().quad()->draw();
+        quad->draw();
 
         if (options.vertical)
           advance.y += chars[c].advance.y;
