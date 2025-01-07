@@ -9,6 +9,7 @@ target_include_directories(axgl
 target_link_libraries(axgl
   INTERFACE
   glm
+  spdlog
   cpptrace::cpptrace
   Tracy::TracyClient
 )

@@ -5,8 +5,8 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/common.hpp>
-#include <axgl/interface/renderer.hpp>
 #include <axgl/interface/realm.hpp>
+#include <axgl/interface/renderer.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -194,11 +194,14 @@ NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
 
+#ifndef AXGL_DEFINED_CREATE_COMPONENT
+#define AXGL_DEFINED_CREATE_COMPONENT
 template<>
-std::shared_ptr<impl::Component> interface::RealmService::create_component()
+std::shared_ptr<interface::Component> interface::RealmService::create_component()
 {
   return std::make_shared<impl::Component>();
 }
+#endif
 
 template<>
 std::shared_ptr<impl::RealmService> Axgl::use_service()

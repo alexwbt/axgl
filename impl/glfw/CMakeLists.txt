@@ -10,5 +10,4 @@ target_link_libraries(axgl_glfw_impl
   INTERFACE
   axgl
   glfw
-  spdlog
 )

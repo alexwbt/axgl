@@ -40,7 +40,7 @@ public:
     bundlefile_service->load_bundlefile("demo_opengl_model_res.bin");
 
     // load model
-    auto model = realm_service->create_component<axgl::impl::Component>();
+    auto model = realm_service->create_component<axgl::interface::Component>();
     axgl->model_service()->load_model(model, "backpack.assbin");
     model->scale = glm::vec3(10);
     model->update_model_matrix();
