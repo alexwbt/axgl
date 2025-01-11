@@ -14,7 +14,6 @@ endif()
 # External Dependencies
 add_subdirectory(_external/glm)
 add_subdirectory(_external/glfw)
-add_subdirectory(_external/entt)
 add_subdirectory(_external/args)
 add_subdirectory(_external/tracy)
 add_subdirectory(_external/spdlog)
@@ -35,7 +34,6 @@ add_subdirectory(axgl)
 
 # Implementations
 add_subdirectory(impl/glfw)
-add_subdirectory(impl/entt)
 add_subdirectory(impl/opengl)
 add_subdirectory(impl/assimp)
 add_subdirectory(impl/bundlefile)

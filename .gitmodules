@@ -37,6 +37,3 @@
 [submodule "_external/tracy"]
 	path = _external/tracy
 	url = https://github.com/wolfpld/tracy.git
-[submodule "_external/entt"]
-	path = _external/entt
-	url = https://github.com/skypjack/entt.git
