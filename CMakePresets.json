@@ -20,7 +20,14 @@
         "ARGS_BUILD_EXAMPLE": "OFF",
         "ASSIMP_BUILD_TESTS": "OFF",
         "GLFW_BUILD_DOCS": "OFF",
-        "ASSIMP_INSTALL": "OFF"
+        "ASSIMP_INSTALL": "OFF",
+        "BUILD_BULLET2_DEMOS": "OFF",
+        "BUILD_EXTRAS": "OFF",
+        "BUILD_CPU_DEMOS": "OFF",
+        "BUILD_ENET": "OFF",
+        "BUILD_CLSOCKET": "OFF",
+        "BUILD_OPENGL3_DEMOS": "OFF",
+        "BUILD_UNIT_TESTS": "OFF"
       }
     },
     {
@@ -37,7 +44,14 @@
         "ARGS_BUILD_EXAMPLE": "OFF",
         "ASSIMP_BUILD_TESTS": "OFF",
         "GLFW_BUILD_DOCS": "OFF",
-        "ASSIMP_INSTALL": "OFF"
+        "ASSIMP_INSTALL": "OFF",
+        "BUILD_BULLET2_DEMOS": "OFF",
+        "BUILD_EXTRAS": "OFF",
+        "BUILD_CPU_DEMOS": "OFF",
+        "BUILD_ENET": "OFF",
+        "BUILD_CLSOCKET": "OFF",
+        "BUILD_OPENGL3_DEMOS": "OFF",
+        "BUILD_UNIT_TESTS": "OFF"
       }
     }
   ],
