@@ -19,7 +19,7 @@ private:
   std::shared_ptr<interface::RealmService> realm_service_;
   std::shared_ptr<interface::RendererService> renderer_service_;
 
-  impl::Component comp_impl_;
+  impl::Entity entity_impl_;
 
   uint32_t content_text_id_ = 0;
   uint32_t background_mesh_id_ = 0;

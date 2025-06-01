@@ -104,18 +104,6 @@ public:
   virtual void remove_component(std::shared_ptr<Component> component) = 0;
   virtual util::Iterable<std::shared_ptr<interface::Component>> get_components() = 0;
 
-  template<typename ComponentType>
-  util::Iterable<std::shared_ptr<ComponentType>> get_components()
-  {
-#ifdef AXGL_DEBUG
-    throw std::runtime_error(
-      std::format("Component type '{}' is not supported.",
-        typeid(ComponentType).name()));
-#else
-    return nullptr;
-#endif
-  }
-
   //
   // Entity management functions
   //
@@ -269,7 +257,6 @@ class RealmContext final
 public:
   const Axgl* axgl = nullptr;
   Realm* realm = nullptr;
-  glm::mat4 pv{ 1.0f };
 
 private:
   RealmService* realm_service_;

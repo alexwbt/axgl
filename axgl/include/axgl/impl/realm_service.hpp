@@ -119,12 +119,12 @@ public:
     children_.on_remove();
   }
 
-  void add_component(std::shared_ptr<Component> component)
+  void add_component(std::shared_ptr<Component> component) override
   {
     components_.push_back(std::move(component));
   }
 
-  void remove_component(std::shared_ptr<Component> component)
+  void remove_component(std::shared_ptr<Component> component) override
   {
     components_.erase(
       std::remove(components_.begin(), components_.end(), component),
@@ -132,22 +132,22 @@ public:
     );
   }
 
-  util::Iterable<std::shared_ptr<interface::Component>> get_components()
+  util::Iterable<std::shared_ptr<interface::Component>> get_components() override
   {
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
   }
 
-  void add_child(std::shared_ptr<Entity> entity)
+  void add_child(std::shared_ptr<interface::Entity> entity) override
   {
     children_.add_entity(std::move(entity));
   }
 
-  void remove_child(std::shared_ptr<Entity> entity)
+  void remove_child(std::shared_ptr<interface::Entity> entity) override
   {
     children_.remove_entity(std::move(entity));
   }
 
-  util::Iterable<std::shared_ptr<interface::Entity>> get_children()
+  util::Iterable<std::shared_ptr<interface::Entity>> get_children() override
   {
     return children_.get_entities();
   }
