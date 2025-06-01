@@ -22,6 +22,22 @@
 
 NAMESPACE_AXGL
 
+namespace DefaultServices
+{
+  constexpr const char* kWindow = "window";
+  constexpr const char* kRenderer = "renderer";
+  constexpr const char* kResource = "resource";
+  constexpr const char* kRealm = "realm";
+  constexpr const char* kInput = "input";
+  constexpr const char* kModel = "model";
+  constexpr const char* kGui = "gui";
+};
+
+#define DECLARE_SERVICE_GETTER(service_name, service_getter_name) \
+  std::shared_ptr<interface::service_name##Service> service_getter_name##_service() const { \
+    return get_service<interface::service_name##Service>(DefaultServices::k##service_name); \
+  }
+
 class Axgl final : public ServiceManager
 {
 public:
@@ -86,40 +102,13 @@ public:
 #endif
   }
 
-  std::shared_ptr<interface::WindowService> window_service() const
-  {
-    return get_service<interface::WindowService>("window");
-  }
-
-  std::shared_ptr<interface::RendererService> renderer_service() const
-  {
-    return get_service<interface::RendererService>("renderer");
-  }
-
-  std::shared_ptr<interface::ResourceService> resource_service() const
-  {
-    return get_service<interface::ResourceService>("resource");
-  }
-
-  std::shared_ptr<interface::RealmService> realm_service() const
-  {
-    return get_service<interface::RealmService>("realm");
-  }
-
-  std::shared_ptr<interface::InputService> input_service() const
-  {
-    return get_service<interface::InputService>("input");
-  }
-
-  std::shared_ptr<interface::ModelService> model_service() const
-  {
-    return get_service<interface::ModelService>("model");
-  }
-
-  std::shared_ptr<interface::GuiService> gui_service() const
-  {
-    return get_service<interface::GuiService>("gui");
-  }
+  DECLARE_SERVICE_GETTER(Window, window)
+  DECLARE_SERVICE_GETTER(Renderer, renderer)
+  DECLARE_SERVICE_GETTER(Resource, resource)
+  DECLARE_SERVICE_GETTER(Realm, realm)
+  DECLARE_SERVICE_GETTER(Input, input)
+  DECLARE_SERVICE_GETTER(Model, model)
+  DECLARE_SERVICE_GETTER(Gui, gui)
 };
 
 NAMESPACE_AXGL_END
