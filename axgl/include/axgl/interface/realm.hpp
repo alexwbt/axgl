@@ -37,14 +37,16 @@ protected:
   Entity* parent_ = nullptr;
 
 public:
-  uint32_t tick = 0;
-  bool should_remove = false;
-
   virtual ~Component() {}
-  virtual void update() {}
-  virtual void render() {}
-  virtual void on_create() {}
-  virtual void on_remove() {}
+  virtual void update() = 0;
+  virtual void render() = 0;
+  virtual void on_create() = 0;
+  virtual void on_remove() = 0;
+
+  const Entity* get_parent() const
+  {
+    return parent_;
+  }
 
 protected:
   const RealmContext* get_context() const
@@ -69,12 +71,15 @@ public:
   glm::vec3 rotation{ 0.0f };
   glm::vec3 position{ 0.0f };
 
+  uint32_t tick = 0;
+  bool should_remove = false;
+
 public:
   virtual ~Entity() {}
-  virtual void update() {}
-  virtual void render() {}
-  virtual void on_create() {}
-  virtual void on_remove() {}
+  virtual void update() = 0;
+  virtual void render() = 0;
+  virtual void on_create() = 0;
+  virtual void on_remove() = 0;
 
   void update_model_matrix()
   {
@@ -221,9 +226,30 @@ public:
   // Entity factory function
   //
 
-  virtual std::shared_ptr<Entity> create_entity() const
+  template<typename EntityType>
+  std::shared_ptr<EntityType> create_entity()
   {
-    return std::make_shared<Entity>();
+#ifdef AXGL_DEBUG
+    throw std::runtime_error(
+      std::format("Entity type '{}' is not supported.",
+        typeid(EntityType).name()));
+#else
+    return nullptr;
+#endif
+  }
+
+  template<typename EntityType, typename EntityImplType>
+  std::shared_ptr<EntityImplType> create_entity_impl()
+  {
+    auto entity = create_entity<EntityType>();
+    auto entity_impl = std::dynamic_pointer_cast<EntityImplType>(entity);
+#ifdef AXGL_DEBUG
+    if (!entity_impl)
+      throw std::runtime_error(
+        std::format("Entity implementation '{}' is not supported.",
+          typeid(EntityType).name()));
+#endif
+    return entity_impl;
   }
 
   //

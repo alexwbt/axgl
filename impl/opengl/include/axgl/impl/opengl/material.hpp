@@ -64,19 +64,19 @@ public:
     using enum interface::TextureType;
     switch (type)
     {
-    case DIFFUSE: diffuse_texture_ = std::move(texture_); break;
-    case SPECULAR: specular_texture_ = std::move(texture_); break;
-    case NORMAL: normal_texture_ = std::move(texture_); break;
-    case HEIGHT: height_texture_ = std::move(texture_); break;
+    case kDiffuse: diffuse_texture_ = std::move(texture_); break;
+    case kSpecular: specular_texture_ = std::move(texture_); break;
+    case kNormal: normal_texture_ = std::move(texture_); break;
+    case kHeight: height_texture_ = std::move(texture_); break;
 #ifdef AXGL_DEBUG
-    case UNKNOWN: SPDLOG_WARN("Adding texture with UNKNOWN type."); break;
+    case kUnkown: SPDLOG_WARN("Adding texture with UNKNOWN type."); break;
 #endif
     }
   }
 
   void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
   {
-    glm::mat4 model = mesh->get_model();
+    glm::mat4 model = mesh->get_parent()->get_model();
     glm::mat4 mvp = context->pv * model;
 
     shader_->use_program();
@@ -86,7 +86,7 @@ public:
     shader_->set_vec4("mesh_color", color_);
     shader_->set_float("mesh_shininess", shininess_);
 
-    use_lights(context->realm->lights);
+    //use_lights(context->realm->lights);
 
     use_texture(0, "diffuse", diffuse_texture_);
     use_texture(1, "specular", specular_texture_);
@@ -182,7 +182,7 @@ public:
 
   void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
   {
-    glm::mat4 model = mesh->get_model();
+    glm::mat4 model = mesh->get_parent()->get_model();
     glm::mat4 mvp = context->pv * model;
 
     shader_->use_program();

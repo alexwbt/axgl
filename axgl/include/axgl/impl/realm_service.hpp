@@ -6,87 +6,164 @@
 #include <axgl/axgl.hpp>
 #include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
-#include <axgl/interface/renderer.hpp>
 
 NAMESPACE_AXGL_IMPL
 
-class Component : public interface::Component
+class EntityContainer
+{
+private:
+  std::vector<std::shared_ptr<interface::Entity>> entities_;
+
+public:
+  void update()
+  {
+    for (const auto& entity : entities_)
+    {
+      if (entity->tick == 0)
+        entity->on_create();
+
+      entity->update();
+      ++entity->tick;
+    }
+
+    entities_.erase(
+      std::remove_if(entities_.begin(), entities_.end(),
+        [](const auto& entity)
+        {
+          if (entity->should_remove)
+            entity->on_remove();
+          return entity->should_remove;
+        }),
+      entities_.end()
+    );
+  }
+
+  void render()
+  {
+    for (const auto& entity : entities_)
+      entity->render();
+  }
+
+  void on_create()
+  {
+    for (const auto& entity : entities_)
+      entity->on_create();
+  }
+
+  void on_remove()
+  {
+    for (const auto& entity : entities_)
+      entity->on_remove();
+  }
+
+  void add_entity(std::shared_ptr<interface::Entity> entity)
+  {
+    entities_.push_back(std::move(entity));
+  }
+
+  void remove_entity(std::shared_ptr<interface::Entity> entity)
+  {
+    for (auto& e : entities_)
+    {
+      if (e == entity)
+      {
+        e->should_remove = true;
+        break;
+      }
+    }
+  }
+  
+  util::Iterable<std::shared_ptr<interface::Entity>> get_entities()
+  {
+    return util::to_iterable_t<std::shared_ptr<interface::Entity>>(entities_);
+  }
+};
+
+class Entity : public interface::Entity
 {
 private:
   std::vector<std::shared_ptr<interface::Component>> components_;
+
+  EntityContainer children_;
 
 public:
   void update() override
   {
     for (const auto& comp : components_)
-    {
-      if (comp->tick == 0)
-        comp->on_create();
-
       comp->update();
-      ++comp->tick;
-    }
 
-    components_.erase(
-      std::remove_if(components_.begin(), components_.end(),
-        [](const auto& c)
-        {
-          if (c->should_remove)
-            c->on_remove();
-          return c->should_remove;
-        }),
-      components_.end()
-    );
+    children_.update();
   }
 
   void render() override
   {
     for (const auto& comp : components_)
       comp->render();
+
+    children_.render();
   }
 
-  void add_component(std::shared_ptr<interface::Component> component) override
+  void on_create() override
+  {
+    for (const auto& comp : components_)
+      comp->on_create();
+
+    children_.on_create();
+  }
+
+  void on_remove() override
+  {
+    for (const auto& comp : components_)
+      comp->on_remove();
+
+    children_.on_remove();
+  }
+
+  void add_component(std::shared_ptr<Component> component)
   {
     components_.push_back(std::move(component));
   }
 
-  void remove_component(uint32_t id) override
+  void remove_component(std::shared_ptr<Component> component)
   {
-    for (const auto& comp : components_)
-    {
-      if (comp->get_id() == id)
-      {
-        comp->should_remove = true;
-        break;
-      }
-    }
+    components_.erase(
+      std::remove(components_.begin(), components_.end(), component),
+      components_.end()
+    );
   }
 
-  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
+  util::Iterable<std::shared_ptr<interface::Component>> get_components()
   {
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
   }
 
-  std::shared_ptr<interface::Component> get_component(uint32_t id) const override
+  void add_child(std::shared_ptr<Entity> entity)
   {
-    for (const auto& comp : components_)
-      if (comp->get_id() == id)
-        return comp;
-    return nullptr;
+    children_.add_entity(std::move(entity));
+  }
+
+  void remove_child(std::shared_ptr<Entity> entity)
+  {
+    children_.remove_entity(std::move(entity));
+  }
+
+  util::Iterable<std::shared_ptr<interface::Entity>> get_children()
+  {
+    return children_.get_entities();
   }
 };
 
 class Realm : public interface::Realm
 {
 private:
-  impl::Component comp_impl_;
-  std::shared_ptr<interface::Renderer> renderer_;
+  EntityContainer entities_;
 
 public:
   void update() override
   {
     ZoneScopedN("Realm Update");
-    comp_impl_.update();
+    
+    entities_.update();
   }
 
   void render() override
@@ -97,34 +174,13 @@ public:
 
     renderer_->before_render();
 
-    comp_impl_.render();
+    entities_.render();
 
     renderer_->after_render();
   }
 
-  void set_renderer(std::shared_ptr<interface::Renderer> renderer) override
+  util::Iterable<std::shared_ptr<interface::Entity>> get_entities()
   {
-    renderer_ = std::move(renderer);
-  }
-
-  void add_component(std::shared_ptr<interface::Component> component) override
-  {
-    comp_impl_.add_component(std::move(component));
-  }
-
-  void remove_component(uint32_t id) override
-  {
-    comp_impl_.remove_component(id);
-  }
-
-  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
-  {
-    return comp_impl_.get_components();
-  }
-
-  std::shared_ptr<interface::Component> get_component(uint32_t id) const override
-  {
-    return comp_impl_.get_component(id);
   }
 };
 
@@ -184,12 +240,12 @@ NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
 
-#ifndef AXGL_DEFINED_CREATE_COMPONENT
-#define AXGL_DEFINED_CREATE_COMPONENT
+#ifndef AXGL_DEFINED_CREATE_ENTITY
+#define AXGL_DEFINED_CREATE_ENTITY
 template<>
-std::shared_ptr<interface::Component> interface::RealmService::create_component()
+std::shared_ptr<interface::Entity> interface::RealmService::create_entity()
 {
-  return std::make_shared<impl::Component>();
+  return std::make_shared<impl::Entity>();
 }
 #endif
 

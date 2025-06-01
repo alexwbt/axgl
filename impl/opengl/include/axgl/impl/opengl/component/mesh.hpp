@@ -16,8 +16,6 @@ NAMESPACE_AXGL_IMPL
 class OpenglMesh : public interface::Mesh
 {
 private:
-  impl::Component comp_impl_;
-
   int attribute_offset_ = 0;
   std::shared_ptr<OpenglMaterial> material_;
   std::shared_ptr<opengl::VertexArrayObject> vertex_array_;
@@ -28,30 +26,7 @@ public:
     vertex_array_ = std::make_shared<opengl::VertexArrayObject>();
   }
 
-  void add_component(std::shared_ptr<interface::Component> component) override
-  {
-    comp_impl_.add_component(std::move(component));
-  }
-
-  void remove_component(uint32_t id) override
-  {
-    comp_impl_.remove_component(id);
-  }
-
-  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
-  {
-    return comp_impl_.get_components();
-  }
-
-  std::shared_ptr<interface::Component> get_component(uint32_t id) const override
-  {
-    return comp_impl_.get_component(id);
-  }
-
-  void update() override
-  {
-    comp_impl_.update();
-  }
+  void update() override {}
 
   void render() override
   {
@@ -61,8 +36,6 @@ public:
       material_->use(context, this);
     }
     vertex_array_->draw();
-
-    comp_impl_.render();
   }
 
   void set_vertices(const std::span<const glm::vec3>& vertices) override

@@ -81,13 +81,13 @@ public:
     texture->replace_texture(std::move(texture_ptr));
 
     auto material = renderer_service_->create_material("2d");
-    material->add_texture(interface::TextureType::DIFFUSE, texture);
+    material->add_texture(interface::TextureType::kDiffuse, texture);
 
     auto mesh = realm_service_->create_component_impl<interface::Mesh, OpenglMesh>();
     mesh->replace_vao(opengl::StaticVAOs::instance().quad());
     mesh->set_material(material);
-    mesh->scale = glm::vec3(text.size, 1);
-    mesh->update_model_matrix();
+    //mesh->scale = glm::vec3(text.size, 1);
+    //mesh->update_model_matrix();
 
     return mesh;
   }
