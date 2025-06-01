@@ -10,6 +10,9 @@
 
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
+#include <axgl/interface/renderer.hpp>
+#include <axgl/interface/camera.hpp>
+#include <axgl/interface/light.hpp>
 #include <axgl/util/iterable.hpp>
 
 NAMESPACE_AXGL
@@ -139,7 +142,21 @@ class Realm
   friend class RealmService;
 
 public:
+  interface::Camera camera;
+
+protected:
+  std::shared_ptr<interface::Renderer> renderer_;
+
+public:
   virtual ~Realm() {}
+
+  void set_renderer(std::shared_ptr<interface::Renderer> renderer)
+  {
+    renderer_ = std::move(renderer);
+  }
+
+  virtual void update() = 0;
+  virtual void render() = 0;
 
   //
   // Entity management functions
@@ -198,6 +215,15 @@ public:
           typeid(ComponentType).name()));
 #endif
     return comp_impl;
+  }
+
+  //
+  // Entity factory function
+  //
+
+  virtual std::shared_ptr<Entity> create_entity() const
+  {
+    return std::make_shared<Entity>();
   }
 
   //

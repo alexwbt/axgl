@@ -86,12 +86,6 @@ public:
   void update() override
   {
     ZoneScopedN("Realm Update");
-
-    interface::RealmContext context(this);
-    context.axgl = get_context()->axgl;
-    context.renderer = renderer_.get();
-    context.realm = this;
-
     comp_impl_.update();
   }
 
@@ -102,12 +96,6 @@ public:
     if (!renderer_ || !renderer_->ready()) return;
 
     renderer_->before_render();
-
-    interface::RealmContext context(this);
-    context.axgl = get_context()->axgl;
-    context.renderer = renderer_.get();
-    context.realm = this;
-    context.pv = camera.pv(renderer_->viewport());
 
     comp_impl_.render();
 
@@ -153,6 +141,7 @@ public:
 
     interface::RealmContext context(this);
     context.axgl = get_context()->axgl;
+    context.realm = realm_.get();
     realm_->update();
   }
 
@@ -162,6 +151,7 @@ public:
 
     interface::RealmContext context(this);
     context.axgl = get_context()->axgl;
+    context.realm = realm_.get();
     realm_->render();
   }
 
@@ -207,7 +197,7 @@ template<>
 std::shared_ptr<impl::RealmService> Axgl::use_service()
 {
   auto realm_service = std::make_shared<impl::RealmService>();
-  register_service("realm", realm_service);
+  register_service(DefaultServices::kRealm, realm_service);
 
   return realm_service;
 }

@@ -20,11 +20,11 @@ public:
 
 enum class TextureType
 {
-  UNKNOWN,
-  DIFFUSE,
-  SPECULAR,
-  NORMAL,
-  HEIGHT,
+  kUnkown,
+  kDiffuse,
+  kSpecular,
+  kNormal,
+  kHeight,
 };
 
 class Material

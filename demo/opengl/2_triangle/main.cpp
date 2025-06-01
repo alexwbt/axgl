@@ -32,13 +32,18 @@ int main()
   auto material = renderer_service->create_material("2d");
   material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
-  // triangle mesh
-  auto mesh = realm_service->create_component<axgl::interface::Mesh>();
-  mesh->set_vertices(std::vector<glm::vec2>{ {0.8f, -0.5f}, { -0.8f, -0.5f }, { 0.0f, 0.5f } });
-  mesh->set_material(material);
-  mesh->scale = glm::vec3(200.0f);
-  mesh->update_model_matrix();
-  realm->add_component(mesh);
+  // triangle entity
+  auto entity = realm_service->create_entity();
+  {
+    // triangle mesh
+    auto mesh = realm_service->create_component<axgl::interface::Mesh>();
+    mesh->set_vertices(std::vector<glm::vec2>{ {0.8f, -0.5f}, { -0.8f, -0.5f }, { 0.0f, 0.5f } });
+    mesh->set_material(material);
+    entity->add_component(mesh);
+  }
+  entity->scale = glm::vec3(200.0f);
+  entity->update_model_matrix();
+  realm->add_entity(entity);
 
   // start
   axgl.run();
