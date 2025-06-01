@@ -37,6 +37,3 @@
 [submodule "_external/tracy"]
 	path = _external/tracy
 	url = https://github.com/wolfpld/tracy.git
-[submodule "_external/bullet"]
-	path = _external/bullet
-	url = https://github.com/bulletphysics/bullet3.git
