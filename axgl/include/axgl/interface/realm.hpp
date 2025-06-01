@@ -10,9 +10,6 @@
 
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
-#include <axgl/interface/renderer.hpp>
-#include <axgl/interface/camera.hpp>
-#include <axgl/interface/light.hpp>
 #include <axgl/util/iterable.hpp>
 
 NAMESPACE_AXGL
@@ -28,6 +25,39 @@ class RealmContext;
 
 class Component
 {
+  friend class Entity;
+
+private:
+  RealmContext* context_ = nullptr;
+
+protected:
+  Entity* parent_ = nullptr;
+
+public:
+  uint32_t tick = 0;
+  bool should_remove = false;
+
+  virtual ~Component() {}
+  virtual void update() {}
+  virtual void render() {}
+  virtual void on_create() {}
+  virtual void on_remove() {}
+
+protected:
+  const RealmContext* get_context() const
+  {
+#ifdef AXGL_DEBUG
+    if (!context_)
+      throw std::runtime_error("RealmContext is not provided here.");
+#endif
+    return context_;
+  }
+};
+
+class Entity : public Component
+{
+  friend class Realm;
+
 private:
   glm::mat4 model_matrix_{ 1.0f };
 
@@ -36,10 +66,8 @@ public:
   glm::vec3 rotation{ 0.0f };
   glm::vec3 position{ 0.0f };
 
-  uint32_t tick = 0;
-  bool should_remove = false;
-
-  virtual ~Component() {}
+public:
+  virtual ~Entity() {}
   virtual void update() {}
   virtual void render() {}
   virtual void on_create() {}
@@ -60,78 +88,91 @@ public:
       : model_matrix_;
   }
 
-  uint32_t get_id() const
-  {
-    return id_;
-  }
+  //
+  // Component management functions
+  //
 
-  virtual void add_component(std::shared_ptr<Component> component) {}
-  virtual void remove_component(uint32_t id) {}
+  virtual void add_component(std::shared_ptr<Component> component) = 0;
+  virtual void remove_component(std::shared_ptr<Component> component) = 0;
+  virtual util::Iterable<std::shared_ptr<interface::Component>> get_components() = 0;
 
-  virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
-  virtual std::shared_ptr<Component> get_component(uint32_t id) const { return nullptr; }
-
-private:
-  static uint32_t next_id()
-  {
-    static uint32_t next_id_ = 1;
-    return next_id_++;
-  }
-  const RealmContext* context_ = nullptr;
-  const Component* parent_ = nullptr;
-  const uint32_t id_ = next_id();
-protected:
-  const RealmContext* get_context() const
+  template<typename ComponentType>
+  util::Iterable<std::shared_ptr<ComponentType>> get_components()
   {
 #ifdef AXGL_DEBUG
-    if (!context_)
-      throw std::runtime_error("RealmContext is not provided here.");
+    throw std::runtime_error(
+      std::format("Component type '{}' is not supported.",
+        typeid(ComponentType).name()));
+#else
+    return nullptr;
 #endif
-    return context_;
-  }
-  void use_context(const RealmContext* context) const
-  {
-    for (const auto& component : get_components())
-    {
-      component->context_ = context;
-      component->parent_ = this;
-      component->use_context(context);
-    }
-  }
-  void clear_context() const
-  {
-    for (const auto& component : get_components())
-    {
-      component->context_ = nullptr;
-      component->parent_ = nullptr;
-      component->clear_context();
-    }
   }
 
-  friend class Realm;
-  friend class RealmContext;
-  friend class RealmService;
+  //
+  // Entity management functions
+  //
+
+  virtual void add_child(std::shared_ptr<Entity> entity) = 0;
+  virtual void remove_child(std::shared_ptr<Entity> entity) = 0;
+  virtual util::Iterable<std::shared_ptr<interface::Entity>> get_children() = 0;
+
+  //
+  // Context
+  //
+
+private:
+  virtual void use_context(RealmContext* context)
+  {
+    // set context
+    context_ = context;
+    // set context for all components
+    for (const auto& component : get_components())
+      component->context_ = context;
+    // set context for all children
+    for (const auto& child : get_children())
+      child->use_context(context);
+  }
 };
 
-class Realm : public Component
+class Realm
 {
-public:
-  interface::Camera camera;
-  std::vector<interface::Light> lights;
+  friend class RealmService;
 
 public:
   virtual ~Realm() {}
-  virtual void set_renderer(std::shared_ptr<Renderer> renderer) = 0;
 
-  friend class RealmService;
+  //
+  // Entity management functions
+  //
+
+  virtual void add_entity(std::shared_ptr<Entity> entity) = 0;
+  virtual void remove_entity(std::shared_ptr<Entity> entity) = 0;
+  virtual util::Iterable<std::shared_ptr<interface::Entity>> get_entities() = 0;
+
+  //
+  // Context
+  //
+
+private:
+  virtual void use_context(RealmContext* context)
+  {
+    for (const auto& entity : get_entities())
+      entity->use_context(context);
+  }
 };
 
 class RealmService : public Service
 {
+  friend class RealmContext;
+
 public:
   virtual std::shared_ptr<Realm> create_realm() = 0;
   virtual std::shared_ptr<Realm> get_active_realm() const = 0;
   virtual void set_active_realm(std::shared_ptr<Realm> realm) = 0;
+
+  //
+  // Component factory functions
+  //
 
   template<typename ComponentType>
   std::shared_ptr<ComponentType> create_component()
@@ -159,45 +200,34 @@ public:
     return comp_impl;
   }
 
-private:
-  void use_context(RealmContext* context) const
-  {
-    if (auto realm = get_active_realm())
-      realm->context_ = context;
-  }
-  void clear_context() const
-  {
-    if (auto realm = get_active_realm())
-      realm->context_ = nullptr;
-  }
+  //
+  // Context
+  //
 
-  friend class RealmContext;
+private:
+  virtual void use_context(RealmContext* context)
+  {
+    if (auto realm = get_active_realm())
+      realm->use_context(context);
+  }
 };
 
 class RealmContext final
 {
 public:
   const Axgl* axgl = nullptr;
-  const Renderer* renderer = nullptr;
   Realm* realm = nullptr;
   glm::mat4 pv{ 1.0f };
+
 private:
-  Component* provider_ = nullptr;
-  RealmService* realm_service_ = nullptr;
+  RealmService* realm_service_;
+
 public:
-  RealmContext(Component* provider) : provider_(provider)
-  {
-#ifdef AXGL_DEBUG
-    if (!provider)
-      throw std::runtime_error("RealmContext initialized with nullptr provider.");
-#endif
-    provider_->use_context(this);
-  }
   RealmContext(RealmService* realm_service) : realm_service_(realm_service)
   {
 #ifdef AXGL_DEBUG
-    if (!realm_service)
-      throw std::runtime_error("RealmContext initialized with nullptr realm_service.");
+    if (!realm)
+      throw std::runtime_error("RealmContext initialized with nullptr realm service.");
 #endif
     realm_service_->use_context(this);
   }
@@ -207,17 +237,8 @@ public:
   RealmContext& operator=(RealmContext&&) = delete;
   ~RealmContext()
   {
-    if (provider_)
-      provider_->clear_context();
-    else if (realm_service_)
-      realm_service_->clear_context();
-  }
-  void copy(const RealmContext* context)
-  {
-    axgl = context->axgl;
-    renderer = context->renderer;
-    realm = context->realm;
-    pv = context->pv;
+    if (realm_service_)
+      realm_service_->use_context(nullptr);
   }
 };
 
