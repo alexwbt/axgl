@@ -43,7 +43,7 @@ class Renderer
 
 public:
   interface::Camera camera;
-  // std::vector<interface::Light> lights;
+  std::vector<interface::Light> lights;
 
   virtual ~Renderer() {}
   virtual bool ready() = 0;

@@ -76,7 +76,8 @@ public:
 
   void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
   {
-    const auto& camera = context->realm->get_renderer()->camera;
+    const auto renderer = context->realm->get_renderer();
+    const auto& camera = renderer->camera;
     const auto& pv = camera.projection_view_matrix();
     glm::mat4 model = mesh->get_parent()->get_model();
     glm::mat4 mvp = pv * model;
@@ -88,7 +89,7 @@ public:
     shader_->set_vec4("mesh_color", color_);
     shader_->set_float("mesh_shininess", shininess_);
 
-    //use_lights(context->realm->lights);
+    use_lights(renderer->lights);
 
     use_texture(0, "diffuse", diffuse_texture_);
     use_texture(1, "specular", specular_texture_);
