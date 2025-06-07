@@ -44,7 +44,7 @@ in vec3 vert_normal;
 in vec2 vert_uv;
 
 uniform vec3 camera_pos;
-uniform vec3 mesh_color;
+uniform vec4 mesh_color;
 uniform float mesh_shininess;
 
 uniform sampler2D diffuse_texture;
@@ -69,7 +69,7 @@ out vec4 FragColor;
 
 vec3 get_mesh_diffuse()
 {
-  return use_diffuse_texture ? texture(diffuse_texture, vert_uv).rgb : mesh_color;
+  return use_diffuse_texture ? texture(diffuse_texture, vert_uv).rgb : mesh_color.rgb;
 }
 
 vec3 get_mesh_specular()
@@ -158,5 +158,5 @@ void main()
   // point lights
   for (int i = 0; i < point_lights_size; ++i) result += calc_point_light(point_lights[i], view_dir);
 
-  FragColor = vec4(result, 1.0);
+  FragColor = vec4(result, mesh_color.a);
 }
