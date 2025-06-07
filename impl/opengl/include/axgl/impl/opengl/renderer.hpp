@@ -39,6 +39,13 @@ public:
     ZoneScopedN("Renderer Before Render");
     if (!window_) return;
 
+    auto size = window_->get_size();
+    if (size.x != camera.viewport.x || size.y != camera.viewport.y)
+    {
+      camera.viewport = size;
+      camera.update_projection_view_matrix();
+    }
+
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -47,7 +54,6 @@ public:
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    auto size = window_->get_size();
     glViewport(0, 0, size.x, size.y);
 
     glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
@@ -84,11 +90,6 @@ public:
     if (!initialized_glad_ && !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
     initialized_glad_ = true;
-  }
-
-  glm::ivec2 viewport() const override
-  {
-    return window_->get_size();
   }
 };
 

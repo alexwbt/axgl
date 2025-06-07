@@ -45,6 +45,10 @@ public:
 
   const Entity* get_parent() const
   {
+#ifdef AXGL_DEBUG
+    if (!parent_)
+      throw std::runtime_error("An entity is not assigned to this component.");
+#endif
     return parent_;
   }
 
@@ -103,6 +107,7 @@ public:
   virtual void add_component(std::shared_ptr<Component> component) = 0;
   virtual void remove_component(std::shared_ptr<Component> component) = 0;
   virtual util::Iterable<std::shared_ptr<interface::Component>> get_components() = 0;
+  void set_component_parent(std::shared_ptr<Component> component) { component->parent_ = this; }
 
   //
   // Entity management functions
@@ -134,19 +139,14 @@ class Realm
 {
   friend class RealmService;
 
-public:
-  interface::Camera camera;
-
 protected:
   std::shared_ptr<interface::Renderer> renderer_;
 
 public:
   virtual ~Realm() {}
 
-  void set_renderer(std::shared_ptr<interface::Renderer> renderer)
-  {
-    renderer_ = std::move(renderer);
-  }
+  void set_renderer(std::shared_ptr<interface::Renderer> renderer) { renderer_ = std::move(renderer); }
+  std::shared_ptr<interface::Renderer> get_renderer() const { return renderer_; }
 
   virtual void update() = 0;
   virtual void render() = 0;
@@ -250,7 +250,7 @@ private:
     if (auto realm = get_active_realm())
       realm->use_context(context);
   }
-};
+  };
 
 class RealmContext final
 {
@@ -265,7 +265,7 @@ public:
   RealmContext(RealmService* realm_service) : realm_service_(realm_service)
   {
 #ifdef AXGL_DEBUG
-    if (!realm)
+    if (!realm_service_)
       throw std::runtime_error("RealmContext initialized with nullptr realm service.");
 #endif
     realm_service_->use_context(this);

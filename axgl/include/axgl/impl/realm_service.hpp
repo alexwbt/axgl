@@ -72,7 +72,7 @@ public:
       }
     }
   }
-  
+
   util::Iterable<std::shared_ptr<interface::Entity>> get_entities()
   {
     return util::to_iterable_t<std::shared_ptr<interface::Entity>>(entities_);
@@ -121,6 +121,7 @@ public:
 
   void add_component(std::shared_ptr<Component> component) override
   {
+    set_component_parent(component);
     components_.push_back(std::move(component));
   }
 
@@ -162,7 +163,7 @@ public:
   void update() override
   {
     ZoneScopedN("Realm Update");
-    
+
     entities_.update();
   }
 
@@ -179,8 +180,19 @@ public:
     renderer_->after_render();
   }
 
-  util::Iterable<std::shared_ptr<interface::Entity>> get_entities()
+  void add_entity(std::shared_ptr<interface::Entity> entity) override
   {
+    entities_.add_entity(std::move(entity));
+  }
+
+  void remove_entity(std::shared_ptr<interface::Entity> entity) override
+  {
+    entities_.remove_entity(std::move(entity));
+  }
+
+  util::Iterable<std::shared_ptr<interface::Entity>> get_entities() override
+  {
+    return entities_.get_entities();
   }
 };
 
@@ -248,6 +260,12 @@ std::shared_ptr<interface::Entity> interface::RealmService::create_entity()
   return std::make_shared<impl::Entity>();
 }
 #endif
+
+template<>
+std::shared_ptr<impl::Entity> interface::RealmService::create_entity()
+{
+  return std::make_shared<impl::Entity>();
+}
 
 template<>
 std::shared_ptr<impl::RealmService> Axgl::use_service()

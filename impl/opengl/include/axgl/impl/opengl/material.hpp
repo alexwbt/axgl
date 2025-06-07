@@ -76,13 +76,15 @@ public:
 
   void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
   {
+    const auto& camera = context->realm->get_renderer()->camera;
+    const auto& pv = camera.projection_view_matrix();
     glm::mat4 model = mesh->get_parent()->get_model();
-    glm::mat4 mvp = context->pv * model;
+    glm::mat4 mvp = pv * model;
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);
     shader_->set_mat4("model", model);
-    shader_->set_vec3("camera_pos", context->realm->camera.position);
+    shader_->set_vec3("camera_pos", camera.position);
     shader_->set_vec4("mesh_color", color_);
     shader_->set_float("mesh_shininess", shininess_);
 
@@ -182,8 +184,10 @@ public:
 
   void use(const interface::RealmContext* context, const interface::Mesh* mesh) override
   {
+    const auto& camera = context->realm->get_renderer()->camera;
+    const auto& pv = camera.projection_view_matrix();
     glm::mat4 model = mesh->get_parent()->get_model();
-    glm::mat4 mvp = context->pv * model;
+    glm::mat4 mvp = pv * model;
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);

@@ -38,6 +38,10 @@ public:
     vertex_array_->draw();
   }
 
+  void on_create() override {}
+
+  void on_remove() override {}
+
   void set_vertices(const std::span<const glm::vec3>& vertices) override
   {
     std::array<opengl::VertexAttribute, 1> attributes{
@@ -82,7 +86,7 @@ public:
     if (!material_)
       throw std::runtime_error("The provided material is not a valid opengl material.");
 #endif
-  }
+}
 
   std::shared_ptr<interface::Material> get_material() const override
   {

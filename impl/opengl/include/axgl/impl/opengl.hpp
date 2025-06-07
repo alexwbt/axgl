@@ -28,11 +28,11 @@ NAMESPACE_AXGL
 #error Duplicate definition of component interface::GuiElement
 #endif
 #define AXGL_DEFINED_CREATE_COMPONENT_GUI_ELEMENT
-template<>
-std::shared_ptr<interface::GuiElement> interface::RealmService::create_component()
-{
-  return std::make_shared<impl::OpenglGuiElement>();
-}
+// template<>
+// std::shared_ptr<interface::GuiElement> interface::RealmService::create_component()
+// {
+//   return std::make_shared<impl::OpenglGuiElement>();
+// }
 
 NAMESPACE_AXGL_END
 
@@ -68,9 +68,9 @@ std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 template<>
 std::shared_ptr<impl::OpenglGuiService> Axgl::use_service()
 {
-  auto text_service = std::make_shared<impl::OpenglTextService>();
+  // auto text_service = std::make_shared<impl::OpenglTextService>();
   auto gui_service = std::make_shared<impl::OpenglGuiService>();
-  register_service("text", text_service);
+  // register_service("text", text_service);
   register_service("gui", gui_service);
 
   return gui_service;

@@ -50,21 +50,24 @@ public:
     auto rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
     horizontal_right_ = glm::normalize(glm::cross(front_, glm::vec3(0, -1, 0)));
     up_ = glm::normalize(glm::vec3(rotation * glm::vec4(glm::cross(front_, horizontal_right_), 1)));
+  }
 
+  void update_projection_view_matrix()
+  {
     // view matrix
     glm::mat4 view = glm::lookAt(position, position + front_, up_);
     // projection matrix
     glm::mat4 projection;
     if (orthographic)
     {
-      float f = glm::radians(fov);
-      float r = viewport.x / viewport.y;
-      projection = glm::perspective(f, r, near_clip, far_clip);
+      glm::vec2 v = viewport * 0.5f;
+      projection = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
     }
     else
     {
-      glm::vec2 v = viewport * 0.5f;
-      projection = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
+      float f = glm::radians(fov);
+      float r = viewport.x / viewport.y;
+      projection = glm::perspective(f, r, near_clip, far_clip);
     }
     // projection * view
     projection_view_matrix_ = projection * view;
