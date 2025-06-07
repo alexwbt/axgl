@@ -50,6 +50,8 @@ public:
     auto rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
     horizontal_right_ = glm::normalize(glm::cross(front_, glm::vec3(0, -1, 0)));
     up_ = glm::normalize(glm::vec3(rotation * glm::vec4(glm::cross(front_, horizontal_right_), 1)));
+
+    update_projection_view_matrix();
   }
 
   void update_projection_view_matrix()
@@ -63,7 +65,7 @@ public:
       glm::vec2 v = viewport * 0.5f;
       projection = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
     }
-    else
+    else if (viewport.y > 0)
     {
       float f = glm::radians(fov);
       float r = viewport.x / viewport.y;

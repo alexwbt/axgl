@@ -6,7 +6,7 @@
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
 
-void circle_mesh(std::shared_ptr<axgl::interface::Mesh> mesh, uint32_t vert_count)
+static void circle_mesh(std::shared_ptr<axgl::interface::Mesh> mesh, uint32_t vert_count)
 {
   std::vector<glm::vec2> vertices;
   std::vector<uint32_t> indices;

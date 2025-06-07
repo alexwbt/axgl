@@ -25,9 +25,10 @@ static std::vector<glm::vec3> cube_normals = {
 
 class Application : public axgl::interface::Service
 {
-public:
-  std::shared_ptr<axgl::interface::Mesh> mesh;
+private:
+  std::shared_ptr<axgl::interface::Entity> cube_entity_;
 
+public:
   void initialize() override
   {
     auto axgl = get_context()->axgl;
@@ -36,10 +37,17 @@ public:
     auto window = axgl->window_service()->create_window();
     window->set_title("Hello input!");
 
+    // input
+    axgl->input_service()->set_window(window);
+
     // renderer
     auto renderer_service = axgl->renderer_service();
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
+    renderer->camera.position.z = -2;
+    renderer->camera.update();
+    renderer->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
+      axgl::interface::Light::Color{ glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
 
     // realm
     auto realm_service = axgl->realm_service();
@@ -47,31 +55,30 @@ public:
     realm->set_renderer(renderer);
 
     // camera
-    axgl->input_service()->set_window(window);
-    realm->camera.position.z = -2;
-    realm->camera.update();
     auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
+    camera_service->set_renderer(renderer);
 
-    // material
-    auto material = renderer_service->create_material("default");
-    material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
+    // cube entity
+    cube_entity_ = realm_service->create_entity<axgl::interface::Entity>();
+    {
+      // material
+      auto material = renderer_service->create_material("default");
+      material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
-    // cube mesh
-    mesh = realm_service->create_component<axgl::interface::Mesh>();
-    mesh->set_vertices(cube_vertices);
-    mesh->set_normals(cube_normals);
-    mesh->set_material(material);
-    realm->add_component(mesh);
-
-    // light
-    realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
-      axgl::interface::Light::Color { glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
+      // cube mesh
+      auto mesh = realm_service->create_component<axgl::interface::Mesh>();
+      mesh->set_vertices(cube_vertices);
+      mesh->set_normals(cube_normals);
+      mesh->set_material(material);
+      cube_entity_->add_component(mesh);
+    }
+    realm->add_entity(cube_entity_);
   }
 
   void update() override
   {
-    mesh->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+    cube_entity_->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
   }
 };
 

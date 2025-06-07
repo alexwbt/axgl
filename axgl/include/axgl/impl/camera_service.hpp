@@ -23,7 +23,7 @@ public:
 private:
   std::shared_ptr<CameraMode> camera_mode_;
   std::shared_ptr<interface::InputService> input_service_;
-  std::shared_ptr<interface::RealmService> realm_service_;
+  std::shared_ptr<interface::Renderer> renderer_;
 
 public:
   void set_camera_mode(std::shared_ptr<CameraMode> camera_mode)
@@ -35,19 +35,22 @@ public:
     camera_mode_->bind_inputs(input_service_);
   }
 
+  void set_renderer(std::shared_ptr<interface::Renderer> renderer)
+  {
+    renderer_ = std::move(renderer);
+  }
+
   void initialize() override
   {
     auto axgl = get_context()->axgl;
     input_service_ = axgl->input_service();
-    realm_service_ = axgl->realm_service();
   }
 
   void update() override
   {
-    if (!camera_mode_)
+    if (!camera_mode_ || !renderer_)
       return;
-    auto realm = realm_service_->get_active_realm();
-    camera_mode_->update(realm->camera);
+    camera_mode_->update(renderer_->camera);
   }
 };
 

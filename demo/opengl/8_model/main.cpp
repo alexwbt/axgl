@@ -18,10 +18,17 @@ public:
     auto window = axgl->window_service()->create_window();
     window->set_title("Hello model!");
 
+    // input
+    axgl->input_service()->set_window(window);
+
     // renderer
     auto renderer_service = axgl->renderer_service();
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
+    renderer->camera.position.z = -20;
+    renderer->camera.update();
+    renderer->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
+      axgl::interface::Light::Color{ glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
 
     // realm
     auto realm_service = axgl->realm_service();
@@ -29,26 +36,20 @@ public:
     realm->set_renderer(renderer);
 
     // camera
-    axgl->input_service()->set_window(window);
-    realm->camera.position.z = -20;
-    realm->camera.update();
     auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
+    camera_service->set_renderer(renderer);
 
     // load bundlefile
     auto bundlefile_service = axgl->get_service<axgl::impl::BundlefileService>("bundlefile");
     bundlefile_service->load_bundlefile("demo_opengl_model_res.bin");
 
-    // load model
-    auto model = realm_service->create_component<axgl::interface::Component>();
-    axgl->model_service()->load_model(model, "backpack.assbin");
-    model->scale = glm::vec3(10);
-    model->update_model_matrix();
-    realm->add_component(model);
-
-    // light
-    realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
-      axgl::interface::Light::Color { glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
+    // model entity
+    auto entity = realm_service->create_entity<axgl::interface::Entity>();
+    axgl->model_service()->load_model(entity, "backpack.assbin");
+    entity->scale = glm::vec3(10);
+    entity->update_model_matrix();
+    realm->add_entity(entity);
   }
 };
 

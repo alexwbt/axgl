@@ -35,13 +35,13 @@ public:
     resource_service_ = context->axgl->resource_service();
   }
 
-  ModelResources load_model(std::shared_ptr<interface::Component> root, const std::string& resource_key) override
+  ModelResources load_model(std::shared_ptr<interface::Entity> entity, const std::string& resource_key) override
   {
     ModelLoader loader(
       realm_service_,
       renderer_service_,
       resource_service_,
-      root,
+      entity,
       resource_key,
       "default"
     );

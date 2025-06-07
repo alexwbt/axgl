@@ -22,7 +22,7 @@ public:
 
 enum class TextureType
 {
-  kUnkown,
+  kUnknown,
   kDiffuse,
   kSpecular,
   kNormal,

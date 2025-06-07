@@ -35,9 +35,10 @@ static std::vector<glm::vec2> cube_uv = {
 
 class Application : public axgl::interface::Service
 {
-public:
-  std::shared_ptr<axgl::interface::Mesh> mesh;
+private:
+  std::shared_ptr<axgl::interface::Entity> cube_entity_;
 
+public:
   void initialize() override
   {
     auto axgl = get_context()->axgl;
@@ -50,45 +51,46 @@ public:
     auto renderer_service = axgl->renderer_service();
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
+    renderer->camera.position.z = -2;
+    renderer->camera.update();
+    renderer->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
+      axgl::interface::Light::Color{ glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
 
     // realm
     auto realm_service = axgl->realm_service();
     auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
 
-    // camera
-    realm->camera.position.z = -2;
-    realm->camera.update();
+    // cube entity
+    cube_entity_ = realm_service->create_entity<axgl::interface::Entity>();
+    {
+      // diffuse texture
+      auto diffuse_texture = renderer_service->create_texture();
+      diffuse_texture->load_texture(demo_opengl_textured_cube_res::get("container/diffuse.png"));
+      // specular texture
+      auto specular_texture = renderer_service->create_texture();
+      specular_texture->load_texture(demo_opengl_textured_cube_res::get("container/specular.png"));
 
-    // diffuse texture
-    auto diffuse_texture = renderer_service->create_texture();
-    diffuse_texture->load_texture(demo_opengl_textured_cube_res::get("container/diffuse.png"));
-    // specular texture
-    auto specular_texture = renderer_service->create_texture();
-    specular_texture->load_texture(demo_opengl_textured_cube_res::get("container/specular.png"));
+      // material
+      auto material = renderer_service->create_material("default");
+      material->add_texture(axgl::interface::TextureType::kDiffuse, diffuse_texture);
+      material->add_texture(axgl::interface::TextureType::kSpecular, specular_texture);
 
-    // material
-    auto material = renderer_service->create_material("default");
-    material->add_texture(axgl::interface::TextureType::DIFFUSE, diffuse_texture);
-    material->add_texture(axgl::interface::TextureType::SPECULAR, specular_texture);
-
-    // square mesh
-    mesh = realm_service->create_component<axgl::interface::Mesh>();
-    mesh->set_vertices(cube_vertices);
-    mesh->set_normals(cube_normals);
-    mesh->set_uv(cube_uv);
-    mesh->set_material(material);
-    realm->add_component(mesh);
-
-    // light
-    realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
-      axgl::interface::Light::Color { glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
+      // square mesh
+      auto mesh = realm_service->create_component<axgl::interface::Mesh>();
+      mesh->set_vertices(cube_vertices);
+      mesh->set_normals(cube_normals);
+      mesh->set_uv(cube_uv);
+      mesh->set_material(material);
+      cube_entity_->add_component(mesh);
+    }
+    realm->add_entity(cube_entity_);
   }
 
   void update() override
   {
-    mesh->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
-    mesh->update_model_matrix();
+    cube_entity_->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+    cube_entity_->update_model_matrix();
   }
 };
 

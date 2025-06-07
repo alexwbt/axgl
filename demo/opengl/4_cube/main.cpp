@@ -24,9 +24,10 @@ static std::vector<glm::vec3> cube_normals = {
 
 class Application : public axgl::interface::Service
 {
-public:
-  std::shared_ptr<axgl::interface::Entity> cube;
+private:
+  std::shared_ptr<axgl::interface::Entity> cube_entity_;
 
+public:
   void initialize() override
   {
     auto axgl = get_context()->axgl;
@@ -39,12 +40,8 @@ public:
     auto renderer_service = axgl->renderer_service();
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
-
-    // camera
     renderer->camera.position.z = -2;
     renderer->camera.update();
-
-    // light
     renderer->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
       axgl::interface::Light::Color { glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
 
@@ -54,7 +51,7 @@ public:
     realm->set_renderer(renderer);
 
     // cube entity
-    cube = realm_service->create_entity<axgl::interface::Entity>();
+    cube_entity_ = realm_service->create_entity<axgl::interface::Entity>();
     {
       // material
       auto material = renderer_service->create_material("default");
@@ -65,15 +62,15 @@ public:
       mesh->set_vertices(cube_vertices);
       mesh->set_normals(cube_normals);
       mesh->set_material(material);
-      cube->add_component(mesh);
+      cube_entity_->add_component(mesh);
     }
-    realm->add_entity(cube);
+    realm->add_entity(cube_entity_);
   }
 
   void update() override
   {
-    cube->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
-    cube->update_model_matrix();
+    cube_entity_->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+    cube_entity_->update_model_matrix();
   }
 };
 

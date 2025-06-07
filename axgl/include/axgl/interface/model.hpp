@@ -22,7 +22,7 @@ public:
     std::vector<std::shared_ptr<interface::Material>> materials;
   };
 
-  virtual ModelResources load_model(std::shared_ptr<interface::Component> root, const std::string& resource_key) = 0;
+  virtual ModelResources load_model(std::shared_ptr<interface::Entity> entity, const std::string& resource_key) = 0;
 };
 
 NAMESPACE_AXGL_INTERFACE_END

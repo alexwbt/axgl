@@ -40,7 +40,7 @@ class ModelLoader
     std::shared_ptr<interface::RealmService> realm_service,
     std::shared_ptr<interface::RendererService> renderer_service,
     std::shared_ptr<interface::ResourceService> resource_service,
-    std::shared_ptr<interface::Component> root,
+    std::shared_ptr<interface::Entity> entity,
     const std::string& resource_key,
     const std::string& material_type
   ) :
@@ -73,22 +73,22 @@ class ModelLoader
         resources_.textures.push_back(embedded_textures_[i]);
       }
     }
-    process_node(root, ai_scene->mRootNode, ai_scene);
+    process_node(entity, ai_scene->mRootNode, ai_scene);
   }
 
   void process_node(
-    std::shared_ptr<interface::Component> root,
+    std::shared_ptr<interface::Entity> entity,
     aiNode* ai_node, const aiScene* ai_scene)
   {
     for (int i = 0; i < ai_node->mNumMeshes; ++i)
     {
       aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
-      root->add_component(load_mesh(ai_mesh, ai_scene));
+      entity->add_component(load_mesh(ai_mesh, ai_scene));
     }
 
     // add children node mesh
     for (int i = 0; i < ai_node->mNumChildren; ++i)
-      process_node(root, ai_node->mChildren[i], ai_scene);
+      process_node(entity, ai_node->mChildren[i], ai_scene);
   }
 
   std::shared_ptr<axgl::interface::Mesh> load_mesh(aiMesh* ai_mesh, const aiScene* ai_scene)
@@ -144,7 +144,7 @@ class ModelLoader
       auto ai_texture_type = static_cast<aiTextureType>(i);
       auto texture_type = map_texture_type(ai_texture_type);
 
-      if (texture_type == interface::TextureType::UNKNOWN)
+      if (texture_type == interface::TextureType::kUnknown)
         continue;
 
       load_textures(ai_material, ai_texture_type, material, texture_type);
@@ -198,27 +198,27 @@ class ModelLoader
     using enum interface::TextureType;
     switch (ai_texture_type)
     {
-    case aiTextureType_DIFFUSE: return DIFFUSE;
-    case aiTextureType_SPECULAR: return SPECULAR;
-      // case aiTextureType_AMBIENT: return AMBIENT;
-      // case aiTextureType_EMISSIVE: return EMISSIVE;
-    case aiTextureType_HEIGHT: return HEIGHT;
-    case aiTextureType_NORMALS: return NORMAL;
-      // case aiTextureType_SHININESS: return SHININESS;
-      // case aiTextureType_OPACITY: return OPACITY;
-      // case aiTextureType_DISPLACEMENT: return DISPLACEMENT;
-      // case aiTextureType_LIGHTMAP: return LIGHTMAP;
-      // case aiTextureType_REFLECTION: return REFLECTION;
-      // case aiTextureType_BASE_COLOR: return BASE_COLOR;
-      // case aiTextureType_NORMAL_CAMERA: return NORMAL_CAMERA;
-      // case aiTextureType_EMISSION_COLOR: return EMISSION_COLOR;
-      // case aiTextureType_METALNESS: return METALNESS;
-      // case aiTextureType_DIFFUSE_ROUGHNESS: return DIFFUSE_ROUGHNESS;
-      // case aiTextureType_AMBIENT_OCCLUSION: return AMBIENT_OCCLUSION;
-      // case aiTextureType_SHEEN: return SHEEN;
-      // case aiTextureType_CLEARCOAT: return CLEARCOAT;
-      // case aiTextureType_TRANSMISSION: return TRANSMISSION;
-    default: return UNKNOWN;
+    case aiTextureType_DIFFUSE: return kDiffuse;
+    case aiTextureType_SPECULAR: return kSpecular;
+      // case aiTextureType_AMBIENT: return kAmbient;
+      // case aiTextureType_EMISSIVE: return kEmissive;
+    case aiTextureType_HEIGHT: return kHeight;
+    case aiTextureType_NORMALS: return kNormal;
+      // case aiTextureType_SHININESS: return kShininess;
+      // case aiTextureType_OPACITY: return kOpacity;
+      // case aiTextureType_DISPLACEMENT: return kDisplacement;
+      // case aiTextureType_LIGHTMAP: return kLightmap;
+      // case aiTextureType_REFLECTION: return kReflection;
+      // case aiTextureType_BASE_COLOR: return kBase_color;
+      // case aiTextureType_NORMAL_CAMERA: return kNormal_camera;
+      // case aiTextureType_EMISSION_COLOR: return kEmission_color;
+      // case aiTextureType_METALNESS: return kMetalness;
+      // case aiTextureType_DIFFUSE_ROUGHNESS: return kDiffuse_roughness;
+      // case aiTextureType_AMBIENT_OCCLUSION: return kAmbient_occlusion;
+      // case aiTextureType_SHEEN: return kSheen;
+      // case aiTextureType_CLEARCOAT: return kClearcoat;
+      // case aiTextureType_TRANSMISSION: return kTransmission;
+    default: return kUnknown;
     }
   }
   };
