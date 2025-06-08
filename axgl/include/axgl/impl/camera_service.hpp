@@ -5,6 +5,7 @@
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/camera.hpp>
 #include <axgl/interface/service.hpp>
+#include <axgl/impl/component/camera.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -23,7 +24,9 @@ public:
 private:
   std::shared_ptr<CameraMode> camera_mode_;
   std::shared_ptr<interface::InputService> input_service_;
-  std::shared_ptr<interface::Renderer> renderer_;
+
+  std::shared_ptr<interface::Entity> camera_entity_;
+  std::shared_ptr<impl::component::Camera> camera_comp_;
 
 public:
   void set_camera_mode(std::shared_ptr<CameraMode> camera_mode)
@@ -35,9 +38,10 @@ public:
     camera_mode_->bind_inputs(input_service_);
   }
 
-  void set_renderer(std::shared_ptr<interface::Renderer> renderer)
+  void set_camera(std::shared_ptr<interface::Entity> camera_entity)
   {
-    renderer_ = std::move(renderer);
+    camera_entity_ = std::move(camera_entity);
+    camera_comp_ = camera_entity_->get_component_t<impl::component::Camera>();
   }
 
   void initialize() override
@@ -48,9 +52,10 @@ public:
 
   void update() override
   {
-    if (!camera_mode_ || !renderer_)
+    if (!camera_mode_ || !camera_entity_)
       return;
-    camera_mode_->update(renderer_->camera);
+    camera_mode_->update(camera_comp_->camera);
+    //camera_entity_->position = camera_comp_->camera.position;
   }
 };
 

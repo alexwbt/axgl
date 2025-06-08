@@ -4,6 +4,8 @@
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/camera_service.hpp>
+#include <axgl/impl/component/camera.hpp>
+#include <axgl/impl/component/light.hpp>
 
 static std::vector<glm::vec3> cube_vertices = {
   glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f),
@@ -44,20 +46,11 @@ public:
     auto renderer_service = axgl->renderer_service();
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
-    renderer->camera.position.z = -2;
-    renderer->camera.update();
-    renderer->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
-      axgl::interface::Light::Color{ glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
 
     // realm
     auto realm_service = axgl->realm_service();
     auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
-
-    // camera
-    auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
-    camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
-    camera_service->set_renderer(renderer);
 
     // cube entity
     cube_entity_ = realm_service->create_entity<axgl::interface::Entity>();
@@ -67,18 +60,47 @@ public:
       material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
       // cube mesh
-      auto mesh = realm_service->create_component<axgl::interface::Mesh>();
+      auto mesh = realm_service->create_component<axgl::interface::component::Mesh>();
       mesh->set_vertices(cube_vertices);
       mesh->set_normals(cube_normals);
       mesh->set_material(material);
       cube_entity_->add_component(mesh);
     }
     realm->add_entity(cube_entity_);
+
+    // camera entity
+    auto camera_entity = realm_service->create_entity<axgl::interface::Entity>();
+    {
+      auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+      camera_entity->add_component(camera_comp);
+    }
+    camera_entity->position.z = -2;
+    realm->add_entity(camera_entity);
+
+    // light entity
+    auto light_entity = realm_service->create_entity<axgl::interface::Entity>();
+    {
+      auto light_comp = realm_service->create_component<axgl::impl::component::Light>();
+      light_comp->light.color.ambient = glm::vec3(0.3f);
+      light_entity->add_component(light_comp);
+    }
+    light_entity->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
+    realm->add_entity(light_entity);
+
+    // camera input
+    auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
+    camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
+    camera_service->set_camera(camera_entity);
+  }
+
+  void tick() override
+  {
+    cube_entity_->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
   }
 
   void update() override
   {
-    cube_entity_->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+    cube_entity_->update_model_matrix();
   }
 };
 

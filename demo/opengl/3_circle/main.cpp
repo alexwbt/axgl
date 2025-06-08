@@ -5,8 +5,9 @@
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
+#include <axgl/impl/component/camera.hpp>
 
-static void circle_mesh(std::shared_ptr<axgl::interface::Mesh> mesh, uint32_t vert_count)
+static void circle_mesh(std::shared_ptr<axgl::interface::component::Mesh> mesh, size_t vert_count)
 {
   std::vector<glm::vec2> vertices;
   std::vector<uint32_t> indices;
@@ -44,9 +45,6 @@ int main()
   auto renderer_service = axgl.renderer_service();
   auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
-  renderer->camera.orthographic = true;
-  renderer->camera.near_clip = -1;
-  renderer->camera.far_clip = 1;
 
   // realm
   auto realm_service = axgl.realm_service();
@@ -61,10 +59,17 @@ int main()
     material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
     // circle mesh
-    auto mesh = realm_service->create_component<axgl::interface::Mesh>();
-    circle_mesh(mesh, 50);
-    mesh->set_material(material);
-    entity->add_component(mesh);
+    auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
+    circle_mesh(mesh_comp, 50);
+    mesh_comp->set_material(material);
+    entity->add_component(mesh_comp);
+
+    // camera
+    auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+    camera_comp->camera.orthographic = true;
+    camera_comp->camera.near_clip = -1;
+    camera_comp->camera.far_clip = 1;
+    entity->add_component(camera_comp);
   }
   entity->scale = glm::vec3(200.0f);
   entity->update_model_matrix();

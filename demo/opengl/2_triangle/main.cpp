@@ -3,6 +3,7 @@
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
+#include <axgl/impl/component/camera.hpp>
 
 int main()
 {
@@ -19,9 +20,6 @@ int main()
   auto renderer_service = axgl.renderer_service();
   auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
-  renderer->camera.orthographic = true;
-  renderer->camera.near_clip = -1;
-  renderer->camera.far_clip = 1;
 
   // realm
   auto realm_service = axgl.realm_service();
@@ -36,10 +34,17 @@ int main()
     material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
     // triangle mesh
-    auto mesh = realm_service->create_component<axgl::interface::Mesh>();
-    mesh->set_vertices(std::vector<glm::vec2>{ { 0.8f, -0.5f }, { -0.8f, -0.5f }, { 0.0f, 0.5f } });
-    mesh->set_material(material);
-    entity->add_component(mesh);
+    auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
+    mesh_comp->set_vertices(std::vector<glm::vec2>{ { 0.8f, -0.5f }, { -0.8f, -0.5f }, { 0.0f, 0.5f } });
+    mesh_comp->set_material(material);
+    entity->add_component(mesh_comp);
+
+    // camera
+    auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+    camera_comp->camera.orthographic = true;
+    camera_comp->camera.near_clip = -1;
+    camera_comp->camera.far_clip = 1;
+    entity->add_component(camera_comp);
   }
   entity->scale = glm::vec3(200.0f);
   entity->update_model_matrix();

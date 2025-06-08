@@ -35,6 +35,7 @@ public:
   virtual ~Service() {}
   virtual void initialize() {}
   virtual void terminate() {}
+  virtual void tick() {}
   virtual void update() {}
   virtual void render() {}
   virtual bool running() { return true; }

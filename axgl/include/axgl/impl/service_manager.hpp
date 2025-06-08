@@ -98,6 +98,14 @@ public:
       service->terminate();
   }
 
+  void tick(Axgl* axgl)
+  {
+    interface::ServiceContext context(this, axgl);
+    for (const auto& service : services_)
+      if (service->running())
+        service->tick();
+  }
+
   void update(Axgl* axgl)
   {
     interface::ServiceContext context(this, axgl);

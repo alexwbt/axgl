@@ -16,7 +16,6 @@
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/model.hpp>
-#include <axgl/interface/gui.hpp>
 #include <axgl/impl/service_manager.hpp>
 #include <axgl/util/string.hpp>
 
@@ -30,7 +29,6 @@ namespace DefaultServices
   constexpr const char* kRealm = "realm";
   constexpr const char* kInput = "input";
   constexpr const char* kModel = "model";
-  constexpr const char* kGui = "gui";
 };
 
 #define DECLARE_SERVICE_GETTER(service_name, service_getter_name) \
@@ -65,10 +63,16 @@ public:
 
       auto should_update = delta_time >= 1;
 
-      while (delta_time >= 1)
+      if (should_update)
       {
         ZoneScopedN("Update");
         update(this);
+      }
+
+      while (delta_time >= 1)
+      {
+        ZoneScopedN("Tick");
+        tick(this);
         delta_time--;
       }
 
@@ -108,7 +112,6 @@ public:
   DECLARE_SERVICE_GETTER(Realm, realm)
   DECLARE_SERVICE_GETTER(Input, input)
   DECLARE_SERVICE_GETTER(Model, model)
-  DECLARE_SERVICE_GETTER(Gui, gui)
 };
 
 NAMESPACE_AXGL_END

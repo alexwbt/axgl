@@ -5,6 +5,7 @@
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
+#include <axgl/impl/component/camera.hpp>
 
 #include <demo_opengl_texture/res.hpp>
 
@@ -23,9 +24,6 @@ int main()
   auto renderer_service = axgl.renderer_service();
   auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
-  renderer->camera.orthographic = true;
-  renderer->camera.near_clip = -1;
-  renderer->camera.far_clip = 1;
 
   // realm
   auto realm_service = axgl.realm_service();
@@ -44,22 +42,29 @@ int main()
     material->add_texture(axgl::interface::TextureType::kDiffuse, texture);
 
     // square mesh
-    auto mesh = realm_service->create_component<axgl::interface::Mesh>();
-    mesh->set_vertices(std::vector<glm::vec2>{
+    auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
+    mesh_comp->set_vertices(std::vector<glm::vec2>{
       { 0.5f, 0.5f },
       { 0.5f, -0.5f },
       { -0.5f, -0.5f },
       { -0.5f, 0.5f },
     });
-    mesh->set_uv(std::vector<glm::vec2>{
+    mesh_comp->set_uv(std::vector<glm::vec2>{
       { 1.0f, 1.0f },
       { 1.0f, 0.0f },
       { 0.0f, 0.0f },
       { 0.0f, 1.0f },
     });
-    mesh->set_indices(std::vector<uint32_t>{ 0, 1, 2, 0, 2, 3 });
-    mesh->set_material(material);
-    square_entity->add_component(mesh);
+    mesh_comp->set_indices(std::vector<uint32_t>{ 0, 1, 2, 0, 2, 3 });
+    mesh_comp->set_material(material);
+    square_entity->add_component(mesh_comp);
+
+    // camera
+    auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+    camera_comp->camera.orthographic = true;
+    camera_comp->camera.near_clip = -1;
+    camera_comp->camera.far_clip = 1;
+    square_entity->add_component(camera_comp);
   }
   square_entity->scale = glm::vec3(200.0f);
   square_entity->update_model_matrix();

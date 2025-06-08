@@ -40,16 +40,13 @@ public:
 
 class Renderer
 {
-
 public:
-  interface::Camera camera;
-  std::vector<interface::Light> lights;
-
   virtual ~Renderer() {}
   virtual bool ready() = 0;
   virtual void before_render() = 0;
   virtual void after_render() = 0;
   virtual void set_window(std::shared_ptr<Window> window) = 0;
+  virtual glm::ivec2 viewport() const = 0;
 };
 
 class RendererService : public Service

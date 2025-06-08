@@ -15,15 +15,23 @@ private:
   std::vector<std::shared_ptr<interface::Entity>> entities_;
 
 public:
+  void tick()
+  {
+    for (const auto& entity : entities_)
+    {
+      entity->tick();
+      ++entity->ticks;
+    }
+  }
+
   void update()
   {
     for (const auto& entity : entities_)
     {
-      if (entity->tick == 0)
+      if (entity->ticks == 0)
         entity->on_create();
 
       entity->update();
-      ++entity->tick;
     }
 
     entities_.erase(
@@ -87,6 +95,14 @@ private:
   EntityContainer children_;
 
 public:
+  void tick() override
+  {
+    for (const auto& comp : components_)
+      comp->tick();
+
+    children_.tick();
+  }
+
   void update() override
   {
     for (const auto& comp : components_)
@@ -160,6 +176,11 @@ private:
   EntityContainer entities_;
 
 public:
+  void tick() override
+  {
+    entities_.tick();
+  }
+
   void update() override
   {
     ZoneScopedN("Realm Update");
@@ -171,7 +192,10 @@ public:
   {
     ZoneScopedN("Realm Render");
 
-    if (!renderer_ || !renderer_->ready()) return;
+    if (!context_
+      || !context_->camera
+      || !renderer_
+      || !renderer_->ready()) return;
 
     renderer_->before_render();
 
@@ -202,14 +226,28 @@ private:
   std::shared_ptr<Realm> realm_;
   std::vector<std::shared_ptr<Realm>> realms_;
 
+  interface::RealmContext context_;
+
 public:
+  void initialize() override
+  {
+    context_.axgl = get_context()->axgl;
+  }
+
+  void tick() override
+  {
+    if (!realm_) return;
+
+    realm_->tick();
+  }
+
   void update() override
   {
     if (!realm_) return;
 
-    interface::RealmContext context(this);
-    context.axgl = get_context()->axgl;
-    context.realm = realm_.get();
+    context_.realm = realm_.get();
+    use_context(&context_);
+
     realm_->update();
   }
 
@@ -217,10 +255,10 @@ public:
   {
     if (!realm_) return;
 
-    interface::RealmContext context(this);
-    context.axgl = get_context()->axgl;
-    context.realm = realm_.get();
     realm_->render();
+    use_context(nullptr);
+    context_.camera = nullptr;
+    context_.lights.clear();
   }
 
   std::shared_ptr<interface::Realm> create_realm() override

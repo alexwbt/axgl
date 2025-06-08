@@ -7,6 +7,24 @@
 
 #include <demo_opengl_gui/res.hpp>
 
+static std::vector<glm::vec3> cube_vertices = {
+  glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f),
+  glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(00.5f, -0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f, -0.5f,  0.5f),
+  glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
+  glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f, -0.5f,  0.5f),
+  glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f, -0.5f,  0.5f), glm::vec3(00.5f, -0.5f,  0.5f), glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(-0.5f, -0.5f, -0.5f),
+  glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
+};
+
+static std::vector<glm::vec3> cube_normals = {
+  glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f),
+  glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f),
+ -glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),
+  glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f),
+  glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f),
+  glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f),
+};
+
 class Application : public axgl::interface::Service
 {
 public:
@@ -18,10 +36,22 @@ public:
     auto window = axgl->window_service()->create_window();
     window->set_title("Hello gui!");
 
+    // input
+    axgl->input_service()->set_window(window);
+
     // renderer
     auto renderer_service = axgl->renderer_service();
     auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
+    renderer->camera.position.z = -2;
+    renderer->camera.update();
+    renderer->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
+      axgl::interface::Light::Color{ glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
+
+    // camera
+    auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
+    camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
+    camera_service->set_renderer(renderer);
 
     // resources
     auto resource_service = axgl->resource_service();
@@ -32,21 +62,24 @@ public:
     auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
 
-    // camera
-    realm->camera.position.z = -2;
-    realm->camera.update();
-    axgl->input_service()->set_window(window);
-    axgl->get_service<axgl::impl::CameraService>("camera")
-      ->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
+    // cube entity
+    auto cube = realm_service->create_entity<axgl::interface::Entity>();
+    {
+      // material
+      auto material = renderer_service->create_material("default");
+      material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
-    // light
-    realm->lights.emplace_back(glm::vec3(0.2f, -1.0f, 1.2f),
-      axgl::interface::Light::Color{ glm::vec3(0.3f), glm::vec3(1), glm::vec3(1) });
+      // cube mesh
+      auto mesh = realm_service->create_component<axgl::interface::Mesh>();
+      mesh->set_vertices(cube_vertices);
+      mesh->set_normals(cube_normals);
+      mesh->set_material(material);
+      cube->add_component(mesh);
+    }
+    realm->add_entity(cube);
 
-    // gui
-    auto gui_service = axgl->gui_service();
-
-    auto text = gui_service->create_element();
+    // text element
+    auto text = realm_service->create_entity<axgl::interface::GuiElement>();
     text->props.font = "arial,noto-tc";
     text->props.content = (const char*)
       u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
@@ -55,11 +88,12 @@ public:
     text->props.size = glm::vec2(200, 200);
     text->props.bg_color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
 
-    auto page = gui_service->create_page();
+    // root element
+    auto page = realm_service->create_entity<axgl::interface::GuiElement>();
     page->props.size = window->get_size();
     page->props.bg_color = glm::vec4(0.2f, 0.5f, 0.2f, 1.0f);
     page->add_child(text);
-    realm->add_component(page);
+    realm->add_entity(page);
   }
 };
 
@@ -72,7 +106,7 @@ int main()
   axgl.use_service<axgl::impl::GlfwInputService>();
   axgl.use_service<axgl::impl::GlfwWindowService>();
   axgl.use_service<axgl::impl::OpenglRendererService>();
-  axgl.use_service<axgl::impl::OpenglGuiService>();
+  axgl.use_service<axgl::impl::OpenglTextService>();
   axgl.register_service("app", std::make_shared<Application>());
   axgl.run();
 }
