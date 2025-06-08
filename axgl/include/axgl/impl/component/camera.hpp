@@ -12,18 +12,28 @@ namespace component
   public:
     interface::Camera camera;
 
-    void update()
+    void update() override
     {
       if (disabled)
         return;
 
-      auto* parent = get_parent();
-      auto* context = get_context();
+      auto parent = get_parent();
+      auto context = get_context();
       auto renderer = context->realm->get_renderer();
 
-      camera.position = parent->position;
-      camera.viewport = glm::vec2(renderer->viewport());
-      camera.update();
+      const auto& viewport = renderer->viewport();
+      if (viewport.x != camera.viewport.x || viewport.y != camera.viewport.y)
+      {
+        camera.viewport.x = viewport.x;
+        camera.viewport.y = viewport.y;
+        camera.update_projection_view_matrix();
+      }
+
+      if (camera.position != parent->position)
+      {
+        camera.position = parent->position;
+        camera.update_projection_view_matrix();
+      }
 
       context->camera = &camera;
     }

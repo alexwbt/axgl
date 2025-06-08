@@ -48,9 +48,10 @@ namespace entity
     {
       scale = glm::vec3(props.size, 1);
       position = glm::vec3(props.origin + props.offset, 0);
-      update_model_matrix();
 
       entity_impl_.update();
+
+      update_model_matrix();
     }
 
     void render() override
@@ -126,7 +127,7 @@ namespace entity
       entity_impl_.remove_component(std::move(component));
     }
 
-    util::Iterable<std::shared_ptr<interface::Component>> get_components() override
+    util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
     {
       return entity_impl_.get_components();
     }
@@ -141,7 +142,7 @@ namespace entity
       entity_impl_.remove_child(std::move(entity));
     }
 
-    util::Iterable<std::shared_ptr<interface::Entity>> get_children() override
+    util::Iterable<std::shared_ptr<interface::Entity>> get_children() const override
     {
       return entity_impl_.get_children();
     }

@@ -112,7 +112,7 @@ public:
 
   virtual void add_component(std::shared_ptr<Component> component) = 0;
   virtual void remove_component(std::shared_ptr<Component> component) = 0;
-  virtual util::Iterable<std::shared_ptr<interface::Component>> get_components() = 0;
+  virtual util::Iterable<std::shared_ptr<interface::Component>> get_components() const = 0;
   void set_component_parent(std::shared_ptr<Component> component) { component->parent_ = this; }
 
   template<typename ComponentType>
@@ -130,7 +130,7 @@ public:
 
   virtual void add_child(std::shared_ptr<Entity> entity) = 0;
   virtual void remove_child(std::shared_ptr<Entity> entity) = 0;
-  virtual util::Iterable<std::shared_ptr<interface::Entity>> get_children() = 0;
+  virtual util::Iterable<std::shared_ptr<interface::Entity>> get_children() const = 0;
 
   //
   // Context
@@ -174,7 +174,7 @@ public:
 
   virtual void add_entity(std::shared_ptr<Entity> entity) = 0;
   virtual void remove_entity(std::shared_ptr<Entity> entity) = 0;
-  virtual util::Iterable<std::shared_ptr<interface::Entity>> get_entities() = 0;
+  virtual util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const = 0;
 
   //
   // Context

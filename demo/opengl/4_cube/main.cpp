@@ -84,9 +84,13 @@ public:
     realm->add_entity(light_entity);
   }
 
-  void update() override
+  void tick() override
   {
     cube_entity_->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+  }
+
+  void update() override
+  {
     cube_entity_->update_model_matrix();
   }
 };

@@ -12,13 +12,13 @@ namespace component
   public:
     interface::Light light;
 
-    void update()
+    void update() override
     {
       if (disabled)
         return;
 
-      auto* parent = get_parent();
-      auto* context = get_context();
+      auto parent = get_parent();
+      auto context = get_context();
 
       light.position = parent->position;
       light.direction = parent->rotation;

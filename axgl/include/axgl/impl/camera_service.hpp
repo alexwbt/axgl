@@ -55,7 +55,7 @@ public:
     if (!camera_mode_ || !camera_entity_)
       return;
     camera_mode_->update(camera_comp_->camera);
-    //camera_entity_->position = camera_comp_->camera.position;
+    camera_entity_->position = camera_comp_->camera.position;
   }
 };
 

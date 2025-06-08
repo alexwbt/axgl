@@ -131,7 +131,7 @@ public:
     return false;
   }
 
-  void exec(const std::string& command)
+  void exec(const std::string& command) const
   {
     auto args = util::split(command, ' ');
     if (args.empty())

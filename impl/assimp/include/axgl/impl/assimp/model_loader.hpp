@@ -91,9 +91,9 @@ class ModelLoader
       process_node(entity, ai_node->mChildren[i], ai_scene);
   }
 
-  std::shared_ptr<axgl::interface::Mesh> load_mesh(aiMesh* ai_mesh, const aiScene* ai_scene)
+  std::shared_ptr<axgl::interface::component::Mesh> load_mesh(aiMesh* ai_mesh, const aiScene* ai_scene)
   {
-    auto mesh = realm_service_->create_component<axgl::interface::Mesh>();
+    auto mesh = realm_service_->create_component<axgl::interface::component::Mesh>();
     resources_.meshes.push_back(mesh);
 
     std::vector<glm::vec3> vertices;

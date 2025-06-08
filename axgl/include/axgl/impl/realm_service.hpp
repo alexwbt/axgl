@@ -81,7 +81,7 @@ public:
     }
   }
 
-  util::Iterable<std::shared_ptr<interface::Entity>> get_entities()
+  util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const
   {
     return util::to_iterable_t<std::shared_ptr<interface::Entity>>(entities_);
   }
@@ -149,7 +149,7 @@ public:
     );
   }
 
-  util::Iterable<std::shared_ptr<interface::Component>> get_components() override
+  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
   }
@@ -164,7 +164,7 @@ public:
     children_.remove_entity(std::move(entity));
   }
 
-  util::Iterable<std::shared_ptr<interface::Entity>> get_children() override
+  util::Iterable<std::shared_ptr<interface::Entity>> get_children() const override
   {
     return children_.get_entities();
   }
@@ -214,7 +214,7 @@ public:
     entities_.remove_entity(std::move(entity));
   }
 
-  util::Iterable<std::shared_ptr<interface::Entity>> get_entities() override
+  util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const override
   {
     return entities_.get_entities();
   }
