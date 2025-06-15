@@ -5,10 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <axgl/common.hpp>
-#include <axgl/interface/component/gui_element.hpp>
 #include <axgl/util/string.hpp>
+#include <axgl/interface/component/gui_element.hpp>
 
-#include <axgl/impl/component/camera.hpp>
 #include <axgl/impl/realm_service.hpp>
 
 #include <axgl/impl/opengl/text.hpp>
@@ -28,8 +27,8 @@ namespace component
 
     std::shared_ptr<interface::component::Mesh> content_text_ = nullptr;
     std::shared_ptr<interface::component::Mesh> background_ = nullptr;
-    std::shared_ptr<impl::component::Camera> camera_ = nullptr;
 
+    interface::Camera camera_;
     interface::RealmContext context_;
     ComponentContainer components_;
 
@@ -40,14 +39,8 @@ namespace component
       realm_service_ = context->axgl->realm_service();
       renderer_service_ = context->axgl->renderer_service();
 
-      camera_ = realm_service_->create_component<Camera>();
-      camera_->camera.orthographic = true;
-      camera_->camera.near_clip = -1;
-      camera_->camera.far_clip = 1;
-      components_.add_component(camera_);
-
-      update_background();
       update_content_text();
+      update_background();
 
       // set context and parents of the newly created components
       use_context(context);
@@ -68,6 +61,19 @@ namespace component
 
     void update() override
     {
+      // update viewport
+      auto context = get_context();
+      auto renderer = context->realm->get_renderer();
+      const auto& viewport = renderer->viewport();
+      if (viewport.x != camera_.viewport.x || viewport.y != camera_.viewport.y)
+      {
+        camera_.viewport.x = viewport.x;
+        camera_.viewport.y = viewport.y;
+        camera_.set_projection_view_matrix(
+          glm::ortho(camera_.viewport.x, 0.0f, 0.0f, camera_.viewport.y));
+      }
+
+      // parent position
       auto parent = get_parent();
       parent->scale = glm::vec3(props.size, 1);
       parent->position = glm::vec3(props.origin + props.offset, 0);
@@ -89,7 +95,10 @@ namespace component
     void update_content_text()
     {
       if (content_text_)
+      {
+        components_.remove_component(content_text_);
         content_text_ = nullptr;
+      }
 
       if (props.content.empty())
         return;
@@ -111,12 +120,9 @@ namespace component
           text_service->load_font(f, resource_service->get_resource(resource_key));
         }
       }
-
-      auto text_mesh = text_service->create_text(props.content, font,
+      content_text_ = text_service->create_text(props.content, font,
         { .size = static_cast<uint32_t>(props.font_size) });
-      //content_text_ = realm_service_->create_entity<interface::Entity>();
-      //content_text_->scale = glm::vec3(props.font_size, props.font_size, 1);
-      //content_text_->update_model_matrix();
+      components_.add_component(content_text_);
     }
 
     void update_background()
@@ -139,6 +145,7 @@ namespace component
       if (context)
       {
         context_ = *context;
+        context_.camera = &camera_;
         Component::use_context(&context_);
         components_.use_context(&context_);
       }

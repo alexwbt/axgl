@@ -95,30 +95,26 @@ public:
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
 
-    // root gui element
-    auto gui_root = realm_service->create_entity<axgl::interface::Entity>();
+    // gui entity
+    auto gui_element = realm_service->create_entity<axgl::interface::Entity>();
     {
-      // root gui element
-      auto gui_root_comp = realm_service->create_component<axgl::interface::component::GuiElement>();
-      gui_root_comp->props.size = window->get_size();
-      gui_root_comp->props.bg_color = glm::vec4(0.2f, 0.5f, 0.2f, 1.0f);
-      gui_root->add_component(gui_root_comp);
+      // gui component
+      auto gui_comp = realm_service->create_component<axgl::interface::component::GuiElement>();
+      //gui_comp->props.size = window->get_size();
+      //gui_comp->props.bg_color = glm::vec4(0.2f, 0.5f, 0.2f, 0.5f);
 
-      // text element
-      //auto text = realm_service->create_entity<axgl::interface::Entity>();
-      //{
-      //  auto text = realm_service->create_component<axgl::interface::component::GuiElement>();
-      //  text->props.font = "arial,noto-tc";
-      //  text->props.content = (const char*)
-      //    u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
-      //    u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。";
-      //  text->props.font_size = 48;
-      //  text->props.size = glm::vec2(200, 200);
-      //  text->props.bg_color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
-      //}
-      //gui_root->add_child(text);
+      gui_comp->props.font = "arial,noto-tc";
+      gui_comp->props.content = (const char*)
+        u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
+        u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。";
+      gui_comp->props.font_size = 48;
+      gui_comp->props.size = glm::vec2(48, 48);
+      gui_comp->props.fg_color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+      gui_comp->props.bg_color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
+
+      gui_element->add_component(gui_comp);
     }
-    realm->add_entity(gui_root);
+    realm->add_entity(gui_element);
   }
 };
 

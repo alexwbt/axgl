@@ -65,13 +65,13 @@ public:
   std::shared_ptr<interface::component::Mesh> create_text(
     const std::string& value,
     const std::vector<std::string>& font,
-    opengl::TextOptions options) const
+    opengl::TextOptions options
+  ) const
   {
     opengl::Text text;
     text_renderer_.render_text(text, value, font, options);
 
-    auto texture = std::dynamic_pointer_cast<OpenglTexture>(
-      renderer_service_->create_texture());
+    auto texture = std::dynamic_pointer_cast<OpenglTexture>(renderer_service_->create_texture());
 #ifdef AXGL_DEBUG
     if (!texture)
       throw std::runtime_error("OpenglTexture is required to use OpenglTextService");

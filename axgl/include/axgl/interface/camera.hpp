@@ -74,6 +74,11 @@ public:
     // projection * view
     projection_view_matrix_ = projection * view;
   }
+
+  void set_projection_view_matrix(glm::mat4 pv)
+  {
+    projection_view_matrix_ = pv;
+  }
 };
 
 NAMESPACE_AXGL_INTERFACE_END
