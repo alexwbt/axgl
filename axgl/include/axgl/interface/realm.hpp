@@ -28,15 +28,11 @@ class RealmContext;
 
 class Component
 {
-  friend class Entity;
-
 public:
   bool disabled = false;
 
-private:
-  RealmContext* context_ = nullptr;
-
 protected:
+  RealmContext* context_ = nullptr;
   Entity* parent_ = nullptr;
 
 public:
@@ -47,7 +43,7 @@ public:
   virtual void on_create() {}
   virtual void on_remove() {}
 
-  const Entity* get_parent() const
+  Entity* get_parent() const
   {
 #ifdef AXGL_DEBUG
     if (!parent_)
@@ -65,13 +61,21 @@ protected:
 #endif
     return context_;
   }
+
+public:
+  virtual void use_context(RealmContext* context)
+  {
+    context_ = context;
+  }
+
+  virtual void set_parent(Entity* parent)
+  {
+    parent_ = parent;
+  }
 };
 
 class Entity : public Component
 {
-  friend class Realm;
-  friend class RealmContext;
-
 private:
   glm::mat4 model_matrix_{ 1.0f };
 
@@ -112,8 +116,7 @@ public:
 
   virtual void add_component(std::shared_ptr<Component> component) = 0;
   virtual void remove_component(std::shared_ptr<Component> component) = 0;
-  virtual util::Iterable<std::shared_ptr<interface::Component>> get_components() const = 0;
-  void set_component_parent(std::shared_ptr<Component> component) { component->parent_ = this; }
+  virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
 
   template<typename ComponentType>
   std::shared_ptr<ComponentType> get_component_t()
@@ -130,20 +133,19 @@ public:
 
   virtual void add_child(std::shared_ptr<Entity> entity) = 0;
   virtual void remove_child(std::shared_ptr<Entity> entity) = 0;
-  virtual util::Iterable<std::shared_ptr<interface::Entity>> get_children() const = 0;
+  virtual util::Iterable<std::shared_ptr<Entity>> get_children() const = 0;
 
   //
   // Context
   //
 
-private:
-  virtual void use_context(RealmContext* context)
+  void use_context(RealmContext* context) override
   {
     // set context
-    context_ = context;
+    Component::use_context(context);
     // set context for all components
     for (const auto& component : get_components())
-      component->context_ = context;
+      component->use_context(context);
     // set context for all children
     for (const auto& child : get_children())
       child->use_context(context);
@@ -152,17 +154,15 @@ private:
 
 class Realm
 {
-  friend class RealmService;
-
 protected:
   RealmContext* context_;
-  std::shared_ptr<interface::Renderer> renderer_;
+  std::shared_ptr<Renderer> renderer_;
 
 public:
   virtual ~Realm() {}
 
-  void set_renderer(std::shared_ptr<interface::Renderer> renderer) { renderer_ = std::move(renderer); }
-  std::shared_ptr<interface::Renderer> get_renderer() const { return renderer_; }
+  void set_renderer(std::shared_ptr<Renderer> renderer) { renderer_ = std::move(renderer); }
+  std::shared_ptr<Renderer> get_renderer() const { return renderer_; }
 
   virtual void tick() = 0;
   virtual void update() = 0;
@@ -174,13 +174,12 @@ public:
 
   virtual void add_entity(std::shared_ptr<Entity> entity) = 0;
   virtual void remove_entity(std::shared_ptr<Entity> entity) = 0;
-  virtual util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const = 0;
+  virtual util::Iterable<std::shared_ptr<Entity>> get_entities() const = 0;
 
   //
   // Context
   //
 
-private:
   virtual void use_context(RealmContext* context)
   {
     context_ = context;
@@ -274,8 +273,8 @@ public:
   const Axgl* axgl = nullptr;
   Realm* realm = nullptr;
 
-  const interface::Camera* camera = nullptr;
-  std::vector<const interface::Light*> lights;
+  const Camera* camera = nullptr;
+  std::vector<const Light*> lights;
 };
 
 NAMESPACE_AXGL_INTERFACE_END

@@ -14,9 +14,6 @@ namespace component
 
     void update() override
     {
-      if (disabled)
-        return;
-
       auto parent = get_parent();
       auto context = get_context();
 

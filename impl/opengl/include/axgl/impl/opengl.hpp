@@ -20,18 +20,18 @@ std::shared_ptr<interface::component::Mesh> interface::RealmService::create_comp
 
 NAMESPACE_AXGL_END
 
-#include <axgl/impl/opengl/entity/gui_element.hpp>
+#include <axgl/impl/opengl/component/gui_element.hpp>
 
 NAMESPACE_AXGL
 
-#ifdef AXGL_DEFINED_CREATE_ENTITY_GUI_ELEMENT
-#error Duplicate definition of component interface::GuiElement
+#ifdef AXGL_DEFINED_CREATE_COMPONENT_GUI_ELEMENT
+#error Duplicate definition of component interface::component::GuiElement
 #endif
-#define AXGL_DEFINED_CREATE_ENTITY_GUI_ELEMENT
+#define AXGL_DEFINED_CREATE_COMPONENT_GUI_ELEMENT
 template<>
-std::shared_ptr<interface::entity::GuiElement> interface::RealmService::create_entity()
+std::shared_ptr<interface::component::GuiElement> interface::RealmService::create_component()
 {
-  return std::make_shared<impl::entity::OpenglGuiElement>();
+  return std::make_shared<impl::component::OpenglGuiElement>();
 }
 
 NAMESPACE_AXGL_END

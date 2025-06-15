@@ -9,6 +9,78 @@
 
 NAMESPACE_AXGL_IMPL
 
+class ComponentContainer
+{
+private:
+  std::vector<std::shared_ptr<interface::Component>> components_;
+
+public:
+  void tick()
+  {
+    for (const auto& comp : components_)
+      if (!comp->disabled)
+        comp->tick();
+  }
+
+  void update()
+  {
+    for (const auto& comp : components_)
+      if (!comp->disabled)
+        comp->update();
+  }
+
+  void render()
+  {
+    for (const auto& comp : components_)
+      if (!comp->disabled)
+        comp->render();
+  }
+
+  void on_create()
+  {
+    for (const auto& comp : components_)
+      if (!comp->disabled)
+        comp->on_create();
+  }
+
+  void on_remove()
+  {
+    for (const auto& comp : components_)
+      if (!comp->disabled)
+        comp->on_remove();
+  }
+
+  void add_component(std::shared_ptr<interface::Component> component)
+  {
+    components_.push_back(std::move(component));
+  }
+
+  void remove_component(std::shared_ptr<interface::Component> component)
+  {
+    components_.erase(
+      std::remove(components_.begin(), components_.end(), component),
+      components_.end()
+    );
+  }
+
+  util::Iterable<std::shared_ptr<interface::Component>> get_components() const
+  {
+    return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
+  }
+
+  void use_context(interface::RealmContext* context)
+  {
+    for (const auto& comp : components_)
+      comp->use_context(context);
+  }
+
+  void set_parent(interface::Entity* parent)
+  {
+    for (const auto& comp : components_)
+      comp->set_parent(parent);
+  }
+};
+
 class EntityContainer
 {
 private:
@@ -85,73 +157,71 @@ public:
   {
     return util::to_iterable_t<std::shared_ptr<interface::Entity>>(entities_);
   }
+
+  void use_context(interface::RealmContext* context)
+  {
+    for (const auto& entity : entities_)
+      entity->use_context(context);
+  }
+
+  void set_parent(interface::Entity* parent)
+  {
+    for (const auto& entity : entities_)
+      entity->set_parent(parent);
+  }
 };
 
 class Entity : public interface::Entity
 {
 private:
-  std::vector<std::shared_ptr<interface::Component>> components_;
-
+  ComponentContainer components_;
   EntityContainer children_;
 
 public:
   void tick() override
   {
-    for (const auto& comp : components_)
-      comp->tick();
-
+    components_.tick();
     children_.tick();
   }
 
   void update() override
   {
-    for (const auto& comp : components_)
-      comp->update();
-
+    components_.update();
     children_.update();
   }
 
   void render() override
   {
-    for (const auto& comp : components_)
-      comp->render();
-
+    components_.render();
     children_.render();
   }
 
   void on_create() override
   {
-    for (const auto& comp : components_)
-      comp->on_create();
-
+    components_.on_create();
     children_.on_create();
   }
 
   void on_remove() override
   {
-    for (const auto& comp : components_)
-      comp->on_remove();
-
+    components_.on_remove();
     children_.on_remove();
   }
 
-  void add_component(std::shared_ptr<Component> component) override
+  void add_component(std::shared_ptr<interface::Component> component) override
   {
-    set_component_parent(component);
-    components_.push_back(std::move(component));
+    component->set_parent(this);
+    components_.add_component(std::move(component));
   }
 
-  void remove_component(std::shared_ptr<Component> component) override
+  void remove_component(std::shared_ptr<interface::Component> component) override
   {
-    components_.erase(
-      std::remove(components_.begin(), components_.end(), component),
-      components_.end()
-    );
+    components_.remove_component(std::move(component));
   }
 
   util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
   {
-    return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
+    return components_.get_components();
   }
 
   void add_child(std::shared_ptr<interface::Entity> entity) override
