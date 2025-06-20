@@ -13,7 +13,7 @@ NAMESPACE_AXGL
 #endif
 #define AXGL_DEFINED_CREATE_COMPONENT_MESH
 template<>
-std::shared_ptr<interface::component::Mesh> interface::RealmService::create_component()
+inline std::shared_ptr<interface::component::Mesh> interface::RealmService::create_component()
 {
   return std::make_shared<impl::component::OpenglMesh>();
 }
@@ -29,7 +29,7 @@ NAMESPACE_AXGL
 #endif
 #define AXGL_DEFINED_CREATE_ENTITY_GUI_ELEMENT
 template<>
-std::shared_ptr<interface::entity::GuiElement> interface::RealmService::create_entity()
+inline std::shared_ptr<interface::entity::GuiElement> interface::RealmService::create_entity()
 {
   return std::make_shared<impl::entity::OpenglGuiElement>();
 }
@@ -45,7 +45,7 @@ NAMESPACE_AXGL_END
 NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
+inline std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 {
 #ifdef AXGL_DEBUG
   if (!has_service_type<impl::GlfwWindowService>("window"))

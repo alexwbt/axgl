@@ -29,25 +29,25 @@ private:
 public:
   Camera() { update(); }
 
-  glm::vec3 up() const { return up_; }
-  glm::vec3 front() const { return front_; }
-  glm::vec3 horizontal_right() const { return horizontal_right_; }
-  glm::mat4 projection_view_matrix() const { return projection_view_matrix_; }
+  [[nodiscard]] glm::vec3 up() const { return up_; }
+  [[nodiscard]] glm::vec3 front() const { return front_; }
+  [[nodiscard]] glm::vec3 horizontal_right() const { return horizontal_right_; }
+  [[nodiscard]] glm::mat4 projection_view_matrix() const { return projection_view_matrix_; }
 
   void update()
   {
-    auto yaw_radians = glm::radians(yaw);
-    auto pitch_radians = glm::radians(pitch);
-    auto roll_radians = glm::radians(roll);
+    const auto yaw_radians = glm::radians(yaw);
+    const auto pitch_radians = glm::radians(pitch);
+    const auto roll_radians = glm::radians(roll);
 
-    auto sin_yaw = glm::sin(yaw_radians);
-    auto cos_yaw = glm::cos(yaw_radians);
-    auto sin_pitch = glm::sin(pitch_radians);
-    auto cos_pitch = glm::cos(pitch_radians);
+    const auto sin_yaw = glm::sin(yaw_radians);
+    const auto cos_yaw = glm::cos(yaw_radians);
+    const auto sin_pitch = glm::sin(pitch_radians);
+    const auto cos_pitch = glm::cos(pitch_radians);
 
     front_ = glm::normalize(glm::vec3(sin_yaw * sin_pitch, cos_pitch, cos_yaw * sin_pitch));
 
-    auto rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
+    const auto rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
     horizontal_right_ = glm::normalize(glm::cross(front_, glm::vec3(0, -1, 0)));
     up_ = glm::normalize(glm::vec3(rotation * glm::vec4(glm::cross(front_, horizontal_right_), 1)));
 
@@ -57,25 +57,25 @@ public:
   void update_projection_view_matrix()
   {
     // view matrix
-    glm::mat4 view = glm::lookAt(position, position + front_, up_);
+    const auto view = glm::lookAt(position, position + front_, up_);
     // projection matrix
     glm::mat4 projection;
     if (orthographic)
     {
-      glm::vec2 v = viewport * 0.5f;
+      const auto v = viewport * 0.5f;
       projection = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
     }
     else if (viewport.y > 0)
     {
-      float f = glm::radians(fov);
-      float r = viewport.x / viewport.y;
+      const float f = glm::radians(fov);
+      const float r = viewport.x / viewport.y;
       projection = glm::perspective(f, r, near_clip, far_clip);
     }
     // projection * view
     projection_view_matrix_ = projection * view;
   }
 
-  void set_projection_view_matrix(glm::mat4 pv)
+  void set_projection_view_matrix(const glm::mat4& pv)
   {
     projection_view_matrix_ = pv;
   }

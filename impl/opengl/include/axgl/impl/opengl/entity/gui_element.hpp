@@ -19,9 +19,8 @@ NAMESPACE_AXGL_IMPL
 
 namespace entity
 {
-  class OpenglGuiElement : public interface::entity::GuiElement
+  class OpenglGuiElement final : public interface::entity::GuiElement
   {
-  private:
     std::shared_ptr<interface::RealmService> realm_service_;
     std::shared_ptr<interface::RendererService> renderer_service_;
 
@@ -34,7 +33,6 @@ namespace entity
     AXGL_USE_ENTITY_CONTAINER_IMPL(children_);
     AXGL_USE_COMPONENT_CONTAINER_IMPL(components_);
 
-  public:
     void on_create() override
     {
       auto context = get_context();
@@ -94,7 +92,6 @@ namespace entity
     bool hovering() override { return false; }
     bool focused() override { return false; }
 
-  public:
     void update_content_text()
     {
       if (content_text_)
@@ -106,15 +103,15 @@ namespace entity
       if (props.content.empty())
         return;
 
-      auto context = get_context();
-      auto text_service = context->axgl->get_service<OpenglTextService>("text");
+      const auto context = get_context();
+      const auto text_service = context->axgl->get_service<OpenglTextService>("text");
 
-      auto font = util::split(props.font, ',');
+      const auto font = util::split(props.font, ',');
       for (const auto& f : font)
       {
         if (!text_service->has_font(f))
         {
-          auto resource_service = context->axgl->resource_service();
+          const auto resource_service = context->axgl->resource_service();
           auto resource_key = "font/" + f + ".ttf";
 #ifdef AXGL_DEBUG
           if (!resource_service->has_resource(resource_key))
@@ -128,7 +125,7 @@ namespace entity
       options.size = static_cast<uint32_t>(props.font_size);
       content_text_ = text_service->create_text(props.content, font, options);
 
-      auto text_mesh = content_text_->get_component_t<interface::component::Mesh>();
+      const auto text_mesh = content_text_->get_component_t<interface::component::Mesh>();
       text_mesh->get_material()->set_color(props.fg_color);
 
       add_child(content_text_);
@@ -138,11 +135,11 @@ namespace entity
     {
       if (!background_)
       {
-        auto mesh = realm_service_->create_component_impl<interface::component::Mesh, component::OpenglMesh>();
+        const auto mesh = realm_service_->create_component_impl<interface::component::Mesh, component::OpenglMesh>();
         mesh->replace_vao(opengl::StaticVAOs::instance().quad());
         background_ = mesh;
 
-        auto material = renderer_service_->create_material("2d");
+        const auto material = renderer_service_->create_material("2d");
         background_->set_material(material);
 
         add_component(background_);

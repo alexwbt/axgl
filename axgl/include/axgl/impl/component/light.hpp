@@ -14,8 +14,8 @@ namespace component
 
     void update() override
     {
-      auto parent = get_parent();
-      auto context = get_context();
+      const auto parent = get_parent();
+      const auto context = get_context();
 
       light.position = parent->position;
       light.direction = parent->rotation;
@@ -30,7 +30,7 @@ NAMESPACE_AXGL_IMPL_END
 NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<impl::component::Light> interface::RealmService::create_component()
+inline std::shared_ptr<impl::component::Light> interface::RealmService::create_component()
 {
   return std::make_shared<impl::component::Light>();
 }

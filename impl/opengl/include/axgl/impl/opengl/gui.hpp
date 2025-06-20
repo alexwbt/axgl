@@ -15,11 +15,6 @@ public:
   {
     return std::make_shared<entity::OpenglGuiElement>();
   }
-
-  //std::shared_ptr<interface::entity::GuiElement> create_page() override
-  //{
-  //  return std::make_shared<entity::OpenglGuiElement>();
-  //}
 };
 
 NAMESPACE_AXGL_IMPL_END

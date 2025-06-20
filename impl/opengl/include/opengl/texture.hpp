@@ -2,8 +2,7 @@
 
 #include <span>
 #include <array>
-#include <string>
-#include <stdint.h>
+#include <cstdint>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -45,7 +44,6 @@ namespace opengl
 
   class Texture final
   {
-  private:
     GLuint id_ = 0;
     GLuint target_ = 0;
     GLsizei width_ = 0;
@@ -88,17 +86,17 @@ namespace opengl
         glDeleteTextures(1, &id_);
     }
 
-    GLuint get_id() const
+    [[nodiscard]] GLuint get_id() const
     {
       return id_;
     }
 
-    GLsizei get_width() const
+    [[nodiscard]] GLsizei get_width() const
     {
       return width_;
     }
 
-    GLsizei get_height() const
+    [[nodiscard]] GLsizei get_height() const
     {
       return height_;
     }
@@ -119,13 +117,13 @@ namespace opengl
     }
 
     void load_texture(
-      GLint level,
-      GLint internalformat,
-      GLsizei width,
-      GLsizei height,
-      GLint border,
-      GLenum format,
-      GLenum type,
+      const GLint level,
+      const GLint internalformat,
+      const GLsizei width,
+      const GLsizei height,
+      const GLint border,
+      const GLenum format,
+      const GLenum type,
       const void* pixels)
     {
       if (target_ > 0)
@@ -168,7 +166,7 @@ namespace opengl
       }
       target_ = GL_TEXTURE_CUBE_MAP;
 
-      StbiImage texture[6] = {
+      const StbiImage texture[6] = {
         data[0], data[1], data[2],
         data[3], data[4], data[5],
       };

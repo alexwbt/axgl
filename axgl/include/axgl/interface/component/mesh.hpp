@@ -22,7 +22,7 @@ namespace component
     virtual void set_indices(const std::span<const uint32_t>& indices) = 0;
 
     virtual void set_material(std::shared_ptr<Material> material) = 0;
-    virtual std::shared_ptr<Material> get_material() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<Material> get_material() const = 0;
   };
 }
 

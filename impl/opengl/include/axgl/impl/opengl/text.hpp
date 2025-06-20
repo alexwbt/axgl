@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <stdint.h>
+#include <cstdint>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>

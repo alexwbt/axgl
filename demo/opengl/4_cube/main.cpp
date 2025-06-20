@@ -6,7 +6,7 @@
 #include <axgl/impl/component/camera.hpp>
 #include <axgl/impl/component/light.hpp>
 
-static std::vector<glm::vec3> cube_vertices = {
+static std::vector cube_vertices = {
   glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f),
   glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(00.5f, -0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f, -0.5f,  0.5f),
   glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
@@ -15,7 +15,7 @@ static std::vector<glm::vec3> cube_vertices = {
   glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
 };
 
-static std::vector<glm::vec3> cube_normals = {
+static std::vector cube_normals = {
   glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f),
   glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f),
  -glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),
@@ -24,39 +24,38 @@ static std::vector<glm::vec3> cube_normals = {
   glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f),
 };
 
-class Application : public axgl::interface::Service
+class Application final : public axgl::interface::Service
 {
-private:
   std::shared_ptr<axgl::interface::Entity> cube_entity_;
 
 public:
   void initialize() override
   {
-    auto axgl = get_context()->axgl;
+    const auto axgl = get_context()->axgl;
 
     // window
-    auto window = axgl->window_service()->create_window();
+    const auto window = axgl->window_service()->create_window();
     window->set_title("Hello cube!");
 
     // renderer
-    auto renderer_service = axgl->renderer_service();
-    auto renderer = renderer_service->create_renderer();
+    const auto renderer_service = axgl->renderer_service();
+    const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
-    auto realm_service = axgl->realm_service();
-    auto realm = realm_service->create_realm();
+    const auto realm_service = axgl->realm_service();
+    const auto realm = realm_service->create_realm();
     realm->set_renderer(renderer);
 
     // cube entity
     cube_entity_ = realm_service->create_entity<axgl::interface::Entity>();
     {
       // material
-      auto material = renderer_service->create_material("default");
+      const auto material = renderer_service->create_material("default");
       material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
       // cube mesh
-      auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
+      const auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
       mesh_comp->set_vertices(cube_vertices);
       mesh_comp->set_normals(cube_normals);
       mesh_comp->set_material(material);
@@ -74,9 +73,9 @@ public:
     realm->add_entity(camera_entity);
 
     // light entity
-    auto light_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto light_entity = realm_service->create_entity<axgl::interface::Entity>();
     {
-      auto light_comp = realm_service->create_component<axgl::impl::component::Light>();
+      const auto light_comp = realm_service->create_component<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
       light_entity->add_component(light_comp);
     }

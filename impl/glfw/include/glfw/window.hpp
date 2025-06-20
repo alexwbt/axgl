@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #define GLFW_INCLUDE_NONE
+#include <ranges>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -15,7 +16,7 @@ namespace glfw
 
   struct EventListener
   {
-    virtual ~EventListener() {}
+    virtual ~EventListener() = default;
     virtual void on_key_down(int key) {}
     virtual void on_key_up(int key) {}
     virtual void on_mouse_down(int button) {}
@@ -26,7 +27,6 @@ namespace glfw
 
   class Window final
   {
-  private:
     inline static bool initialized_ = false;
     inline static bool terminated_ = false;
     inline static std::unordered_map<GLFWwindow*, std::shared_ptr<Window>> windows_;
@@ -39,12 +39,12 @@ namespace glfw
       return window;
     }
 
-    inline static void initialize()
+    static void initialize()
     {
       if (initialized_ || terminated_)
         return;
 
-      glfwSetErrorCallback(Window::glfw_error_callback);
+      glfwSetErrorCallback(glfw_error_callback);
 
       if (!glfwInit())
       {
@@ -55,41 +55,39 @@ namespace glfw
       initialized_ = true;
     }
 
-    inline static void terminate()
+    static void terminate()
     {
       if (!initialized_ || terminated_)
         return;
 
-      for (const auto& [glfw_window, window] : windows_)
+      for (const auto &window : windows_ | std::views::values)
         window->destroy();
 
       glfwTerminate();
       terminated_ = true;
     }
 
-    inline static void glfw_window_hint(int hint, int value)
+    static void glfw_window_hint(int hint, int value)
     {
       glfwWindowHint(hint, value);
     }
 
-    inline static bool should_close_all()
+    static bool should_close_all()
     {
-      for (const auto& [glfw_window, window] : windows_)
+      for (const auto &glfw_window : windows_ | std::views::keys)
         if (!glfwWindowShouldClose(glfw_window))
           return false;
       return true;
     }
 
-    inline static void update_all()
+    static void update_all()
     {
       glfwPollEvents();
 
       // destroy closed windows
       for (auto it = windows_.begin(); it != windows_.end();)
       {
-        const auto& glfw_window = it->first;
-        const auto& window = it->second;
-        if (window->destroyed_ || glfwWindowShouldClose(glfw_window))
+        if (it->second->destroyed_ || glfwWindowShouldClose(it->first))
         {
           it->second->destroy();
           it = windows_.erase(it);
@@ -100,50 +98,50 @@ namespace glfw
     }
 
   private:
-    inline static void glfw_error_callback(int error, const char* description)
+    static void glfw_error_callback(int error, const char* description)
     {
       SPDLOG_ERROR("GLFW Error {}: {}", error, description);
     }
 
-    inline static void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
+    static void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
     {
-      auto listener = get_window_event_listener(glfw_window);
+      const auto listener = get_window_event_listener(glfw_window);
       if (!listener) return;
 
       switch (action)
       {
       case GLFW_PRESS:    listener->on_key_down(key); break;
       case GLFW_RELEASE:  listener->on_key_up(key); break;
+      default: ;
       }
     }
 
-    inline static void cursor_pos_callback(GLFWwindow* glfw_window, double x, double y)
+    static void cursor_pos_callback(GLFWwindow* glfw_window, double x, double y)
     {
-      auto listener = get_window_event_listener(glfw_window);
-      if (listener)
+      if (const auto listener = get_window_event_listener(glfw_window))
         listener->on_mouse_move(x, y);
     }
 
-    inline static void mouse_button_callback(GLFWwindow* glfw_window, int button, int action, int mods)
+    static void mouse_button_callback(GLFWwindow* glfw_window, int button, int action, int mods)
     {
-      auto listener = get_window_event_listener(glfw_window);
+      const auto listener = get_window_event_listener(glfw_window);
       if (!listener) return;
 
       switch (action)
       {
-      case GLFW_PRESS:    listener->on_mouse_down(button); break;
-      case GLFW_RELEASE:  listener->on_mouse_up(button); break;
+      case GLFW_PRESS: listener->on_mouse_down(button); break;
+      case GLFW_RELEASE: listener->on_mouse_up(button); break;
+      default: ;
       }
     }
 
-    inline static void frame_buffer_size_callback(GLFWwindow* glfw_window, int width, int height)
+    static void frame_buffer_size_callback(GLFWwindow* glfw_window, int width, int height)
     {
-      auto listener = get_window_event_listener(glfw_window);
-      if (listener)
+      if (const auto listener = get_window_event_listener(glfw_window))
         listener->on_resize(width, height);
     }
 
-    inline static std::shared_ptr<Window> get_window(GLFWwindow* glfw_window)
+    static std::shared_ptr<Window> get_window(GLFWwindow* glfw_window)
     {
       try
       {
@@ -156,7 +154,7 @@ namespace glfw
       }
     }
 
-    inline static std::shared_ptr<EventListener> get_window_event_listener(GLFWwindow* glfw_window)
+    static std::shared_ptr<EventListener> get_window_event_listener(GLFWwindow* glfw_window)
     {
       auto window = get_window(glfw_window);
       if (!window) return nullptr;
@@ -164,7 +162,6 @@ namespace glfw
       return window->event_listener_;
     }
 
-  private:
     GLFWwindow* glfw_window_;
 
     std::shared_ptr<EventListener> event_listener_;
@@ -186,10 +183,10 @@ namespace glfw
         return;
       }
 
-      glfwSetKeyCallback(glfw_window_, Window::key_callback);
-      glfwSetCursorPosCallback(glfw_window_, Window::cursor_pos_callback);
-      glfwSetMouseButtonCallback(glfw_window_, Window::mouse_button_callback);
-      glfwSetFramebufferSizeCallback(glfw_window_, Window::frame_buffer_size_callback);
+      glfwSetKeyCallback(glfw_window_, key_callback);
+      glfwSetCursorPosCallback(glfw_window_, cursor_pos_callback);
+      glfwSetMouseButtonCallback(glfw_window_, mouse_button_callback);
+      glfwSetFramebufferSizeCallback(glfw_window_, frame_buffer_size_callback);
     }
 
   public:
@@ -198,22 +195,22 @@ namespace glfw
       destroy();
     }
 
-    void set_title(const std::string& title)
+    void set_title(const std::string& title) const
     {
       glfwSetWindowTitle(glfw_window_, title.c_str());
     }
 
-    void set_size(int width, int height)
+    void set_size(int width, int height) const
     {
       glfwSetWindowSize(glfw_window_, width, height);
     }
 
-    void set_position(int x, int y)
+    void set_position(int x, int y) const
     {
       glfwSetWindowPos(glfw_window_, x, y);
     }
 
-    void set_input_mode(int mode, int value)
+    void set_input_mode(int mode, int value) const
     {
       glfwSetInputMode(glfw_window_, mode, value);
     }
@@ -223,10 +220,10 @@ namespace glfw
       event_listener_ = std::move(event_listener);
     }
 
-    GLFWwindow* get_glfw_window() const { return glfw_window_; }
-    bool is_destroyed() const { return destroyed_; }
-    bool key_pressed(int key) const { return glfwGetKey(glfw_window_, key) == GLFW_PRESS; }
-    glm::ivec2 get_mouse_pos() const
+    [[nodiscard]] GLFWwindow* get_glfw_window() const { return glfw_window_; }
+    [[nodiscard]] bool is_destroyed() const { return destroyed_; }
+    [[nodiscard]] bool key_pressed(int key) const { return glfwGetKey(glfw_window_, key) == GLFW_PRESS; }
+    [[nodiscard]] glm::ivec2 get_mouse_pos() const
     {
       double xpos, ypos;
       glfwGetCursorPos(glfw_window_, &xpos, &ypos);
@@ -236,7 +233,7 @@ namespace glfw
     void use() const { glfwMakeContextCurrent(glfw_window_); }
     void swap_buffers() const { glfwSwapBuffers(glfw_window_); }
 
-    glm::ivec2 get_size() const
+    [[nodiscard]] glm::ivec2 get_size() const
     {
       int width, height;
       glfwGetFramebufferSize(glfw_window_, &width, &height);

@@ -8,15 +8,13 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
 #include <axgl/interface/window.hpp>
-#include <axgl/interface/camera.hpp>
-#include <axgl/interface/light.hpp>
 
 NAMESPACE_AXGL_INTERFACE
 
 class Texture
 {
 public:
-  virtual ~Texture() {}
+  virtual ~Texture() = default;
   virtual void load_texture(std::span<const uint8_t> data) = 0;
 };
 
@@ -32,7 +30,7 @@ enum class TextureType
 class Material
 {
 public:
-  virtual ~Material() {}
+  virtual ~Material() = default;
   virtual void set_color(const glm::vec4& color) = 0;
   virtual void set_prop(const std::string& key, const std::string& value) = 0;
   virtual void add_texture(TextureType type, std::shared_ptr<Texture> texture) = 0;
@@ -41,12 +39,12 @@ public:
 class Renderer
 {
 public:
-  virtual ~Renderer() {}
+  virtual ~Renderer() = default;
   virtual bool ready() = 0;
   virtual void before_render() = 0;
   virtual void after_render() = 0;
   virtual void set_window(std::shared_ptr<Window> window) = 0;
-  virtual glm::ivec2 viewport() const = 0;
+  [[nodiscard]] virtual glm::ivec2 viewport() const = 0;
 };
 
 class RendererService : public Service

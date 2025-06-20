@@ -9,13 +9,13 @@
 
 NAMESPACE_AXGL_IMPL
 
-class CameraService : public interface::Service
+class CameraService final : public interface::Service
 {
 public:
   class CameraMode
   {
   public:
-    virtual ~CameraMode() {}
+    virtual ~CameraMode() = default;
     virtual void bind_inputs(std::shared_ptr<interface::InputService> input_service) = 0;
     virtual void unbind_inputs(std::shared_ptr<interface::InputService> input_service) = 0;
     virtual void update(interface::Camera& camera) = 0;
@@ -26,7 +26,7 @@ private:
   std::shared_ptr<interface::InputService> input_service_;
 
   std::shared_ptr<interface::Entity> camera_entity_;
-  std::shared_ptr<impl::component::Camera> camera_comp_;
+  std::shared_ptr<component::Camera> camera_comp_;
 
 public:
   void set_camera_mode(std::shared_ptr<CameraMode> camera_mode)
@@ -41,12 +41,12 @@ public:
   void set_camera(std::shared_ptr<interface::Entity> camera_entity)
   {
     camera_entity_ = std::move(camera_entity);
-    camera_comp_ = camera_entity_->get_component_t<impl::component::Camera>();
+    camera_comp_ = camera_entity_->get_component_t<component::Camera>();
   }
 
   void initialize() override
   {
-    auto axgl = get_context()->axgl;
+    const auto axgl = get_context()->axgl;
     input_service_ = axgl->input_service();
   }
 
@@ -59,9 +59,8 @@ public:
   }
 };
 
-class Keyboard3DFreeFlyCameraMode : public CameraService::CameraMode
+class Keyboard3DFreeFlyCameraMode final : public CameraService::CameraMode
 {
-private:
   std::shared_ptr<interface::InputService> input_service_;
   std::shared_ptr<interface::Input> escape_;
   std::shared_ptr<interface::Pointer> pointer_;
@@ -99,7 +98,7 @@ public:
     input_service->add_input(down_);
     input_service->add_input(left_);
     input_service->add_input(right_);
-    input_service->set_cursor_mode(axgl::interface::CursorMode::LOCKED);
+    input_service->set_cursor_mode(interface::CursorMode::LOCKED);
     input_service_ = std::move(input_service);
   }
 
@@ -201,7 +200,7 @@ NAMESPACE_AXGL_IMPL_END
 NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<impl::CameraService> Axgl::use_service()
+inline std::shared_ptr<impl::CameraService> Axgl::use_service()
 {
   auto camera_service = std::make_shared<impl::CameraService>();
   register_service("camera", camera_service);

@@ -45,7 +45,6 @@ NAMESPACE_AXGL_IMPL
 
 class ComponentContainer
 {
-private:
   std::vector<std::shared_ptr<interface::Component>> components_;
 
 public:
@@ -89,26 +88,23 @@ public:
     components_.push_back(std::move(component));
   }
 
-  void remove_component(std::shared_ptr<interface::Component> component)
+  void remove_component(const std::shared_ptr<interface::Component>& component)
   {
-    components_.erase(
-      std::remove(components_.begin(), components_.end(), component),
-      components_.end()
-    );
+    std::erase(components_, component);
   }
 
-  util::Iterable<std::shared_ptr<interface::Component>> get_components() const
+  [[nodiscard]] util::Iterable<std::shared_ptr<interface::Component>> get_components() const
   {
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
   }
 
-  void set_context(interface::RealmContext* context)
+  void set_context(interface::RealmContext* context) const
   {
     for (const auto& comp : components_)
       comp->set_context(context);
   }
 
-  void set_parent(interface::Entity* parent)
+  void set_parent(interface::Entity* parent) const
   {
     for (const auto& comp : components_)
       comp->set_parent(parent);
@@ -117,11 +113,10 @@ public:
 
 class EntityContainer
 {
-private:
   std::vector<std::shared_ptr<interface::Entity>> entities_;
 
 public:
-  void tick()
+  void tick() const
   {
     for (const auto& entity : entities_)
     {
@@ -140,31 +135,28 @@ public:
       entity->update();
     }
 
-    entities_.erase(
-      std::remove_if(entities_.begin(), entities_.end(),
-        [](const auto& entity)
-        {
-          if (entity->should_remove)
-            entity->on_remove();
-          return entity->should_remove;
-        }),
-      entities_.end()
-    );
+    std::erase_if(entities_,
+      [](const auto& entity)
+      {
+        if (entity->should_remove)
+          entity->on_remove();
+        return entity->should_remove;
+      });
   }
 
-  void render()
+  void render() const
   {
     for (const auto& entity : entities_)
       entity->render();
   }
 
-  void on_create()
+  void on_create() const
   {
     for (const auto& entity : entities_)
       entity->on_create();
   }
 
-  void on_remove()
+  void on_remove() const
   {
     for (const auto& entity : entities_)
       entity->on_remove();
@@ -175,7 +167,7 @@ public:
     entities_.push_back(std::move(entity));
   }
 
-  void remove_entity(std::shared_ptr<interface::Entity> entity)
+  void remove_entity(const std::shared_ptr<interface::Entity>& entity) const
   {
     for (auto& e : entities_)
     {
@@ -187,27 +179,26 @@ public:
     }
   }
 
-  util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const
+  [[nodiscard]] util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const
   {
     return util::to_iterable_t<std::shared_ptr<interface::Entity>>(entities_);
   }
 
-  void set_context(interface::RealmContext* context)
+  void set_context(interface::RealmContext* context) const
   {
     for (const auto& entity : entities_)
       entity->set_context(context);
   }
 
-  void set_parent(interface::Entity* parent)
+  void set_parent(interface::Entity* parent) const
   {
     for (const auto& entity : entities_)
       entity->set_parent(parent);
   }
 };
 
-class Entity : public interface::Entity
+class Entity final : public interface::Entity
 {
-private:
   ComponentContainer components_;
   EntityContainer children_;
 
@@ -246,9 +237,8 @@ public:
   AXGL_USE_ENTITY_CONTAINER_IMPL(children_);
 };
 
-class Realm : public interface::Realm
+class Realm final : public interface::Realm
 {
-private:
   EntityContainer entities_;
 
 public:
@@ -285,20 +275,19 @@ public:
     entities_.add_entity(std::move(entity));
   }
 
-  void remove_entity(std::shared_ptr<interface::Entity> entity) override
+  void remove_entity(const std::shared_ptr<interface::Entity> entity) override
   {
-    entities_.remove_entity(std::move(entity));
+    entities_.remove_entity(entity);
   }
 
-  util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const override
+  [[nodiscard]] util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const override
   {
     return entities_.get_entities();
   }
 };
 
-class RealmService : public interface::RealmService
+class RealmService final : public interface::RealmService
 {
-private:
   std::shared_ptr<Realm> realm_;
   std::vector<std::shared_ptr<Realm>> realms_;
 
@@ -344,7 +333,7 @@ public:
     return realm_;
   }
 
-  std::shared_ptr<interface::Realm> get_active_realm() const override
+  [[nodiscard]] std::shared_ptr<interface::Realm> get_active_realm() const override
   {
     return realm_;
   }
@@ -369,20 +358,20 @@ NAMESPACE_AXGL
 #ifndef AXGL_DEFINED_CREATE_ENTITY
 #define AXGL_DEFINED_CREATE_ENTITY
 template<>
-std::shared_ptr<interface::Entity> interface::RealmService::create_entity()
+inline std::shared_ptr<interface::Entity> interface::RealmService::create_entity()
 {
   return std::make_shared<impl::Entity>();
 }
 #endif
 
 template<>
-std::shared_ptr<impl::Entity> interface::RealmService::create_entity()
+inline std::shared_ptr<impl::Entity> interface::RealmService::create_entity()
 {
   return std::make_shared<impl::Entity>();
 }
 
 template<>
-std::shared_ptr<impl::RealmService> Axgl::use_service()
+inline std::shared_ptr<impl::RealmService> Axgl::use_service()
 {
   auto realm_service = std::make_shared<impl::RealmService>();
   register_service(DefaultServices::kRealm, realm_service);

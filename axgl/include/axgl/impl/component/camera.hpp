@@ -7,18 +7,18 @@ NAMESPACE_AXGL_IMPL
 
 namespace component
 {
-  class Camera : public interface::Component
+  class Camera final : public interface::Component
   {
   public:
     interface::Camera camera;
 
     void update() override
     {
-      auto parent = get_parent();
-      auto context = get_context();
-      auto renderer = context->realm->get_renderer();
+      const auto parent = get_parent();
+      const auto context = get_context();
+      const auto renderer = context->realm->get_renderer();
 
-      const auto& viewport = renderer->viewport();
+      const auto viewport = glm::vec2(renderer->viewport());
       if (viewport.x != camera.viewport.x || viewport.y != camera.viewport.y)
       {
         camera.viewport.x = viewport.x;
@@ -42,7 +42,7 @@ NAMESPACE_AXGL_IMPL_END
 NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<impl::component::Camera> interface::RealmService::create_component()
+inline std::shared_ptr<impl::component::Camera> interface::RealmService::create_component()
 {
   return std::make_shared<impl::component::Camera>();
 }

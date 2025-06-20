@@ -3,7 +3,7 @@
 #include <span>
 #include <memory>
 #include <format>
-#include <stdint.h>
+#include <cstdint>
 #include <algorithm>
 #include <stdexcept>
 #include <unordered_map>

@@ -1,10 +1,11 @@
 #pragma once
 
 #include <memory>
-#include <stdint.h>
+#include <cstdint>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/window.hpp>
+#include <utility>
 
 NAMESPACE_AXGL_INTERFACE
 
@@ -147,7 +148,6 @@ class Input;
 class Pointer;
 class InputService : public Service
 {
-private:
   static uint32_t next_id()
   {
     static uint32_t next_id_ = 1;
@@ -175,8 +175,8 @@ public:
   InputSource source;
   uint32_t tick;
 
-  Input(const std::string& name, InputSource source) :
-    id(InputService::next_id()), name(name), source(source), tick(0)
+  Input(std::string name, const InputSource source) :
+    id(InputService::next_id()), name(std::move(name)), source(source), tick(0)
   {}
 };
 
@@ -190,8 +190,8 @@ public:
   glm::ivec2 delta;
   uint32_t tick;
 
-  Pointer(const std::string& name, PointerSource source) :
-    id(InputService::next_id()), name(name), source(source),
+  Pointer(std::string name, const PointerSource source) :
+    id(InputService::next_id()), name(std::move(name)), source(source),
     position(0), delta(0), tick(0)
   {}
 };

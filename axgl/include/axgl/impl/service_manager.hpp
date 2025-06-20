@@ -14,11 +14,9 @@ NAMESPACE_AXGL
 
 class ServiceManager : public interface::ServiceContextProvider
 {
-private:
   std::vector<std::shared_ptr<interface::Service>> services_;
   std::unordered_map<std::string, std::shared_ptr<interface::Service>> service_map_;
 
-private:
   util::Iterable<std::shared_ptr<interface::Service>> services() const override
   {
     return util::to_iterable(services_);
@@ -48,17 +46,12 @@ public:
     if (!has_service(id))
       throw std::runtime_error(std::format("Trying to remove service but service with id '{}' does not exist.", id));
 #endif
-    services_.erase(
-      std::remove_if(
-        services_.begin(), services_.end(),
-        [&](const auto& ptr) { return ptr == service_map_[id]; }),
-      services_.end()
-    );
+    std::erase_if(services_, [&](const auto& ptr) { return ptr == service_map_[id]; });
     service_map_.erase(id);
   }
 
   template<typename ServiceType>
-  bool has_service_type(const std::string& id) const
+  [[nodiscard]] bool has_service_type(const std::string& id) const
   {
     if (!has_service(id))
       return false;
@@ -68,7 +61,7 @@ public:
   }
 
   template<typename ServiceType>
-  std::shared_ptr<ServiceType> get_service(const std::string& id) const
+  [[nodiscard]] std::shared_ptr<ServiceType> get_service(const std::string& id) const
   {
 #ifdef AXGL_DEBUG
     if (!has_service(id))
@@ -125,19 +118,17 @@ public:
   bool running(Axgl* axgl)
   {
     interface::ServiceContext context(this, axgl);
-    for (const auto& service : services_)
-      if (service->keep_alive())
-        return true;
-    return false;
+    return std::ranges::any_of(services_,
+      [&](const auto& service) { return service->keep_alive(); });
   }
 
   void exec(const std::string& command) const
   {
-    auto args = util::split(command, ' ');
+    const auto args = util::split(command, ' ');
     if (args.empty())
       return;
 
-    if (auto service = get_service<interface::Service>(args[0]))
+    if (const auto service = get_service<interface::Service>(args[0]))
       service->exec(args);
   }
 };

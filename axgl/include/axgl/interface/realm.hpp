@@ -1,7 +1,7 @@
 #pragma once
 
 #include <format>
-#include <stdint.h>
+#include <cstdint>
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -36,14 +36,14 @@ protected:
   Entity* parent_ = nullptr;
 
 public:
-  virtual ~Component() {}
+  virtual ~Component() = default;
   virtual void tick() {}
   virtual void update() {}
   virtual void render() {}
   virtual void on_create() {}
   virtual void on_remove() {}
 
-  Entity* get_parent() const
+  [[nodiscard]] Entity* get_parent() const
   {
 #ifdef AXGL_DEBUG
     if (!parent_)
@@ -53,7 +53,7 @@ public:
   }
 
 protected:
-  RealmContext* get_context() const
+  [[nodiscard]] RealmContext* get_context() const
   {
 #ifdef AXGL_DEBUG
     if (!context_)
@@ -76,7 +76,6 @@ public:
 
 class Entity : public Component
 {
-private:
   glm::mat4 model_matrix_{ 1.0f };
 
 public:
@@ -87,14 +86,6 @@ public:
   uint32_t ticks = 0;
   bool should_remove = false;
 
-public:
-  virtual ~Entity() {}
-  virtual void tick() {}
-  virtual void update() {}
-  virtual void render() {}
-  virtual void on_create() {}
-  virtual void on_remove() {}
-
   void update_model_matrix()
   {
     model_matrix_
@@ -103,7 +94,7 @@ public:
       * glm::scale(scale);
   }
 
-  glm::mat4 get_model() const
+  [[nodiscard]] glm::mat4 get_model() const
   {
     return parent_
       ? parent_->model_matrix_ * model_matrix_
@@ -116,10 +107,10 @@ public:
 
   virtual void add_component(std::shared_ptr<Component> component) = 0;
   virtual void remove_component(std::shared_ptr<Component> component) = 0;
-  virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
+  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
 
   template<typename ComponentType>
-  std::shared_ptr<ComponentType> get_component_t()
+  [[nodiscard]] std::shared_ptr<ComponentType> get_component_t()
   {
     for (const auto& comp : get_components())
       if (auto comp_t = std::dynamic_pointer_cast<ComponentType>(comp))
@@ -133,10 +124,10 @@ public:
 
   virtual void add_child(std::shared_ptr<Entity> entity) = 0;
   virtual void remove_child(std::shared_ptr<Entity> entity) = 0;
-  virtual util::Iterable<std::shared_ptr<Entity>> get_children() const = 0;
+  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Entity>> get_children() const = 0;
 
   template<typename EntityType>
-  std::shared_ptr<EntityType> get_child_t()
+  [[nodiscard]] std::shared_ptr<EntityType> get_child_t()
   {
     for (const auto& entity : get_children())
       if (auto entity_t = std::dynamic_pointer_cast<EntityType>(entity))
@@ -164,14 +155,14 @@ public:
 class Realm
 {
 protected:
-  RealmContext* context_;
+  RealmContext* context_ = nullptr;
   std::shared_ptr<Renderer> renderer_;
 
 public:
-  virtual ~Realm() {}
+  virtual ~Realm() = default;
 
   void set_renderer(std::shared_ptr<Renderer> renderer) { renderer_ = std::move(renderer); }
-  std::shared_ptr<Renderer> get_renderer() const { return renderer_; }
+  [[nodiscard]] std::shared_ptr<Renderer> get_renderer() const { return renderer_; }
 
   virtual void tick() = 0;
   virtual void update() = 0;
@@ -183,7 +174,7 @@ public:
 
   virtual void add_entity(std::shared_ptr<Entity> entity) = 0;
   virtual void remove_entity(std::shared_ptr<Entity> entity) = 0;
-  virtual util::Iterable<std::shared_ptr<Entity>> get_entities() const = 0;
+  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Entity>> get_entities() const = 0;
 
   //
   // Context
@@ -201,8 +192,8 @@ class RealmService : public Service
 {
 public:
   virtual std::shared_ptr<Realm> create_realm() = 0;
-  virtual std::shared_ptr<Realm> get_active_realm() const = 0;
   virtual void set_active_realm(std::shared_ptr<Realm> realm) = 0;
+  [[nodiscard]] virtual std::shared_ptr<Realm> get_active_realm() const = 0;
 
   //
   // Component factory functions

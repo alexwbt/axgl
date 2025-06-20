@@ -23,12 +23,12 @@ NAMESPACE_AXGL
 
 namespace DefaultServices
 {
-  constexpr const char* kWindow = "window";
-  constexpr const char* kRenderer = "renderer";
-  constexpr const char* kResource = "resource";
-  constexpr const char* kRealm = "realm";
-  constexpr const char* kInput = "input";
-  constexpr const char* kModel = "model";
+  constexpr auto kWindow = "window";
+  constexpr auto kRenderer = "renderer";
+  constexpr auto kResource = "resource";
+  constexpr auto kRealm = "realm";
+  constexpr auto kInput = "input";
+  constexpr auto kModel = "model";
 };
 
 #define DECLARE_SERVICE_GETTER(service_name, service_getter_name) \

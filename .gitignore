@@ -1,4 +1,6 @@
 .vs/
+.idea/
+
 _log/
 _bin/
 _build/

@@ -2,7 +2,7 @@
 
 #include <span>
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 #include <unordered_map>
 
 #include <axgl/axgl.hpp>
@@ -11,9 +11,8 @@
 
 NAMESPACE_AXGL_IMPL
 
-class ResourceService : public interface::ResourceService
+class ResourceService final : public interface::ResourceService
 {
-private:
   std::unordered_map<std::string, std::span<const uint8_t>> resources_;
 
 public:
@@ -32,7 +31,7 @@ public:
     resources_.erase(key);
   }
 
-  bool has_resource(const std::string& key) const override
+  [[nodiscard]] bool has_resource(const std::string& key) const override
   {
     return resources_.contains(key);
   }
@@ -52,7 +51,7 @@ NAMESPACE_AXGL_IMPL_END
 NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<impl::ResourceService> Axgl::use_service()
+inline std::shared_ptr<impl::ResourceService> Axgl::use_service()
 {
   auto resource_service = std::make_shared<impl::ResourceService>();
   register_service("resource", resource_service);

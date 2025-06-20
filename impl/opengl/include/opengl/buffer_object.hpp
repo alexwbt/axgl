@@ -1,7 +1,7 @@
 #pragma once
 
 #include <span>
-#include <stdint.h>
+#include <cstdint>
 
 #include <glad/glad.h>
 

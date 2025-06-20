@@ -21,8 +21,8 @@ namespace entity
       glm::vec4 bg_color{ 0 }, fg_color{ 0 };
       bool hidden = false;
       bool block_cursor = false;
-      std::string content = "";
-      std::string font = "";
+      std::string content;
+      std::string font;
       float font_size = 0;
       TextStyle text_style = TextStyle::NORMAL;
       TextAlign horizontal_align = TextAlign::CENTER;

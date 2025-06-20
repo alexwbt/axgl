@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <vector>
-#include <unordered_map>
 
 #include <axgl/common.hpp>
 #include <axgl/util/iterable.hpp>
@@ -17,12 +16,11 @@ class ServiceContext;
 class ServiceContextProvider;
 class Service
 {
-private:
   const ServiceContext* context_ = nullptr;
   friend class ServiceContextProvider;
 
 protected:
-  const ServiceContext* get_context() const
+  [[nodiscard]] const ServiceContext* get_context() const
   {
 #ifdef AXGL_DEBUG
     if (!context_)
@@ -32,7 +30,7 @@ protected:
   }
 
 public:
-  virtual ~Service() {}
+  virtual ~Service() = default;
   virtual void initialize() {}
   virtual void terminate() {}
   virtual void tick() {}
@@ -46,11 +44,11 @@ public:
 class ServiceContextProvider
 {
 public:
-  virtual ~ServiceContextProvider() {}
-  virtual util::Iterable<std::shared_ptr<Service>> services() const = 0;
+  virtual ~ServiceContextProvider() = default;
+  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Service>> services() const = 0;
 
 private:
-  void set_context(const ServiceContext* context)
+  void set_context(const ServiceContext* context) const
   {
     for (const auto& service : services())
       service->context_ = context;
@@ -68,7 +66,7 @@ private:
   ServiceContextProvider* provider_;
 
 public:
-  ServiceContext(ServiceContextProvider* provider) : provider_(provider)
+  explicit ServiceContext(ServiceContextProvider* provider) : provider_(provider)
   {
     provider_->set_context(this);
   }

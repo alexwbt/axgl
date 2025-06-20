@@ -1,6 +1,5 @@
 #pragma once
 
-#include <list>
 #include <memory>
 
 #include <axgl/common.hpp>
@@ -10,13 +9,12 @@
 
 NAMESPACE_AXGL_IMPL
 
-class GlfwWindow : public interface::Window
+class GlfwWindow final : public interface::Window
 {
-private:
   std::shared_ptr<glfw::Window> window_;
 
 public:
-  GlfwWindow(std::shared_ptr<glfw::Window> window)
+  explicit GlfwWindow(std::shared_ptr<glfw::Window> window)
     : window_(std::move(window))
   {}
 
@@ -32,7 +30,7 @@ public:
       window_->set_position(x, y);
   }
 
-  void set_size(uint32_t width, uint32_t height) override
+  void set_size(const uint32_t width, const uint32_t height) override
   {
     if (!window_->is_destroyed())
       window_->set_size(width, height);

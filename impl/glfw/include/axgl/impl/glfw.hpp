@@ -10,7 +10,7 @@
 NAMESPACE_AXGL
 
 template<>
-std::shared_ptr<impl::GlfwWindowService> Axgl::use_service()
+inline std::shared_ptr<impl::GlfwWindowService> Axgl::use_service()
 {
   glfw::Window::initialize();
 
@@ -21,7 +21,7 @@ std::shared_ptr<impl::GlfwWindowService> Axgl::use_service()
 }
 
 template<>
-std::shared_ptr<impl::GlfwInputService> Axgl::use_service()
+inline std::shared_ptr<impl::GlfwInputService> Axgl::use_service()
 {
   auto input_service = std::make_shared<impl::GlfwInputService>();
   register_service("input", input_service);

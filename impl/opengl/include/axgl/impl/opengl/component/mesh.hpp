@@ -16,9 +16,8 @@ NAMESPACE_AXGL_IMPL
 
 namespace component
 {
-  class OpenglMesh : public interface::component::Mesh
+  class OpenglMesh final : public interface::component::Mesh
   {
-  private:
     int attribute_offset_ = 0;
     std::shared_ptr<OpenglMaterial> material_;
     std::shared_ptr<opengl::VertexArrayObject> vertex_array_;
