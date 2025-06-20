@@ -50,7 +50,7 @@ public:
   virtual util::Iterable<std::shared_ptr<Service>> services() const = 0;
 
 private:
-  void use_context(const ServiceContext* context)
+  void set_context(const ServiceContext* context)
   {
     for (const auto& service : services())
       service->context_ = context;
@@ -70,7 +70,7 @@ private:
 public:
   ServiceContext(ServiceContextProvider* provider) : provider_(provider)
   {
-    provider_->use_context(this);
+    provider_->set_context(this);
   }
   ServiceContext(ServiceContextProvider* provider, Axgl* axgl) : ServiceContext(provider)
   {
@@ -87,7 +87,7 @@ public:
 
   ~ServiceContext()
   {
-    provider_->use_context(nullptr);
+    provider_->set_context(nullptr);
   }
 };
 

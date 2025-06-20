@@ -6,9 +6,9 @@
 
 NAMESPACE_AXGL_INTERFACE
 
-namespace component
+namespace entity
 {
-  class GuiElement : public Component
+  class GuiElement : public Entity
   {
   public:
     enum class TextAlign { BEGIN, CENTER, END };

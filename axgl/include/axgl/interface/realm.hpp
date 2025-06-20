@@ -47,7 +47,7 @@ public:
   {
 #ifdef AXGL_DEBUG
     if (!parent_)
-      throw std::runtime_error("An entity is not assigned to this component.");
+      throw std::runtime_error("Parent is not assigned.");
 #endif
     return parent_;
   }
@@ -57,13 +57,13 @@ protected:
   {
 #ifdef AXGL_DEBUG
     if (!context_)
-      throw std::runtime_error("RealmContext is not provided here.");
+      throw std::runtime_error("RealmContext is not provided.");
 #endif
     return context_;
   }
 
 public:
-  virtual void use_context(RealmContext* context)
+  virtual void set_context(RealmContext* context)
   {
     context_ = context;
   }
@@ -122,8 +122,8 @@ public:
   std::shared_ptr<ComponentType> get_component_t()
   {
     for (const auto& comp : get_components())
-      if (auto comp_type = std::dynamic_pointer_cast<ComponentType>(comp))
-        return comp_type;
+      if (auto comp_t = std::dynamic_pointer_cast<ComponentType>(comp))
+        return comp_t;
     return nullptr;
   }
 
@@ -135,20 +135,29 @@ public:
   virtual void remove_child(std::shared_ptr<Entity> entity) = 0;
   virtual util::Iterable<std::shared_ptr<Entity>> get_children() const = 0;
 
+  template<typename EntityType>
+  std::shared_ptr<EntityType> get_child_t()
+  {
+    for (const auto& entity : get_children())
+      if (auto entity_t = std::dynamic_pointer_cast<EntityType>(entity))
+        return entity_t;
+    return nullptr;
+  }
+
   //
   // Context
   //
 
-  void use_context(RealmContext* context) override
+  void set_context(RealmContext* context) override
   {
     // set context
-    Component::use_context(context);
+    Component::set_context(context);
     // set context for all components
     for (const auto& component : get_components())
-      component->use_context(context);
+      component->set_context(context);
     // set context for all children
     for (const auto& child : get_children())
-      child->use_context(context);
+      child->set_context(context);
   }
 };
 
@@ -180,11 +189,11 @@ public:
   // Context
   //
 
-  virtual void use_context(RealmContext* context)
+  virtual void set_context(RealmContext* context)
   {
     context_ = context;
     for (const auto& entity : get_entities())
-      entity->use_context(context);
+      entity->set_context(context);
   }
 };
 
@@ -260,10 +269,10 @@ public:
   //
 
 protected:
-  virtual void use_context(RealmContext* context)
+  virtual void set_context(RealmContext* context)
   {
     if (auto realm = get_active_realm())
-      realm->use_context(context);
+      realm->set_context(context);
   }
 };
 

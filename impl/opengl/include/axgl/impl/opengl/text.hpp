@@ -62,10 +62,10 @@ public:
     text_renderer_.unload_font(name);
   }
 
-  std::shared_ptr<interface::component::Mesh> create_text(
+  std::shared_ptr<interface::Entity> create_text(
     const std::string& value,
     const std::vector<std::string>& font,
-    opengl::TextOptions options
+    const opengl::TextOptions& options
   ) const
   {
     opengl::Text text;
@@ -87,7 +87,12 @@ public:
     mesh->replace_vao(opengl::StaticVAOs::instance().quad());
     mesh->set_material(material);
 
-    return mesh;
+    auto text_entity = realm_service_->create_entity<interface::Entity>();
+    text_entity->scale = glm::vec3(text.size, 1.0f);
+    text_entity->update_model_matrix();
+    text_entity->add_component(mesh);
+
+    return text_entity;
   }
 };
 

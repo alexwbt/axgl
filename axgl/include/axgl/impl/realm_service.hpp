@@ -7,6 +7,40 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 
+#define AXGL_USE_COMPONENT_CONTAINER_IMPL(component_container) \
+  public: \
+    void add_component(std::shared_ptr<interface::Component> component) override \
+    { \
+      component->set_parent(this); \
+      component->set_context(context_); \
+      component_container.add_component(std::move(component)); \
+    } \
+    void remove_component(std::shared_ptr<interface::Component> component) override \
+    { \
+      component_container.remove_component(std::move(component)); \
+    } \
+    util::Iterable<std::shared_ptr<interface::Component>> get_components() const override \
+    { \
+      return component_container.get_components(); \
+    }
+
+#define AXGL_USE_ENTITY_CONTAINER_IMPL(entity_container) \
+  public: \
+    void add_child(std::shared_ptr<interface::Entity> entity) override \
+    { \
+      entity->set_parent(this); \
+      entity->set_context(context_); \
+      entity_container.add_entity(std::move(entity)); \
+    } \
+    void remove_child(std::shared_ptr<interface::Entity> entity) override \
+    { \
+      entity_container.remove_entity(std::move(entity)); \
+    } \
+    util::Iterable<std::shared_ptr<interface::Entity>> get_children() const override \
+    { \
+      return entity_container.get_entities(); \
+    }
+
 NAMESPACE_AXGL_IMPL
 
 class ComponentContainer
@@ -68,10 +102,10 @@ public:
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
   }
 
-  void use_context(interface::RealmContext* context)
+  void set_context(interface::RealmContext* context)
   {
     for (const auto& comp : components_)
-      comp->use_context(context);
+      comp->set_context(context);
   }
 
   void set_parent(interface::Entity* parent)
@@ -158,10 +192,10 @@ public:
     return util::to_iterable_t<std::shared_ptr<interface::Entity>>(entities_);
   }
 
-  void use_context(interface::RealmContext* context)
+  void set_context(interface::RealmContext* context)
   {
     for (const auto& entity : entities_)
-      entity->use_context(context);
+      entity->set_context(context);
   }
 
   void set_parent(interface::Entity* parent)
@@ -208,36 +242,8 @@ public:
     children_.on_remove();
   }
 
-  void add_component(std::shared_ptr<interface::Component> component) override
-  {
-    component->set_parent(this);
-    components_.add_component(std::move(component));
-  }
-
-  void remove_component(std::shared_ptr<interface::Component> component) override
-  {
-    components_.remove_component(std::move(component));
-  }
-
-  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
-  {
-    return components_.get_components();
-  }
-
-  void add_child(std::shared_ptr<interface::Entity> entity) override
-  {
-    children_.add_entity(std::move(entity));
-  }
-
-  void remove_child(std::shared_ptr<interface::Entity> entity) override
-  {
-    children_.remove_entity(std::move(entity));
-  }
-
-  util::Iterable<std::shared_ptr<interface::Entity>> get_children() const override
-  {
-    return children_.get_entities();
-  }
+  AXGL_USE_COMPONENT_CONTAINER_IMPL(components_);
+  AXGL_USE_ENTITY_CONTAINER_IMPL(children_);
 };
 
 class Realm : public interface::Realm
@@ -316,7 +322,7 @@ public:
     if (!realm_) return;
 
     context_.realm = realm_.get();
-    use_context(&context_);
+    set_context(&context_);
 
     realm_->update();
   }
@@ -326,7 +332,7 @@ public:
     if (!realm_) return;
 
     realm_->render();
-    use_context(nullptr);
+    set_context(nullptr);
     context_.camera = nullptr;
     context_.lights.clear();
   }

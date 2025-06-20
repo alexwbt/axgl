@@ -30,6 +30,7 @@ namespace opengl
   struct TextOptions final
   {
     uint32_t size = 0;
+    glm::vec4 color{ 1 };
     bool vertical = false;
   };
 
@@ -214,7 +215,7 @@ namespace opengl
       Text& target,
       const std::string& value,
       const std::vector<std::string>& font,
-      TextOptions options
+      const TextOptions& options
     ) const
     {
       std::unordered_map<uint32_t, Character> chars;
@@ -272,7 +273,7 @@ namespace opengl
       auto shader = StaticShaders::instance().text();
       shader->use_program();
       shader->set_int("text_texture", 0);
-      shader->set_vec4("text_color", glm::vec4(1));
+      shader->set_vec4("text_color", options.color);
 
       glm::vec3 advance(0);
       glm::mat4 projection = glm::ortho(
