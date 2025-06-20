@@ -197,7 +197,7 @@ public:
   }
 };
 
-class Entity final : public interface::Entity
+class Entity : public interface::Entity
 {
   ComponentContainer components_;
   EntityContainer children_;
@@ -237,7 +237,7 @@ public:
   AXGL_USE_ENTITY_CONTAINER_IMPL(children_);
 };
 
-class Realm final : public interface::Realm
+class Realm : public interface::Realm
 {
   EntityContainer entities_;
 
@@ -286,7 +286,7 @@ public:
   }
 };
 
-class RealmService final : public interface::RealmService
+class RealmService : public interface::RealmService
 {
   std::shared_ptr<Realm> realm_;
   std::vector<std::shared_ptr<Realm>> realms_;

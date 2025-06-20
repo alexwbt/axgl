@@ -1,7 +1,7 @@
 #include <format>
 #include <vector>
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <filesystem>
@@ -34,9 +34,9 @@ static std::vector<File> read_directory(const std::string& source)
   {
     if (!std::filesystem::is_directory(entry.path()))
     {
-      auto path = entry_to_string(entry.path());
-      auto key = entry_to_string(std::filesystem::relative(entry.path(), source));
-      auto key_hash = to_hash(key);
+      const auto path = entry_to_string(entry.path());
+      const auto key = entry_to_string(std::filesystem::relative(entry.path(), source));
+      const auto key_hash = to_hash(key);
       files.push_back({ path, key, key_hash });
     }
   }
@@ -48,9 +48,8 @@ static void write_files(const std::vector<File>& files, const std::string& targe
   std::ofstream header_output_stream(target + ".hpp");
   header_output_stream << "#pragma once" << std::endl;
   header_output_stream << "#include <span>" << std::endl;
-  header_output_stream << "#include <array>" << std::endl;
   header_output_stream << "#include <string>" << std::endl;
-  header_output_stream << "#include <stdint.h>" << std::endl;
+  header_output_stream << "#include <cstdint>" << std::endl;
   header_output_stream << "#include <unordered_map>" << std::endl;
   if (!ns.empty()) header_output_stream << "namespace " << ns << " {" << std::endl;
   header_output_stream << "extern const std::unordered_map<std::string, std::span<const uint8_t>> data;" << std::endl;
@@ -59,6 +58,7 @@ static void write_files(const std::vector<File>& files, const std::string& targe
 
   std::ofstream output_stream(target + ".cpp");
   output_stream << "#pragma warning(push, 0)" << std::endl;
+  output_stream << "#include <array>" << std::endl;
   output_stream << "#include " << std::filesystem::path(target + ".hpp").filename() << std::endl;
   if (!ns.empty()) output_stream << "namespace " << ns << " {" << std::endl;
 
@@ -103,7 +103,7 @@ static int embed_files(const std::string& source, const std::string& target, con
   return 0;
 }
 
-int main(int argc, char** argv)
+int main(const int argc, char** argv)
 {
   args::ArgumentParser parser("Embeds all files in a directory into a cpp file.");
   args::HelpFlag help(parser, "help", "Display the help menu.", { 'h', "help" });

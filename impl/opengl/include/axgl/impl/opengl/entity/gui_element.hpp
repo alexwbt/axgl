@@ -19,7 +19,7 @@ NAMESPACE_AXGL_IMPL
 
 namespace entity
 {
-  class OpenglGuiElement final : public interface::entity::GuiElement
+  class OpenglGuiElement : public interface::entity::GuiElement
   {
     std::shared_ptr<interface::RealmService> realm_service_;
     std::shared_ptr<interface::RendererService> renderer_service_;

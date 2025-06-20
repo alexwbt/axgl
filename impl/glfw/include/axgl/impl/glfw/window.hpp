@@ -9,7 +9,7 @@
 
 NAMESPACE_AXGL_IMPL
 
-class GlfwWindow final : public interface::Window
+class GlfwWindow : public interface::Window
 {
   std::shared_ptr<glfw::Window> window_;
 

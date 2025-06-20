@@ -1,10 +1,8 @@
 #pragma once
 
-#include <span>
 #include <string>
 #include <fstream>
-#include <stdint.h>
-#include <unordered_map>
+#include <cstdint>
 
 #include <bundlefile/bundle_fbs.h>
 
@@ -13,11 +11,10 @@ namespace bundlefile
 
   class Bundle
   {
-  private:
     std::vector<uint8_t> data_;
 
   public:
-    Bundle(const std::string& path)
+    explicit Bundle(const std::string& path)
     {
       std::ifstream input_stream(path, std::ios::binary | std::ios::ate);
       if (!input_stream)
@@ -30,7 +27,7 @@ namespace bundlefile
       input_stream.read(reinterpret_cast<char*>(data_.data()), size);
     }
 
-    const auto* get_bundle() const
+    [[nodiscard]] const auto* get_bundle() const
     {
       return fbs::bundlefile::GetBundle(data_.data());
     }

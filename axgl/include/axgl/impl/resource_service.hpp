@@ -11,7 +11,7 @@
 
 NAMESPACE_AXGL_IMPL
 
-class ResourceService final : public interface::ResourceService
+class ResourceService : public interface::ResourceService
 {
   std::unordered_map<std::string, std::span<const uint8_t>> resources_;
 

@@ -9,7 +9,7 @@
 
 #include <demo_opengl_gui/res.hpp>
 
-static std::vector<glm::vec3> cube_vertices = {
+static std::vector cube_vertices = {
   glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f),
   glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(00.5f, -0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f, -0.5f,  0.5f),
   glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
@@ -18,7 +18,7 @@ static std::vector<glm::vec3> cube_vertices = {
   glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
 };
 
-static std::vector<glm::vec3> cube_normals = {
+static std::vector cube_normals = {
   glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f),
   glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f),
  -glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),
@@ -27,43 +27,43 @@ static std::vector<glm::vec3> cube_normals = {
   glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f),
 };
 
-class Application : public axgl::interface::Service
+class Application final : public axgl::interface::Service
 {
 public:
   void initialize() override
   {
-    auto axgl = get_context()->axgl;
+    const auto axgl = get_context()->axgl;
 
     // window
-    auto window = axgl->window_service()->create_window();
+    const auto window = axgl->window_service()->create_window();
     window->set_title("Hello gui!");
 
     // input
     axgl->input_service()->set_window(window);
 
     // renderer
-    auto renderer_service = axgl->renderer_service();
-    auto renderer = renderer_service->create_renderer();
+    const auto renderer_service = axgl->renderer_service();
+    const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // resources
-    auto resource_service = axgl->resource_service();
+    const auto resource_service = axgl->resource_service();
     resource_service->load_resources(demo_opengl_gui_res::data);
 
     // realm
-    auto realm_service = axgl->realm_service();
-    auto realm = axgl->realm_service()->create_realm();
+    const auto realm_service = axgl->realm_service();
+    const auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
 
     // cube entity
-    auto cube = realm_service->create_entity<axgl::interface::Entity>();
+    const auto cube = realm_service->create_entity<axgl::interface::Entity>();
     {
       // material
-      auto material = renderer_service->create_material("default");
+      const auto material = renderer_service->create_material("default");
       material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
 
       // cube mesh
-      auto mesh = realm_service->create_component<axgl::interface::component::Mesh>();
+      const auto mesh = realm_service->create_component<axgl::interface::component::Mesh>();
       mesh->set_vertices(cube_vertices);
       mesh->set_normals(cube_normals);
       mesh->set_material(material);
@@ -72,18 +72,18 @@ public:
     realm->add_entity(cube);
 
     // camera entity
-    auto camera_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto camera_entity = realm_service->create_entity<axgl::interface::Entity>();
     {
-      auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+      const auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
       camera_entity->add_component(camera_comp);
     }
     camera_entity->position.z = -2;
     realm->add_entity(camera_entity);
 
     // light entity
-    auto light_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto light_entity = realm_service->create_entity<axgl::interface::Entity>();
     {
-      auto light_comp = realm_service->create_component<axgl::impl::component::Light>();
+      const auto light_comp = realm_service->create_component<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
       light_entity->add_component(light_comp);
     }
@@ -91,18 +91,18 @@ public:
     realm->add_entity(light_entity);
 
     // camera input
-    auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
+    const auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
     camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
 
     // gui entity
-    auto gui_element = realm_service->create_entity<axgl::interface::entity::GuiElement>();
+    const auto gui_element = realm_service->create_entity<axgl::interface::entity::GuiElement>();
     gui_element->props.size = glm::vec2(1, 1);
     gui_element->props.bg_color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     gui_element->props.font = "arial,noto-tc";
-    gui_element->props.content = (const char*)
+    gui_element->props.content = reinterpret_cast<const char*>(
       u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
-      u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。";
+      u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。");
     gui_element->props.font_size = 48;
     gui_element->props.fg_color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
     realm->add_entity(gui_element);

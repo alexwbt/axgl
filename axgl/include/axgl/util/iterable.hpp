@@ -18,7 +18,7 @@ namespace util
     class IteratorWrapper
     {
     public:
-      virtual ~IteratorWrapper() {}
+      virtual ~IteratorWrapper() = default;
 
       virtual reference current() const = 0;
       virtual bool equal(const IteratorWrapper* rhs) const = 0;
@@ -32,7 +32,6 @@ namespace util
     template<typename Iterator>
     class Adaptor : public IteratorWrapper
     {
-    private:
       Iterator iterator_;
 
     public:
@@ -81,7 +80,6 @@ namespace util
   template <typename ValueType>
   class Iterable
   {
-  private:
     AnyIterator<ValueType> begin_;
     AnyIterator<ValueType> end_;
 
@@ -94,7 +92,7 @@ namespace util
       : begin_(other.begin_), end_(other.end_)
     {}
 
-    Iterable(Iterable&& other)
+    Iterable(Iterable&& other) noexcept
       : begin_(std::move(other.begin_)), end_(std::move(other.end_))
     {}
 
@@ -110,7 +108,7 @@ namespace util
   };
 
   template <typename ValueType, typename ContainerType>
-  inline Iterable<ValueType> to_iterable_t(const ContainerType& data)
+  Iterable<ValueType> to_iterable_t(const ContainerType& data)
   {
     using WrapperType = typename AnyIterator<ValueType>::template Adaptor<decltype(std::begin(data))>;
     return {
@@ -120,7 +118,7 @@ namespace util
   }
 
   template <typename ContainerType>
-  inline auto to_iterable(const ContainerType& data)
+  auto to_iterable(const ContainerType& data)
     -> Iterable<typename std::decay<decltype(*std::begin(data))>::type>
   {
     using ValueType = typename std::decay<decltype(*std::begin(data))>::type;

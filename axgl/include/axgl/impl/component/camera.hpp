@@ -7,7 +7,7 @@ NAMESPACE_AXGL_IMPL
 
 namespace component
 {
-  class Camera final : public interface::Component
+  class Camera : public interface::Component
   {
   public:
     interface::Camera camera;

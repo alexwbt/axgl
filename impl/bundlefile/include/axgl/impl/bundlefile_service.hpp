@@ -14,14 +14,13 @@ NAMESPACE_AXGL_IMPL
 
 class BundlefileService : public interface::Service
 {
-private:
   std::shared_ptr<interface::ResourceService> resource_service_;
   std::unordered_map<std::string, std::unique_ptr<bundlefile::Bundle>> bundles_;
 
 public:
   void initialize() override
   {
-    auto context = get_context();
+    const auto context = get_context();
     resource_service_ = context->axgl->resource_service();
   }
 
@@ -29,14 +28,14 @@ public:
   {
     bundles_[path] = std::make_unique<bundlefile::Bundle>(path);
 
-    auto bundle = bundles_[path]->get_bundle();
+    const auto bundle = bundles_[path]->get_bundle();
     for (const auto& file : *bundle->files())
       resource_service_->load_resource(file->key()->str(), flatbuffers::make_span(file->data()));
   }
 
   void unload_bundlefile(const std::string& path)
   {
-    auto bundle = bundles_[path]->get_bundle();
+    const auto bundle = bundles_[path]->get_bundle();
     for (const auto& file : *bundle->files())
       resource_service_->unload_resource(file->key()->str());
 

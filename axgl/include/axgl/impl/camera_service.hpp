@@ -9,7 +9,7 @@
 
 NAMESPACE_AXGL_IMPL
 
-class CameraService final : public interface::Service
+class CameraService : public interface::Service
 {
 public:
   class CameraMode
@@ -59,7 +59,7 @@ public:
   }
 };
 
-class Keyboard3DFreeFlyCameraMode final : public CameraService::CameraMode
+class Keyboard3DFreeFlyCameraMode : public CameraService::CameraMode
 {
   std::shared_ptr<interface::InputService> input_service_;
   std::shared_ptr<interface::Input> escape_;
