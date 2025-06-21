@@ -18,17 +18,45 @@ NAMESPACE_AXGL_IMPL
 class OpenglMaterial : public interface::Material
 {
 public:
+  glm::vec4 color_{ 1.0f, 1.0f, 1.0f, 1.0f };
+  interface::CullMode cull_mode_ = interface::CullMode::kCCW;
+
+  void set_color(const glm::vec4& color) override
+  {
+    color_ = color;
+  }
+
+  void set_cull_mode(const interface::CullMode cull_mode) override
+  {
+    cull_mode_ = cull_mode;
+  }
+
   virtual void use(
     const interface::RealmContext* context,
     const interface::component::Mesh* mesh
-  ) = 0;
+  )
+  {
+    glCullFace(GL_FRONT);
+    switch (cull_mode_)
+    {
+    case interface::CullMode::kCW:
+      glEnable(GL_CULL_FACE);
+      glFrontFace(GL_CW);
+      break;
+    case interface::CullMode::kCCW:
+      glEnable(GL_CULL_FACE);
+      glFrontFace(GL_CCW);
+      break;
+    case interface::CullMode::kNone:
+      glDisable(GL_CULL_FACE);
+      break;
+    }
+  }
 };
 
 class OpenglDefaultMaterial : public OpenglMaterial
 {
-private:
   std::shared_ptr<opengl::ShaderProgram> shader_ = opengl::StaticShaders::instance().mesh_3d();
-  glm::vec4 color_{ 1.0f, 1.0f, 1.0f, 1.0f };
   float shininess_ = 1.0f;
 
   std::shared_ptr<OpenglTexture> diffuse_texture_;
@@ -37,11 +65,6 @@ private:
   std::shared_ptr<OpenglTexture> height_texture_;
 
 public:
-  void set_color(const glm::vec4& color) override
-  {
-    color_ = color;
-  }
-
   void set_prop(const std::string& key, const std::string& value) override
   {
     if (key == "shininess")
@@ -76,9 +99,10 @@ public:
 
   void use(const interface::RealmContext* context, const interface::component::Mesh* mesh) override
   {
-    const auto& pv = context->camera->projection_view_matrix();
-    glm::mat4 model = mesh->get_parent()->get_model();
-    glm::mat4 mvp = pv * model;
+    OpenglMaterial::use(context, mesh);
+
+    const auto model = mesh->get_parent()->get_model();
+    const auto mvp = context->camera->projection_view_matrix() * model;
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);
@@ -96,7 +120,7 @@ public:
   }
 
 private:
-  void use_lights(const std::vector<const interface::Light*>& lights)
+  void use_lights(const std::vector<const interface::Light*>& lights) const
   {
     int sun_lights_size = 0;
     int spot_lights_size = 0;
@@ -144,9 +168,10 @@ private:
   }
 
   void use_texture(
-    int i,
+    const int i,
     const std::string& name,
-    const std::shared_ptr<OpenglTexture>& texture)
+    const std::shared_ptr<OpenglTexture>& texture
+  ) const
   {
     if (!texture) return;
 
@@ -159,17 +184,10 @@ private:
 
 class OpenglDefault2DMaterial : public OpenglMaterial
 {
-private:
   std::shared_ptr<opengl::ShaderProgram> shader_ = opengl::StaticShaders::instance().mesh_2d();
-  glm::vec4 color_{ 1.0f, 1.0f, 1.0f, 1.0f };
   std::shared_ptr<OpenglTexture> texture_;
 
 public:
-  void set_color(const glm::vec4& color) override
-  {
-    color_ = color;
-  }
-
   void set_prop(const std::string& key, const std::string& value) override {}
 
   void add_texture(interface::TextureType type, std::shared_ptr<interface::Texture> texture) override
@@ -183,9 +201,9 @@ public:
 
   void use(const interface::RealmContext* context, const interface::component::Mesh* mesh) override
   {
-    const auto& pv = context->camera->projection_view_matrix();
-    glm::mat4 model = mesh->get_parent()->get_model();
-    glm::mat4 mvp = pv * model;
+    OpenglMaterial::use(context, mesh);
+
+    const auto mvp = context->camera->projection_view_matrix() * mesh->get_parent()->get_model();
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);

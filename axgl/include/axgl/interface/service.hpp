@@ -66,7 +66,7 @@ private:
   ServiceContextProvider* provider_;
 
 public:
-  explicit ServiceContext(ServiceContextProvider* provider) : provider_(provider)
+  ServiceContext(ServiceContextProvider* provider) : provider_(provider)
   {
     provider_->set_context(this);
   }

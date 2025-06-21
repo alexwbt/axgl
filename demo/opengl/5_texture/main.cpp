@@ -17,32 +17,32 @@ int main()
   axgl.use_service<axgl::impl::RealmService>();
 
   // window
-  auto window = axgl.window_service()->create_window();
+  const auto window = axgl.window_service()->create_window();
   window->set_title("Hello texture!");
 
   // renderer
-  auto renderer_service = axgl.renderer_service();
-  auto renderer = renderer_service->create_renderer();
+  const auto renderer_service = axgl.renderer_service();
+  const auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
 
   // realm
-  auto realm_service = axgl.realm_service();
-  auto realm = axgl.realm_service()->create_realm();
+  const auto realm_service = axgl.realm_service();
+  const auto realm = axgl.realm_service()->create_realm();
   realm->set_renderer(renderer);
 
   // square entity
-  auto square_entity = realm_service->create_entity<axgl::interface::Entity>();
+  const auto square_entity = realm_service->create_entity<axgl::interface::Entity>();
   {
     // texture
-    auto texture = renderer_service->create_texture();
+    const auto texture = renderer_service->create_texture();
     texture->load_texture(demo_opengl_texture_res::get("container.png"));
 
     // material
-    auto material = renderer_service->create_material("2d");
+    const auto material = renderer_service->create_material("2d");
     material->add_texture(axgl::interface::TextureType::kDiffuse, texture);
 
     // square mesh
-    auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
+    const auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
     mesh_comp->set_vertices(std::vector<glm::vec2>{
       { 0.5f, 0.5f },
       { 0.5f, -0.5f },
@@ -60,7 +60,7 @@ int main()
     square_entity->add_component(mesh_comp);
 
     // camera
-    auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+    const auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
     camera_comp->camera.orthographic = true;
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;

@@ -10,5 +10,7 @@ in vec2 vert_uv;
 
 void main()
 {
-  FragColor = use_texture ? texture(mesh_texture, vert_uv) * mesh_color : mesh_color;
+  FragColor = use_texture
+   ? texture(mesh_texture, vert_uv) * mesh_color
+   : mesh_color;
 }

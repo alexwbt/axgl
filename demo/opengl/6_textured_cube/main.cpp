@@ -8,7 +8,7 @@
 
 #include <demo_opengl_textured_cube/res.hpp>
 
-static std::vector<glm::vec3> cube_vertices = {
+static std::vector cube_vertices = {
   glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f),
   glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(00.5f, -0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f, -0.5f,  0.5f),
   glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
@@ -17,7 +17,7 @@ static std::vector<glm::vec3> cube_vertices = {
   glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
 };
 
-static std::vector<glm::vec3> cube_normals = {
+static std::vector cube_normals = {
   glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f),
   glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f),
  -glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),
@@ -26,7 +26,7 @@ static std::vector<glm::vec3> cube_normals = {
   glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f),
 };
 
-static std::vector<glm::vec2> cube_uv = {
+static std::vector cube_uv = {
   glm::vec2(0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f), glm::vec2(0.0f, 0.0f),
   glm::vec2(0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 1.0f),
   glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec2(0.0f, 0.0f),
@@ -43,39 +43,39 @@ private:
 public:
   void initialize() override
   {
-    auto axgl = get_context()->axgl;
+    const auto axgl = get_context()->axgl;
 
     // window
-    auto window = axgl->window_service()->create_window();
+    const auto window = axgl->window_service()->create_window();
     window->set_title("Hello textured cube!");
 
     // renderer
-    auto renderer_service = axgl->renderer_service();
-    auto renderer = renderer_service->create_renderer();
+    const auto renderer_service = axgl->renderer_service();
+    const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
-    auto realm_service = axgl->realm_service();
-    auto realm = axgl->realm_service()->create_realm();
+    const auto realm_service = axgl->realm_service();
+    const auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
 
     // cube entity
     cube_entity_ = realm_service->create_entity<axgl::interface::Entity>();
     {
       // diffuse texture
-      auto diffuse_texture = renderer_service->create_texture();
+      const auto diffuse_texture = renderer_service->create_texture();
       diffuse_texture->load_texture(demo_opengl_textured_cube_res::get("container/diffuse.png"));
       // specular texture
-      auto specular_texture = renderer_service->create_texture();
+      const auto specular_texture = renderer_service->create_texture();
       specular_texture->load_texture(demo_opengl_textured_cube_res::get("container/specular.png"));
 
       // material
-      auto material = renderer_service->create_material("default");
+      const auto material = renderer_service->create_material("default");
       material->add_texture(axgl::interface::TextureType::kDiffuse, diffuse_texture);
       material->add_texture(axgl::interface::TextureType::kSpecular, specular_texture);
 
       // square mesh
-      auto mesh = realm_service->create_component<axgl::interface::component::Mesh>();
+      const auto mesh = realm_service->create_component<axgl::interface::component::Mesh>();
       mesh->set_vertices(cube_vertices);
       mesh->set_normals(cube_normals);
       mesh->set_uv(cube_uv);
@@ -85,18 +85,18 @@ public:
     realm->add_entity(cube_entity_);
 
     // camera entity
-    auto camera_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto camera_entity = realm_service->create_entity<axgl::interface::Entity>();
     {
-      auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+      const auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
       camera_entity->add_component(camera_comp);
     }
     camera_entity->position.z = -2;
     realm->add_entity(camera_entity);
 
     // light entity
-    auto light_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto light_entity = realm_service->create_entity<axgl::interface::Entity>();
     {
-      auto light_comp = realm_service->create_component<axgl::impl::component::Light>();
+      const auto light_comp = realm_service->create_component<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
       light_entity->add_component(light_comp);
     }

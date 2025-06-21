@@ -17,7 +17,7 @@ namespace opengl
   public:
     stbi_uc* stbi_ptr;
     GLenum format;
-    int width, height;
+    int width = 0, height = 0;
 
     StbiImage(const std::span<const uint8_t>& data)
     {

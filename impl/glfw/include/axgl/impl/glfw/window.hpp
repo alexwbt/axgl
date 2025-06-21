@@ -14,7 +14,7 @@ class GlfwWindow : public interface::Window
   std::shared_ptr<glfw::Window> window_;
 
 public:
-  explicit GlfwWindow(std::shared_ptr<glfw::Window> window)
+  GlfwWindow(std::shared_ptr<glfw::Window> window)
     : window_(std::move(window))
   {}
 

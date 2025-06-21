@@ -14,7 +14,7 @@ namespace bundlefile
     std::vector<uint8_t> data_;
 
   public:
-    explicit Bundle(const std::string& path)
+    Bundle(const std::string& path)
     {
       std::ifstream input_stream(path, std::ios::binary | std::ios::ate);
       if (!input_stream)

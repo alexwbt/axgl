@@ -18,8 +18,7 @@ NAMESPACE_AXGL_IMPL
 
 class OpenglRenderer : public interface::Renderer
 {
-private:
-  int clear_bit_ = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+  int clear_bit_ = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
   GLfloat clear_color_r_ = 0.0f;
   GLfloat clear_color_g_ = 0.0f;
   GLfloat clear_color_b_ = 0.0f;
@@ -41,9 +40,10 @@ public:
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
+    glEnable(GL_STENCIL_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -63,7 +63,8 @@ public:
 
     glDisable(GL_MULTISAMPLE);
     glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+    glDisable(GL_STENCIL_TEST);
+    glDisable(GL_BLEND);
   }
 
   void set_window(std::shared_ptr<interface::Window> window) override
@@ -86,7 +87,7 @@ public:
     initialized_glad_ = true;
   }
 
-  glm::ivec2 viewport() const
+  glm::ivec2 viewport() const override
   {
     return window_->get_size();
   }

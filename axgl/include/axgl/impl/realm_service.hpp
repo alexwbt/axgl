@@ -13,6 +13,7 @@
     { \
       component->set_parent(this); \
       component->set_context(context_); \
+      component_container.set_parent(this); \
       component_container.add_component(std::move(component)); \
     } \
     void remove_component(std::shared_ptr<interface::Component> component) override \
@@ -46,41 +47,67 @@ NAMESPACE_AXGL_IMPL
 class ComponentContainer
 {
   std::vector<std::shared_ptr<interface::Component>> components_;
+  interface::Entity* parent_ = nullptr;
 
 public:
-  void tick()
+  void tick() const
   {
     for (const auto& comp : components_)
+    {
       if (!comp->disabled)
+      {
+        comp->set_parent(parent_);
         comp->tick();
+      }
+    }
   }
 
-  void update()
+  void update() const
   {
     for (const auto& comp : components_)
+    {
       if (!comp->disabled)
+      {
+        comp->set_parent(parent_);
         comp->update();
+      }
+    }
   }
 
-  void render()
+  void render() const
   {
     for (const auto& comp : components_)
+    {
       if (!comp->disabled)
+      {
+        comp->set_parent(parent_);
         comp->render();
+      }
+    }
   }
 
-  void on_create()
+  void on_create() const
   {
     for (const auto& comp : components_)
+    {
       if (!comp->disabled)
+      {
+        comp->set_parent(parent_);
         comp->on_create();
+      }
+    }
   }
 
-  void on_remove()
+  void on_remove() const
   {
     for (const auto& comp : components_)
+    {
       if (!comp->disabled)
+      {
+        comp->set_parent(parent_);
         comp->on_remove();
+      }
+    }
   }
 
   void add_component(std::shared_ptr<interface::Component> component)
@@ -98,16 +125,9 @@ public:
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
   }
 
-  void set_context(interface::RealmContext* context) const
+  void set_parent(interface::Entity* parent)
   {
-    for (const auto& comp : components_)
-      comp->set_context(context);
-  }
-
-  void set_parent(interface::Entity* parent) const
-  {
-    for (const auto& comp : components_)
-      comp->set_parent(parent);
+    parent_ = parent;
   }
 };
 
