@@ -6,7 +6,7 @@
 
 NAMESPACE_AXGL_INTERFACE
 
-class GuiService : public Service
+class GuiService : virtual public Service
 {
 public:
   virtual std::shared_ptr<entity::GuiElement> create_gui_element() = 0;

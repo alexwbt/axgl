@@ -93,7 +93,7 @@ public:
   }
 };
 
-class OpenglRendererService : public interface::RendererService
+class OpenglRendererService : public ServiceBase, public interface::RendererService
 {
 public:
   std::shared_ptr<interface::Renderer> create_renderer() override

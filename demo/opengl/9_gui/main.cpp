@@ -43,10 +43,10 @@ public:
     for (int i = 0; i < 1000; i++)
     {
       const auto grass = create_grass(axgl);
-      grass->position.x = pos_dis(gen);
-      grass->position.y = -2;
-      grass->position.z = pos_dis(gen);
-      grass->rotation.y = rot_dis(gen);
+      grass->transform()->position.x = pos_dis(gen);
+      grass->transform()->position.y = -2;
+      grass->transform()->position.z = pos_dis(gen);
+      grass->transform()->rotation.y = rot_dis(gen);
       grass->update_model_matrix();
       realm->add_entity(grass);
     }

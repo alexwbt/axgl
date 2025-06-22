@@ -144,9 +144,7 @@ enum class CursorMode
   NORMAL,
 };
 
-class Input;
-class Pointer;
-class InputService : public Service
+class Input final
 {
   static uint32_t next_id()
   {
@@ -154,6 +152,41 @@ class InputService : public Service
     return next_id_++;
   }
 
+public:
+  const uint32_t id;
+  std::string name;
+  InputSource source;
+  uint32_t tick;
+
+  Input(std::string name, const InputSource source) :
+    id(next_id()), name(std::move(name)), source(source), tick(0)
+  {}
+};
+
+class Pointer final
+{
+  static uint32_t next_id()
+  {
+    static uint32_t next_id_ = 1;
+    return next_id_++;
+  }
+
+public:
+  const uint32_t id;
+  std::string name;
+  PointerSource source;
+  glm::ivec2 position;
+  glm::ivec2 delta;
+  uint32_t tick;
+
+  Pointer(std::string name, const PointerSource source) :
+    id(next_id()), name(std::move(name)), source(source),
+    position(0), delta(0), tick(0)
+  {}
+};
+
+class InputService : virtual public Service
+{
 public:
   virtual void set_window(std::shared_ptr<Window> window) = 0;
   virtual void add_input(std::shared_ptr<Input> input) = 0;
@@ -165,35 +198,6 @@ public:
 
   friend class Input;
   friend class Pointer;
-};
-
-class Input
-{
-public:
-  const uint32_t id;
-  std::string name;
-  InputSource source;
-  uint32_t tick;
-
-  Input(std::string name, const InputSource source) :
-    id(InputService::next_id()), name(std::move(name)), source(source), tick(0)
-  {}
-};
-
-class Pointer
-{
-public:
-  const uint32_t id;
-  std::string name;
-  PointerSource source;
-  glm::ivec2 position;
-  glm::ivec2 delta;
-  uint32_t tick;
-
-  Pointer(std::string name, const PointerSource source) :
-    id(InputService::next_id()), name(std::move(name)), source(source),
-    position(0), delta(0), tick(0)
-  {}
 };
 
 NAMESPACE_AXGL_INTERFACE_END

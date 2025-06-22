@@ -6,10 +6,11 @@
 #include <axgl/interface/camera.hpp>
 #include <axgl/interface/service.hpp>
 #include <axgl/impl/component/camera.hpp>
+#include <axgl/impl/service.hpp>
 
 NAMESPACE_AXGL_IMPL
 
-class CameraService : public interface::Service
+class CameraService : public ServiceBase
 {
 public:
   class CameraMode
@@ -55,7 +56,7 @@ public:
     if (!camera_mode_ || !camera_entity_)
       return;
     camera_mode_->update(camera_comp_->camera);
-    camera_entity_->position = camera_comp_->camera.position;
+    camera_entity_->transform()->position = camera_comp_->camera.position;
   }
 };
 
@@ -123,8 +124,8 @@ public:
       controlling_ = !controlling_;
 
       input_service_->set_cursor_mode(controlling_
-        ? axgl::interface::CursorMode::LOCKED
-        : axgl::interface::CursorMode::NORMAL);
+        ? interface::CursorMode::LOCKED
+        : interface::CursorMode::NORMAL);
     }
 
     if (!controlling_)
@@ -151,7 +152,6 @@ public:
 
 class Keyboard2DFreeFlyCameraMode : public CameraService::CameraMode
 {
-private:
   std::shared_ptr<interface::Input> up_;
   std::shared_ptr<interface::Input> down_;
   std::shared_ptr<interface::Input> left_;

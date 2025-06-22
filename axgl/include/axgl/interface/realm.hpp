@@ -3,10 +3,7 @@
 #include <format>
 #include <cstdint>
 
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
@@ -24,17 +21,10 @@ NAMESPACE_AXGL_INTERFACE
 class Realm;
 class Entity;
 class RealmService;
-class RealmContext;
+struct RealmContext;
 
 class Component
 {
-public:
-  bool disabled = false;
-
-protected:
-  RealmContext* context_ = nullptr;
-  Entity* parent_ = nullptr;
-
 public:
   virtual ~Component() = default;
   virtual void tick() {}
@@ -43,63 +33,34 @@ public:
   virtual void on_create() {}
   virtual void on_remove() {}
 
-  [[nodiscard]] Entity* get_parent() const
-  {
-#ifdef AXGL_DEBUG
-    if (!parent_)
-      throw std::runtime_error("Parent is not assigned.");
-#endif
-    return parent_;
-  }
+  virtual uint32_t ticks() const = 0;
+  virtual void set_disabled(bool) = 0;
+  virtual bool is_disabled() const = 0;
 
 protected:
-  [[nodiscard]] RealmContext* get_context() const
-  {
-#ifdef AXGL_DEBUG
-    if (!context_)
-      throw std::runtime_error("RealmContext is not provided.");
-#endif
-    return context_;
-  }
-
+  virtual RealmContext* get_context() const = 0;
 public:
-  virtual void set_context(RealmContext* context)
-  {
-    context_ = context;
-  }
-
-  virtual void set_parent(Entity* parent)
-  {
-    parent_ = parent;
-  }
+  virtual void set_context(RealmContext* context) = 0;
+  virtual void set_parent(Entity* parent) = 0;
+  virtual Entity* get_parent() const = 0;
 };
 
-class Entity : public Component
+struct Transformation final
 {
-  glm::mat4 model_matrix_{ 1.0f };
-
-public:
   glm::vec3 scale{ 1.0f };
   glm::vec3 rotation{ 0.0f };
   glm::vec3 position{ 0.0f };
+};
 
-  uint32_t ticks = 0;
-  bool should_remove = false;
+class Entity : virtual public Component
+{
+public:
+  virtual Transformation* transform() = 0;
+  virtual void update_model_matrix() = 0;
+  virtual glm::mat4 get_model_matrix() const = 0;
 
-  void update_model_matrix()
-  {
-    model_matrix_
-      = glm::translate(glm::mat4(1.0f), position)
-      * glm::toMat4(glm::quat(rotation))
-      * glm::scale(scale);
-  }
-
-  [[nodiscard]] glm::mat4 get_model() const
-  {
-    return parent_
-      ? parent_->model_matrix_ * model_matrix_
-      : model_matrix_;
-  }
+  virtual void mark_remove(bool should_remove) = 0;
+  virtual bool should_remove() const = 0;
 
   //
   // Component management functions
@@ -107,10 +68,10 @@ public:
 
   virtual void add_component(std::shared_ptr<Component> component) = 0;
   virtual void remove_component(std::shared_ptr<Component> component) = 0;
-  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
+  virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
 
   template<typename ComponentType>
-  [[nodiscard]] std::shared_ptr<ComponentType> get_component_t()
+  std::shared_ptr<ComponentType> get_component_t()
   {
     for (const auto& comp : get_components())
       if (auto comp_t = std::dynamic_pointer_cast<ComponentType>(comp))
@@ -124,10 +85,10 @@ public:
 
   virtual void add_child(std::shared_ptr<Entity> entity) = 0;
   virtual void remove_child(std::shared_ptr<Entity> entity) = 0;
-  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Entity>> get_children() const = 0;
+  virtual util::Iterable<std::shared_ptr<Entity>> get_children() const = 0;
 
   template<typename EntityType>
-  [[nodiscard]] std::shared_ptr<EntityType> get_child_t()
+  std::shared_ptr<EntityType> get_child_t()
   {
     for (const auto& entity : get_children())
       if (auto entity_t = std::dynamic_pointer_cast<EntityType>(entity))
@@ -154,15 +115,11 @@ public:
 
 class Realm
 {
-protected:
-  RealmContext* context_ = nullptr;
-  std::shared_ptr<Renderer> renderer_;
-
 public:
   virtual ~Realm() = default;
-
-  void set_renderer(std::shared_ptr<Renderer> renderer) { renderer_ = std::move(renderer); }
-  [[nodiscard]] std::shared_ptr<Renderer> get_renderer() const { return renderer_; }
+  virtual void set_context(RealmContext* context) = 0;
+  virtual void set_renderer(std::shared_ptr<Renderer> renderer) = 0;
+  virtual std::shared_ptr<Renderer> get_renderer() const = 0;
 
   virtual void tick() = 0;
   virtual void update() = 0;
@@ -174,18 +131,7 @@ public:
 
   virtual void add_entity(std::shared_ptr<Entity> entity) = 0;
   virtual void remove_entity(std::shared_ptr<Entity> entity) = 0;
-  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Entity>> get_entities() const = 0;
-
-  //
-  // Context
-  //
-
-  virtual void set_context(RealmContext* context)
-  {
-    context_ = context;
-    for (const auto& entity : get_entities())
-      entity->set_context(context);
-  }
+  virtual util::Iterable<std::shared_ptr<Entity>> get_entities() const = 0;
 };
 
 class RealmService : public Service
@@ -193,7 +139,7 @@ class RealmService : public Service
 public:
   virtual std::shared_ptr<Realm> create_realm() = 0;
   virtual void set_active_realm(std::shared_ptr<Realm> realm) = 0;
-  [[nodiscard]] virtual std::shared_ptr<Realm> get_active_realm() const = 0;
+  virtual std::shared_ptr<Realm> get_active_realm() const = 0;
 
   //
   // Component factory functions
@@ -262,14 +208,13 @@ public:
 protected:
   virtual void set_context(RealmContext* context)
   {
-    if (auto realm = get_active_realm())
+    if (const auto& realm = get_active_realm())
       realm->set_context(context);
   }
 };
 
-class RealmContext final
+struct RealmContext final
 {
-public:
   const Axgl* axgl = nullptr;
   Realm* realm = nullptr;
 

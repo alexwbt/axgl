@@ -53,20 +53,20 @@ inline std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 #endif
 
   // set glfw context
-  auto window_service = get_service<impl::GlfwWindowService>("window");
+  const auto window_service = get_service<impl::GlfwWindowService>("window");
   window_service->set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   window_service->set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 3);
   window_service->set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  // create opengl service
-  auto opengl_service = std::make_shared<impl::OpenglRendererService>();
-  register_service("renderer", opengl_service);
+  // register opengl service
+  const auto opengl_service = std::make_shared<impl::OpenglRendererService>();
+  register_service("renderer", std::static_pointer_cast<interface::RendererService>(opengl_service));
 
   // register opengl related services
-  auto text_service = std::make_shared<impl::OpenglTextService>();
-  auto gui_service = std::make_shared<impl::OpenglGuiService>();
+  const auto gui_service = std::make_shared<impl::OpenglGuiService>();
+  register_service("gui", std::static_pointer_cast<interface::GuiService>(gui_service));
+  const auto text_service = std::make_shared<impl::OpenglTextService>();
   register_service("text", text_service);
-  register_service("gui", gui_service);
 
   return opengl_service;
 }

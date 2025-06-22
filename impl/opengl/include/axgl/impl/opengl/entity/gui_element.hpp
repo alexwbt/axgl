@@ -17,7 +17,7 @@ NAMESPACE_AXGL_IMPL
 
 namespace entity
 {
-  class OpenglGuiElement : public interface::entity::GuiElement
+  class OpenglGuiElement final : public interface::entity::GuiElement, public Entity
   {
     std::shared_ptr<interface::RealmService> realm_service_;
     std::shared_ptr<interface::RendererService> renderer_service_;
@@ -25,15 +25,9 @@ namespace entity
     std::shared_ptr<interface::Entity> content_text_ = nullptr;
     std::shared_ptr<interface::component::Mesh> background_ = nullptr;
 
-    EntityContainer children_;
-    ComponentContainer components_;
-
-    AXGL_USE_ENTITY_CONTAINER_IMPL(children_);
-    AXGL_USE_COMPONENT_CONTAINER_IMPL(components_);
-
     void on_create() override
     {
-      auto context = get_context();
+      const auto context = GuiElement::get_context();
       realm_service_ = context->axgl->realm_service();
       renderer_service_ = context->axgl->renderer_service();
 
@@ -58,23 +52,10 @@ namespace entity
 
     void update() override
     {
-      // TODO: move this to a 2D container entity?
-      //// update viewport
-      //auto context = get_context();
-      //auto renderer = context->realm->get_renderer();
-      //const auto& viewport = renderer->viewport();
-      //if (viewport.x != camera_.viewport.x || viewport.y != camera_.viewport.y)
-      //{
-      //  camera_.viewport.x = viewport.x;
-      //  camera_.viewport.y = viewport.y;
-      //  camera_.set_projection_view_matrix(
-      //    glm::ortho(camera_.viewport.x, 0.0f, 0.0f, camera_.viewport.y));
-      //}
-
       // update models
-      scale = glm::vec3(props.size, 1);
-      position = glm::vec3(props.origin + props.offset, 0);
-      update_model_matrix();
+      GuiElement::transform()->scale = glm::vec3(props.size, 1);
+      GuiElement::transform()->position = glm::vec3(props.origin + props.offset, 0);
+      GuiElement::update_model_matrix();
 
       components_.update();
       children_.update();
@@ -94,14 +75,14 @@ namespace entity
     {
       if (content_text_)
       {
-        remove_child(content_text_);
+        GuiElement::remove_child(content_text_);
         content_text_ = nullptr;
       }
 
       if (props.content.empty())
         return;
 
-      const auto context = get_context();
+      const auto context = GuiElement::get_context();
       const auto text_service = context->axgl->get_service<OpenglTextService>("text");
 
       const auto font = util::split(props.font, ',');
@@ -126,7 +107,7 @@ namespace entity
       const auto text_mesh = content_text_->get_component_t<interface::component::Mesh>();
       text_mesh->get_material()->set_color(props.fg_color);
 
-      add_child(content_text_);
+      GuiElement::add_child(content_text_);
     }
 
     void update_background()
@@ -140,28 +121,10 @@ namespace entity
         const auto material = renderer_service_->create_material("2d");
         background_->set_material(material);
 
-        add_component(background_);
+        GuiElement::add_component(background_);
       }
       background_->get_material()->set_color(props.bg_color);
     }
-
-    /*void set_context(interface::RealmContext* context) override
-    {
-      if (context)
-      {
-        context_ = *context;
-        context_.camera = &camera_;
-        Component::set_context(&context_);
-        components_.set_context(&context_);
-        children_.set_context(&context_);
-      }
-      else
-      {
-        Component::set_context(nullptr);
-        components_.set_context(nullptr);
-        children_.set_context(nullptr);
-      }
-    }*/
   };
 }
 

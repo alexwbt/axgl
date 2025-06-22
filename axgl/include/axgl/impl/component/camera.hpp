@@ -7,7 +7,7 @@ NAMESPACE_AXGL_IMPL
 
 namespace component
 {
-  class Camera : public interface::Component
+  class Camera : public ComponentBase
   {
   public:
     interface::Camera camera;
@@ -26,9 +26,9 @@ namespace component
         camera.update_projection_view_matrix();
       }
 
-      if (camera.position != parent->position)
+      if (camera.position != parent->transform()->position)
       {
-        camera.position = parent->position;
+        camera.position = parent->transform()->position;
         camera.update_projection_view_matrix();
       }
 

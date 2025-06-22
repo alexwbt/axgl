@@ -7,12 +7,13 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
 #include <axgl/interface/resource.hpp>
+#include <axgl/impl/service.hpp>
 
 #include <bundlefile/unbundle.hpp>
 
 NAMESPACE_AXGL_IMPL
 
-class BundlefileService : public interface::Service
+class BundlefileService : public ServiceBase
 {
   std::shared_ptr<interface::ResourceService> resource_service_;
   std::unordered_map<std::string, std::unique_ptr<bundlefile::Bundle>> bundles_;

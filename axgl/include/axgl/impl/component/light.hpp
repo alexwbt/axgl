@@ -7,19 +7,18 @@ NAMESPACE_AXGL_IMPL
 
 namespace component
 {
-  class Light : public interface::Component
+  class Light : public ComponentBase
   {
   public:
     interface::Light light;
 
     void update() override
     {
-      const auto parent = get_parent();
+      const auto transform = get_parent()->transform();
+      light.position = transform->position;
+      light.direction = transform->rotation;
+
       const auto context = get_context();
-
-      light.position = parent->position;
-      light.direction = parent->rotation;
-
       context->lights.push_back(&light);
     }
   };

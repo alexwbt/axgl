@@ -10,17 +10,40 @@
 #include <axgl/interface/service.hpp>
 #include <axgl/util/string.hpp>
 
-NAMESPACE_AXGL
+NAMESPACE_AXGL_IMPL
 
-class ServiceManager : public interface::ServiceContextProvider
+class ServiceBase : virtual public interface::Service
+{
+  const interface::ServiceContext* context_ = nullptr;
+
+public:
+  void set_context(const interface::ServiceContext* context) override
+  {
+#ifdef AXGL_DEBUG
+    if (context_)
+      throw std::runtime_error("Service context already set.");
+#endif
+    context_ = context;
+  }
+
+protected:
+  [[nodiscard]] const interface::ServiceContext* get_context() const override
+  {
+#ifdef AXGL_DEBUG
+    if (!context_)
+      throw std::runtime_error("ServiceContext is not provided here.");
+#endif
+    return context_;
+  }
+};
+
+class ServiceManager
 {
   std::vector<std::shared_ptr<interface::Service>> services_;
   std::unordered_map<std::string, std::shared_ptr<interface::Service>> service_map_;
 
-  util::Iterable<std::shared_ptr<interface::Service>> services() const override
-  {
-    return util::to_iterable(services_);
-  }
+protected:
+  interface::ServiceContext context_;
 
 public:
   virtual ~ServiceManager() {}
@@ -36,6 +59,7 @@ public:
     if (has_service(id))
       throw std::runtime_error(std::format("Trying to register service but service with id '{}' already exists.", id));
 #endif
+    service->set_context(&context_);
     service_map_.insert({ id, service });
     services_.push_back(std::move(service));
   }
@@ -77,47 +101,41 @@ public:
     return service;
   }
 
-  void initialize(Axgl* axgl)
+  void initialize() const
   {
-    interface::ServiceContext context(this, axgl);
     for (const auto& service : services_)
       service->initialize();
   }
 
-  void terminate(Axgl* axgl)
+  void terminate() const
   {
-    interface::ServiceContext context(this, axgl);
     for (const auto& service : services_)
       service->terminate();
   }
 
-  void tick(Axgl* axgl)
+  void tick() const
   {
-    interface::ServiceContext context(this, axgl);
     for (const auto& service : services_)
       if (service->running())
         service->tick();
   }
 
-  void update(Axgl* axgl)
+  void update() const
   {
-    interface::ServiceContext context(this, axgl);
     for (const auto& service : services_)
       if (service->running())
         service->update();
   }
 
-  void render(Axgl* axgl)
+  void render() const
   {
-    interface::ServiceContext context(this, axgl);
     for (const auto& service : services_)
       if (service->running())
         service->render();
   }
 
-  bool running(Axgl* axgl)
+  bool running() const
   {
-    interface::ServiceContext context(this, axgl);
     return std::ranges::any_of(services_,
       [&](const auto& service) { return service->keep_alive(); });
   }
@@ -133,4 +151,4 @@ public:
   }
 };
 
-NAMESPACE_AXGL_END
+NAMESPACE_AXGL_IMPL_END

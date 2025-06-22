@@ -4,6 +4,7 @@
 
 #include <axgl/common.hpp>
 #include <axgl/interface/window.hpp>
+#include <axgl/impl/service.hpp>
 
 #include <glfw/window.hpp>
 
@@ -66,14 +67,13 @@ public:
     return window_->get_size();
   }
 
-public:
   auto glfw_window() const
   {
     return window_;
   }
 };
 
-class GlfwWindowService : public interface::WindowService
+class GlfwWindowService final : public interface::WindowService, public ServiceBase
 {
 public:
   void terminate() override

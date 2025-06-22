@@ -11,6 +11,7 @@
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/impl/opengl/component/mesh.hpp>
+#include <axgl/impl/service.hpp>
 
 #include <opengl/text.hpp>
 #include <opengl/static_vaos.hpp>
@@ -23,9 +24,8 @@ struct OpenglText final
   glm::vec2 offset{ 0 };
 };
 
-class OpenglTextService : public interface::Service
+class OpenglTextService : public ServiceBase
 {
-private:
   opengl::TextRenderer text_renderer_;
 
   std::shared_ptr<interface::RendererService> renderer_service_;
@@ -88,7 +88,7 @@ public:
     mesh->set_material(material);
 
     auto text_entity = realm_service_->create_entity<interface::Entity>();
-    text_entity->scale = glm::vec3(text.size, 1.0f);
+    text_entity->transform()->scale = glm::vec3(text.size, 1.0f);
     text_entity->update_model_matrix();
     text_entity->add_component(mesh);
 

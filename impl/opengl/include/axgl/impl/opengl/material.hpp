@@ -101,7 +101,7 @@ public:
   {
     OpenglMaterial::use(context, mesh);
 
-    const auto model = mesh->get_parent()->get_model();
+    const auto model = mesh->get_parent()->get_model_matrix();
     const auto mvp = context->camera->projection_view_matrix() * model;
 
     shader_->use_program();
@@ -203,7 +203,8 @@ public:
   {
     OpenglMaterial::use(context, mesh);
 
-    const auto mvp = context->camera->projection_view_matrix() * mesh->get_parent()->get_model();
+    const auto& model = mesh->get_parent()->get_model_matrix();
+    const auto mvp = context->camera->projection_view_matrix() * model;
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);

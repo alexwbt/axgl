@@ -22,14 +22,14 @@ public:
   virtual void hide() = 0;
   virtual void show() = 0;
   virtual void close() = 0;
-  [[nodiscard]] virtual bool ready() const = 0;
+  virtual bool ready() const = 0;
   // render
   virtual void use() const = 0;
   virtual void swap_buffers() const = 0;
-  [[nodiscard]] virtual glm::ivec2 get_size() const = 0;
+  virtual glm::ivec2 get_size() const = 0;
 };
 
-class WindowService : public Service
+class WindowService : virtual public Service
 {
 public:
   virtual std::shared_ptr<Window> create_window() = 0;

@@ -3,48 +3,18 @@
 #include <vector>
 #include <memory>
 
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <axgl/axgl.hpp>
 #include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 
-#define AXGL_USE_COMPONENT_CONTAINER_IMPL(component_container) \
-  public: \
-    void add_component(std::shared_ptr<interface::Component> component) override \
-    { \
-      component->set_parent(this); \
-      component->set_context(context_); \
-      component_container.set_parent(this); \
-      component_container.add_component(std::move(component)); \
-    } \
-    void remove_component(std::shared_ptr<interface::Component> component) override \
-    { \
-      component_container.remove_component(std::move(component)); \
-    } \
-    util::Iterable<std::shared_ptr<interface::Component>> get_components() const override \
-    { \
-      return component_container.get_components(); \
-    }
-
-#define AXGL_USE_ENTITY_CONTAINER_IMPL(entity_container) \
-  public: \
-    void add_child(std::shared_ptr<interface::Entity> entity) override \
-    { \
-      entity->set_parent(this); \
-      entity->set_context(context_); \
-      entity_container.add_entity(std::move(entity)); \
-    } \
-    void remove_child(std::shared_ptr<interface::Entity> entity) override \
-    { \
-      entity_container.remove_entity(std::move(entity)); \
-    } \
-    util::Iterable<std::shared_ptr<interface::Entity>> get_children() const override \
-    { \
-      return entity_container.get_entities(); \
-    }
-
 NAMESPACE_AXGL_IMPL
 
-class ComponentContainer
+class ComponentContainer final
 {
   std::vector<std::shared_ptr<interface::Component>> components_;
   interface::Entity* parent_ = nullptr;
@@ -54,7 +24,7 @@ public:
   {
     for (const auto& comp : components_)
     {
-      if (!comp->disabled)
+      if (!comp->is_disabled())
       {
         comp->set_parent(parent_);
         comp->tick();
@@ -66,7 +36,7 @@ public:
   {
     for (const auto& comp : components_)
     {
-      if (!comp->disabled)
+      if (!comp->is_disabled())
       {
         comp->set_parent(parent_);
         comp->update();
@@ -78,7 +48,7 @@ public:
   {
     for (const auto& comp : components_)
     {
-      if (!comp->disabled)
+      if (!comp->is_disabled())
       {
         comp->set_parent(parent_);
         comp->render();
@@ -90,7 +60,7 @@ public:
   {
     for (const auto& comp : components_)
     {
-      if (!comp->disabled)
+      if (!comp->is_disabled())
       {
         comp->set_parent(parent_);
         comp->on_create();
@@ -102,7 +72,7 @@ public:
   {
     for (const auto& comp : components_)
     {
-      if (!comp->disabled)
+      if (!comp->is_disabled())
       {
         comp->set_parent(parent_);
         comp->on_remove();
@@ -131,7 +101,7 @@ public:
   }
 };
 
-class EntityContainer
+class EntityContainer final
 {
   std::vector<std::shared_ptr<interface::Entity>> entities_;
 
@@ -139,17 +109,14 @@ public:
   void tick() const
   {
     for (const auto& entity : entities_)
-    {
       entity->tick();
-      ++entity->ticks;
-    }
   }
 
   void update()
   {
     for (const auto& entity : entities_)
     {
-      if (entity->ticks == 0)
+      if (entity->ticks() == 0)
         entity->on_create();
 
       entity->update();
@@ -193,7 +160,7 @@ public:
     {
       if (e == entity)
       {
-        e->should_remove = true;
+        e->mark_remove(true);
         break;
       }
     }
@@ -217,14 +184,74 @@ public:
   }
 };
 
-class Entity : public interface::Entity
+class ComponentBase : virtual public interface::Component
 {
+  bool disabled_ = false;
+  uint32_t ticks_ = 0;
+
+protected:
+  interface::RealmContext* context_ = nullptr;
+  interface::Entity* parent_ = nullptr;
+
+  [[nodiscard]] interface::Entity* get_parent() const override
+  {
+#ifdef AXGL_DEBUG
+    if (!parent_)
+      throw std::runtime_error("Parent is not assigned.");
+#endif
+    return parent_;
+  }
+
+  [[nodiscard]] interface::RealmContext* get_context() const override
+  {
+#ifdef AXGL_DEBUG
+    if (!context_)
+      throw std::runtime_error("RealmContext is not provided.");
+#endif
+    return context_;
+  }
+
+public:
+  void set_context(interface::RealmContext* context) override { context_ = context; }
+  void set_parent(interface::Entity* parent) override { parent_ = parent;}
+
+  void set_disabled(const bool disabled) override { disabled_ = disabled; }
+  bool is_disabled() const override { return disabled_; }
+
+  void tick() override { ++ticks_; }
+  uint32_t ticks() const override { return ticks_; }
+};
+
+class Entity : virtual public interface::Entity, public ComponentBase
+{
+  glm::mat4 model_matrix_{ 1.0f };
+  interface::Transformation transform_;
+
+protected:
   ComponentContainer components_;
   EntityContainer children_;
 
 public:
+  interface::Transformation* transform() override { return &transform_; }
+
+  void update_model_matrix() override
+  {
+    model_matrix_
+      = glm::translate(glm::mat4(1.0f), transform_.position)
+      * glm::toMat4(glm::quat(transform_.rotation))
+      * glm::scale(transform_.scale);
+  }
+
+  [[nodiscard]] glm::mat4 get_model_matrix() const override
+  {
+    return parent_
+      ? parent_->get_model_matrix() * model_matrix_
+      : model_matrix_;
+  }
+
   void tick() override
   {
+    ComponentBase::tick();
     components_.tick();
     children_.tick();
   }
@@ -253,15 +280,53 @@ public:
     children_.on_remove();
   }
 
-  AXGL_USE_COMPONENT_CONTAINER_IMPL(components_);
-  AXGL_USE_ENTITY_CONTAINER_IMPL(children_);
+  void add_component(std::shared_ptr<interface::Component> component) override
+  {
+    component->set_parent(this);
+    component->set_context(context_);
+    components_.set_parent(this);
+    components_.add_component(std::move(component));
+  }
+
+  void remove_component(std::shared_ptr<interface::Component> component) override
+  {
+    components_.remove_component(std::move(component));
+  }
+
+  util::Iterable<std::shared_ptr<interface::Component>> get_components() const override
+  {
+    return components_.get_components();
+  }
+
+  void add_child(std::shared_ptr<interface::Entity> entity) override
+  {
+    entity->set_parent(this);
+    entity->set_context(context_);
+    children_.add_entity(std::move(entity));
+  }
+
+  void remove_child(std::shared_ptr<interface::Entity> entity) override
+  {
+  children_.remove_entity(std::move(entity));
+  }
+
+  util::Iterable<std::shared_ptr<interface::Entity>> get_children() const override
+  {
+    return children_.get_entities();
+  }
 };
 
 class Realm : public interface::Realm
 {
   EntityContainer entities_;
 
+  interface::RealmContext* context_ = nullptr;
+  std::shared_ptr<interface::Renderer> renderer_;
+
 public:
+  void set_renderer(std::shared_ptr<interface::Renderer> renderer) override { renderer_ = std::move(renderer); }
+  [[nodiscard]] std::shared_ptr<interface::Renderer> get_renderer() const override { return renderer_; }
+
   void tick() override
   {
     entities_.tick();
@@ -303,6 +368,13 @@ public:
   [[nodiscard]] util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const override
   {
     return entities_.get_entities();
+  }
+
+  void set_context(interface::RealmContext* context) override
+  {
+    context_ = context;
+    for (const auto& entity : get_entities())
+      entity->set_context(context);
   }
 };
 

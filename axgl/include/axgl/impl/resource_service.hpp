@@ -9,9 +9,11 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/resource.hpp>
 
+#include <axgl/impl/service.hpp>
+
 NAMESPACE_AXGL_IMPL
 
-class ResourceService : public interface::ResourceService
+class ResourceService : public interface::ResourceService, public ServiceBase
 {
   std::unordered_map<std::string, std::span<const uint8_t>> resources_;
 
@@ -54,7 +56,7 @@ template<>
 inline std::shared_ptr<impl::ResourceService> Axgl::use_service()
 {
   auto resource_service = std::make_shared<impl::ResourceService>();
-  register_service("resource", resource_service);
+  register_service("resource", std::static_pointer_cast<interface::ResourceService>(resource_service));
 
   return resource_service;
 }

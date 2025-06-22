@@ -8,9 +8,8 @@
 
 NAMESPACE_AXGL_IMPL
 
-class GlfwInputService : public interface::InputService
+class GlfwInputService : public interface::InputService, public ServiceBase
 {
-private:
   std::shared_ptr<GlfwWindow> window_;
   std::list<std::shared_ptr<interface::Input>> inputs_;
   std::list<std::shared_ptr<interface::Pointer>> pointers_;

@@ -9,15 +9,13 @@
 #include <spdlog/spdlog.h>
 
 #include <axgl/common.hpp>
-#include <axgl/interface/service.hpp>
 #include <axgl/interface/window.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/resource.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/model.hpp>
-#include <axgl/impl/service_manager.hpp>
-#include <axgl/util/string.hpp>
+#include <axgl/impl/service.hpp>
 
 NAMESPACE_AXGL
 
@@ -31,21 +29,26 @@ namespace DefaultServices
   constexpr auto kModel = "model";
 };
 
-#define DECLARE_SERVICE_GETTER(service_name, service_getter_name) \
+#define AXGL_DECLARE_SERVICE_GETTER(service_name, service_getter_name) \
   std::shared_ptr<interface::service_name##Service> service_getter_name##_service() const { \
     return get_service<interface::service_name##Service>(DefaultServices::k##service_name); \
   }
 
-class Axgl final : public ServiceManager
+class Axgl final : public impl::ServiceManager
 {
 public:
-  void run()
+  Axgl()
+  {
+    context_.axgl = this;
+  }
+
+  void run() const
   {
 #ifdef AXGL_DEBUG
     CPPTRACE_TRY
     {
 #endif
-    initialize(this);
+    initialize();
 
     constexpr int64_t kOneSecond = 1000000000;
     constexpr double kTimeStep = kOneSecond / 60.0;
@@ -53,12 +56,12 @@ public:
     auto start_time = std::chrono::high_resolution_clock::now();
     double delta_time = 0.0;
 
-    while (running(this))
+    while (running())
     {
       ZoneScopedN("Main Loop");
 
       auto now = std::chrono::high_resolution_clock::now();
-      delta_time += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
+      delta_time += std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
       start_time = now;
 
       auto should_update = delta_time >= 1;
@@ -66,24 +69,24 @@ public:
       if (should_update)
       {
         ZoneScopedN("Update");
-        update(this);
+        update();
       }
 
       while (delta_time >= 1)
       {
         ZoneScopedN("Tick");
-        tick(this);
+        tick();
         delta_time--;
       }
 
       if (should_update)
       {
         ZoneScopedN("Render");
-        render(this);
+        render();
       }
     }
 
-    terminate(this);
+    terminate();
 
 #ifdef AXGL_DEBUG
     } CPPTRACE_CATCH(const std::exception& e)
@@ -106,12 +109,12 @@ public:
 #endif
   }
 
-  DECLARE_SERVICE_GETTER(Window, window)
-  DECLARE_SERVICE_GETTER(Renderer, renderer)
-  DECLARE_SERVICE_GETTER(Resource, resource)
-  DECLARE_SERVICE_GETTER(Realm, realm)
-  DECLARE_SERVICE_GETTER(Input, input)
-  DECLARE_SERVICE_GETTER(Model, model)
+  AXGL_DECLARE_SERVICE_GETTER(Window, window)
+  AXGL_DECLARE_SERVICE_GETTER(Renderer, renderer)
+  AXGL_DECLARE_SERVICE_GETTER(Resource, resource)
+  AXGL_DECLARE_SERVICE_GETTER(Realm, realm)
+  AXGL_DECLARE_SERVICE_GETTER(Input, input)
+  AXGL_DECLARE_SERVICE_GETTER(Model, model)
 };
 
 NAMESPACE_AXGL_END

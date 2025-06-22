@@ -1,13 +1,12 @@
 #pragma once
 
 #include <axgl/axgl.hpp>
-#include <axgl/interface/service.hpp>
-
+#include <axgl/impl/service.hpp>
 #include <axgl/impl/camera_service.hpp>
 #include <axgl/impl/component/light.hpp>
 #include <axgl/impl/component/camera.hpp>
 
-class Base : public axgl::interface::Service
+class Base : public axgl::impl::ServiceBase
 {
   std::string window_title_;
 
@@ -41,7 +40,7 @@ public:
       const auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
       camera_entity->add_component(camera_comp);
     }
-    camera_entity->position.z = -2;
+    camera_entity->transform()->position.z = -2;
     realm->add_entity(camera_entity);
 
     // light entity
@@ -51,7 +50,7 @@ public:
       light_comp->light.color.ambient = glm::vec3(0.3f);
       light_entity->add_component(light_comp);
     }
-    light_entity->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
+    light_entity->transform()->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
     realm->add_entity(light_entity);
 
     // camera input
