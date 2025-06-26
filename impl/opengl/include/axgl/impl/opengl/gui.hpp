@@ -9,7 +9,7 @@
 
 NAMESPACE_AXGL_IMPL
 
-class OpenglGuiService : public ServiceBase, public interface::GuiService
+class OpenglGuiService : virtual public interface::GuiService, public ServiceBase
 {
 public:
   std::shared_ptr<interface::entity::GuiElement> create_gui_element() override

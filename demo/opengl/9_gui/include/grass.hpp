@@ -17,6 +17,7 @@ inline std::shared_ptr<axgl::interface::component::Mesh> create_grass_mesh(const
   const auto material = renderer_service->create_material("2d");
   material->add_texture(axgl::interface::TextureType::kDiffuse, texture);
   material->set_cull_mode(axgl::interface::CullMode::kNone);
+  material->set_enable_blend(true);
 
   // grass mesh
   const auto mesh = realm_service->create_component<axgl::interface::component::Mesh>();

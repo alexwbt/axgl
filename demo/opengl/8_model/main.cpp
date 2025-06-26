@@ -10,7 +10,7 @@
 #include <axgl/impl/component/camera.hpp>
 #include <axgl/impl/component/light.hpp>
 
-class Application final : virtual public axgl::interface::Service, public axgl::impl::ServiceBase
+class Application final : public axgl::impl::ServiceBase
 {
 public:
   void initialize() override

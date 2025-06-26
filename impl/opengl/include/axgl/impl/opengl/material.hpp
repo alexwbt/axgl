@@ -17,19 +17,17 @@ NAMESPACE_AXGL_IMPL
 
 class OpenglMaterial : public interface::Material
 {
-public:
+protected:
   glm::vec4 color_{ 1.0f, 1.0f, 1.0f, 1.0f };
   interface::CullMode cull_mode_ = interface::CullMode::kCCW;
+  bool enable_blend_ = false;
 
-  void set_color(const glm::vec4& color) override
-  {
-    color_ = color;
-  }
+public:
+  void set_color(const glm::vec4& color) override { color_ = color; }
+  void set_cull_mode(const interface::CullMode cull_mode) override { cull_mode_ = cull_mode; }
+  void set_enable_blend(const bool enable_blend) override { enable_blend_ = enable_blend; }
 
-  void set_cull_mode(const interface::CullMode cull_mode) override
-  {
-    cull_mode_ = cull_mode;
-  }
+  [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
 
   virtual void use(
     const interface::RealmContext* context,
@@ -51,6 +49,14 @@ public:
       glDisable(GL_CULL_FACE);
       break;
     }
+
+    if (enable_blend_)
+    {
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+    else
+      glDisable(GL_BLEND);
   }
 };
 

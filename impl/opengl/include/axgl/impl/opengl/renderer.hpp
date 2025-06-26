@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 
 #include <glm/glm.hpp>
@@ -26,7 +27,17 @@ class OpenglRenderer : public interface::Renderer
   bool initialized_glad_ = false;
   std::shared_ptr<GlfwWindow> window_;
 
+  bool after_render_ = false;
+  std::multimap<float, interface::Component*, std::greater<float>> blend_renders_;
+
 public:
+  void add_blend_render(const float distance2, interface::Component* component)
+  {
+    blend_renders_.insert({ distance2, component });
+  }
+
+  [[nodiscard]] bool is_after_render() const { return after_render_; }
+
   bool ready() override
   {
     return window_ && window_->ready();
@@ -41,20 +52,27 @@ public:
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    auto size = window_->get_size();
+    const auto size = window_->get_size();
     glViewport(0, 0, size.x, size.y);
 
     glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
     glClear(clear_bit_);
+
+    after_render_ = false;
   }
 
   void after_render() override
   {
+    after_render_ = true;
+
+    // render blending components
+    for (const auto& component : blend_renders_ | std::views::values)
+      component->render();
+    // clear list
+    blend_renders_.clear();
+
     ZoneScopedN("Renderer After Render");
     if (!window_) return;
 

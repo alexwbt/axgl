@@ -24,7 +24,7 @@ static std::vector cube_normals = {
   glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f),
 };
 
-class Application final : virtual public axgl::interface::Service, public axgl::impl::ServiceBase
+class Application final : public axgl::impl::ServiceBase
 {
   std::shared_ptr<axgl::interface::Entity> cube_entity_;
 

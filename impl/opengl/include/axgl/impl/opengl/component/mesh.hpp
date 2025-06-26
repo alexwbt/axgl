@@ -9,12 +9,11 @@
 
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/opengl/material.hpp>
+#include <axgl/impl/opengl/renderer.hpp>
 
 #include <opengl/vertex_array_object.hpp>
 
-NAMESPACE_AXGL_IMPL
-
-namespace component
+NAMESPACE_AXGL_IMPL namespace component
 {
   class OpenglMesh : virtual public interface::component::Mesh, public ComponentBase
   {
@@ -32,7 +31,25 @@ namespace component
     {
       if (material_)
       {
-        auto context = get_context();
+        const auto context = get_context();
+
+        // add to blend render list if enabled blending
+        if (material_->enabled_blend())
+        {
+          const auto renderer = std::dynamic_pointer_cast<OpenglRenderer>(context->realm->get_renderer());
+#ifdef AXGL_DEBUG
+          if (!renderer)
+            throw std::runtime_error("OpenglRenderer is required to render OpenglMesh.");
+#endif
+          if (renderer && !renderer->is_after_render())
+          {
+            const auto parent = get_parent();
+            const auto distance2 = glm::distance2(parent->transform()->position, context->camera->position);
+            renderer->add_blend_render(distance2, parent);
+            return;
+          }
+        }
+
         material_->use(context, this);
       }
       vertex_array_->draw();
@@ -67,7 +84,7 @@ namespace component
       vertex_array_->create_element_buffer(indices);
     }
 
-    void set_material(std::shared_ptr<interface::Material> material) override
+    void set_material(const std::shared_ptr<interface::Material> material) override
     {
       material_ = std::dynamic_pointer_cast<OpenglMaterial>(material);
 #ifdef AXGL_DEBUG
@@ -76,7 +93,7 @@ namespace component
 #endif
     }
 
-    std::shared_ptr<interface::Material> get_material() const override
+    [[nodiscard]] std::shared_ptr<interface::Material> get_material() const override
     {
       return material_;
     }
