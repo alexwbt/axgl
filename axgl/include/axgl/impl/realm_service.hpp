@@ -17,19 +17,13 @@ NAMESPACE_AXGL_IMPL
 class ComponentContainer final
 {
   std::vector<std::shared_ptr<interface::Component>> components_;
-  interface::Entity* parent_ = nullptr;
 
 public:
   void tick() const
   {
     for (const auto& comp : components_)
-    {
       if (!comp->is_disabled())
-      {
-        comp->set_parent(parent_);
         comp->tick();
-      }
-    }
   }
 
   void update() const
@@ -37,49 +31,29 @@ public:
     ZoneScopedN("Component Container Update");
 
     for (const auto& comp : components_)
-    {
       if (!comp->is_disabled())
-      {
-        comp->set_parent(parent_);
         comp->update();
-      }
-    }
   }
 
   void render() const
   {
     for (const auto& comp : components_)
-    {
       if (!comp->is_disabled())
-      {
-        comp->set_parent(parent_);
         comp->render();
-      }
-    }
   }
 
   void on_create() const
   {
     for (const auto& comp : components_)
-    {
       if (!comp->is_disabled())
-      {
-        comp->set_parent(parent_);
         comp->on_create();
-      }
-    }
   }
 
   void on_remove() const
   {
     for (const auto& comp : components_)
-    {
       if (!comp->is_disabled())
-      {
-        comp->set_parent(parent_);
         comp->on_remove();
-      }
-    }
   }
 
   void add_component(std::shared_ptr<interface::Component> component)
@@ -95,11 +69,6 @@ public:
   [[nodiscard]] util::Iterable<std::shared_ptr<interface::Component>> get_components() const
   {
     return util::to_iterable_t<std::shared_ptr<interface::Component>>(components_);
-  }
-
-  void set_parent(interface::Entity* parent)
-  {
-    parent_ = parent;
   }
 
   void set_context(interface::RealmContext* context) const
@@ -308,7 +277,6 @@ public:
   {
     component->set_parent(this);
     component->set_context(context_);
-    components_.set_parent(this);
     components_.add_component(std::move(component));
   }
 

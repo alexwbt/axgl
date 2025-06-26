@@ -47,9 +47,8 @@ NAMESPACE_AXGL_IMPL namespace component
         // do not render and add to blend render list if enabled blending
         if (blend && !after)
         {
-          const auto parent = get_parent();
-          const auto distance2 = glm::distance2(parent->transform()->position, context->camera->position);
-          renderer->add_blend_render(distance2, parent);
+          const auto distance2 = glm::distance2(get_parent()->transform()->position, context->camera->position);
+          renderer->add_blend_render(distance2, this);
           return;
         }
         // use material and render

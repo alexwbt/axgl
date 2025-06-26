@@ -28,13 +28,13 @@ class OpenglRenderer : public interface::Renderer
   std::shared_ptr<GlfwWindow> window_;
 
   bool after_render_ = false;
-  std::multimap<float, interface::Component*, std::greater<float>> blend_renders_;
+  std::vector<std::pair<float, interface::Component*>> blend_renders_;
 
 public:
-  void add_blend_render(const float distance2, interface::Component* component)
+  void add_blend_render(float distance2, interface::Component* component)
   {
     ZoneScopedN("Add Blend Render");
-    blend_renders_.insert({ distance2, component });
+    blend_renders_.emplace_back(distance2, component);
   }
 
   [[nodiscard]] bool is_after_render() const { return after_render_; }
@@ -72,6 +72,9 @@ public:
     {
       ZoneScopedN("Renderer Render Blending Components");
 
+      // sort blend_renders_ by distance descending
+      std::ranges::sort(blend_renders_,
+        [](const auto& a, const auto& b) { return a.first > b.first; });
       // render blending components
       for (const auto& component : blend_renders_ | std::views::values)
         component->render();
