@@ -24,7 +24,7 @@ static std::vector cube_normals = {
   glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f),
 };
 
-class Application final : public axgl::interface::Service
+class Application final : virtual public axgl::interface::Service, public axgl::impl::ServiceBase
 {
   std::shared_ptr<axgl::interface::Entity> cube_entity_;
 
@@ -64,12 +64,12 @@ public:
     realm->add_entity(cube_entity_);
 
     // camera entity
-    auto camera_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto camera_entity = realm_service->create_entity<axgl::interface::Entity>();
     {
-      auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+      const auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
       camera_entity->add_component(camera_comp);
     }
-    camera_entity->position.z = -2;
+    camera_entity->transform()->position.z = -2;
     realm->add_entity(camera_entity);
 
     // light entity
@@ -79,13 +79,13 @@ public:
       light_comp->light.color.ambient = glm::vec3(0.3f);
       light_entity->add_component(light_comp);
     }
-    light_entity->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
+    light_entity->transform()->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
     realm->add_entity(light_entity);
   }
 
   void tick() override
   {
-    cube_entity_->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+    cube_entity_->transform()->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
   }
 
   void update() override

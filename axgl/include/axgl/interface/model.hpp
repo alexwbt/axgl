@@ -10,7 +10,7 @@
 
 NAMESPACE_AXGL_INTERFACE
 
-class ModelService : public Service
+class ModelService : virtual public Service
 {
 public:
   struct ModelResources

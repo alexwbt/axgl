@@ -1,4 +1,3 @@
-
 #include <vector>
 
 #include <axgl/axgl.hpp>
@@ -31,8 +30,7 @@ int main()
   realm->set_renderer(renderer);
 
   // square entity
-  const auto square_entity = realm_service->create_entity<axgl::interface::Entity>();
-  {
+  const auto square_entity = realm_service->create_entity<axgl::interface::Entity>(); {
     // texture
     const auto texture = renderer_service->create_texture();
     texture->load_texture(demo_opengl_texture_res::get("container.png"));
@@ -66,7 +64,7 @@ int main()
     camera_comp->camera.far_clip = 1;
     square_entity->add_component(camera_comp);
   }
-  square_entity->scale = glm::vec3(200.0f);
+  square_entity->transform()->scale = glm::vec3(200.0f);
   square_entity->update_model_matrix();
   realm->add_entity(square_entity);
 

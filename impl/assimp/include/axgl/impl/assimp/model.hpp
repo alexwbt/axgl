@@ -2,14 +2,11 @@
 
 #include <memory>
 
-#include <glm/glm.hpp>
-#include <spdlog/spdlog.h>
-
-#include <axgl/common.hpp>
 #include <axgl/interface/model.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/resource.hpp>
+#include <axgl/impl/service.hpp>
 
 #ifndef AXGL_DEFINED_CREATE_COMPONENT_MESH
 #error Implementation of interface::Mesh must be defined before using __FILE__
@@ -19,9 +16,8 @@
 
 NAMESPACE_AXGL_IMPL
 
-class AssimpModelService : public interface::ModelService
+class AssimpModelService : virtual public interface::ModelService, public ServiceBase
 {
-private:
   std::shared_ptr<interface::RealmService> realm_service_;
   std::shared_ptr<interface::RendererService> renderer_service_;
   std::shared_ptr<interface::ResourceService> resource_service_;
@@ -29,7 +25,7 @@ private:
 public:
   void initialize() override
   {
-    auto context = get_context();
+    const auto context = get_context();
     realm_service_ = context->axgl->realm_service();
     renderer_service_ = context->axgl->renderer_service();
     resource_service_ = context->axgl->resource_service();

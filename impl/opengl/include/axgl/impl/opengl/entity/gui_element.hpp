@@ -17,7 +17,7 @@ NAMESPACE_AXGL_IMPL
 
 namespace entity
 {
-  class OpenglGuiElement final : public interface::entity::GuiElement, public Entity
+  class OpenglGuiElement final : virtual public interface::entity::GuiElement, public Entity
   {
     std::shared_ptr<interface::RealmService> realm_service_;
     std::shared_ptr<interface::RendererService> renderer_service_;
@@ -27,7 +27,7 @@ namespace entity
 
     void on_create() override
     {
-      const auto context = GuiElement::get_context();
+      const auto context = get_context();
       realm_service_ = context->axgl->realm_service();
       renderer_service_ = context->axgl->renderer_service();
 
@@ -53,9 +53,9 @@ namespace entity
     void update() override
     {
       // update models
-      GuiElement::transform()->scale = glm::vec3(props.size, 1);
-      GuiElement::transform()->position = glm::vec3(props.origin + props.offset, 0);
-      GuiElement::update_model_matrix();
+      transform()->scale = glm::vec3(props.size, 1);
+      transform()->position = glm::vec3(props.origin + props.offset, 0);
+      update_model_matrix();
 
       components_.update();
       children_.update();
@@ -75,14 +75,14 @@ namespace entity
     {
       if (content_text_)
       {
-        GuiElement::remove_child(content_text_);
+        remove_child(content_text_);
         content_text_ = nullptr;
       }
 
       if (props.content.empty())
         return;
 
-      const auto context = GuiElement::get_context();
+      const auto context = get_context();
       const auto text_service = context->axgl->get_service<OpenglTextService>("text");
 
       const auto font = util::split(props.font, ',');
@@ -107,7 +107,7 @@ namespace entity
       const auto text_mesh = content_text_->get_component_t<interface::component::Mesh>();
       text_mesh->get_material()->set_color(props.fg_color);
 
-      GuiElement::add_child(content_text_);
+      add_child(content_text_);
     }
 
     void update_background()
@@ -121,7 +121,7 @@ namespace entity
         const auto material = renderer_service_->create_material("2d");
         background_->set_material(material);
 
-        GuiElement::add_component(background_);
+        add_component(background_);
       }
       background_->get_material()->set_color(props.bg_color);
     }
