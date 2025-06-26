@@ -11,6 +11,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
+
 NAMESPACE_AXGL_IMPL
 
 class ComponentContainer final
@@ -218,7 +219,7 @@ public:
   }
 
   void set_context(interface::RealmContext* context) override { context_ = context; }
-  void set_parent(interface::Entity* parent) override { parent_ = parent;}
+  void set_parent(interface::Entity* parent) override { parent_ = parent; }
 
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
   [[nodiscard]] bool is_disabled() const override { return disabled_; }
@@ -240,7 +241,7 @@ protected:
 
 public:
   void mark_remove(const bool should_remove) override { should_remove_ = should_remove; }
-  [[nodiscard]] bool should_remove() const override{ return should_remove_; }
+  [[nodiscard]] bool should_remove() const override { return should_remove_; }
 
   interface::Transformation* transform() override { return &transform_; }
 
@@ -255,8 +256,8 @@ public:
   [[nodiscard]] glm::mat4 get_model_matrix() const override
   {
     return parent_
-             ? parent_->get_model_matrix() * model_matrix_
-             : model_matrix_;
+      ? parent_->get_model_matrix() * model_matrix_
+      : model_matrix_;
   }
 
   void tick() override
@@ -360,10 +361,8 @@ public:
   {
     ZoneScopedN("Realm Render");
 
-    if (!context_
-        || !context_->camera
-        || !renderer_
-        || !renderer_->ready()) return;
+    if (!context_ || !context_->camera || !renderer_ || !renderer_->ready())
+      return;
 
     renderer_->before_render();
 
