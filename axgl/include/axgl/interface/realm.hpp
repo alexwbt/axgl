@@ -67,7 +67,7 @@ public:
   //
 
   virtual void add_component(std::shared_ptr<Component> component) = 0;
-  virtual void remove_component(std::shared_ptr<Component> component) = 0;
+  virtual void remove_component(const std::shared_ptr<Component>& component) = 0;
   virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
 
   template<typename ComponentType>
@@ -84,7 +84,7 @@ public:
   //
 
   virtual void add_child(std::shared_ptr<Entity> entity) = 0;
-  virtual void remove_child(std::shared_ptr<Entity> entity) = 0;
+  virtual void remove_child(const std::shared_ptr<Entity>& entity) = 0;
   virtual util::Iterable<std::shared_ptr<Entity>> get_children() const = 0;
 
   template<typename EntityType>
@@ -94,22 +94,6 @@ public:
       if (auto entity_t = std::dynamic_pointer_cast<EntityType>(entity))
         return entity_t;
     return nullptr;
-  }
-
-  //
-  // Context
-  //
-
-  void set_context(RealmContext* context) override
-  {
-    // set context
-    Component::set_context(context);
-    // set context for all components
-    for (const auto& component : get_components())
-      component->set_context(context);
-    // set context for all children
-    for (const auto& child : get_children())
-      child->set_context(context);
   }
 };
 
@@ -134,7 +118,7 @@ public:
   virtual util::Iterable<std::shared_ptr<Entity>> get_entities() const = 0;
 };
 
-class RealmService : public Service
+class RealmService : virtual public Service
 {
 public:
   virtual std::shared_ptr<Realm> create_realm() = 0;
@@ -199,17 +183,6 @@ public:
           typeid(EntityType).name()));
 #endif
     return entity_impl;
-  }
-
-  //
-  // Context
-  //
-
-protected:
-  virtual void set_context(RealmContext* context)
-  {
-    if (const auto& realm = get_active_realm())
-      realm->set_context(context);
   }
 };
 

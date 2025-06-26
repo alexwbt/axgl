@@ -9,7 +9,6 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/impl/glfw/window.hpp>
-#include <axgl/util/string.hpp>
 
 #include <axgl/impl/opengl/texture.hpp>
 #include <axgl/impl/opengl/material.hpp>
@@ -93,7 +92,7 @@ public:
   }
 };
 
-class OpenglRendererService : public ServiceBase, public interface::RendererService
+class OpenglRendererService : virtual public interface::RendererService, public ServiceBase
 {
 public:
   std::shared_ptr<interface::Renderer> create_renderer() override

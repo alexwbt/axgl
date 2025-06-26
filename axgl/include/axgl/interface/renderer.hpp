@@ -57,7 +57,7 @@ public:
   virtual glm::ivec2 viewport() const = 0;
 };
 
-class RendererService : public Service
+class RendererService : virtual public Service
 {
 public:
   virtual std::shared_ptr<Renderer> create_renderer() = 0;

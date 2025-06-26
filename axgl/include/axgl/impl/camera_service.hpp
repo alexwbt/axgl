@@ -79,14 +79,14 @@ class Keyboard3DFreeFlyCameraMode : public CameraService::CameraMode
 public:
   Keyboard3DFreeFlyCameraMode()
   {
-    escape_ = std::make_shared<interface::Input>("Toggle Camera Control", interface::InputSource::KEY_ESCAPE);
-    pointer_ = std::make_shared<interface::Pointer>("View Movement", interface::PointerSource::MOUSE_MOVE);
-    forward_ = std::make_shared<interface::Input>("Move Forward", interface::InputSource::KEY_W);
-    backward_ = std::make_shared<interface::Input>("Move Backward", interface::InputSource::KEY_S);
-    up_ = std::make_shared<interface::Input>("Move Up", interface::InputSource::KEY_SPACE);
-    down_ = std::make_shared<interface::Input>("Move Down", interface::InputSource::KEY_LEFT_SHIFT);
-    left_ = std::make_shared<interface::Input>("Move Left", interface::InputSource::KEY_A);
-    right_ = std::make_shared<interface::Input>("Move Right", interface::InputSource::KEY_D);
+    escape_ = std::make_shared<interface::Input>("Toggle Camera Control", interface::InputSource::kKeyEscape);
+    pointer_ = std::make_shared<interface::Pointer>("View Movement", interface::PointerSource::kMouseMove);
+    forward_ = std::make_shared<interface::Input>("Move Forward", interface::InputSource::kKeyW);
+    backward_ = std::make_shared<interface::Input>("Move Backward", interface::InputSource::kKeyS);
+    up_ = std::make_shared<interface::Input>("Move Up", interface::InputSource::kKeySpace);
+    down_ = std::make_shared<interface::Input>("Move Down", interface::InputSource::kKeyLeftShift);
+    left_ = std::make_shared<interface::Input>("Move Left", interface::InputSource::kKeyA);
+    right_ = std::make_shared<interface::Input>("Move Right", interface::InputSource::kKeyD);
   }
 
   void bind_inputs(std::shared_ptr<interface::InputService> input_service) override
@@ -99,7 +99,7 @@ public:
     input_service->add_input(down_);
     input_service->add_input(left_);
     input_service->add_input(right_);
-    input_service->set_cursor_mode(interface::CursorMode::LOCKED);
+    input_service->set_cursor_mode(interface::CursorMode::kLocked);
     input_service_ = std::move(input_service);
   }
 
@@ -113,7 +113,7 @@ public:
     input_service->remove_input(down_->id);
     input_service->remove_input(left_->id);
     input_service->remove_input(right_->id);
-    input_service->set_cursor_mode(axgl::interface::CursorMode::NORMAL);
+    input_service->set_cursor_mode(axgl::interface::CursorMode::kNormal);
     input_service_ = nullptr;
   }
 
@@ -124,8 +124,8 @@ public:
       controlling_ = !controlling_;
 
       input_service_->set_cursor_mode(controlling_
-        ? interface::CursorMode::LOCKED
-        : interface::CursorMode::NORMAL);
+        ? interface::CursorMode::kLocked
+        : interface::CursorMode::kNormal);
     }
 
     if (!controlling_)
@@ -162,10 +162,10 @@ class Keyboard2DFreeFlyCameraMode : public CameraService::CameraMode
 public:
   Keyboard2DFreeFlyCameraMode()
   {
-    up_ = std::make_shared<interface::Input>("Move Up", interface::InputSource::KEY_W);
-    down_ = std::make_shared<interface::Input>("Move Down", interface::InputSource::KEY_S);
-    left_ = std::make_shared<interface::Input>("Move Left", interface::InputSource::KEY_A);
-    right_ = std::make_shared<interface::Input>("Move Right", interface::InputSource::KEY_D);
+    up_ = std::make_shared<interface::Input>("Move Up", interface::InputSource::kKeyW);
+    down_ = std::make_shared<interface::Input>("Move Down", interface::InputSource::kKeyS);
+    left_ = std::make_shared<interface::Input>("Move Left", interface::InputSource::kKeyA);
+    right_ = std::make_shared<interface::Input>("Move Right", interface::InputSource::kKeyD);
   }
 
   void bind_inputs(std::shared_ptr<interface::InputService> input_service) override
