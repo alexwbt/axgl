@@ -14,6 +14,8 @@ namespace component
 
     void update() override
     {
+      ZoneScopedN("Camera Component Update");
+
       const auto parent = get_parent();
       const auto context = get_context();
       const auto renderer = context->realm->get_renderer();

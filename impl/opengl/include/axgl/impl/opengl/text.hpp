@@ -71,23 +71,24 @@ public:
     opengl::Text text;
     text_renderer_.render_text(text, value, font, options);
 
-    auto texture = std::dynamic_pointer_cast<OpenglTexture>(renderer_service_->create_texture());
+    const auto texture = std::dynamic_pointer_cast<OpenglTexture>(renderer_service_->create_texture());
 #ifdef AXGL_DEBUG
     if (!texture)
       throw std::runtime_error("OpenglTexture is required to use OpenglTextService");
 #endif
-    auto texture_ptr = std::make_shared<opengl::Texture>();
+    const auto texture_ptr = std::make_shared<opengl::Texture>();
     *texture_ptr = std::move(text.texture);
     texture->replace_texture(std::move(texture_ptr));
 
-    auto material = renderer_service_->create_material("2d");
+    const auto material = renderer_service_->create_material("2d");
     material->add_texture(interface::TextureType::kDiffuse, texture);
+    material->set_enable_blend(true);
 
-    auto mesh = realm_service_->create_component_impl<interface::component::Mesh, component::OpenglMesh>();
+    const auto mesh = realm_service_->create_component_impl<interface::component::Mesh, component::OpenglMesh>();
     mesh->replace_vao(opengl::StaticVAOs::instance().quad());
     mesh->set_material(material);
 
-    auto text_entity = realm_service_->create_entity<interface::Entity>();
+    const auto text_entity = realm_service_->create_entity<interface::Entity>();
     text_entity->transform()->scale = glm::vec3(text.size, 1.0f);
     text_entity->update_model_matrix();
     text_entity->add_component(mesh);

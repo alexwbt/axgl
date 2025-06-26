@@ -29,27 +29,30 @@ NAMESPACE_AXGL_IMPL namespace component
 
     void render() override
     {
+      ZoneScopedN("OpenglMesh Render");
+
       if (material_)
       {
         const auto context = get_context();
-
-        // add to blend render list if enabled blending
-        if (material_->enabled_blend())
-        {
-          const auto renderer = std::dynamic_pointer_cast<OpenglRenderer>(context->realm->get_renderer());
+        const auto renderer = std::dynamic_pointer_cast<OpenglRenderer>(context->realm->get_renderer());
 #ifdef AXGL_DEBUG
-          if (!renderer)
-            throw std::runtime_error("OpenglRenderer is required to render OpenglMesh.");
+        if (!renderer)
+          throw std::runtime_error("OpenglRenderer is required to render OpenglMesh.");
 #endif
-          if (renderer && !renderer->is_after_render())
-          {
-            const auto parent = get_parent();
-            const auto distance2 = glm::distance2(parent->transform()->position, context->camera->position);
-            renderer->add_blend_render(distance2, parent);
-            return;
-          }
+        const bool blend = material_->enabled_blend();
+        const bool after = renderer->is_after_render();
+        // do not render if blend is not enabled and is after render
+        if (!blend && after)
+          return;
+        // do not render and add to blend render list if enabled blending
+        if (blend && !after)
+        {
+          const auto parent = get_parent();
+          const auto distance2 = glm::distance2(parent->transform()->position, context->camera->position);
+          renderer->add_blend_render(distance2, parent);
+          return;
         }
-
+        // use material and render
         material_->use(context, this);
       }
       vertex_array_->draw();

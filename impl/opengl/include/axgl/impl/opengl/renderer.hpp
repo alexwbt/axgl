@@ -33,6 +33,7 @@ class OpenglRenderer : public interface::Renderer
 public:
   void add_blend_render(const float distance2, interface::Component* component)
   {
+    ZoneScopedN("Add Blend Render");
     blend_renders_.insert({ distance2, component });
   }
 
@@ -67,11 +68,16 @@ public:
   {
     after_render_ = true;
 
-    // render blending components
-    for (const auto& component : blend_renders_ | std::views::values)
-      component->render();
-    // clear list
-    blend_renders_.clear();
+    if (!blend_renders_.empty())
+    {
+      ZoneScopedN("Renderer Render Blending Components");
+
+      // render blending components
+      for (const auto& component : blend_renders_ | std::views::values)
+        component->render();
+      // clear list
+      blend_renders_.clear();
+    }
 
     ZoneScopedN("Renderer After Render");
     if (!window_) return;
@@ -81,7 +87,6 @@ public:
     glDisable(GL_MULTISAMPLE);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
-    glDisable(GL_BLEND);
   }
 
   void set_window(std::shared_ptr<interface::Window> window) override

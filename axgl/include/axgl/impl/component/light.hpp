@@ -14,6 +14,8 @@ namespace component
 
     void update() override
     {
+      ZoneScopedN("Light Component Update");
+
       const auto transform = get_parent()->transform();
       light.position = transform->position;
       light.direction = transform->rotation;

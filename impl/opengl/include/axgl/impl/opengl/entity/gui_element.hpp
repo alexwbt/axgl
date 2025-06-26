@@ -17,7 +17,7 @@ NAMESPACE_AXGL_IMPL
 
 namespace entity
 {
-  class OpenglGuiElement final : virtual public interface::entity::GuiElement, public Entity
+  class OpenglGuiElement : virtual public interface::entity::GuiElement, public Entity
   {
     std::shared_ptr<interface::RealmService> realm_service_;
     std::shared_ptr<interface::RendererService> renderer_service_;
@@ -27,6 +27,8 @@ namespace entity
 
     void on_create() override
     {
+      ZoneScopedN("OpenglGuiElement On Create");
+
       const auto context = get_context();
       realm_service_ = context->axgl->realm_service();
       renderer_service_ = context->axgl->renderer_service();
@@ -46,12 +48,15 @@ namespace entity
 
     void tick() override
     {
+      ComponentBase::tick();
       components_.tick();
       children_.tick();
     }
 
     void update() override
     {
+      ZoneScopedN("GUI Element Update");
+
       // update models
       transform()->scale = glm::vec3(props.size, 1);
       transform()->position = glm::vec3(props.origin + props.offset, 0);

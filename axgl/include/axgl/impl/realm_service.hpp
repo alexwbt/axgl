@@ -34,6 +34,8 @@ public:
 
   void update() const
   {
+    ZoneScopedN("Component Container Update");
+
     for (const auto& comp : components_)
     {
       if (!comp->is_disabled())
@@ -120,6 +122,8 @@ public:
 
   void update()
   {
+    ZoneScopedN("Entity Container Update");
+
     for (const auto& entity : entities_)
     {
       if (entity->ticks() == 0)
@@ -128,13 +132,20 @@ public:
       entity->update();
     }
 
-    std::erase_if(entities_,
-      [](const auto& entity)
-      {
-        if (entity->should_remove())
-          entity->on_remove();
-        return entity->should_remove();
-      });
+
+    if (!entities_.empty())
+    {
+      ZoneScopedN("Entity Container Remove Entities");
+
+      std::erase_if(entities_,
+        [](const auto& entity)
+        {
+          const auto should_remove = entity->should_remove();
+          if (should_remove)
+            entity->on_remove();
+          return should_remove;
+        });
+    }
   }
 
   void render() const
@@ -269,6 +280,8 @@ public:
 
   void update() override
   {
+    ZoneScopedN("Entity Update");
+
     components_.update();
     children_.update();
   }
