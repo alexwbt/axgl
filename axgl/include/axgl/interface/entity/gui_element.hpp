@@ -28,12 +28,16 @@ namespace entity
       TextAlign horizontal_align = TextAlign::CENTER;
       TextAlign vertical_align = TextAlign::CENTER;
       std::shared_ptr<Texture> bg_image;
+      bool screen_space = true;
     };
-    Properties props;
-    Properties down;
-    Properties hover;
-    Properties focus;
+    struct StateProperties : Properties
+    {
+      Properties down;
+      Properties hover;
+      Properties focus;
+    };
 
+    virtual StateProperties* props() = 0;
     virtual uint32_t down_tick() = 0;
     virtual bool hovering() = 0;
     virtual bool focused() = 0;

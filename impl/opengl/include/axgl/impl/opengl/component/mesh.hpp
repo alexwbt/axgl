@@ -13,7 +13,9 @@
 
 #include <opengl/vertex_array_object.hpp>
 
-NAMESPACE_AXGL_IMPL namespace component
+NAMESPACE_AXGL_IMPL
+
+namespace component
 {
   class OpenglMesh : virtual public interface::component::Mesh, public ComponentBase
   {

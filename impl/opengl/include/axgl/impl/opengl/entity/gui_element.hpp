@@ -17,120 +17,91 @@ NAMESPACE_AXGL_IMPL
 
 namespace entity
 {
-  class OpenglGuiElement : virtual public interface::entity::GuiElement, public Entity
+
+class OpenglGuiElement : virtual public interface::entity::GuiElement, public Entity
+{
+  StateProperties props_;
+
+  std::shared_ptr<interface::Entity> content_text_ = nullptr;
+  std::shared_ptr<interface::component::Mesh> background_ = nullptr;
+
+public:
+  [[nodiscard]] StateProperties* props() override { return &props_; }
+  [[nodiscard]] uint32_t down_tick() override { return 0; }
+  [[nodiscard]] bool hovering() override { return false; }
+  [[nodiscard]] bool focused() override { return false; }
+
+  void on_create() override
   {
-    std::shared_ptr<interface::RealmService> realm_service_;
-    std::shared_ptr<interface::RendererService> renderer_service_;
+    ZoneScopedN("OpenglGuiElement On Create");
 
-    std::shared_ptr<interface::Entity> content_text_ = nullptr;
-    std::shared_ptr<interface::component::Mesh> background_ = nullptr;
+    Entity::on_create();
 
-    void on_create() override
+    update_content_text();
+    update_background();
+  }
+
+private:
+  void update_content_text()
+  {
+    if (content_text_)
     {
-      ZoneScopedN("OpenglGuiElement On Create");
-
-      const auto context = get_context();
-      realm_service_ = context->axgl->realm_service();
-      renderer_service_ = context->axgl->renderer_service();
-
-      update_content_text();
-      update_background();
-
-      components_.on_create();
-      children_.on_create();
+      remove_child(content_text_);
+      content_text_ = nullptr;
     }
 
-    void on_remove() override
+    if (props_.content.empty())
+      return;
+
+    const auto context = get_context();
+    const auto text_service = context->axgl->get_service<OpenglTextService>("text");
+
+    const auto font = util::split(props_.font, ',');
+    for (const auto& f : font)
     {
-      components_.on_remove();
-      children_.on_remove();
-    }
-
-    void tick() override
-    {
-      ComponentBase::tick();
-      components_.tick();
-      children_.tick();
-    }
-
-    void update() override
-    {
-      ZoneScopedN("GUI Element Update");
-
-      // update models
-      transform()->scale = glm::vec3(props.size, 1);
-      transform()->position = glm::vec3(props.origin + props.offset, 0);
-      update_model_matrix();
-
-      components_.update();
-      children_.update();
-    }
-
-    void render() override
-    {
-      components_.render();
-      children_.render();
-    }
-
-    uint32_t down_tick() override { return 0; }
-    bool hovering() override { return false; }
-    bool focused() override { return false; }
-
-    void update_content_text()
-    {
-      if (content_text_)
+      if (!text_service->has_font(f))
       {
-        remove_child(content_text_);
-        content_text_ = nullptr;
-      }
-
-      if (props.content.empty())
-        return;
-
-      const auto context = get_context();
-      const auto text_service = context->axgl->get_service<OpenglTextService>("text");
-
-      const auto font = util::split(props.font, ',');
-      for (const auto& f : font)
-      {
-        if (!text_service->has_font(f))
-        {
-          const auto resource_service = context->axgl->resource_service();
-          auto resource_key = "font/" + f + ".ttf";
+        const auto resource_service = context->axgl->resource_service();
+        auto resource_key = "font/" + f + ".ttf";
 #ifdef AXGL_DEBUG
-          if (!resource_service->has_resource(resource_key))
-            throw std::runtime_error("Required font not found: " + resource_key);
+        if (!resource_service->has_resource(resource_key))
+          throw std::runtime_error("Required font not found: " + resource_key);
 #endif
-          text_service->load_font(f, resource_service->get_resource(resource_key));
-        }
+        text_service->load_font(f, resource_service->get_resource(resource_key));
       }
-
-      opengl::TextOptions options;
-      options.size = static_cast<uint32_t>(props.font_size);
-      content_text_ = text_service->create_text(props.content, font, options);
-
-      const auto text_mesh = content_text_->get_component_t<interface::component::Mesh>();
-      text_mesh->get_material()->set_color(props.fg_color);
-
-      add_child(content_text_);
     }
 
-    void update_background()
+    opengl::TextOptions options;
+    options.size = static_cast<uint32_t>(props_.font_size);
+    content_text_ = text_service->create_text(props_.content, font, options);
+
+    const auto text_mesh = content_text_->get_component_t<interface::component::Mesh>();
+    text_mesh->get_material()->set_color(props_.fg_color);
+
+    add_child(content_text_);
+  }
+
+  void update_background()
+  {
+    if (!background_)
     {
-      if (!background_)
-      {
-        const auto mesh = realm_service_->create_component_impl<interface::component::Mesh, component::OpenglMesh>();
-        mesh->replace_vao(opengl::StaticVAOs::instance().quad());
-        background_ = mesh;
+      const auto context = get_context();
+      const auto realm_service = context->axgl->realm_service();
+      const auto renderer_service = context->axgl->renderer_service();
 
-        const auto material = renderer_service_->create_material("2d");
-        background_->set_material(material);
+      const auto mesh = realm_service->create_component_impl<interface::component::Mesh, component::OpenglMesh>();
+      mesh->replace_vao(opengl::StaticVAOs::instance().quad());
+      background_ = mesh;
 
-        add_component(background_);
-      }
-      background_->get_material()->set_color(props.bg_color);
+      const auto material = renderer_service->create_material("2d");
+      background_->set_material(material);
+
+      add_component(background_);
     }
-  };
+    background_->get_material()->set_color(props_.bg_color);
+  }
+};
+
 }
 
 NAMESPACE_AXGL_IMPL_END
