@@ -176,14 +176,18 @@ class ComponentBase : virtual public interface::Component
   uint32_t ticks_ = 0;
 
 protected:
+  std::string id_;
   interface::RealmContext* context_ = nullptr;
   interface::Entity* parent_ = nullptr;
+
+  void set_id(const std::string& id) override { id_ = id; }
+  [[nodiscard]] std::string get_id() const override { return id_; }
 
   [[nodiscard]] interface::RealmContext* get_context() const override
   {
 #ifdef AXGL_DEBUG
     if (!context_)
-      throw std::runtime_error("RealmContext is not provided.");
+      throw std::runtime_error(id_ + ": RealmContext is not provided.");
 #endif
     return context_;
   }
@@ -193,7 +197,7 @@ public:
   {
 #ifdef AXGL_DEBUG
     if (!parent_)
-      throw std::runtime_error("Parent is not assigned.");
+      throw std::runtime_error(id_ + ": Parent is not assigned.");
 #endif
     return parent_;
   }
@@ -354,6 +358,7 @@ public:
 
   void add_entity(std::shared_ptr<interface::Entity> entity) override
   {
+    entity->set_context(context_);
     entities_.add_entity(std::move(entity));
   }
 
@@ -391,7 +396,6 @@ public:
   void tick() override
   {
     if (!realm_) return;
-
     realm_->tick();
   }
 
@@ -400,23 +404,21 @@ public:
     if (!realm_) return;
 
     context_.realm = realm_.get();
-    realm_->set_context(&context_);
+    context_.camera = nullptr;
+    context_.lights.clear();
     realm_->update();
   }
 
   void render() override
   {
     if (!realm_) return;
-
     realm_->render();
-    realm_->set_context(nullptr);
-    context_.camera = nullptr;
-    context_.lights.clear();
   }
 
   std::shared_ptr<interface::Realm> create_realm() override
   {
     realm_ = std::make_shared<Realm>();
+    realm_->set_context(&context_);
     realms_.push_back(realm_);
     return realm_;
   }

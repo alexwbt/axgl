@@ -38,6 +38,8 @@ namespace entity
     };
 
     virtual StateProperties* props() = 0;
+    virtual void update_props() = 0;
+
     virtual uint32_t down_tick() = 0;
     virtual bool hovering() = 0;
     virtual bool focused() = 0;

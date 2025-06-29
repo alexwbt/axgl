@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include <axgl/common.hpp>
 #include <axgl/util/string.hpp>
 #include <axgl/interface/realm.hpp>
@@ -10,8 +8,10 @@
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/opengl/text.hpp>
 #include <axgl/impl/opengl/component/mesh.hpp>
+#include <axgl/impl/entity/context_override.hpp>
 
 #include <opengl/static_vaos.hpp>
+
 
 NAMESPACE_AXGL_IMPL
 
@@ -20,10 +20,26 @@ namespace entity
 
 class OpenglGuiElement : virtual public interface::entity::GuiElement, public Entity
 {
+  class Container final : public ContextOverride
+  {
+  public:
+    void update() override
+    {
+      if (parent_context_->camera->viewport != camera_.viewport)
+      {
+        camera_.viewport = parent_context_->camera->viewport;
+        camera_.set_projection_view_matrix(
+          glm::ortho(camera_.viewport.x, 0.0f, 0.0f, camera_.viewport.y));
+      }
+      ContextOverride::update();
+    }
+  };
+
   StateProperties props_;
 
+  std::shared_ptr<interface::Entity> container_ = nullptr;
+  std::shared_ptr<interface::Entity> background_ = nullptr;
   std::shared_ptr<interface::Entity> content_text_ = nullptr;
-  std::shared_ptr<interface::component::Mesh> background_ = nullptr;
 
 public:
   [[nodiscard]] StateProperties* props() override { return &props_; }
@@ -37,8 +53,24 @@ public:
 
     Entity::on_create();
 
+    container_ = std::make_shared<Container>();
+    add_child(container_);
+
     update_content_text();
     update_background();
+    update_props();
+  }
+
+  void update_props() override
+  {
+    if (background_)
+    {
+      background_->transform()->scale = glm::vec3(props_.size, 1);
+      background_->transform()->position = glm::vec3(0, 0, -0.9f);
+      background_->update_model_matrix();
+    }
+    transform()->position = glm::vec3(props_.origin + props_.offset, 0);
+    update_model_matrix();
   }
 
 private:
@@ -78,7 +110,7 @@ private:
     const auto text_mesh = content_text_->get_component_t<interface::component::Mesh>();
     text_mesh->get_material()->set_color(props_.fg_color);
 
-    add_child(content_text_);
+    container_->add_child(content_text_);
   }
 
   void update_background()
@@ -89,16 +121,19 @@ private:
       const auto realm_service = context->axgl->realm_service();
       const auto renderer_service = context->axgl->renderer_service();
 
+      const auto material = renderer_service->create_material("2d");
       const auto mesh = realm_service->create_component_impl<interface::component::Mesh, component::OpenglMesh>();
       mesh->replace_vao(opengl::StaticVAOs::instance().quad());
-      background_ = mesh;
+      mesh->set_material(material);
 
-      const auto material = renderer_service->create_material("2d");
-      background_->set_material(material);
-
-      add_component(background_);
+      background_ = realm_service->create_entity<interface::Entity>();
+      background_->add_component(mesh);
+      container_->add_child(background_);
     }
-    background_->get_material()->set_color(props_.bg_color);
+    background_
+      ->get_component_t<interface::component::Mesh>()
+      ->get_material()
+      ->set_color(props_.bg_color);
   }
 };
 

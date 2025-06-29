@@ -53,14 +53,15 @@ public:
 
     // gui element
     const auto gui_element = realm_service->create_entity<axgl::interface::entity::GuiElement>();
-    gui_element->props()->size = glm::vec2(1, 1);
-    gui_element->props()->bg_color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    gui_element->props()->size = glm::vec2(800, 48);
+    gui_element->props()->bg_color = glm::vec4(1.0f, 1.0f, 1.0f, 0.5f);
     gui_element->props()->font = "arial,noto-tc";
     gui_element->props()->content = reinterpret_cast<const char*>(
       u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
       u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。");
     gui_element->props()->font_size = 48;
     gui_element->props()->fg_color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    gui_element->update_props();
     realm->add_entity(gui_element);
   }
 };

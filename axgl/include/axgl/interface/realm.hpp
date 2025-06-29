@@ -37,6 +37,9 @@ public:
   virtual void set_disabled(bool) = 0;
   virtual bool is_disabled() const = 0;
 
+  virtual void set_id(const std::string& id) = 0;
+  virtual std::string get_id() const = 0;
+
 protected:
   virtual RealmContext* get_context() const = 0;
 public:

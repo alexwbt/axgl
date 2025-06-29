@@ -7,23 +7,25 @@ NAMESPACE_AXGL_IMPL
 
 namespace component
 {
-  class Light : public ComponentBase
+
+class Light : public ComponentBase
+{
+public:
+  interface::Light light;
+
+  void update() override
   {
-  public:
-    interface::Light light;
+    ZoneScopedN("Light Component Update");
 
-    void update() override
-    {
-      ZoneScopedN("Light Component Update");
+    const auto transform = get_parent()->transform();
+    light.position = transform->position;
+    light.direction = transform->rotation;
 
-      const auto transform = get_parent()->transform();
-      light.position = transform->position;
-      light.direction = transform->rotation;
+    const auto context = get_context();
+    context->lights.push_back(&light);
+  }
+};
 
-      const auto context = get_context();
-      context->lights.push_back(&light);
-    }
-  };
 }
 
 NAMESPACE_AXGL_IMPL_END

@@ -7,36 +7,38 @@ NAMESPACE_AXGL_IMPL
 
 namespace component
 {
-  class Camera : public ComponentBase
+class Camera : public ComponentBase
+{
+
+public:
+  interface::Camera camera;
+
+  void update() override
   {
-  public:
-    interface::Camera camera;
+    ZoneScopedN("Camera Component Update");
 
-    void update() override
+    const auto parent = get_parent();
+    const auto context = get_context();
+    const auto renderer = context->realm->get_renderer();
+
+    const auto viewport = glm::vec2(renderer->viewport());
+    if (viewport.x != camera.viewport.x || viewport.y != camera.viewport.y)
     {
-      ZoneScopedN("Camera Component Update");
-
-      const auto parent = get_parent();
-      const auto context = get_context();
-      const auto renderer = context->realm->get_renderer();
-
-      const auto viewport = glm::vec2(renderer->viewport());
-      if (viewport.x != camera.viewport.x || viewport.y != camera.viewport.y)
-      {
-        camera.viewport.x = viewport.x;
-        camera.viewport.y = viewport.y;
-        camera.update_projection_view_matrix();
-      }
-
-      if (camera.position != parent->transform()->position)
-      {
-        camera.position = parent->transform()->position;
-        camera.update_projection_view_matrix();
-      }
-
-      context->camera = &camera;
+      camera.viewport.x = viewport.x;
+      camera.viewport.y = viewport.y;
+      camera.update_projection_view_matrix();
     }
-  };
+
+    if (camera.position != parent->transform()->position)
+    {
+      camera.position = parent->transform()->position;
+      camera.update_projection_view_matrix();
+    }
+
+    context->camera = &camera;
+  }
+};
+
 }
 
 NAMESPACE_AXGL_IMPL_END
