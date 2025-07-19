@@ -24,6 +24,7 @@ add_subdirectory(_external/freetype)
 add_subdirectory(_external/flatbuffer)
 
 # Internal Libraries
+add_subdirectory(lib/net)
 add_subdirectory(lib/glad)
 add_subdirectory(lib/assbin)
 add_subdirectory(lib/embedfile)
@@ -39,4 +40,5 @@ add_subdirectory(impl/assimp)
 add_subdirectory(impl/bundlefile)
 
 # Demonstrations
+add_subdirectory(demo/net)
 add_subdirectory(demo/opengl)
