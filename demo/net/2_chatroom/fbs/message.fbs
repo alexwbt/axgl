@@ -1,0 +1,10 @@
+
+namespace fbs.chatroom;
+
+table Message {
+  content: string;
+}
+
+file_identifier "MESG";
+
+root_type Message;
