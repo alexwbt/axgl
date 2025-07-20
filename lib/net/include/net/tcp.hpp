@@ -106,7 +106,7 @@ public:
   {
     // prepend size
     const uint32_t size = htonl(static_cast<uint32_t>(buffer->size()));
-    std::array<asio::const_buffer, 2> buffers = {
+    const std::array<asio::const_buffer, 2> buffers = {
       asio::buffer(&size, kLengthPrefixSize),
       asio::buffer(buffer->data(), buffer->size()),
     };
