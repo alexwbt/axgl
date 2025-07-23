@@ -19,6 +19,9 @@ function(chatroom_exec name)
     net
     args
     spdlog
+    ftxui::dom
+    ftxui::screen
+    ftxui::component
     demo_net_chatroom_fbs
   )
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")

@@ -1,5 +1,5 @@
 
-#include "./message.hpp"
+#include "common/message.hpp"
 
 class Server final : public net::TcpServer
 {

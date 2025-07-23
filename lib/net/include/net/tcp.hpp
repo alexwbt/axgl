@@ -102,11 +102,11 @@ public:
   explicit LengthPrefixedTcpSocket(asio::ip::tcp::socket socket) :
     socket_(std::move(socket)) {}
 
-  asio::awaitable<void> write_buffer(const std::shared_ptr<std::vector<uint8_t>> buffer) override
+  asio::awaitable<void> write_buffer(const DataPtr buffer) override
   {
     // prepend size
     const uint32_t size = htonl(static_cast<uint32_t>(buffer->size()));
-    const std::array<asio::const_buffer, 2> buffers = {
+    const std::array buffers = {
       asio::buffer(&size, kLengthPrefixSize),
       asio::buffer(buffer->data(), buffer->size()),
     };

@@ -2,6 +2,7 @@
 namespace fbs.chatroom;
 
 table Message {
+  sendee: string;
   content: string;
 }
 

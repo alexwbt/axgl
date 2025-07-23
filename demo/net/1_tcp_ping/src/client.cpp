@@ -1,5 +1,5 @@
 
-#include "./message.hpp"
+#include "common/message.hpp"
 
 class Client final : public net::TcpClient
 {
@@ -28,7 +28,7 @@ public:
     send(build_message("hello world"));
   }
 
-  void on_receive(std::shared_ptr<std::vector<uint8_t>> buffer) override
+  void on_receive(const net::DataPtr buffer) override
   {
     print_message(*buffer);
     stop = true;

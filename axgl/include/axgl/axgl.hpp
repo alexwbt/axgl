@@ -60,11 +60,11 @@ public:
     {
       ZoneScopedN("Main Loop");
 
-      auto now = std::chrono::high_resolution_clock::now();
+      const auto now = std::chrono::high_resolution_clock::now();
       delta_time += std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
       start_time = now;
 
-      auto should_update = delta_time >= 1;
+      const auto should_update = delta_time >= 1;
 
       if (should_update)
       {

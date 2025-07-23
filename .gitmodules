@@ -37,3 +37,6 @@
 [submodule "_external/tracy"]
 	path = _external/tracy
 	url = https://github.com/wolfpld/tracy.git
+[submodule "_external/ftxui"]
+	path = _external/ftxui
+	url = https://github.com/ArthurSonzogni/FTXUI.git

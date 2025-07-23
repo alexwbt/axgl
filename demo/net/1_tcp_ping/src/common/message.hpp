@@ -20,4 +20,3 @@ inline void print_message(const std::vector<uint8_t>& buffer)
     buffer.size() - offset);
   SPDLOG_INFO(value);
 }
-
