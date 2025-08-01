@@ -23,7 +23,7 @@ public:
     SPDLOG_DEBUG("client disconnected: {}", session_id);
   }
 
-  void on_receive(uint32_t session_id, const std::shared_ptr<std::vector<uint8_t>> buffer) override
+  void on_receive(uint32_t session_id, const net::DataPtr buffer) override
   {
     print_message(*buffer);
     send_to_all(build_message("shut up."));
