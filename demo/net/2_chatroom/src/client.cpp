@@ -1,68 +1,41 @@
-#include <ftxui/component/component.hpp>      // for Input, Renderer, Button, Container
-#include <ftxui/component/component_base.hpp> // for ComponentBase
+#include <format>
+
+#include <ftxui/dom/elements.hpp>
+#include <ftxui/component/component.hpp>
 #include <ftxui/component/screen_interactive.hpp>
-#include <ftxui/dom/elements.hpp>             // for Element, vbox, text, separator, hbox
 
-#include <deque>
-#include <string>
+int main()
+{
+  using namespace ftxui;
 
-using namespace ftxui;
+  std::string input_value;
+  std::vector<std::string> message_values;
 
-int main() {
-  // A deque to store chat messages
-  std::deque<std::string> chat_messages;
-
-  // Input box for typing messages
-  std::string input_text;
-  auto input = Input(&input_text, "Type your message...");
-
-  // Button to send messages
-  auto send_button = Button("Send", [&] {
-    if (!input_text.empty()) {
-      chat_messages.push_back(input_text); // Add the message to the chat
-      input_text.clear();                 // Clear the input box
+  auto input = Input(&input_value);
+  input |= CatchEvent([&](const Event& event)
+  {
+    if (event == Event::Return)
+    {
+      message_values.push_back(input_value);
+      input_value.clear();
+      return true;
     }
+    return false;
   });
 
-  // Renderer for the chat messages
-  auto chat_renderer = Renderer([&] {
-    // Display messages as a vertical list of text elements
+  const auto renderer = Renderer(input, [&]
+  {
     std::vector<Element> message_elements;
-    for (const auto& message : chat_messages) {
-      message_elements.push_back(text("-> " + message));
-    }
+    message_elements.reserve(message_values.size());
+    for (const auto& value : message_values)
+      message_elements.push_back(paragraph(std::format("> {}", value)));
 
-    // Create a scrollable message box
-    return vbox(message_elements) | vscroll_indicator | frame | border;
-  });
-
-  // Combine input and button into a single input box
-  auto input_box = Container::Horizontal({
-      input,
-      send_button,
-  });
-
-  // Main container for the layout
-  auto main_container = Container::Vertical({
-      chat_renderer,
-      input_box,
-  });
-
-  // Renderer for the main layout
-  auto layout = Renderer(main_container, [&] {
     return vbox({
-        chat_renderer->Render() | flex, // Chat messages take up most of the space
-        separator(),
-        hbox({
-            input->Render() | flex, // Input box stretches horizontally
-            send_button->Render() | size(WIDTH, GREATER_THAN, 8),
-        }) | border,
+      vbox(std::move(message_elements)),
+      input->Render(),
     });
   });
 
-  // Run the application
   auto screen = ScreenInteractive::Fullscreen();
-  screen.Loop(main_container);
-
-  return 0;
+  screen.Loop(renderer);
 }
