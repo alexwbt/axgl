@@ -4,8 +4,7 @@
 
 #include <net/net.hpp>
 
-inline net::DataPtr build_message(
-  const std::string& content)
+inline net::DataPtr build_message(const std::string& content)
 {
   flatbuffers::FlatBufferBuilder builder;
 

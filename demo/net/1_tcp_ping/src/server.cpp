@@ -18,10 +18,7 @@ public:
     SPDLOG_DEBUG("client connected: {}", session_id);
   }
 
-  void on_disconnect(const uint32_t session_id) override
-  {
-    SPDLOG_DEBUG("client disconnected: {}", session_id);
-  }
+  void on_disconnect(const uint32_t session_id) override { SPDLOG_DEBUG("client disconnected: {}", session_id); }
 
   void on_receive(uint32_t session_id, const net::DataPtr buffer) override
   {
@@ -54,17 +51,18 @@ int main()
     Server server(io_context, 10000);
     server.start();
 
-    std::thread thread([&]
-    {
-      try
+    std::thread thread(
+      [&]
       {
-        io_context->run();
-      }
-      catch (const std::exception& e)
-      {
-        SPDLOG_CRITICAL(e.what());
-      }
-    });
+        try
+        {
+          io_context->run();
+        }
+        catch (const std::exception& e)
+        {
+          SPDLOG_CRITICAL(e.what());
+        }
+      });
 
     while (server.running())
       server.update();

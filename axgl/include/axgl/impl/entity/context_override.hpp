@@ -1,8 +1,8 @@
 #pragma once
 
 #include <axgl/common.hpp>
-#include <axgl/interface/realm.hpp>
 #include <axgl/impl/realm_service.hpp>
+#include <axgl/interface/realm.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -15,7 +15,7 @@ protected:
   interface::RealmContext* parent_context_ = nullptr;
 
   interface::Camera camera_;
-  interface::RealmContext context_{ nullptr, nullptr, &camera_, {} };
+  interface::RealmContext context_{nullptr, nullptr, &camera_, {}};
 
 public:
   void update() override
@@ -35,14 +35,13 @@ public:
   }
 };
 
-}
+} // namespace entity
 
 NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
 
-template<>
-inline std::shared_ptr<impl::entity::ContextOverride> interface::RealmService::create_entity()
+template <> inline std::shared_ptr<impl::entity::ContextOverride> interface::RealmService::create_entity()
 {
   return std::make_shared<impl::entity::ContextOverride>();
 }

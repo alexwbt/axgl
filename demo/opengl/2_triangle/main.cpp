@@ -1,9 +1,9 @@
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/component/camera.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
-#include <axgl/impl/component/camera.hpp>
 
 int main()
 {
@@ -31,11 +31,11 @@ int main()
   {
     // material
     const auto material = renderer_service->create_material("2d");
-    material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
+    material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
     // triangle mesh
     const auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
-    mesh_comp->set_vertices(std::vector<glm::vec2>{ { 0.8f, -0.5f }, { -0.8f, -0.5f }, { 0.0f, 0.5f } });
+    mesh_comp->set_vertices(std::vector<glm::vec2>{{0.8f, -0.5f}, {-0.8f, -0.5f}, {0.0f, 0.5f}});
     mesh_comp->set_material(material);
     entity->add_component(mesh_comp);
 

@@ -3,16 +3,16 @@
 #include <map>
 #include <memory>
 
-#include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #include <spdlog/spdlog.h>
 
 #include <axgl/common.hpp>
-#include <axgl/interface/renderer.hpp>
 #include <axgl/impl/glfw/window.hpp>
+#include <axgl/interface/renderer.hpp>
 
-#include <axgl/impl/opengl/texture.hpp>
 #include <axgl/impl/opengl/material.hpp>
+#include <axgl/impl/opengl/texture.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -39,15 +39,13 @@ public:
 
   [[nodiscard]] bool is_after_render() const { return after_render_; }
 
-  bool ready() override
-  {
-    return window_ && window_->ready();
-  }
+  bool ready() override { return window_ && window_->ready(); }
 
   void before_render() override
   {
     ZoneScopedN("Renderer Before Render");
-    if (!window_) return;
+    if (!window_)
+      return;
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
@@ -73,8 +71,7 @@ public:
       ZoneScopedN("Renderer Render Blending Components");
 
       // sort blend_renders_ by distance descending
-      std::ranges::sort(blend_renders_,
-        [](const auto& a, const auto& b) { return a.first > b.first; });
+      std::ranges::sort(blend_renders_, [](const auto& a, const auto& b) { return a.first > b.first; });
       // render blending components
       for (const auto& component : blend_renders_ | std::views::values)
         component->render();
@@ -83,7 +80,8 @@ public:
     }
 
     ZoneScopedN("Renderer After Render");
-    if (!window_) return;
+    if (!window_)
+      return;
 
     window_->swap_buffers();
 
@@ -97,9 +95,8 @@ public:
     window_ = std::dynamic_pointer_cast<GlfwWindow>(std::move(window));
     if (!window_)
 #ifdef AXGL_DEBUG
-      throw std::runtime_error(
-        "The provided window is not a valid GlfwWindow instance. "
-        "GlfwWindow is required for OpenglRenderer.");
+      throw std::runtime_error("The provided window is not a valid GlfwWindow instance. "
+                               "GlfwWindow is required for OpenglRenderer.");
 #else
       return;
 #endif
@@ -112,24 +109,15 @@ public:
     initialized_glad_ = true;
   }
 
-  glm::ivec2 viewport() const override
-  {
-    return window_->get_size();
-  }
+  glm::ivec2 viewport() const override { return window_->get_size(); }
 };
 
 class OpenglRendererService : virtual public interface::RendererService, public ServiceBase
 {
 public:
-  std::shared_ptr<interface::Renderer> create_renderer() override
-  {
-    return std::make_shared<OpenglRenderer>();
-  }
+  std::shared_ptr<interface::Renderer> create_renderer() override { return std::make_shared<OpenglRenderer>(); }
 
-  std::shared_ptr<interface::Texture> create_texture() override
-  {
-    return std::make_shared<OpenglTexture>();
-  }
+  std::shared_ptr<interface::Texture> create_texture() override { return std::make_shared<OpenglTexture>(); }
 
   std::shared_ptr<interface::Material> create_material(const std::string& type) override
   {

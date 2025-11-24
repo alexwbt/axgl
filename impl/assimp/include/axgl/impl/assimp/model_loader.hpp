@@ -1,22 +1,22 @@
 #pragma once
 
+#include <cstdlib>
+#include <filesystem>
+#include <memory>
+#include <ranges>
 #include <span>
 #include <string>
 #include <vector>
-#include <memory>
-#include <ranges>
-#include <cstdlib>
-#include <filesystem>
 
-#include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 #include <axgl/common.hpp>
+#include <axgl/interface/component/mesh.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/resource.hpp>
-#include <axgl/interface/component/mesh.hpp>
 
 NAMESPACE_AXGL_IMPL
 
@@ -36,14 +36,10 @@ class ModelLoader
 
   interface::ModelService::ModelResources resources_;
 
-  ModelLoader(
-    std::shared_ptr<interface::RealmService> realm_service,
+  ModelLoader(std::shared_ptr<interface::RealmService> realm_service,
     std::shared_ptr<interface::RendererService> renderer_service,
-    std::shared_ptr<interface::ResourceService> resource_service,
-    std::shared_ptr<interface::Entity> entity,
-    const std::string& resource_key,
-    const std::string& material_type
-  ) :
+    std::shared_ptr<interface::ResourceService> resource_service, std::shared_ptr<interface::Entity> entity,
+    const std::string& resource_key, const std::string& material_type) :
     realm_service_(std::move(realm_service)),
     renderer_service_(std::move(renderer_service)),
     resource_service_(std::move(resource_service)),
@@ -66,9 +62,8 @@ class ModelLoader
       for (int i = 0; i < ai_scene->mNumTextures; ++i)
       {
         embedded_textures_[i] = renderer_service_->create_texture();
-        embedded_textures_[i]->load_texture({
-          reinterpret_cast<uint8_t*>(ai_scene->mTextures[i]->pcData),
-          ai_scene->mTextures[i]->mWidth });
+        embedded_textures_[i]->load_texture(
+          {reinterpret_cast<uint8_t*>(ai_scene->mTextures[i]->pcData), ai_scene->mTextures[i]->mWidth});
 
         resources_.textures.push_back(embedded_textures_[i]);
       }
@@ -76,9 +71,7 @@ class ModelLoader
     process_node(entity, ai_scene->mRootNode, ai_scene);
   }
 
-  void process_node(
-    std::shared_ptr<interface::Entity> entity,
-    aiNode* ai_node, const aiScene* ai_scene)
+  void process_node(std::shared_ptr<interface::Entity> entity, aiNode* ai_node, const aiScene* ai_scene)
   {
     for (int i = 0; i < ai_node->mNumMeshes; ++i)
     {
@@ -99,10 +92,7 @@ class ModelLoader
     std::vector<glm::vec3> vertices;
     vertices.reserve(ai_mesh->mNumVertices);
     for (int i = 0; i < ai_mesh->mNumVertices; ++i)
-      vertices.emplace_back(
-        ai_mesh->mVertices[i].x,
-        ai_mesh->mVertices[i].y,
-        ai_mesh->mVertices[i].z);
+      vertices.emplace_back(ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z);
     mesh->set_vertices(vertices);
 
     if (ai_mesh->HasNormals())
@@ -110,10 +100,7 @@ class ModelLoader
       std::vector<glm::vec3> normals;
       normals.reserve(ai_mesh->mNumVertices);
       for (int i = 0; i < ai_mesh->mNumVertices; ++i)
-        normals.emplace_back(
-          ai_mesh->mNormals[i].x,
-          ai_mesh->mNormals[i].y,
-          ai_mesh->mNormals[i].z);
+        normals.emplace_back(ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z);
       mesh->set_normals(normals);
     }
 
@@ -122,9 +109,7 @@ class ModelLoader
       std::vector<glm::vec2> uv;
       uv.reserve(ai_mesh->mNumVertices);
       for (int i = 0; i < ai_mesh->mNumVertices; ++i)
-        uv.emplace_back(
-          ai_mesh->mTextureCoords[0][i].x,
-          ai_mesh->mTextureCoords[0][i].y);
+        uv.emplace_back(ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y);
       mesh->set_uv(uv);
     }
 
@@ -155,12 +140,8 @@ class ModelLoader
     return mesh;
   }
 
-  void load_textures(
-    aiMaterial* ai_material,
-    aiTextureType ai_texture_type,
-    std::shared_ptr<interface::Material> material,
-    interface::TextureType texture_type
-  )
+  void load_textures(aiMaterial* ai_material, aiTextureType ai_texture_type,
+    std::shared_ptr<interface::Material> material, interface::TextureType texture_type)
   {
     auto count = ai_material->GetTextureCount(ai_texture_type);
     for (int i = 0; i < count; ++i)
@@ -190,8 +171,8 @@ class ModelLoader
         material->add_texture(texture_type, std::move(texture));
         resources_.textures.push_back(texture);
       }
-      }
     }
+  }
 
   interface::TextureType map_texture_type(aiTextureType ai_texture_type)
   {
@@ -199,11 +180,13 @@ class ModelLoader
     switch (ai_texture_type)
     {
     case aiTextureType_DIFFUSE: return kDiffuse;
-    case aiTextureType_SPECULAR: return kSpecular;
+    case aiTextureType_SPECULAR:
+      return kSpecular;
       // case aiTextureType_AMBIENT: return kAmbient;
       // case aiTextureType_EMISSIVE: return kEmissive;
     case aiTextureType_HEIGHT: return kHeight;
-    case aiTextureType_NORMALS: return kNormal;
+    case aiTextureType_NORMALS:
+      return kNormal;
       // case aiTextureType_SHININESS: return kShininess;
       // case aiTextureType_OPACITY: return kOpacity;
       // case aiTextureType_DISPLACEMENT: return kDisplacement;
@@ -221,6 +204,6 @@ class ModelLoader
     default: return kUnknown;
     }
   }
-  };
+};
 
 NAMESPACE_AXGL_IMPL_END

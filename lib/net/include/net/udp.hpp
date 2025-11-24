@@ -12,9 +12,9 @@ protected:
 
 public:
   UdpServer(const std::shared_ptr<asio::io_context>& io_context, const asio::ip::port_type& port) :
-    Server(io_context, port),
-    socket_(*io_context, { asio::ip::udp::v4(), port })
-  {}
+    Server(io_context, port), socket_(*io_context, {asio::ip::udp::v4(), port})
+  {
+  }
 
   // void start() override;
   // void stop() override;
@@ -35,4 +35,4 @@ public:
 //   // virtual std::shared_ptr<Socket> new_socket(asio::ip::tcp::socket socket) = 0;
 // };
 
-}
+} // namespace net

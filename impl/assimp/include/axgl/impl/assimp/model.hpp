@@ -2,11 +2,11 @@
 
 #include <memory>
 
+#include <axgl/impl/service.hpp>
 #include <axgl/interface/model.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/resource.hpp>
-#include <axgl/impl/service.hpp>
 
 #ifndef AXGL_DEFINED_CREATE_COMPONENT_MESH
 #error Implementation of interface::Mesh must be defined before using __FILE__
@@ -33,14 +33,7 @@ public:
 
   ModelResources load_model(std::shared_ptr<interface::Entity> entity, const std::string& resource_key) override
   {
-    ModelLoader loader(
-      realm_service_,
-      renderer_service_,
-      resource_service_,
-      entity,
-      resource_key,
-      "default"
-    );
+    ModelLoader loader(realm_service_, renderer_service_, resource_service_, entity, resource_key, "default");
     return loader.resources_;
   }
 };

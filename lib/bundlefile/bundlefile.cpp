@@ -1,6 +1,6 @@
 
-#include <fstream>
 #include <filesystem>
+#include <fstream>
 
 #include <args.hxx>
 #include <spdlog/spdlog.h>
@@ -33,7 +33,7 @@ static std::vector<File> read_directory(const std::string& source)
     {
       auto path = entry_to_string(entry.path());
       auto key = entry_to_string(std::filesystem::relative(entry.path(), source));
-      files.push_back({ path, key });
+      files.push_back({path, key});
     }
   }
   return files;
@@ -73,8 +73,7 @@ static int write_files(const std::vector<File>& files, const std::string& target
     return 1;
   }
 
-  output_stream.write(reinterpret_cast<const char*>(
-    builder.GetBufferPointer()), builder.GetSize());
+  output_stream.write(reinterpret_cast<const char*>(builder.GetBufferPointer()), builder.GetSize());
 
   return 0;
 }
@@ -99,13 +98,19 @@ static int bundle_files(const std::string& source, const std::string& target)
 int main(int argc, char** argv)
 {
   args::ArgumentParser parser("Bundles all files in a directory into a binary file.");
-  args::HelpFlag help(parser, "help", "Display the help menu.", { 'h', "help" });
+  args::HelpFlag help(parser, "help", "Display the help menu.", {'h', "help"});
 
   args::Positional<std::string> source(parser, "source", "The source directory to bundle.", args::Options::Required);
   args::Positional<std::string> target(parser, "target", "The output binary file.", args::Options::Required);
 
-  try { parser.ParseCLI(argc, argv); }
-  catch (const args::Completion& e) { std::cout << e.what(); }
+  try
+  {
+    parser.ParseCLI(argc, argv);
+  }
+  catch (const args::Completion& e)
+  {
+    std::cout << e.what();
+  }
   catch (const args::Help&)
   {
     std::cout << parser;

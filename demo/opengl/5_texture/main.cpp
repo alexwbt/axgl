@@ -1,10 +1,10 @@
 #include <vector>
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/component/camera.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
-#include <axgl/impl/component/camera.hpp>
 
 #include <demo_opengl_texture/res.hpp>
 
@@ -30,7 +30,8 @@ int main()
   realm->set_renderer(renderer);
 
   // square entity
-  const auto square_entity = realm_service->create_entity<axgl::interface::Entity>(); {
+  const auto square_entity = realm_service->create_entity<axgl::interface::Entity>();
+  {
     // texture
     const auto texture = renderer_service->create_texture();
     texture->load_texture(demo_opengl_texture_res::get("container.png"));
@@ -42,18 +43,18 @@ int main()
     // square mesh
     const auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
     mesh_comp->set_vertices(std::vector<glm::vec2>{
-      { 0.5f, 0.5f },
-      { 0.5f, -0.5f },
-      { -0.5f, -0.5f },
-      { -0.5f, 0.5f },
+      {0.5f, 0.5f},
+      {0.5f, -0.5f},
+      {-0.5f, -0.5f},
+      {-0.5f, 0.5f},
     });
     mesh_comp->set_uv(std::vector<glm::vec2>{
-      { 1.0f, 1.0f },
-      { 1.0f, 0.0f },
-      { 0.0f, 0.0f },
-      { 0.0f, 1.0f },
+      {1.0f, 1.0f},
+      {1.0f, 0.0f},
+      {0.0f, 0.0f},
+      {0.0f, 1.0f},
     });
-    mesh_comp->set_indices(std::vector<uint32_t>{ 0, 1, 2, 0, 2, 3 });
+    mesh_comp->set_indices(std::vector<uint32_t>{0, 1, 2, 0, 2, 3});
     mesh_comp->set_material(material);
     square_entity->add_component(mesh_comp);
 

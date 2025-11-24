@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
-#include <memory>
 #include <cstdint>
+#include <memory>
+#include <string>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>

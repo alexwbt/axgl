@@ -16,15 +16,15 @@ public:
   float roll = 0.0f;
   float near_clip = 0.1f;
   float far_clip = 1000.0f;
-  glm::vec2 viewport{ 0.0f };
-  glm::vec3 position{ 0.0f };
+  glm::vec2 viewport{0.0f};
+  glm::vec3 position{0.0f};
   bool orthographic = false;
 
 private:
-  glm::vec3 up_{ 0.0f };
-  glm::vec3 front_{ 0.0f };
-  glm::vec3 horizontal_right_{ 0.0f };
-  glm::mat4 projection_view_matrix_{ 0.0f };
+  glm::vec3 up_{0.0f};
+  glm::vec3 front_{0.0f};
+  glm::vec3 horizontal_right_{0.0f};
+  glm::mat4 projection_view_matrix_{0.0f};
 
 public:
   Camera() { update(); }
@@ -75,10 +75,7 @@ public:
     projection_view_matrix_ = projection * view;
   }
 
-  void set_projection_view_matrix(const glm::mat4& pv)
-  {
-    projection_view_matrix_ = pv;
-  }
+  void set_projection_view_matrix(const glm::mat4& pv) { projection_view_matrix_ = pv; }
 };
 
 NAMESPACE_AXGL_INTERFACE_END

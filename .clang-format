@@ -12,3 +12,15 @@ BreakBeforeBraces: Allman
 InsertNewlineAtEOF: true
 PointerAlignment: Left
 DerivePointerAlignment: false
+AllowShortBlocksOnASingleLine: Always
+SpaceInEmptyBlock: true
+AllowShortCaseExpressionOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+IndentCaseBlocks: false
+IndentCaseLabels: false
+LambdaBodyIndentation: Signature
+AllowShortLambdasOnASingleLine: All
+PackConstructorInitializers: NextLine
+BreakConstructorInitializers: AfterColon
+AlignAfterOpenBracket: DontAlign
+AllowAllArgumentsOnNextLine: true

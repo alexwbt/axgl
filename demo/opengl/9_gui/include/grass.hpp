@@ -30,18 +30,18 @@ inline std::shared_ptr<axgl::interface::Entity> create_grass(const axgl::Axgl* a
     // grass mesh
     const auto mesh = realm_service->create_component<axgl::interface::component::Mesh>();
     mesh->set_vertices(std::vector<glm::vec2>{
-      { 0.5f, 0.5f },
-      { 0.5f, -0.5f },
-      { -0.5f, -0.5f },
-      { -0.5f, 0.5f },
+      {0.5f, 0.5f},
+      {0.5f, -0.5f},
+      {-0.5f, -0.5f},
+      {-0.5f, 0.5f},
     });
     mesh->set_uv(std::vector<glm::vec2>{
-      { 1.0f, 1.0f },
-      { 1.0f, 0.0f },
-      { 0.0f, 0.0f },
-      { 0.0f, 1.0f },
+      {1.0f, 1.0f},
+      {1.0f, 0.0f},
+      {0.0f, 0.0f},
+      {0.0f, 1.0f},
     });
-    mesh->set_indices(std::vector<uint32_t>{ 0, 1, 2, 0, 2, 3 });
+    mesh->set_indices(std::vector<uint32_t>{0, 1, 2, 0, 2, 3});
     mesh->set_material(material);
     grass->add_component(mesh);
   }
