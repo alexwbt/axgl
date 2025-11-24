@@ -13,7 +13,10 @@
 
 #include <opengl/static_shaders.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 class OpenglMaterial : public interface::Material
 {
@@ -225,4 +228,5 @@ public:
   }
 };
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl

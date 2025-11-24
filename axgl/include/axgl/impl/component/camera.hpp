@@ -3,13 +3,11 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 
-NAMESPACE_AXGL_IMPL
-
-namespace component
+namespace axgl::impl::component
 {
+
 class Camera : public ComponentBase
 {
-
 public:
   interface::Camera camera;
 
@@ -39,15 +37,14 @@ public:
   }
 };
 
-} // namespace component
+} // namespace impl::component
 
-NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
+namespace axgl
+{
 
 template <> inline std::shared_ptr<impl::component::Camera> interface::RealmService::create_component()
 {
   return std::make_shared<impl::component::Camera>();
 }
 
-NAMESPACE_AXGL_END
+}

@@ -7,7 +7,8 @@
 
 /* Service implementations */
 
-NAMESPACE_AXGL
+namespace axgl
+{
 
 template <> inline std::shared_ptr<impl::GlfwWindowService> Axgl::use_service()
 {
@@ -27,4 +28,4 @@ template <> inline std::shared_ptr<impl::GlfwInputService> Axgl::use_service()
   return input_service;
 }
 
-NAMESPACE_AXGL_END
+} // namespace axgl

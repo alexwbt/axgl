@@ -17,16 +17,19 @@
 #include <axgl/interface/model.hpp>
 #include <axgl/impl/service.hpp>
 
-NAMESPACE_AXGL
+namespace axgl
+{
 
 namespace DefaultServices
 {
+
 constexpr auto kWindow = "window";
 constexpr auto kRenderer = "renderer";
 constexpr auto kResource = "resource";
 constexpr auto kRealm = "realm";
 constexpr auto kInput = "input";
 constexpr auto kModel = "model";
+
 }; // namespace DefaultServices
 
 #define AXGL_DECLARE_SERVICE_GETTER(service_name, service_getter_name)                                                 \
@@ -112,4 +115,4 @@ public:
   AXGL_DECLARE_SERVICE_GETTER(Model, model)
 };
 
-NAMESPACE_AXGL_END
+} // namespace axgl

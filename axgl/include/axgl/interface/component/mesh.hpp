@@ -8,10 +8,14 @@
 
 #include <glm/glm.hpp>
 
-NAMESPACE_AXGL_INTERFACE
+namespace axgl
+{
+namespace interface
+{
 
 namespace component
 {
+
 class Mesh : virtual public Component
 {
 public:
@@ -24,6 +28,8 @@ public:
   virtual void set_material(std::shared_ptr<Material> material) = 0;
   virtual std::shared_ptr<Material> get_material() const = 0;
 };
+
 } // namespace component
 
-NAMESPACE_AXGL_INTERFACE_END
+} // namespace interface
+} // namespace axgl

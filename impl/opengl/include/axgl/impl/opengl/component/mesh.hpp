@@ -13,10 +13,14 @@
 
 #include <opengl/vertex_array_object.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 namespace component
 {
+
 class OpenglMesh : virtual public interface::component::Mesh, public ComponentBase
 {
   int attribute_offset_ = 0;
@@ -95,6 +99,8 @@ public:
 
   void replace_vao(std::shared_ptr<opengl::VertexArrayObject> vertex_array) { vertex_array_ = std::move(vertex_array); }
 };
+
 } // namespace component
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl

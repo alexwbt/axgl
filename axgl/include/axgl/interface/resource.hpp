@@ -8,7 +8,10 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
 
-NAMESPACE_AXGL_INTERFACE
+namespace axgl
+{
+namespace interface
+{
 
 class ResourceService : virtual public Service
 {
@@ -21,4 +24,5 @@ public:
   virtual const std::span<const uint8_t>& get_resource(const std::string& key) = 0;
 };
 
-NAMESPACE_AXGL_INTERFACE_END
+} // namespace interface
+} // namespace axgl

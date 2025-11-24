@@ -16,7 +16,10 @@
 #include <opengl/text.hpp>
 #include <opengl/static_vaos.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 struct OpenglText final
 {
@@ -91,4 +94,5 @@ public:
   }
 };
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl

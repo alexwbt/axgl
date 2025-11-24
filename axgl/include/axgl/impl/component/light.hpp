@@ -3,9 +3,7 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 
-NAMESPACE_AXGL_IMPL
-
-namespace component
+namespace axgl::impl::component
 {
 
 class Light : public ComponentBase
@@ -28,13 +26,12 @@ public:
 
 } // namespace component
 
-NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
+namespace axgl
+{
 
 template <> inline std::shared_ptr<impl::component::Light> interface::RealmService::create_component()
 {
   return std::make_shared<impl::component::Light>();
 }
 
-NAMESPACE_AXGL_END
+}

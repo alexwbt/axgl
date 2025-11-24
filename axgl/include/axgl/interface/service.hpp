@@ -4,11 +4,17 @@
 
 #include <axgl/common.hpp>
 
-NAMESPACE_AXGL
-class Axgl;
-NAMESPACE_AXGL_END
+namespace axgl
+{
 
-NAMESPACE_AXGL_INTERFACE
+class Axgl;
+
+}
+
+namespace axgl
+{
+namespace interface
+{
 
 struct ServiceContext final
 {
@@ -35,4 +41,5 @@ protected:
   virtual const ServiceContext* get_context() const = 0;
 };
 
-NAMESPACE_AXGL_INTERFACE_END
+} // namespace interface
+} // namespace axgl

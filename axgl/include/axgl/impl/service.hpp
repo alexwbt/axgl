@@ -10,7 +10,10 @@
 #include <axgl/interface/service.hpp>
 #include <axgl/util/string.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 class ServiceBase : virtual public interface::Service
 {
@@ -146,4 +149,5 @@ public:
   }
 };
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl

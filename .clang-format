@@ -43,3 +43,12 @@ BraceWrapping:
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
 SortIncludes: false
+NamespaceIndentation: None
+CompactNamespaces: false
+KeepEmptyLines:
+  AtStartOfBlock: false
+  AtEndOfFile: true
+  AtStartOfFile: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+WrapNamespaceBodyWithEmptyLines: Always
+MaxEmptyLinesToKeep: 1

@@ -12,11 +12,17 @@
 #include <axgl/interface/light.hpp>
 #include <axgl/util/iterable.hpp>
 
-NAMESPACE_AXGL
-class Axgl;
-NAMESPACE_AXGL_END
+namespace axgl
+{
 
-NAMESPACE_AXGL_INTERFACE
+class Axgl;
+
+}
+
+namespace axgl
+{
+namespace interface
+{
 
 class Realm;
 class Entity;
@@ -187,4 +193,5 @@ struct RealmContext final
   std::vector<const Light*> lights;
 };
 
-NAMESPACE_AXGL_INTERFACE_END
+} // namespace interface
+} // namespace axgl

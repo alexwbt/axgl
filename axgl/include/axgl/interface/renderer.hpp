@@ -9,7 +9,10 @@
 #include <axgl/interface/service.hpp>
 #include <axgl/interface/window.hpp>
 
-NAMESPACE_AXGL_INTERFACE
+namespace axgl
+{
+namespace interface
+{
 
 class Texture
 {
@@ -66,4 +69,5 @@ public:
   virtual std::shared_ptr<Material> create_material(const std::string& type) = 0;
 };
 
-NAMESPACE_AXGL_INTERFACE_END
+} // namespace interface
+} // namespace axgl

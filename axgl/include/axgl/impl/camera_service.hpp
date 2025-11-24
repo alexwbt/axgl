@@ -8,7 +8,10 @@
 #include <axgl/impl/component/camera.hpp>
 #include <axgl/impl/service.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 class CameraService : public ServiceBase
 {
@@ -201,9 +204,11 @@ public:
   }
 };
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl
 
-NAMESPACE_AXGL
+namespace axgl
+{
 
 template <> inline std::shared_ptr<impl::CameraService> Axgl::use_service()
 {
@@ -213,4 +218,4 @@ template <> inline std::shared_ptr<impl::CameraService> Axgl::use_service()
   return camera_service;
 }
 
-NAMESPACE_AXGL_END
+} // namespace axgl

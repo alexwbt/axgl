@@ -11,7 +11,10 @@
 
 #include <axgl/impl/service.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 class ResourceService : public interface::ResourceService, public ServiceBase
 {
@@ -39,9 +42,11 @@ public:
   }
 };
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl
 
-NAMESPACE_AXGL
+namespace axgl
+{
 
 template <> inline std::shared_ptr<impl::ResourceService> Axgl::use_service()
 {
@@ -51,4 +56,4 @@ template <> inline std::shared_ptr<impl::ResourceService> Axgl::use_service()
   return resource_service;
 }
 
-NAMESPACE_AXGL_END
+} // namespace axgl

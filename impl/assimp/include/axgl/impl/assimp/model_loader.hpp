@@ -18,7 +18,10 @@
 #include <axgl/interface/resource.hpp>
 #include <axgl/interface/component/mesh.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 class AssimpModelService;
 
@@ -206,4 +209,5 @@ class ModelLoader
   }
 };
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl

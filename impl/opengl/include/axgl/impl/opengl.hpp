@@ -6,7 +6,8 @@
 
 #include <axgl/impl/opengl/component/mesh.hpp>
 
-NAMESPACE_AXGL
+namespace axgl
+{
 
 #ifdef AXGL_DEFINED_CREATE_COMPONENT_MESH
 #error Duplicate definition of component interface::Mesh
@@ -17,11 +18,12 @@ template <> inline std::shared_ptr<interface::component::Mesh> interface::RealmS
   return std::make_shared<impl::component::OpenglMesh>();
 }
 
-NAMESPACE_AXGL_END
+} // namespace axgl
 
 #include <axgl/impl/opengl/entity/gui_element.hpp>
 
-NAMESPACE_AXGL
+namespace axgl
+{
 
 #ifdef AXGL_DEFINED_CREATE_ENTITY_GUI_ELEMENT
 #error Duplicate definition of entity interface::entity::GuiElement
@@ -32,7 +34,7 @@ template <> inline std::shared_ptr<interface::entity::GuiElement> interface::Rea
   return std::make_shared<impl::entity::OpenglGuiElement>();
 }
 
-NAMESPACE_AXGL_END
+} // namespace axgl
 
 /* Service implementations */
 
@@ -40,7 +42,8 @@ NAMESPACE_AXGL_END
 #include <axgl/impl/opengl/gui.hpp>
 #include <axgl/impl/opengl/text.hpp>
 
-NAMESPACE_AXGL
+namespace axgl
+{
 
 template <> inline std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 {
@@ -68,4 +71,4 @@ template <> inline std::shared_ptr<impl::OpenglRendererService> Axgl::use_servic
   return opengl_service;
 }
 
-NAMESPACE_AXGL_END
+} // namespace axgl

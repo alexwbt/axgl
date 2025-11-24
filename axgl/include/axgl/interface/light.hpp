@@ -4,7 +4,10 @@
 
 #include <axgl/common.hpp>
 
-NAMESPACE_AXGL_INTERFACE
+namespace axgl
+{
+namespace interface
+{
 
 class Light final
 {
@@ -59,4 +62,5 @@ public:
   }
 };
 
-NAMESPACE_AXGL_INTERFACE_END
+} // namespace interface
+} // namespace axgl

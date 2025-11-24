@@ -4,9 +4,7 @@
 #include <axgl/interface/realm.hpp>
 #include <axgl/impl/realm_service.hpp>
 
-NAMESPACE_AXGL_IMPL
-
-namespace entity
+namespace axgl::impl::entity
 {
 
 class ContextOverride : public Entity
@@ -35,15 +33,14 @@ public:
   }
 };
 
-} // namespace entity
+} // namespace axgl::impl::entity
 
-NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
+namespace axgl
+{
 
 template <> inline std::shared_ptr<impl::entity::ContextOverride> interface::RealmService::create_entity()
 {
   return std::make_shared<impl::entity::ContextOverride>();
 }
 
-NAMESPACE_AXGL_END
+} // namespace axgl

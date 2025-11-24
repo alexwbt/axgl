@@ -7,7 +7,10 @@
 #include <axgl/interface/window.hpp>
 #include <utility>
 
-NAMESPACE_AXGL_INTERFACE
+namespace axgl
+{
+namespace interface
+{
 
 enum class InputSource
 {
@@ -198,4 +201,5 @@ public:
   friend class Pointer;
 };
 
-NAMESPACE_AXGL_INTERFACE_END
+} // namespace interface
+} // namespace axgl

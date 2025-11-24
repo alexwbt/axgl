@@ -4,10 +4,14 @@
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
 
-NAMESPACE_AXGL_INTERFACE
+namespace axgl
+{
+namespace interface
+{
 
 namespace entity
 {
+
 class GuiElement : virtual public Entity
 {
 public:
@@ -54,6 +58,8 @@ public:
   virtual bool hovering() = 0;
   virtual bool focused() = 0;
 };
+
 } // namespace entity
 
-NAMESPACE_AXGL_INTERFACE_END
+} // namespace interface
+} // namespace axgl

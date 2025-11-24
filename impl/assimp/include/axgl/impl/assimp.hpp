@@ -6,7 +6,8 @@
 
 #include <axgl/impl/assimp/model.hpp>
 
-NAMESPACE_AXGL
+namespace axgl
+{
 
 template <> inline std::shared_ptr<impl::AssimpModelService> Axgl::use_service()
 {
@@ -16,4 +17,4 @@ template <> inline std::shared_ptr<impl::AssimpModelService> Axgl::use_service()
   return service;
 }
 
-NAMESPACE_AXGL_END
+} // namespace axgl

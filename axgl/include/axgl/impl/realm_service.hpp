@@ -12,7 +12,10 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 class ComponentContainer final
 {
@@ -414,9 +417,7 @@ public:
   }
 };
 
-NAMESPACE_AXGL_IMPL_END
-
-NAMESPACE_AXGL
+} // namespace impl
 
 #ifndef AXGL_DEFINED_CREATE_ENTITY
 #define AXGL_DEFINED_CREATE_ENTITY
@@ -439,4 +440,4 @@ template <> inline std::shared_ptr<impl::RealmService> Axgl::use_service()
   return realm_service;
 }
 
-NAMESPACE_AXGL_END
+} // namespace axgl

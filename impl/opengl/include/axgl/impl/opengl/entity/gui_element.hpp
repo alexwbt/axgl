@@ -12,7 +12,10 @@
 
 #include <opengl/static_vaos.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 namespace entity
 {
@@ -134,4 +137,5 @@ private:
 
 } // namespace entity
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl

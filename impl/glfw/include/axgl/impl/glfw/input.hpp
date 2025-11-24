@@ -6,7 +6,10 @@
 #include <axgl/interface/input.hpp>
 #include <axgl/impl/glfw/window.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 class GlfwInputService : public interface::InputService, public ServiceBase
 {
@@ -214,4 +217,5 @@ public:
   }
 };
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl

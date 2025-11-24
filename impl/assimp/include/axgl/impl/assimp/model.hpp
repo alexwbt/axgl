@@ -14,7 +14,10 @@
 
 #include "./model_loader.hpp"
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 class AssimpModelService : virtual public interface::ModelService, public ServiceBase
 {
@@ -38,4 +41,5 @@ public:
   }
 };
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl

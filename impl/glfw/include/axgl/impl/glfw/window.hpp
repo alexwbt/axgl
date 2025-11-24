@@ -8,7 +8,10 @@
 
 #include <glfw/window.hpp>
 
-NAMESPACE_AXGL_IMPL
+namespace axgl
+{
+namespace impl
+{
 
 class GlfwWindow : public interface::Window
 {
@@ -81,4 +84,5 @@ public:
   void set_window_hint(int hint, int value) const { glfw::Window::glfw_window_hint(hint, value); }
 };
 
-NAMESPACE_AXGL_IMPL_END
+} // namespace impl
+} // namespace axgl
