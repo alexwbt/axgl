@@ -24,7 +24,7 @@ public:
   }
 };
 
-} // namespace component
+} // namespace axgl::impl::component
 
 namespace axgl
 {
@@ -34,4 +34,4 @@ template <> inline std::shared_ptr<impl::component::Light> interface::RealmServi
   return std::make_shared<impl::component::Light>();
 }
 
-}
+} // namespace axgl

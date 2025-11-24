@@ -37,7 +37,7 @@ public:
   }
 };
 
-} // namespace impl::component
+} // namespace axgl::impl::component
 
 namespace axgl
 {
@@ -47,4 +47,4 @@ template <> inline std::shared_ptr<impl::component::Camera> interface::RealmServ
   return std::make_shared<impl::component::Camera>();
 }
 
-}
+} // namespace axgl

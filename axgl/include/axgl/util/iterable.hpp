@@ -33,7 +33,7 @@ public:
     Iterator iterator_;
 
   public:
-    Adaptor(const Iterator& rhs) : iterator_(rhs) { }
+    explicit Adaptor(const Iterator& rhs) : iterator_(rhs) { }
     Adaptor(const Adaptor& other) : iterator_(other.iterator_) { }
 
     reference current() const override { return *iterator_; }
@@ -56,7 +56,7 @@ private:
 
 public:
   AnyIterator() : wrapper_(nullptr) { }
-  AnyIterator(std::unique_ptr<IteratorWrapper> wrapper) : wrapper_(std::move(wrapper)) { }
+  explicit AnyIterator(std::unique_ptr<IteratorWrapper> wrapper) : wrapper_(std::move(wrapper)) { }
   AnyIterator(const AnyIterator& other)
   {
     if (other.wrapper_)
