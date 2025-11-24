@@ -1,7 +1,7 @@
 #! /bin/bash
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")" && cd .. && pwd)"
 
 rm -rf \
-  $DIR/../_build \
-  $DIR/../_bin
+  $ROOT_DIR/_build \
+  $ROOT_DIR/_bin
