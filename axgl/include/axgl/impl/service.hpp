@@ -10,9 +10,7 @@
 #include <axgl/interface/service.hpp>
 #include <axgl/util/string.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class ServiceBase : virtual public interface::Service
@@ -49,7 +47,7 @@ protected:
   interface::ServiceContext context_;
 
 public:
-  virtual ~ServiceManager() { }
+  virtual ~ServiceManager() = default;
 
   bool has_service(const std::string& id) const { return service_map_.contains(id); }
 
@@ -149,5 +147,5 @@ public:
   }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
+

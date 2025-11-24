@@ -4,12 +4,7 @@
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/renderer.hpp>
 
-namespace axgl
-{
-namespace interface
-{
-
-namespace entity
+namespace axgl::interface::entity
 {
 
 class GuiElement : virtual public Entity
@@ -59,7 +54,5 @@ public:
   virtual bool focused() = 0;
 };
 
-} // namespace entity
+} // namespace axgl::interface::entity
 
-} // namespace interface
-} // namespace axgl

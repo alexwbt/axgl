@@ -19,7 +19,7 @@ public:
   GLenum format;
   int width = 0, height = 0;
 
-  StbiImage(const std::span<const uint8_t>& data)
+  explicit StbiImage(const std::span<const uint8_t>& data)
   {
     int nrChannels;
     stbi_ptr = stbi_load_from_memory(data.data(), data.size(), &width, &height, &nrChannels, 0);
@@ -132,12 +132,12 @@ public:
     target_ = GL_TEXTURE_CUBE_MAP;
 
     const StbiImage texture[6] = {
-      data[0],
-      data[1],
-      data[2],
-      data[3],
-      data[4],
-      data[5],
+      StbiImage(data[0]),
+      StbiImage(data[1]),
+      StbiImage(data[2]),
+      StbiImage(data[3]),
+      StbiImage(data[4]),
+      StbiImage(data[5]),
     };
     for (int i = 0; i < 6; i++)
     {

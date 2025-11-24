@@ -7,9 +7,7 @@
 #include <axgl/impl/service.hpp>
 #include <axgl/impl/opengl/entity/gui_element.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class OpenglGuiService : virtual public interface::GuiService, public ServiceBase
@@ -21,5 +19,5 @@ public:
   }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
+

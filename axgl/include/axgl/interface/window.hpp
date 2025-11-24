@@ -9,9 +9,7 @@
 
 #include <glm/glm.hpp>
 
-namespace axgl
-{
-namespace interface
+namespace axgl::interface
 {
 
 class Window
@@ -38,5 +36,5 @@ public:
   virtual std::shared_ptr<Window> create_window() = 0;
 };
 
-} // namespace interface
-} // namespace axgl
+} // namespace axgl::interface
+

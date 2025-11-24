@@ -12,9 +12,7 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class ComponentContainer final
@@ -417,7 +415,10 @@ public:
   }
 };
 
-} // namespace impl
+} // namespace axgl::impl
+
+namespace axgl
+{
 
 #ifndef AXGL_DEFINED_CREATE_ENTITY
 #define AXGL_DEFINED_CREATE_ENTITY

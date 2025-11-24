@@ -6,8 +6,8 @@ FILE_PATTERN="^$ROOT_DIR/\(axgl\|demo\|impl\|lib\).*\.\(cpp\|hpp\)$"
 
 find $ROOT_DIR \
   -regex "$FILE_PATTERN" \
-  -exec clang-format -i {} \;
+  -exec clang-tidy {} -fix -fix-errors -- -std=c++20 \;
 
 find $ROOT_DIR \
   -regex "$FILE_PATTERN" \
-  -exec clang-tidy {} -fix -- -std=c++20 \;
+  -exec clang-format -i {} \;

@@ -46,10 +46,10 @@
 
 #define USE_ASSIMP_OPTION(option, flag)                                                                                \
   SPDLOG_INFO("{}: {}", #option,                                                                                       \
-    fmt::format(fmt::fg((flag & aiProcess_##option) ? fmt::terminal_color::green : fmt::terminal_color::red),          \
-      (flag & aiProcess_##option) ? "enabled" : "disabled"));                                                          \
+    fmt::format(fmt::fg(((flag) & aiProcess_##option) ? fmt::terminal_color::green : fmt::terminal_color::red),        \
+      ((flag) & aiProcess_##option) ? "enabled" : "disabled"));                                                        \
   if (option)                                                                                                          \
-    flag |= aiProcess_##option;
+    (flag) |= aiProcess_##option;
 
 static int convert(const std::string& input, const std::string& output, unsigned int flag)
 {

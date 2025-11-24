@@ -8,9 +8,7 @@
 
 #include <opengl/texture.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class OpenglTexture : public interface::Texture
@@ -36,5 +34,5 @@ public:
   void replace_texture(std::shared_ptr<opengl::Texture> texture) { texture_ = std::move(texture); }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
+

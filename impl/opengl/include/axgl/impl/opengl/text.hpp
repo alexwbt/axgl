@@ -16,9 +16,7 @@
 #include <opengl/text.hpp>
 #include <opengl/static_vaos.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 struct OpenglText final
@@ -94,5 +92,5 @@ public:
   }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
+

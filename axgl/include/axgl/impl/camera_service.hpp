@@ -8,9 +8,7 @@
 #include <axgl/impl/component/camera.hpp>
 #include <axgl/impl/service.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class CameraService : public ServiceBase
@@ -204,8 +202,7 @@ public:
   }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
 
 namespace axgl
 {

@@ -2,6 +2,7 @@
 
 #include <span>
 #include <string>
+#include <utility>
 #include <vector>
 #include <memory>
 #include <ranges>
@@ -18,9 +19,7 @@
 #include <axgl/interface/resource.hpp>
 #include <axgl/interface/component/mesh.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class AssimpModelService;
@@ -42,12 +41,12 @@ class ModelLoader
   ModelLoader(std::shared_ptr<interface::RealmService> realm_service,
     std::shared_ptr<interface::RendererService> renderer_service,
     std::shared_ptr<interface::ResourceService> resource_service, std::shared_ptr<interface::Entity> entity,
-    const std::string& resource_key, const std::string& material_type) :
+    std::string resource_key, std::string material_type) :
     realm_service_(std::move(realm_service)),
     renderer_service_(std::move(renderer_service)),
     resource_service_(std::move(resource_service)),
-    resource_key_(resource_key),
-    material_type_(material_type)
+    resource_key_(std::move(resource_key)),
+    material_type_(std::move(material_type))
   {
     Assimp::Importer importer;
     const auto& data = resource_service_->get_resource(resource_key);
@@ -209,5 +208,5 @@ class ModelLoader
   }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
+

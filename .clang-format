@@ -50,5 +50,4 @@ KeepEmptyLines:
   AtEndOfFile: true
   AtStartOfFile: true
 KeepEmptyLinesAtTheStartOfBlocks: false
-WrapNamespaceBodyWithEmptyLines: Always
 MaxEmptyLinesToKeep: 1

@@ -21,7 +21,7 @@ private:
   size_t attribute_size_ = 0;
 
 public:
-  VertexArrayObject(GLenum usage = GL_STATIC_DRAW) : usage_(usage) { glGenVertexArrays(1, &id_); }
+  explicit VertexArrayObject(GLenum usage = GL_STATIC_DRAW) : usage_(usage) { glGenVertexArrays(1, &id_); }
   VertexArrayObject(const VertexArrayObject&) = delete;
   VertexArrayObject& operator=(const VertexArrayObject&) = delete;
 

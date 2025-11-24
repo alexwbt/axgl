@@ -8,9 +8,7 @@
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/component/mesh.hpp>
 
-namespace axgl
-{
-namespace interface
+namespace axgl::interface
 {
 
 class ModelService : virtual public Service
@@ -26,5 +24,5 @@ public:
   virtual ModelResources load_model(std::shared_ptr<Entity> entity, const std::string& resource_key) = 0;
 };
 
-} // namespace interface
-} // namespace axgl
+} // namespace axgl::interface
+

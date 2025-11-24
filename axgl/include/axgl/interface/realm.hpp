@@ -19,9 +19,7 @@ class Axgl;
 
 }
 
-namespace axgl
-{
-namespace interface
+namespace axgl::interface
 {
 
 class Realm;
@@ -193,5 +191,5 @@ struct RealmContext final
   std::vector<const Light*> lights;
 };
 
-} // namespace interface
-} // namespace axgl
+} // namespace axgl::interface
+

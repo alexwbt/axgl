@@ -8,9 +8,7 @@
 
 #include <glfw/window.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class GlfwWindow : public interface::Window
@@ -18,7 +16,7 @@ class GlfwWindow : public interface::Window
   std::shared_ptr<glfw::Window> window_;
 
 public:
-  GlfwWindow(std::shared_ptr<glfw::Window> window) : window_(std::move(window)) { }
+  explicit GlfwWindow(std::shared_ptr<glfw::Window> window) : window_(std::move(window)) { }
 
   void set_title(const std::string& title) override
   {
@@ -84,5 +82,5 @@ public:
   void set_window_hint(int hint, int value) const { glfw::Window::glfw_window_hint(hint, value); }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
+

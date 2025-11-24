@@ -5,9 +5,7 @@
 
 #include <axgl/common.hpp>
 
-namespace axgl
-{
-namespace interface
+namespace axgl::interface
 {
 
 class Camera final
@@ -81,5 +79,5 @@ public:
   void set_projection_view_matrix(const glm::mat4& pv) { projection_view_matrix_ = pv; }
 };
 
-} // namespace interface
-} // namespace axgl
+} // namespace axgl::interface
+

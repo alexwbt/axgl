@@ -53,7 +53,7 @@ private:
   std::unordered_map<std::string, GLuint> uniform_locations_;
 
 public:
-  ShaderProgram(const std::vector<Shader>& shaders)
+  explicit ShaderProgram(const std::vector<Shader>& shaders)
   {
     program_id_ = glCreateProgram();
 

@@ -12,12 +12,7 @@
 
 #include <opengl/static_vaos.hpp>
 
-namespace axgl
-{
-namespace impl
-{
-
-namespace entity
+namespace axgl::impl::entity
 {
 
 class OpenglGuiElement : virtual public interface::entity::GuiElement, public Entity
@@ -135,7 +130,5 @@ private:
   }
 };
 
-} // namespace entity
+} // namespace axgl::impl::entity
 
-} // namespace impl
-} // namespace axgl

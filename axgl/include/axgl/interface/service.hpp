@@ -11,9 +11,7 @@ class Axgl;
 
 }
 
-namespace axgl
-{
-namespace interface
+namespace axgl::interface
 {
 
 struct ServiceContext final
@@ -41,5 +39,5 @@ protected:
   virtual const ServiceContext* get_context() const = 0;
 };
 
-} // namespace interface
-} // namespace axgl
+} // namespace axgl::interface
+

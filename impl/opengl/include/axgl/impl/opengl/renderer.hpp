@@ -14,9 +14,7 @@
 #include <axgl/impl/opengl/texture.hpp>
 #include <axgl/impl/opengl/material.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class OpenglRenderer : public interface::Renderer
@@ -138,5 +136,5 @@ public:
   }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
+

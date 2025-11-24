@@ -11,9 +11,7 @@
 
 #include <bundlefile/unbundle.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class BundlefileService : public ServiceBase
@@ -47,8 +45,7 @@ public:
   }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
 
 namespace axgl
 {

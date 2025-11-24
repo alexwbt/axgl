@@ -11,9 +11,7 @@
 
 #include <axgl/impl/service.hpp>
 
-namespace axgl
-{
-namespace impl
+namespace axgl::impl
 {
 
 class ResourceService : public interface::ResourceService, public ServiceBase
@@ -42,8 +40,7 @@ public:
   }
 };
 
-} // namespace impl
-} // namespace axgl
+} // namespace axgl::impl
 
 namespace axgl
 {
