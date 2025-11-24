@@ -51,10 +51,11 @@ int main()
   realm->set_renderer(renderer);
 
   // circle entity
-  const auto entity = realm_service->create_entity<axgl::interface::Entity>(); {
+  const auto entity = realm_service->create_entity<axgl::interface::Entity>();
+  {
     // material
     const auto material = renderer_service->create_material("2d");
-    material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
+    material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
     // circle mesh
     const auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();

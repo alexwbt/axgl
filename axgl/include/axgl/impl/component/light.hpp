@@ -26,14 +26,13 @@ public:
   }
 };
 
-}
+} // namespace component
 
 NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
 
-template<>
-inline std::shared_ptr<impl::component::Light> interface::RealmService::create_component()
+template <> inline std::shared_ptr<impl::component::Light> interface::RealmService::create_component()
 {
   return std::make_shared<impl::component::Light>();
 }

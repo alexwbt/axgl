@@ -12,7 +12,6 @@
 
 #include <opengl/static_vaos.hpp>
 
-
 NAMESPACE_AXGL_IMPL
 
 namespace entity
@@ -28,8 +27,7 @@ class OpenglGuiElement : virtual public interface::entity::GuiElement, public En
       if (parent_context_->camera->viewport != camera_.viewport)
       {
         camera_.viewport = parent_context_->camera->viewport;
-        camera_.set_projection_view_matrix(
-          glm::ortho(camera_.viewport.x, 0.0f, 0.0f, camera_.viewport.y));
+        camera_.set_projection_view_matrix(glm::ortho(camera_.viewport.x, 0.0f, 0.0f, camera_.viewport.y));
       }
       ContextOverride::update();
     }
@@ -130,13 +128,10 @@ private:
       background_->add_component(mesh);
       container_->add_child(background_);
     }
-    background_
-      ->get_component_t<interface::component::Mesh>()
-      ->get_material()
-      ->set_color(props_.bg_color);
+    background_->get_component_t<interface::component::Mesh>()->get_material()->set_color(props_.bg_color);
   }
 };
 
-}
+} // namespace entity
 
 NAMESPACE_AXGL_IMPL_END

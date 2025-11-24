@@ -12,8 +12,7 @@ NAMESPACE_AXGL
 #error Duplicate definition of component interface::Mesh
 #endif
 #define AXGL_DEFINED_CREATE_COMPONENT_MESH
-template<>
-inline std::shared_ptr<interface::component::Mesh> interface::RealmService::create_component()
+template <> inline std::shared_ptr<interface::component::Mesh> interface::RealmService::create_component()
 {
   return std::make_shared<impl::component::OpenglMesh>();
 }
@@ -28,8 +27,7 @@ NAMESPACE_AXGL
 #error Duplicate definition of entity interface::entity::GuiElement
 #endif
 #define AXGL_DEFINED_CREATE_ENTITY_GUI_ELEMENT
-template<>
-inline std::shared_ptr<interface::entity::GuiElement> interface::RealmService::create_entity()
+template <> inline std::shared_ptr<interface::entity::GuiElement> interface::RealmService::create_entity()
 {
   return std::make_shared<impl::entity::OpenglGuiElement>();
 }
@@ -44,8 +42,7 @@ NAMESPACE_AXGL_END
 
 NAMESPACE_AXGL
 
-template<>
-inline std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
+template <> inline std::shared_ptr<impl::OpenglRendererService> Axgl::use_service()
 {
 #ifdef AXGL_DEBUG
   if (!has_service_type<impl::GlfwWindowService>("window"))

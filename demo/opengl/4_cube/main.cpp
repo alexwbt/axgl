@@ -7,21 +7,81 @@
 #include <axgl/impl/component/light.hpp>
 
 static std::vector cube_vertices = {
-  glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f,  0.5f, -0.5f),
-  glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(00.5f, -0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f, -0.5f,  0.5f),
-  glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
-  glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f, -0.5f,  0.5f),
-  glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(00.5f, -0.5f, -0.5f), glm::vec3(00.5f, -0.5f,  0.5f), glm::vec3(00.5f, -0.5f,  0.5f), glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(-0.5f, -0.5f, -0.5f),
-  glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(00.5f,  0.5f, -0.5f), glm::vec3(00.5f,  0.5f,  0.5f), glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(-0.5f,  0.5f,  0.5f),
+  glm::vec3(-0.5f, -0.5f, -0.5f),
+  glm::vec3(00.5f, 0.5f, -0.5f),
+  glm::vec3(00.5f, -0.5f, -0.5f),
+  glm::vec3(00.5f, 0.5f, -0.5f),
+  glm::vec3(-0.5f, -0.5f, -0.5f),
+  glm::vec3(-0.5f, 0.5f, -0.5f),
+  glm::vec3(-0.5f, -0.5f, 0.5f),
+  glm::vec3(00.5f, -0.5f, 0.5f),
+  glm::vec3(00.5f, 0.5f, 0.5f),
+  glm::vec3(00.5f, 0.5f, 0.5f),
+  glm::vec3(-0.5f, 0.5f, 0.5f),
+  glm::vec3(-0.5f, -0.5f, 0.5f),
+  glm::vec3(-0.5f, 0.5f, 0.5f),
+  glm::vec3(-0.5f, 0.5f, -0.5f),
+  glm::vec3(-0.5f, -0.5f, -0.5f),
+  glm::vec3(-0.5f, -0.5f, -0.5f),
+  glm::vec3(-0.5f, -0.5f, 0.5f),
+  glm::vec3(-0.5f, 0.5f, 0.5f),
+  glm::vec3(00.5f, 0.5f, 0.5f),
+  glm::vec3(00.5f, -0.5f, -0.5f),
+  glm::vec3(00.5f, 0.5f, -0.5f),
+  glm::vec3(00.5f, -0.5f, -0.5f),
+  glm::vec3(00.5f, 0.5f, 0.5f),
+  glm::vec3(00.5f, -0.5f, 0.5f),
+  glm::vec3(-0.5f, -0.5f, -0.5f),
+  glm::vec3(00.5f, -0.5f, -0.5f),
+  glm::vec3(00.5f, -0.5f, 0.5f),
+  glm::vec3(00.5f, -0.5f, 0.5f),
+  glm::vec3(-0.5f, -0.5f, 0.5f),
+  glm::vec3(-0.5f, -0.5f, -0.5f),
+  glm::vec3(-0.5f, 0.5f, -0.5f),
+  glm::vec3(00.5f, 0.5f, 0.5f),
+  glm::vec3(00.5f, 0.5f, -0.5f),
+  glm::vec3(00.5f, 0.5f, 0.5f),
+  glm::vec3(-0.5f, 0.5f, -0.5f),
+  glm::vec3(-0.5f, 0.5f, 0.5f),
 };
 
 static std::vector cube_normals = {
-  glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f,  0.0f, -1.0f),
-  glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f,  0.0f,  1.0f),
- -glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),-glm::vec3(1.0f,  0.0f,  0.0f),
-  glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(1.0f,  0.0f,  0.0f),
-  glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f),
-  glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  1.0f,  0.0f),
+  glm::vec3(0.0f, 0.0f, -1.0f),
+  glm::vec3(0.0f, 0.0f, -1.0f),
+  glm::vec3(0.0f, 0.0f, -1.0f),
+  glm::vec3(0.0f, 0.0f, -1.0f),
+  glm::vec3(0.0f, 0.0f, -1.0f),
+  glm::vec3(0.0f, 0.0f, -1.0f),
+  glm::vec3(0.0f, 0.0f, 1.0f),
+  glm::vec3(0.0f, 0.0f, 1.0f),
+  glm::vec3(0.0f, 0.0f, 1.0f),
+  glm::vec3(0.0f, 0.0f, 1.0f),
+  glm::vec3(0.0f, 0.0f, 1.0f),
+  glm::vec3(0.0f, 0.0f, 1.0f),
+  -glm::vec3(1.0f, 0.0f, 0.0f),
+  -glm::vec3(1.0f, 0.0f, 0.0f),
+  -glm::vec3(1.0f, 0.0f, 0.0f),
+  -glm::vec3(1.0f, 0.0f, 0.0f),
+  -glm::vec3(1.0f, 0.0f, 0.0f),
+  -glm::vec3(1.0f, 0.0f, 0.0f),
+  glm::vec3(1.0f, 0.0f, 0.0f),
+  glm::vec3(1.0f, 0.0f, 0.0f),
+  glm::vec3(1.0f, 0.0f, 0.0f),
+  glm::vec3(1.0f, 0.0f, 0.0f),
+  glm::vec3(1.0f, 0.0f, 0.0f),
+  glm::vec3(1.0f, 0.0f, 0.0f),
+  glm::vec3(0.0f, -1.0f, 0.0f),
+  glm::vec3(0.0f, -1.0f, 0.0f),
+  glm::vec3(0.0f, -1.0f, 0.0f),
+  glm::vec3(0.0f, -1.0f, 0.0f),
+  glm::vec3(0.0f, -1.0f, 0.0f),
+  glm::vec3(0.0f, -1.0f, 0.0f),
+  glm::vec3(0.0f, 1.0f, 0.0f),
+  glm::vec3(0.0f, 1.0f, 0.0f),
+  glm::vec3(0.0f, 1.0f, 0.0f),
+  glm::vec3(0.0f, 1.0f, 0.0f),
+  glm::vec3(0.0f, 1.0f, 0.0f),
+  glm::vec3(0.0f, 1.0f, 0.0f),
 };
 
 class Application final : public axgl::impl::ServiceBase
@@ -52,7 +112,7 @@ public:
     {
       // material
       const auto material = renderer_service->create_material("default");
-      material->set_color({ 1.0f, 0.5f, 0.2f, 1.0f });
+      material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
       // cube mesh
       const auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
@@ -83,15 +143,9 @@ public:
     realm->add_entity(light_entity);
   }
 
-  void tick() override
-  {
-    cube_entity_->transform()->rotation += glm::vec3(0.01f, 0.02f, 0.05f);
-  }
+  void tick() override { cube_entity_->transform()->rotation += glm::vec3(0.01f, 0.02f, 0.05f); }
 
-  void update() override
-  {
-    cube_entity_->update_model_matrix();
-  }
+  void update() override { cube_entity_->update_model_matrix(); }
 };
 
 int main()

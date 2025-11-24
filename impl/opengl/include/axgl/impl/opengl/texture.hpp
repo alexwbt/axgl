@@ -16,15 +16,9 @@ private:
   std::shared_ptr<opengl::Texture> texture_;
 
 public:
-  OpenglTexture()
-  {
-    texture_ = std::make_shared<opengl::Texture>();
-  }
+  OpenglTexture() { texture_ = std::make_shared<opengl::Texture>(); }
 
-  void use()
-  {
-    texture_->use();
-  }
+  void use() { texture_->use(); }
 
   void load_texture(std::span<const uint8_t> data) override
   {
@@ -36,10 +30,7 @@ public:
     texture_->generate_mipmap();
   }
 
-  void replace_texture(std::shared_ptr<opengl::Texture> texture)
-  {
-    texture_ = std::move(texture);
-  }
+  void replace_texture(std::shared_ptr<opengl::Texture> texture) { texture_ = std::move(texture); }
 };
 
 NAMESPACE_AXGL_IMPL_END

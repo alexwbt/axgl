@@ -33,14 +33,7 @@ public:
 
   ModelResources load_model(std::shared_ptr<interface::Entity> entity, const std::string& resource_key) override
   {
-    ModelLoader loader(
-      realm_service_,
-      renderer_service_,
-      resource_service_,
-      entity,
-      resource_key,
-      "default"
-    );
+    ModelLoader loader(realm_service_, renderer_service_, resource_service_, entity, resource_key, "default");
     return loader.resources_;
   }
 };

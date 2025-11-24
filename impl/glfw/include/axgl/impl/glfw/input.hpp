@@ -149,9 +149,8 @@ public:
     window_ = dynamic_pointer_cast<GlfwWindow>(window);
 #ifdef AXGL_DEBUG
     if (!window_)
-      throw std::runtime_error(
-        "The provided window is not a valid GlfwWindow instance. "
-        "GlfwWindow is required for GlfwInputService.");
+      throw std::runtime_error("The provided window is not a valid GlfwWindow instance. "
+                               "GlfwWindow is required for GlfwInputService.");
 #endif
   }
 
@@ -167,24 +166,14 @@ public:
     using enum interface::CursorMode;
     switch (mode)
     {
-    case kLocked:
-      window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-      break;
-    case kNormal:
-      window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-      break;
+    case kLocked: window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED); break;
+    case kNormal: window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_NORMAL); break;
     }
   }
 
-  void add_input(std::shared_ptr<interface::Input> input) override
-  {
-    inputs_.push_back(std::move(input));
-  }
+  void add_input(std::shared_ptr<interface::Input> input) override { inputs_.push_back(std::move(input)); }
 
-  void add_pointer(std::shared_ptr<interface::Pointer> pointer) override
-  {
-    pointers_.push_back(std::move(pointer));
-  }
+  void add_pointer(std::shared_ptr<interface::Pointer> pointer) override { pointers_.push_back(std::move(pointer)); }
 
   void remove_input(uint32_t id) override
   {

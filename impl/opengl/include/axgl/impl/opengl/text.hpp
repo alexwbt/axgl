@@ -21,7 +21,7 @@ NAMESPACE_AXGL_IMPL
 struct OpenglText final
 {
   std::shared_ptr<OpenglTexture> texture;
-  glm::vec2 offset{ 0 };
+  glm::vec2 offset{0};
 };
 
 class OpenglTextService : public ServiceBase
@@ -39,10 +39,7 @@ public:
     realm_service_ = context->axgl->realm_service();
   }
 
-  bool has_font(const std::string& name) const
-  {
-    return text_renderer_.has_font(name);
-  }
+  bool has_font(const std::string& name) const { return text_renderer_.has_font(name); }
 
   void load_font(const std::string& name, std::span<const uint8_t> data, int index = 0)
   {
@@ -63,10 +60,7 @@ public:
   }
 
   std::shared_ptr<interface::Entity> create_text(
-    const std::string& value,
-    const std::vector<std::string>& font,
-    const opengl::TextOptions& options
-  ) const
+    const std::string& value, const std::vector<std::string>& font, const opengl::TextOptions& options) const
   {
     opengl::Text text;
     text_renderer_.render_text(text, value, font, options);

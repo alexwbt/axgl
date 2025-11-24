@@ -18,25 +18,16 @@ class ResourceService : public interface::ResourceService, public ServiceBase
   std::unordered_map<std::string, std::span<const uint8_t>> resources_;
 
 public:
-  void load_resource(const std::string& key, std::span<const uint8_t> data) override
-  {
-    resources_[key] = data;
-  }
+  void load_resource(const std::string& key, std::span<const uint8_t> data) override { resources_[key] = data; }
 
   void load_resources(std::unordered_map<std::string, std::span<const uint8_t>> data) override
   {
     resources_.insert(data.begin(), data.end());
   }
 
-  void unload_resource(const std::string& key) override
-  {
-    resources_.erase(key);
-  }
+  void unload_resource(const std::string& key) override { resources_.erase(key); }
 
-  [[nodiscard]] bool has_resource(const std::string& key) const override
-  {
-    return resources_.contains(key);
-  }
+  [[nodiscard]] bool has_resource(const std::string& key) const override { return resources_.contains(key); }
 
   const std::span<const uint8_t>& get_resource(const std::string& key) override
   {
@@ -52,8 +43,7 @@ NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
 
-template<>
-inline std::shared_ptr<impl::ResourceService> Axgl::use_service()
+template <> inline std::shared_ptr<impl::ResourceService> Axgl::use_service()
 {
   auto resource_service = std::make_shared<impl::ResourceService>();
   register_service("resource", std::static_pointer_cast<interface::ResourceService>(resource_service));

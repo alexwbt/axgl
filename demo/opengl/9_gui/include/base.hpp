@@ -11,7 +11,7 @@ class Base : public axgl::impl::ServiceBase
   std::string window_title_;
 
 public:
-  Base(std::string window_title) : window_title_(std::move(window_title)) {}
+  Base(std::string window_title) : window_title_(std::move(window_title)) { }
 
   void initialize() override
   {

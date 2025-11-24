@@ -27,11 +27,11 @@ class Component
 {
 public:
   virtual ~Component() = default;
-  virtual void tick() {}
-  virtual void update() {}
-  virtual void render() {}
-  virtual void on_create() {}
-  virtual void on_remove() {}
+  virtual void tick() { }
+  virtual void update() { }
+  virtual void render() { }
+  virtual void on_create() { }
+  virtual void on_remove() { }
 
   virtual uint32_t ticks() const = 0;
   virtual void set_disabled(bool) = 0;
@@ -42,6 +42,7 @@ public:
 
 protected:
   virtual RealmContext* get_context() const = 0;
+
 public:
   virtual void set_context(RealmContext* context) = 0;
   virtual void set_parent(Entity* parent) = 0;
@@ -50,9 +51,9 @@ public:
 
 struct Transformation final
 {
-  glm::vec3 scale{ 1.0f };
-  glm::vec3 rotation{ 0.0f };
-  glm::vec3 position{ 0.0f };
+  glm::vec3 scale{1.0f};
+  glm::vec3 rotation{0.0f};
+  glm::vec3 position{0.0f};
 };
 
 class Entity : virtual public Component
@@ -73,8 +74,7 @@ public:
   virtual void remove_component(const std::shared_ptr<Component>& component) = 0;
   virtual util::Iterable<std::shared_ptr<Component>> get_components() const = 0;
 
-  template<typename ComponentType>
-  std::shared_ptr<ComponentType> get_component_t()
+  template <typename ComponentType> std::shared_ptr<ComponentType> get_component_t()
   {
     for (const auto& comp : get_components())
       if (auto comp_t = std::dynamic_pointer_cast<ComponentType>(comp))
@@ -90,8 +90,7 @@ public:
   virtual void remove_child(const std::shared_ptr<Entity>& entity) = 0;
   virtual util::Iterable<std::shared_ptr<Entity>> get_children() const = 0;
 
-  template<typename EntityType>
-  std::shared_ptr<EntityType> get_child_t()
+  template <typename EntityType> std::shared_ptr<EntityType> get_child_t()
   {
     for (const auto& entity : get_children())
       if (auto entity_t = std::dynamic_pointer_cast<EntityType>(entity))
@@ -132,19 +131,16 @@ public:
   // Component factory functions
   //
 
-  template<typename ComponentType>
-  std::shared_ptr<ComponentType> create_component()
+  template <typename ComponentType> std::shared_ptr<ComponentType> create_component()
   {
 #ifdef AXGL_DEBUG
-    throw std::runtime_error(
-      std::format("Component type '{}' is not supported.",
-        typeid(ComponentType).name()));
+    throw std::runtime_error(std::format("Component type '{}' is not supported.", typeid(ComponentType).name()));
 #else
     return nullptr;
 #endif
   }
 
-  template<typename ComponentType, typename ComponentImplType>
+  template <typename ComponentType, typename ComponentImplType>
   std::shared_ptr<ComponentImplType> create_component_impl()
   {
     auto comp = create_component<ComponentType>();
@@ -152,8 +148,7 @@ public:
 #ifdef AXGL_DEBUG
     if (!comp_impl)
       throw std::runtime_error(
-        std::format("Component implementation '{}' is not supported.",
-          typeid(ComponentType).name()));
+        std::format("Component implementation '{}' is not supported.", typeid(ComponentType).name()));
 #endif
     return comp_impl;
   }
@@ -162,28 +157,22 @@ public:
   // Entity factory function
   //
 
-  template<typename EntityType>
-  std::shared_ptr<EntityType> create_entity()
+  template <typename EntityType> std::shared_ptr<EntityType> create_entity()
   {
 #ifdef AXGL_DEBUG
-    throw std::runtime_error(
-      std::format("Entity type '{}' is not supported.",
-        typeid(EntityType).name()));
+    throw std::runtime_error(std::format("Entity type '{}' is not supported.", typeid(EntityType).name()));
 #else
     return nullptr;
 #endif
   }
 
-  template<typename EntityType, typename EntityImplType>
-  std::shared_ptr<EntityImplType> create_entity_impl()
+  template <typename EntityType, typename EntityImplType> std::shared_ptr<EntityImplType> create_entity_impl()
   {
     auto entity = create_entity<EntityType>();
     auto entity_impl = std::dynamic_pointer_cast<EntityImplType>(entity);
 #ifdef AXGL_DEBUG
     if (!entity_impl)
-      throw std::runtime_error(
-        std::format("Entity implementation '{}' is not supported.",
-          typeid(EntityType).name()));
+      throw std::runtime_error(std::format("Entity implementation '{}' is not supported.", typeid(EntityType).name()));
 #endif
     return entity_impl;
   }

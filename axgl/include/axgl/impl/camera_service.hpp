@@ -123,9 +123,7 @@ public:
     {
       controlling_ = !controlling_;
 
-      input_service_->set_cursor_mode(controlling_
-        ? interface::CursorMode::kLocked
-        : interface::CursorMode::kNormal);
+      input_service_->set_cursor_mode(controlling_ ? interface::CursorMode::kLocked : interface::CursorMode::kNormal);
     }
 
     if (!controlling_)
@@ -135,16 +133,20 @@ public:
       camera.yaw += pointer_->delta.x * view_movement_speed_;
 
     if (pointer_->tick > 1 && pointer_->delta.y != 0)
-      camera.pitch = std::min(std::max(
-        camera.pitch + (pointer_->delta.y * view_movement_speed_),
-        1.0f), 179.0f);
+      camera.pitch = std::min(std::max(camera.pitch + (pointer_->delta.y * view_movement_speed_), 1.0f), 179.0f);
 
-    if (forward_->tick > 0) camera.position += camera.front() * camera_speed_;
-    if (backward_->tick > 0) camera.position -= camera.front() * camera_speed_;
-    if (up_->tick > 0) camera.position += glm::vec3(0, 1, 0) * camera_speed_;
-    if (down_->tick > 0) camera.position -= glm::vec3(0, 1, 0) * camera_speed_;
-    if (right_->tick > 0) camera.position += camera.horizontal_right() * camera_speed_;
-    if (left_->tick > 0) camera.position -= camera.horizontal_right() * camera_speed_;
+    if (forward_->tick > 0)
+      camera.position += camera.front() * camera_speed_;
+    if (backward_->tick > 0)
+      camera.position -= camera.front() * camera_speed_;
+    if (up_->tick > 0)
+      camera.position += glm::vec3(0, 1, 0) * camera_speed_;
+    if (down_->tick > 0)
+      camera.position -= glm::vec3(0, 1, 0) * camera_speed_;
+    if (right_->tick > 0)
+      camera.position += camera.horizontal_right() * camera_speed_;
+    if (left_->tick > 0)
+      camera.position -= camera.horizontal_right() * camera_speed_;
 
     camera.update();
   }
@@ -186,10 +188,14 @@ public:
 
   void update(interface::Camera& camera) override
   {
-    if (up_->tick > 0) camera.position += glm::vec3(0, 1, 0) * camera_speed_;
-    if (down_->tick > 0) camera.position -= glm::vec3(0, 1, 0) * camera_speed_;
-    if (right_->tick > 0) camera.position += glm::vec3(1, 0, 0) * camera_speed_;
-    if (left_->tick > 0) camera.position -= glm::vec3(1, 0, 0) * camera_speed_;
+    if (up_->tick > 0)
+      camera.position += glm::vec3(0, 1, 0) * camera_speed_;
+    if (down_->tick > 0)
+      camera.position -= glm::vec3(0, 1, 0) * camera_speed_;
+    if (right_->tick > 0)
+      camera.position += glm::vec3(1, 0, 0) * camera_speed_;
+    if (left_->tick > 0)
+      camera.position -= glm::vec3(1, 0, 0) * camera_speed_;
 
     camera.update();
   }
@@ -199,8 +205,7 @@ NAMESPACE_AXGL_IMPL_END
 
 NAMESPACE_AXGL
 
-template<>
-inline std::shared_ptr<impl::CameraService> Axgl::use_service()
+template <> inline std::shared_ptr<impl::CameraService> Axgl::use_service()
 {
   auto camera_service = std::make_shared<impl::CameraService>();
   register_service("camera", camera_service);

@@ -16,7 +16,7 @@
 class Application final : public Base
 {
 public:
-  Application(std::string window_title) : Base(std::move(window_title)) {}
+  Application(std::string window_title) : Base(std::move(window_title)) { }
 
   void initialize() override
   {
