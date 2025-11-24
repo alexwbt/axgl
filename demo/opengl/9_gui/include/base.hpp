@@ -1,17 +1,17 @@
 #pragma once
 
 #include <axgl/axgl.hpp>
-#include <axgl/impl/camera_service.hpp>
-#include <axgl/impl/component/camera.hpp>
-#include <axgl/impl/component/light.hpp>
 #include <axgl/impl/service.hpp>
+#include <axgl/impl/camera_service.hpp>
+#include <axgl/impl/component/light.hpp>
+#include <axgl/impl/component/camera.hpp>
 
 class Base : public axgl::impl::ServiceBase
 {
   std::string window_title_;
 
 public:
-  Base(std::string window_title) : window_title_(std::move(window_title)) { }
+  Base(std::string window_title) : window_title_(std::move(window_title)) {}
 
   void initialize() override
   {

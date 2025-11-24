@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include <vector>
+#include <string>
 
 #include <net/tcp.hpp>
 #include <spdlog/spdlog.h>
@@ -15,6 +15,8 @@ inline std::shared_ptr<std::vector<uint8_t>> build_message(const std::string& me
 inline void print_message(const std::vector<uint8_t>& buffer)
 {
   constexpr int offset = net::LengthPrefixedTcpSocket::kLengthPrefixSize;
-  const std::string_view value(reinterpret_cast<const char*>(buffer.data() + offset), buffer.size() - offset);
+  const std::string_view value(
+    reinterpret_cast<const char*>(buffer.data() + offset),
+    buffer.size() - offset);
   SPDLOG_INFO(value);
 }

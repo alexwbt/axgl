@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstdint>
 #include <memory>
+#include <cstdint>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/window.hpp>
@@ -158,7 +158,9 @@ public:
   InputSource source;
   uint32_t tick;
 
-  Input(std::string name, const InputSource source) : id(next_id()), name(std::move(name)), source(source), tick(0) { }
+  Input(std::string name, const InputSource source) :
+    id(next_id()), name(std::move(name)), source(source), tick(0)
+  {}
 };
 
 class Pointer final
@@ -178,9 +180,9 @@ public:
   uint32_t tick;
 
   Pointer(std::string name, const PointerSource source) :
-    id(next_id()), name(std::move(name)), source(source), position(0), delta(0), tick(0)
-  {
-  }
+    id(next_id()), name(std::move(name)), source(source),
+    position(0), delta(0), tick(0)
+  {}
 };
 
 class InputService : virtual public Service

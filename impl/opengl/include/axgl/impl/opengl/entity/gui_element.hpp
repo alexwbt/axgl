@@ -1,16 +1,17 @@
 #pragma once
 
 #include <axgl/common.hpp>
-#include <axgl/interface/entity/gui_element.hpp>
-#include <axgl/interface/realm.hpp>
 #include <axgl/util/string.hpp>
+#include <axgl/interface/realm.hpp>
+#include <axgl/interface/entity/gui_element.hpp>
 
-#include <axgl/impl/entity/context_override.hpp>
-#include <axgl/impl/opengl/component/mesh.hpp>
-#include <axgl/impl/opengl/text.hpp>
 #include <axgl/impl/realm_service.hpp>
+#include <axgl/impl/opengl/text.hpp>
+#include <axgl/impl/opengl/component/mesh.hpp>
+#include <axgl/impl/entity/context_override.hpp>
 
 #include <opengl/static_vaos.hpp>
+
 
 NAMESPACE_AXGL_IMPL
 
@@ -27,7 +28,8 @@ class OpenglGuiElement : virtual public interface::entity::GuiElement, public En
       if (parent_context_->camera->viewport != camera_.viewport)
       {
         camera_.viewport = parent_context_->camera->viewport;
-        camera_.set_projection_view_matrix(glm::ortho(camera_.viewport.x, 0.0f, 0.0f, camera_.viewport.y));
+        camera_.set_projection_view_matrix(
+          glm::ortho(camera_.viewport.x, 0.0f, 0.0f, camera_.viewport.y));
       }
       ContextOverride::update();
     }
@@ -128,10 +130,13 @@ private:
       background_->add_component(mesh);
       container_->add_child(background_);
     }
-    background_->get_component_t<interface::component::Mesh>()->get_material()->set_color(props_.bg_color);
+    background_
+      ->get_component_t<interface::component::Mesh>()
+      ->get_material()
+      ->set_color(props_.bg_color);
   }
 };
 
-} // namespace entity
+}
 
 NAMESPACE_AXGL_IMPL_END

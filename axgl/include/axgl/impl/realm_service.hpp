@@ -1,12 +1,12 @@
 #pragma once
 
-#include <memory>
 #include <vector>
+#include <memory>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <axgl/axgl.hpp>
 #include <axgl/common.hpp>
@@ -56,9 +56,15 @@ public:
         comp->on_remove();
   }
 
-  void add_component(std::shared_ptr<interface::Component> component) { components_.push_back(std::move(component)); }
+  void add_component(std::shared_ptr<interface::Component> component)
+  {
+    components_.push_back(std::move(component));
+  }
 
-  void remove_component(const std::shared_ptr<interface::Component>& component) { std::erase(components_, component); }
+  void remove_component(const std::shared_ptr<interface::Component>& component)
+  {
+    std::erase(components_, component);
+  }
 
   [[nodiscard]] util::Iterable<std::shared_ptr<interface::Component>> get_components() const
   {
@@ -95,6 +101,7 @@ public:
       entity->update();
     }
 
+
     if (!entities_.empty())
     {
       ZoneScopedN("Entity Container Remove Entities");
@@ -128,7 +135,10 @@ public:
       entity->on_remove();
   }
 
-  void add_entity(std::shared_ptr<interface::Entity> entity) { entities_.push_back(std::move(entity)); }
+  void add_entity(std::shared_ptr<interface::Entity> entity)
+  {
+    entities_.push_back(std::move(entity));
+  }
 
   void remove_entity(const std::shared_ptr<interface::Entity>& entity) const
   {
@@ -204,7 +214,7 @@ public:
 
 class Entity : virtual public interface::Entity, public ComponentBase
 {
-  glm::mat4 model_matrix_{1.0f};
+  glm::mat4 model_matrix_{ 1.0f };
   interface::Transformation transform_;
 
   bool should_remove_ = false;
@@ -221,13 +231,17 @@ public:
 
   void update_model_matrix() override
   {
-    model_matrix_ = glm::translate(glm::mat4(1.0f), transform_.position) * glm::toMat4(glm::quat(transform_.rotation)) *
-                    glm::scale(transform_.scale);
+    model_matrix_
+      = glm::translate(glm::mat4(1.0f), transform_.position)
+        * glm::toMat4(glm::quat(transform_.rotation))
+        * glm::scale(transform_.scale);
   }
 
   [[nodiscard]] glm::mat4 get_model_matrix() const override
   {
-    return parent_ ? parent_->get_model_matrix() * model_matrix_ : model_matrix_;
+    return parent_
+      ? parent_->get_model_matrix() * model_matrix_
+      : model_matrix_;
   }
 
   void tick() override
@@ -287,7 +301,10 @@ public:
     children_.add_entity(std::move(entity));
   }
 
-  void remove_child(const std::shared_ptr<interface::Entity>& entity) override { children_.remove_entity(entity); }
+  void remove_child(const std::shared_ptr<interface::Entity>& entity) override
+  {
+    children_.remove_entity(entity);
+  }
 
   [[nodiscard]] util::Iterable<std::shared_ptr<interface::Entity>> get_children() const override
   {
@@ -313,7 +330,10 @@ public:
   void set_renderer(std::shared_ptr<interface::Renderer> renderer) override { renderer_ = std::move(renderer); }
   [[nodiscard]] std::shared_ptr<interface::Renderer> get_renderer() const override { return renderer_; }
 
-  void tick() override { entities_.tick(); }
+  void tick() override
+  {
+    entities_.tick();
+  }
 
   void update() override
   {
@@ -342,7 +362,10 @@ public:
     entities_.add_entity(std::move(entity));
   }
 
-  void remove_entity(const std::shared_ptr<interface::Entity> entity) override { entities_.remove_entity(entity); }
+  void remove_entity(const std::shared_ptr<interface::Entity> entity) override
+  {
+    entities_.remove_entity(entity);
+  }
 
   [[nodiscard]] util::Iterable<std::shared_ptr<interface::Entity>> get_entities() const override
   {
@@ -365,19 +388,20 @@ class RealmService : virtual public interface::RealmService, public ServiceBase
   interface::RealmContext context_;
 
 public:
-  void initialize() override { context_.axgl = get_context()->axgl; }
+  void initialize() override
+  {
+    context_.axgl = get_context()->axgl;
+  }
 
   void tick() override
   {
-    if (!realm_)
-      return;
+    if (!realm_) return;
     realm_->tick();
   }
 
   void update() override
   {
-    if (!realm_)
-      return;
+    if (!realm_) return;
 
     context_.realm = realm_.get();
     context_.camera = nullptr;
@@ -387,8 +411,7 @@ public:
 
   void render() override
   {
-    if (!realm_)
-      return;
+    if (!realm_) return;
     realm_->render();
   }
 
@@ -400,15 +423,19 @@ public:
     return realm_;
   }
 
-  [[nodiscard]] std::shared_ptr<interface::Realm> get_active_realm() const override { return realm_; }
+  [[nodiscard]] std::shared_ptr<interface::Realm> get_active_realm() const override
+  {
+    return realm_;
+  }
 
   void set_active_realm(std::shared_ptr<interface::Realm> realm) override
   {
     auto realm_impl = std::dynamic_pointer_cast<Realm>(realm);
 #ifdef AXGL_DEBUG
     if (!realm_impl)
-      throw std::runtime_error("Failed to set active realm. "
-                               "Default Realm is required for default RealmService");
+      throw std::runtime_error(
+        "Failed to set active realm. "
+        "Default Realm is required for default RealmService");
 #endif
     realm_ = std::move(realm_impl);
   }
@@ -420,18 +447,21 @@ NAMESPACE_AXGL
 
 #ifndef AXGL_DEFINED_CREATE_ENTITY
 #define AXGL_DEFINED_CREATE_ENTITY
-template <> inline std::shared_ptr<interface::Entity> interface::RealmService::create_entity()
+template<>
+inline std::shared_ptr<interface::Entity> interface::RealmService::create_entity()
 {
   return std::make_shared<impl::Entity>();
 }
 #endif
 
-template <> inline std::shared_ptr<impl::Entity> interface::RealmService::create_entity()
+template<>
+inline std::shared_ptr<impl::Entity> interface::RealmService::create_entity()
 {
   return std::make_shared<impl::Entity>();
 }
 
-template <> inline std::shared_ptr<impl::RealmService> Axgl::use_service()
+template<>
+inline std::shared_ptr<impl::RealmService> Axgl::use_service()
 {
   auto realm_service = std::make_shared<impl::RealmService>();
   register_service(DefaultServices::kRealm, realm_service);

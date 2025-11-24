@@ -1,10 +1,10 @@
 #pragma once
 
+#include <unordered_map>
+#include <ranges>
 #include <memory>
 #include <mutex>
 #include <queue>
-#include <ranges>
-#include <unordered_map>
 
 #ifdef _WIN32
 #include <SDKDDKVer.h>
@@ -44,7 +44,9 @@ class Session final
   asio::steady_timer output_signal_;
 
   Session(const uint32_t id, std::shared_ptr<Socket> socket) :
-    id_(id), socket_(std::move(socket)), output_signal_(socket_->get_executor())
+    id_(id),
+    socket_(std::move(socket)),
+    output_signal_(socket_->get_executor())
   {
     output_signal_.expires_at(std::chrono::steady_clock::time_point::max());
   }
@@ -98,12 +100,12 @@ public:
   {
     const std::shared_ptr<Session> session(new Session(id, std::move(socket)));
     // start read loop
-    asio::co_spawn(
-      session->socket_->get_executor(), [session]() -> asio::awaitable<void> { return session->read_buffers(); },
+    asio::co_spawn(session->socket_->get_executor(),
+      [session]() -> asio::awaitable<void> { return session->read_buffers(); },
       asio::detached);
     // start write loop
-    asio::co_spawn(
-      session->socket_->get_executor(), [session]() -> asio::awaitable<void> { return session->write_buffers(); },
+    asio::co_spawn(session->socket_->get_executor(),
+      [session]() -> asio::awaitable<void> { return session->write_buffers(); },
       asio::detached);
 
     return session;
@@ -115,7 +117,10 @@ public:
     output_signal_.cancel();
   }
 
-  [[nodiscard]] bool connected() const { return socket_->connected(); }
+  [[nodiscard]] bool connected() const
+  {
+    return socket_->connected();
+  }
 
   void send(DataPtr buffer)
   {
@@ -150,14 +155,16 @@ public:
 
   Server(std::shared_ptr<asio::io_context> io_context, const asio::ip::port_type& port) :
     io_context_(std::move(io_context)), port_(port)
-  {
-  }
+  {}
 
   virtual void update()
   {
     for (auto it = sessions_.begin(); it != sessions_.end();)
     {
-      it->second->handle_input([this, &it](DataPtr buffer) { on_receive(it->first, std::move(buffer)); });
+      it->second->handle_input([this, &it](DataPtr buffer)
+      {
+        on_receive(it->first, std::move(buffer));
+      });
 
       if (!it->second->connected())
       {
@@ -187,9 +194,9 @@ public:
       sessions_.at(session_id)->close();
   }
 
-  virtual void on_disconnect(uint32_t session_id) { }
-  virtual void on_receive(uint32_t session_id, DataPtr buffer) { }
-  virtual void on_connect(uint32_t session_id, std::shared_ptr<Session> session) { }
+  virtual void on_disconnect(uint32_t session_id) {}
+  virtual void on_receive(uint32_t session_id, DataPtr buffer) {}
+  virtual void on_connect(uint32_t session_id, std::shared_ptr<Session> session) {}
 
   virtual void start() = 0;
   virtual void stop() = 0;
@@ -208,7 +215,9 @@ protected:
 public:
   virtual ~Client() = default;
 
-  explicit Client(std::shared_ptr<asio::io_context> io_context) : io_context_(std::move(io_context)) { }
+  explicit Client(std::shared_ptr<asio::io_context> io_context) :
+    io_context_(std::move(io_context))
+  {}
 
   virtual void disconnect()
   {
@@ -221,7 +230,10 @@ public:
     if (!session_)
       return;
 
-    session_->handle_input([this](DataPtr buffer) { on_receive(std::move(buffer)); });
+    session_->handle_input([this](DataPtr buffer)
+    {
+      on_receive(std::move(buffer));
+    });
 
     if (!session_->connected())
     {
@@ -230,7 +242,10 @@ public:
     }
   }
 
-  virtual bool connected() { return session_ && session_->connected(); }
+  virtual bool connected()
+  {
+    return session_ && session_->connected();
+  }
 
   virtual void send(DataPtr buffer)
   {
@@ -238,12 +253,12 @@ public:
       session_->send(std::move(buffer));
   }
 
-  virtual void on_connect() { }
-  virtual void on_disconnect() { }
-  virtual void on_receive(DataPtr buffer) { }
-  virtual void connection_failed(const asio::error_code& error_code) { }
+  virtual void on_connect() {}
+  virtual void on_disconnect() {}
+  virtual void on_receive(DataPtr buffer) {}
+  virtual void connection_failed(const asio::error_code& error_code) {}
 
   virtual void connect(const std::string& host, const asio::ip::port_type& port) = 0;
 };
 
-} // namespace net
+}

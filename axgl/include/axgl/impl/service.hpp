@@ -1,10 +1,10 @@
 #pragma once
 
-#include <format>
-#include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
+#include <memory>
+#include <format>
+#include <unordered_map>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
@@ -46,9 +46,12 @@ protected:
   interface::ServiceContext context_;
 
 public:
-  virtual ~ServiceManager() { }
+  virtual ~ServiceManager() {}
 
-  bool has_service(const std::string& id) const { return service_map_.contains(id); }
+  bool has_service(const std::string& id) const
+  {
+    return service_map_.contains(id);
+  }
 
   void register_service(const std::string& id, std::shared_ptr<interface::Service> service)
   {
@@ -57,7 +60,7 @@ public:
       throw std::runtime_error(std::format("Trying to register service but service with id '{}' already exists.", id));
 #endif
     service->set_context(&context_);
-    service_map_.insert({id, service});
+    service_map_.insert({ id, service });
     services_.push_back(std::move(service));
   }
 
@@ -71,7 +74,8 @@ public:
     service_map_.erase(id);
   }
 
-  template <typename ServiceType> [[nodiscard]] bool has_service_type(const std::string& id) const
+  template<typename ServiceType>
+  [[nodiscard]] bool has_service_type(const std::string& id) const
   {
     if (!has_service(id))
       return false;
@@ -80,7 +84,8 @@ public:
     return service != nullptr;
   }
 
-  template <typename ServiceType> [[nodiscard]] std::shared_ptr<ServiceType> get_service(const std::string& id) const
+  template<typename ServiceType>
+  [[nodiscard]] std::shared_ptr<ServiceType> get_service(const std::string& id) const
   {
 #ifdef AXGL_DEBUG
     if (!has_service(id))
@@ -90,8 +95,7 @@ public:
     auto service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(id));
 #ifdef AXGL_DEBUG
     if (!service)
-      throw std::runtime_error(
-        std::format("Service type '{}' is required, but is not supported.", typeid(ServiceType).name()));
+      throw std::runtime_error(std::format("Service type '{}' is required, but is not supported.", typeid(ServiceType).name()));
 #endif
 
     return service;
@@ -132,7 +136,8 @@ public:
 
   bool running() const
   {
-    return std::ranges::any_of(services_, [&](const auto& service) { return service->keep_alive(); });
+    return std::ranges::any_of(services_,
+      [&](const auto& service) { return service->keep_alive(); });
   }
 
   void exec(const std::string& command) const

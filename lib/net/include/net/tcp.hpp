@@ -18,11 +18,14 @@ protected:
 
 public:
   TcpServer(const std::shared_ptr<asio::io_context>& io_context, const asio::ip::port_type& port) :
-    Server(io_context, port), acceptor_(*io_context, {asio::ip::tcp::v4(), port})
-  {
-  }
+    Server(io_context, port),
+    acceptor_(*io_context, { asio::ip::tcp::v4(), port })
+  {}
 
-  void start() override { asio::co_spawn(*io_context_, accept_connections(), asio::detached); }
+  void start() override
+  {
+    asio::co_spawn(*io_context_, accept_connections(), asio::detached);
+  }
 
   void stop() override
   {
@@ -30,7 +33,10 @@ public:
     acceptor_.close();
   }
 
-  bool running() override { return acceptor_.is_open(); }
+  bool running() override
+  {
+    return acceptor_.is_open();
+  }
 
   virtual std::shared_ptr<Socket> new_socket(asio::ip::tcp::socket socket) = 0;
 
@@ -45,7 +51,7 @@ private:
       const auto session_id = use_next_session_id();
       const auto session = Session::create(session_id, std::move(socket));
 
-      sessions_.insert({session_id, session});
+      sessions_.insert({ session_id, session });
       on_connect(session_id, session);
     }
   }
@@ -58,33 +64,29 @@ public:
 
   void connect(const std::string& host, const asio::ip::port_type& port) override
   {
-    asio::co_spawn(
-      *io_context_,
-      [this, host, port]() -> asio::awaitable<void>
+    asio::co_spawn(*io_context_, [this, host, port]() -> asio::awaitable<void>
+    {
+      asio::error_code ec;
+      asio::ip::tcp::endpoint endpoint(asio::ip::make_address(host, ec), port);
+      if (ec)
       {
-        asio::error_code ec;
-        asio::ip::tcp::endpoint endpoint(asio::ip::make_address(host, ec), port);
-        if (ec)
-        {
-          connection_failed(ec);
-          co_return;
-        }
+        connection_failed(ec);
+        co_return;
+      }
 
-        asio::ip::tcp::resolver resolver(*io_context_);
-        asio::ip::tcp::socket asio_socket(*io_context_);
-        co_await asio::async_connect(
-          asio_socket, resolver.resolve(endpoint), asio::redirect_error(asio::use_awaitable, ec));
-        if (ec)
-        {
-          connection_failed(ec);
-          co_return;
-        }
+      asio::ip::tcp::resolver resolver(*io_context_);
+      asio::ip::tcp::socket asio_socket(*io_context_);
+      co_await asio::async_connect(asio_socket, resolver.resolve(endpoint), asio::redirect_error(asio::use_awaitable, ec));
+      if (ec)
+      {
+        connection_failed(ec);
+        co_return;
+      }
 
-        auto socket = new_socket(std::move(asio_socket));
-        session_ = Session::create(0, std::move(socket));
-        on_connect();
-      },
-      asio::detached);
+      auto socket = new_socket(std::move(asio_socket));
+      session_ = Session::create(0, std::move(socket));
+      on_connect();
+    }, asio::detached);
   }
 
   virtual std::shared_ptr<Socket> new_socket(asio::ip::tcp::socket socket) = 0;
@@ -97,7 +99,8 @@ class LengthPrefixedTcpSocket final : public Socket
 public:
   static constexpr size_t kLengthPrefixSize = 4;
 
-  explicit LengthPrefixedTcpSocket(asio::ip::tcp::socket socket) : socket_(std::move(socket)) { }
+  explicit LengthPrefixedTcpSocket(asio::ip::tcp::socket socket) :
+    socket_(std::move(socket)) {}
 
   asio::awaitable<void> write_buffer(const DataPtr buffer) override
   {
@@ -124,4 +127,4 @@ public:
   asio::any_io_executor get_executor() override { return socket_.get_executor(); }
 };
 
-} // namespace net
+}

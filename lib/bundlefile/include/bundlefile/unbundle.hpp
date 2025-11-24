@@ -1,33 +1,36 @@
 #pragma once
 
-#include <cstdint>
-#include <fstream>
 #include <string>
+#include <fstream>
+#include <cstdint>
 
 #include <bundlefile/bundle_fbs.h>
 
 namespace bundlefile
 {
 
-class Bundle
-{
-  std::vector<uint8_t> data_;
-
-public:
-  Bundle(const std::string& path)
+  class Bundle
   {
-    std::ifstream input_stream(path, std::ios::binary | std::ios::ate);
-    if (!input_stream)
-      throw std::runtime_error("Failed to open bundlefile: " + path);
+    std::vector<uint8_t> data_;
 
-    const auto size = input_stream.tellg();
-    input_stream.seekg(0, std::ios::beg);
+  public:
+    Bundle(const std::string& path)
+    {
+      std::ifstream input_stream(path, std::ios::binary | std::ios::ate);
+      if (!input_stream)
+        throw std::runtime_error("Failed to open bundlefile: " + path);
 
-    data_.resize(size);
-    input_stream.read(reinterpret_cast<char*>(data_.data()), size);
-  }
+      const auto size = input_stream.tellg();
+      input_stream.seekg(0, std::ios::beg);
 
-  [[nodiscard]] const auto* get_bundle() const { return fbs::bundlefile::GetBundle(data_.data()); }
-};
+      data_.resize(size);
+      input_stream.read(reinterpret_cast<char*>(data_.data()), size);
+    }
 
-} // namespace bundlefile
+    [[nodiscard]] const auto* get_bundle() const
+    {
+      return fbs::bundlefile::GetBundle(data_.data());
+    }
+  };
+
+}

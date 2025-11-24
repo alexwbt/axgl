@@ -1,14 +1,14 @@
 #include <axgl/axgl.hpp>
-#include <axgl/impl/assimp.hpp>
-#include <axgl/impl/bundlefile_service.hpp>
-#include <axgl/impl/camera_service.hpp>
-#include <axgl/impl/component/camera.hpp>
-#include <axgl/impl/component/light.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
-#include <axgl/impl/realm_service.hpp>
-#include <axgl/impl/resource_service.hpp>
+#include <axgl/impl/assimp.hpp>
 #include <axgl/impl/service.hpp>
+#include <axgl/impl/realm_service.hpp>
+#include <axgl/impl/camera_service.hpp>
+#include <axgl/impl/resource_service.hpp>
+#include <axgl/impl/bundlefile_service.hpp>
+#include <axgl/impl/component/camera.hpp>
+#include <axgl/impl/component/light.hpp>
 
 class Application final : public axgl::impl::ServiceBase
 {

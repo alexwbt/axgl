@@ -8,7 +8,8 @@
 
 NAMESPACE_AXGL
 
-template <> inline std::shared_ptr<impl::AssimpModelService> Axgl::use_service()
+template<>
+inline std::shared_ptr<impl::AssimpModelService> Axgl::use_service()
 {
   auto service = std::make_shared<impl::AssimpModelService>();
   register_service("model", service);

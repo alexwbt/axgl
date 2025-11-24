@@ -1,7 +1,7 @@
 #pragma once
 
-#include <memory>
 #include <span>
+#include <memory>
 
 #include <glm/glm.hpp>
 

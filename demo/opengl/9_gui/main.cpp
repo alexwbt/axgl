@@ -1,11 +1,11 @@
 ﻿#include <random>
 
 #include <axgl/axgl.hpp>
-#include <axgl/impl/camera_service.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>
 #include <axgl/impl/resource_service.hpp>
+#include <axgl/impl/camera_service.hpp>
 
 #include <demo_opengl_gui/res.hpp>
 
@@ -16,7 +16,7 @@
 class Application final : public Base
 {
 public:
-  Application(std::string window_title) : Base(std::move(window_title)) { }
+  Application(std::string window_title) : Base(std::move(window_title)) {}
 
   void initialize() override
   {
