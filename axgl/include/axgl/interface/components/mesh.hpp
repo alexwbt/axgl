@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <span>
+#include <string_view>
 
 #include <glm/glm.hpp>
 
@@ -14,6 +15,8 @@ namespace axgl::component
 class Mesh : virtual public Component
 {
 public:
+  static constexpr std::string_view kType = "component::mesh";
+
   virtual void set_vertices(const std::span<const glm::vec2>& vertices) = 0;
   virtual void set_vertices(const std::span<const glm::vec3>& vertices) = 0;
   virtual void set_normals(const std::span<const glm::vec3>& normals) = 0;

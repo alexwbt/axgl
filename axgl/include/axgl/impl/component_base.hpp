@@ -1,5 +1,8 @@
 #pragma once
 
+#ifdef AXGL_DEBUG
+#include <stdexcept>
+#endif
 #include <cstdint>
 
 #include <axgl/interface/component.hpp>
@@ -22,12 +25,19 @@ public:
   std::string get_id() const override { return id_; }
 
   void tick() override { ++ticks_; }
-  uint32_t ticks() const override { return ticks_; }
+  std::uint32_t ticks() const override { return ticks_; }
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
   bool is_disabled() const override { return disabled_; }
 
   void set_entity(Entity* entity) override { entity_ = entity; }
-  Entity* get_entity() const override { return entity_; }
+  Entity* get_entity() const override
+  {
+#ifdef AXGL_DEBUG
+    if (!entity_)
+      throw std::runtime_error("Component entity is not set.");
+#endif
+    return entity_;
+  }
 };
 
 } // namespace axgl::impl

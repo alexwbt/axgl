@@ -2,12 +2,14 @@
 
 #include <array>
 #include <memory>
+#include <span>
 
-#include <axgl/common.hpp>
-#include <axgl/interface/realm.hpp>
-#include <axgl/interface/component/mesh.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtx/norm.hpp>
 
-#include <../../../../../../../axgl/include/axgl/impl/services/realm_service.hpp>
+#include <axgl/interface/components/mesh.hpp>
+
+#include <axgl/impl/component_base.hpp>
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
 
@@ -16,7 +18,7 @@
 namespace axgl::impl::component
 {
 
-class OpenglMesh : virtual public interface::component::Mesh, public ComponentBase
+class OpenglMesh : virtual public axgl::component::Mesh, public ComponentBase
 {
   int attribute_offset_ = 0;
   std::shared_ptr<OpenglMaterial> material_;
@@ -31,7 +33,7 @@ public:
 
     if (material_)
     {
-      const auto context = get_context();
+      const auto context = get_entity()->get_context();
       const auto renderer = std::dynamic_pointer_cast<OpenglRenderer>(context->realm->get_renderer());
 #ifdef AXGL_DEBUG
       if (!renderer)
@@ -45,7 +47,7 @@ public:
       // do not render and add to blend render list if enabled blending
       if (blend && !after)
       {
-        const auto distance2 = glm::distance2(get_parent()->transform()->position, context->camera->position);
+        const auto distance2 = glm::distance2(get_entity()->transform()->position, context->camera->position);
         renderer->add_blend_render(distance2, this);
         return;
       }
@@ -81,7 +83,7 @@ public:
 
   void set_indices(const std::span<const uint32_t>& indices) override { vertex_array_->create_element_buffer(indices); }
 
-  void set_material(const std::shared_ptr<interface::Material> material) override
+  void set_material(const std::shared_ptr<axgl::Material> material) override
   {
     material_ = std::dynamic_pointer_cast<OpenglMaterial>(material);
 #ifdef AXGL_DEBUG
@@ -90,7 +92,7 @@ public:
 #endif
   }
 
-  [[nodiscard]] std::shared_ptr<interface::Material> get_material() const override { return material_; }
+  std::shared_ptr<axgl::Material> get_material() const override { return material_; }
 
   void replace_vao(std::shared_ptr<opengl::VertexArrayObject> vertex_array) { vertex_array_ = std::move(vertex_array); }
 };

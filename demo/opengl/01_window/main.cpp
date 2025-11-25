@@ -7,11 +7,15 @@ int main()
   axgl::Axgl axgl;
 
   // register window service
-  const auto window_service = axgl.use_service<axgl::impl::GlfwWindowService>();
+  axgl.use_service<axgl::impl::GlfwWindowService>();
+  const auto window_service = axgl.window_service();
+
+  axgl.initialize();
 
   // create window
   const auto window = window_service->create_window();
   window->set_title("Hello Window!");
 
   axgl.run();
+  axgl.terminate();
 }

@@ -1,27 +1,26 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
+#include <span>
 
-#include <../../../../../../axgl/include/axgl/interface/service.hpp>
-#include <../../../../../../axgl/include/axgl/interface/services/renderer.hpp>
-#include <axgl/common.hpp>
+#include <axgl/interface/texture.hpp>
 
 #include <opengl/texture.hpp>
 
 namespace axgl::impl
 {
 
-class OpenglTexture : public interface::Texture
+class OpenglTexture : public axgl::Texture
 {
-private:
   std::shared_ptr<opengl::Texture> texture_;
 
 public:
   OpenglTexture() { texture_ = std::make_shared<opengl::Texture>(); }
 
-  void use() { texture_->use(); }
+  void use() const { texture_->use(); }
 
-  void load_texture(std::span<const uint8_t> data) override
+  void load_texture(const std::span<const std::uint8_t> data) override
   {
     texture_->load_image_texture(data);
     texture_->set_parameteri(GL_TEXTURE_WRAP_S, GL_REPEAT);

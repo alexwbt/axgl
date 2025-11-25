@@ -2,7 +2,7 @@
 
 #include <../../../axgl/include/axgl/impl/services/realm_service.hpp>
 #include <axgl/axgl.hpp>
-#include <axgl/impl/component/camera.hpp>
+#include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 

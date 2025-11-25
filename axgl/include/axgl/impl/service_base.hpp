@@ -1,6 +1,8 @@
 #pragma once
 
+#ifdef AXGL_DEBUG
 #include <stdexcept>
+#endif
 
 #include <axgl/interface/service.hpp>
 

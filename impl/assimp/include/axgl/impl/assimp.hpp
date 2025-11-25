@@ -2,17 +2,16 @@
 
 #include <axgl/axgl.hpp>
 
-/* Service implementations */
-
 #include <axgl/impl/assimp/model.hpp>
 
 namespace axgl
 {
 
-template <> inline std::shared_ptr<impl::AssimpModelService> Axgl::use_service()
+template <>
+inline std::shared_ptr<impl::AssimpModelService> Axgl::use_service()
 {
   auto service = std::make_shared<impl::AssimpModelService>();
-  register_service("model", service);
+  register_service(DefaultServices::kModel, service);
 
   return service;
 }

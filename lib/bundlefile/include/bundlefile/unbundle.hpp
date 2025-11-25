@@ -1,8 +1,9 @@
 #pragma once
 
-#include <string>
-#include <fstream>
 #include <cstdint>
+#include <fstream>
+#include <string>
+#include <vector>
 
 #include <bundlefile/bundle_fbs.h>
 
@@ -11,7 +12,7 @@ namespace bundlefile
 
 class Bundle
 {
-  std::vector<uint8_t> data_;
+  std::vector<std::uint8_t> data_;
 
 public:
   explicit Bundle(const std::string& path)
@@ -27,7 +28,7 @@ public:
     input_stream.read(reinterpret_cast<char*>(data_.data()), size);
   }
 
-  [[nodiscard]] const auto* get_bundle() const { return fbs::bundlefile::GetBundle(data_.data()); }
+  const auto* get_bundle() const { return fbs::bundlefile::GetBundle(data_.data()); }
 };
 
 } // namespace bundlefile

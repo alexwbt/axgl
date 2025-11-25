@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 namespace axgl
@@ -22,7 +22,7 @@ public:
   virtual void on_create() { }
   virtual void on_remove() { }
 
-  virtual uint32_t ticks() const = 0;
+  virtual std::uint32_t ticks() const = 0;
   virtual void set_disabled(bool) = 0;
   virtual bool is_disabled() const = 0;
 

@@ -1,9 +1,11 @@
 #pragma once
 
+#ifdef AXGL_DEBUG
+#include <stdexcept>
+#endif
 #include <algorithm>
 #include <format>
 #include <memory>
-#include <stdexcept>
 #include <unordered_map>
 #include <vector>
 

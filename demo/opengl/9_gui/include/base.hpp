@@ -2,8 +2,8 @@
 
 #include <../../../../axgl/include/axgl/impl/services/camera_service.hpp>
 #include <axgl/axgl.hpp>
-#include <axgl/impl/component/camera.hpp>
-#include <axgl/impl/component/light.hpp>
+#include <axgl/impl/components/camera.hpp>
+#include <axgl/impl/components/light.hpp>
 #include <axgl/impl/service.hpp>
 
 class Base : public axgl::impl::ServiceBase

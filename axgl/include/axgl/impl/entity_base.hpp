@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef AXGL_DEBUG
+#include <stdexcept>
+#endif
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -16,6 +20,7 @@ namespace axgl::impl
 class EntityBase : virtual public Entity
 {
   std::string id_;
+  Realm::Context* context_ = nullptr;
 
   bool disabled_ = false;
   std::uint32_t ticks_ = 0;
@@ -26,11 +31,19 @@ class EntityBase : virtual public Entity
   bool should_remove_ = false;
 
 protected:
-  Realm::Context* context_ = nullptr;
-  ComponentContainer components_;
+  ComponentContainer components_{this};
 
 public:
-  void tick() override { ++ticks_; }
+  void tick() override
+  {
+    ++ticks_;
+    components_.tick();
+  }
+  void update() override { components_.update(); }
+  void render() override { components_.render(); }
+  void on_create() override { components_.on_create(); }
+  void on_remove() override { components_.on_remove(); }
+
   uint32_t ticks() const override { return ticks_; }
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
   bool is_disabled() const override { return disabled_; }
@@ -52,6 +65,14 @@ public:
   ComponentManager* components() override { return &components_; }
 
   void set_context(Realm::Context* context) override { context_ = context; }
+  Realm::Context* get_context() override
+  {
+#ifdef AXGL_DEBUG
+    if (!context_)
+      throw std::runtime_error("Entity context is not set.");
+#endif
+    return context_;
+  }
 };
 
 } // namespace axgl::impl

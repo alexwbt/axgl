@@ -13,9 +13,12 @@ namespace axgl::impl
 
 class ComponentContainer : virtual public ComponentManager
 {
+  Entity* entity_;
   std::vector<std::shared_ptr<Component>> components_;
 
 public:
+  explicit ComponentContainer(Entity* entity) : entity_(entity) { }
+
   void tick() const
   {
     for (const auto& comp : components_)
@@ -51,7 +54,11 @@ public:
         comp->on_remove();
   }
 
-  void add(std::shared_ptr<Component> component) override { components_.push_back(std::move(component)); }
+  void add(std::shared_ptr<Component> component) override
+  {
+    component->set_entity(entity_);
+    components_.push_back(std::move(component));
+  }
 
   void remove(const std::shared_ptr<Component>& component) override { std::erase(components_, component); }
 

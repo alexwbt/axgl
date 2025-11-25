@@ -1,10 +1,10 @@
 #include <../../../axgl/include/axgl/impl/services/camera_service.hpp>
 #include <../../../axgl/include/axgl/impl/services/resource_service.hpp>
+#include <../../../impl/bundlefile/include/axgl/impl/services/bundlefile_service.hpp>
 #include <axgl/axgl.hpp>
 #include <axgl/impl/assimp.hpp>
-#include <axgl/impl/bundlefile_service.hpp>
-#include <axgl/impl/component/camera.hpp>
-#include <axgl/impl/component/light.hpp>
+#include <axgl/impl/components/camera.hpp>
+#include <axgl/impl/components/light.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 #include <axgl/impl/realm_service.hpp>

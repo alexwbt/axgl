@@ -15,6 +15,7 @@
 #include <spdlog/spdlog.h>
 #include <tracy/Tracy.hpp>
 
+#include <axgl/interface/services/entity_service.hpp>
 #include <axgl/interface/services/input_service.hpp>
 #include <axgl/interface/services/model_service.hpp>
 #include <axgl/interface/services/realm_service.hpp>
@@ -22,7 +23,7 @@
 #include <axgl/interface/services/resource_service.hpp>
 #include <axgl/interface/services/window_service.hpp>
 
-#include "./service_container.hpp"
+#include "service_container.hpp"
 
 namespace axgl
 {
@@ -34,8 +35,10 @@ constexpr auto kWindow = "window";
 constexpr auto kRenderer = "renderer";
 constexpr auto kResource = "resource";
 constexpr auto kRealm = "realm";
+constexpr auto kEntity = "entity";
 constexpr auto kInput = "input";
 constexpr auto kModel = "model";
+constexpr auto kCamera = "camera";
 
 }; // namespace DefaultServices
 
@@ -56,8 +59,6 @@ public:
     CPPTRACE_TRY
     {
 #endif
-      initialize();
-
       constexpr int64_t kOneSecond = 1000000000;
       constexpr double kTimeStep = kOneSecond / 60.0;
 
@@ -93,9 +94,6 @@ public:
           render();
         }
       }
-
-      terminate();
-
 #ifdef AXGL_DEBUG
     }
     CPPTRACE_CATCH(const std::exception& e)
@@ -105,12 +103,45 @@ public:
 #endif
   }
 
+  template <typename ServiceType>
+  std::shared_ptr<ServiceType> use_service()
+  {
+#ifdef AXGL_DEBUG
+    throw std::runtime_error(std::format("Service type '{}' is not supported.", typeid(ServiceType).name()));
+#else
+    return nullptr;
+#endif
+  }
+
   AXGL_DECLARE_SERVICE_GETTER(Window, window)
   AXGL_DECLARE_SERVICE_GETTER(Renderer, renderer)
   AXGL_DECLARE_SERVICE_GETTER(Resource, resource)
   AXGL_DECLARE_SERVICE_GETTER(Realm, realm)
+  AXGL_DECLARE_SERVICE_GETTER(Entity, entity)
   AXGL_DECLARE_SERVICE_GETTER(Input, input)
   AXGL_DECLARE_SERVICE_GETTER(Model, model)
 };
 
+} // namespace axgl
+
+#include <axgl/impl/services/camera_service.hpp>
+#include <axgl/impl/services/entity_service.hpp>
+#include <axgl/impl/services/realm_service.hpp>
+#include <axgl/impl/services/resource_service.hpp>
+
+#define AXGL_DECLARE_USE_SERVICE(service_name)                                                                         \
+  template <>                                                                                                          \
+  inline std::shared_ptr<impl::service_name##Service> Axgl::use_service()                                              \
+  {                                                                                                                    \
+    const auto service = std::make_shared<impl::service_name##Service>();                                              \
+    register_service(DefaultServices::k##service_name, service);                                                       \
+    return service;                                                                                                    \
+  }
+
+namespace axgl
+{
+AXGL_DECLARE_USE_SERVICE(Resource)
+AXGL_DECLARE_USE_SERVICE(Realm)
+AXGL_DECLARE_USE_SERVICE(Entity)
+AXGL_DECLARE_USE_SERVICE(Camera)
 } // namespace axgl

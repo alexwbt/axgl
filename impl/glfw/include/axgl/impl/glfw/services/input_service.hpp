@@ -1,23 +1,27 @@
 #pragma once
 
 #include <list>
+#include <memory>
 
-#include <axgl/common.hpp>
 #include <axgl/interface/input.hpp>
+#include <axgl/interface/pointer.hpp>
+#include <axgl/interface/services/input_service.hpp>
+
 #include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl
 {
 
-class GlfwInputService : public interface::InputService, public ServiceBase
+class GlfwInputService : public axgl::InputService, public ServiceBase
 {
   std::shared_ptr<GlfwWindow> window_;
-  std::list<std::shared_ptr<interface::Input>> inputs_;
-  std::list<std::shared_ptr<interface::Pointer>> pointers_;
+  std::list<std::shared_ptr<axgl::Input>> inputs_;
+  std::list<std::shared_ptr<axgl::Pointer>> pointers_;
 
-  static int to_glfw_keycode(interface::InputSource source)
+  static int to_glfw_keycode(const axgl::Input::Source source)
   {
-    using enum interface::InputSource;
+    using enum axgl::Input::Source;
     switch (source)
     {
     case kKeySpace: return GLFW_KEY_SPACE;
@@ -145,7 +149,7 @@ class GlfwInputService : public interface::InputService, public ServiceBase
   }
 
 public:
-  void set_window(std::shared_ptr<interface::Window> window) override
+  void set_window(std::shared_ptr<axgl::Window> window) override
   {
     window_ = dynamic_pointer_cast<GlfwWindow>(window);
 #ifdef AXGL_DEBUG
@@ -155,7 +159,7 @@ public:
 #endif
   }
 
-  void set_cursor_mode(interface::CursorMode mode) override
+  void set_cursor_mode(axgl::InputService::CursorMode mode) override
   {
     if (!window_)
 #ifdef AXGL_DEBUG
@@ -164,7 +168,7 @@ public:
       return;
 #endif
     window_->use();
-    using enum interface::CursorMode;
+    using enum axgl::InputService::CursorMode;
     switch (mode)
     {
     case kLocked: window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED); break;
@@ -172,18 +176,26 @@ public:
     }
   }
 
-  void add_input(std::shared_ptr<interface::Input> input) override { inputs_.push_back(std::move(input)); }
+  void add_input(std::shared_ptr<axgl::Input> input) override { inputs_.push_back(std::move(input)); }
 
-  void add_pointer(std::shared_ptr<interface::Pointer> pointer) override { pointers_.push_back(std::move(pointer)); }
+  void add_pointer(std::shared_ptr<axgl::Pointer> pointer) override { pointers_.push_back(std::move(pointer)); }
 
   void remove_input(uint32_t id) override
   {
-    inputs_.remove_if([id](const auto& input) { return input->id == id; });
+    inputs_.remove_if(
+      [id](const auto& input)
+      {
+        return input->id == id;
+      });
   }
 
   void remove_pointer(uint32_t id) override
   {
-    pointers_.remove_if([id](const auto& pointer) { return pointer->id == id; });
+    pointers_.remove_if(
+      [id](const auto& pointer)
+      {
+        return pointer->id == id;
+      });
   }
 
   void update() override
@@ -191,7 +203,7 @@ public:
     if (!window_)
       return;
 
-    for (auto& input : inputs_)
+    for (const auto& input : inputs_)
     {
       if (window_->glfw_window()->key_pressed(to_glfw_keycode(input->source)))
         input->tick++;
@@ -199,9 +211,9 @@ public:
         input->tick = 0;
     }
 
-    for (auto& pointer : pointers_)
+    for (const auto& pointer : pointers_)
     {
-      using enum interface::PointerSource;
+      using enum axgl::Pointer::Source;
       switch (pointer->source)
       {
       case kMouseMove:

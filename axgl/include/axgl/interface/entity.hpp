@@ -40,6 +40,7 @@ public:
   virtual ComponentManager* components() = 0;
 
   virtual void set_context(Realm::Context* context) = 0;
+  virtual Realm::Context* get_context() = 0;
 };
 
 } // namespace axgl

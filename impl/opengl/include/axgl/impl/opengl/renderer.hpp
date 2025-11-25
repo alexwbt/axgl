@@ -1,23 +1,17 @@
 #pragma once
 
-#include <map>
 #include <memory>
 
-#include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #include <spdlog/spdlog.h>
 
-#include <../../../../../../axgl/include/axgl/interface/services/renderer.hpp>
-#include <axgl/common.hpp>
 #include <axgl/impl/glfw/window.hpp>
-
-#include <axgl/impl/opengl/texture.hpp>
-#include <axgl/impl/opengl/material.hpp>
 
 namespace axgl::impl
 {
 
-class OpenglRenderer : public interface::Renderer
+class OpenglRenderer : public axgl::Renderer
 {
   int clear_bit_ = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
   GLfloat clear_color_r_ = 0.0f;
@@ -29,16 +23,16 @@ class OpenglRenderer : public interface::Renderer
   std::shared_ptr<GlfwWindow> window_;
 
   bool after_render_ = false;
-  std::vector<std::pair<float, interface::Component*>> blend_renders_;
+  std::vector<std::pair<float, axgl::Component*>> blend_renders_;
 
 public:
-  void add_blend_render(float distance2, interface::Component* component)
+  void add_blend_render(float distance2, axgl::Component* component)
   {
     ZoneScopedN("Add Blend Render");
     blend_renders_.emplace_back(distance2, component);
   }
 
-  [[nodiscard]] bool is_after_render() const { return after_render_; }
+  bool is_after_render() const { return after_render_; }
 
   bool ready() override { return window_ && window_->ready(); }
 
@@ -72,7 +66,11 @@ public:
       ZoneScopedN("Renderer Render Blending Components");
 
       // sort blend_renders_ by distance descending
-      std::ranges::sort(blend_renders_, [](const auto& a, const auto& b) { return a.first > b.first; });
+      std::ranges::sort(blend_renders_,
+        [](const auto& a, const auto& b)
+        {
+          return a.first > b.first;
+        });
       // render blending components
       for (const auto& component : blend_renders_ | std::views::values)
         component->render();
@@ -91,7 +89,7 @@ public:
     glDisable(GL_STENCIL_TEST);
   }
 
-  void set_window(std::shared_ptr<interface::Window> window) override
+  void set_window(std::shared_ptr<axgl::Window> window) override
   {
     window_ = std::dynamic_pointer_cast<GlfwWindow>(std::move(window));
     if (!window_)
@@ -105,35 +103,12 @@ public:
     window_->use();
 
     // initialize glad
-    if (!initialized_glad_ && !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    if (!initialized_glad_ && !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
     initialized_glad_ = true;
   }
 
   glm::ivec2 viewport() const override { return window_->get_size(); }
-};
-
-class OpenglRendererService : virtual public interface::RendererService, public ServiceBase
-{
-public:
-  std::shared_ptr<interface::Renderer> create_renderer() override { return std::make_shared<OpenglRenderer>(); }
-
-  std::shared_ptr<interface::Texture> create_texture() override { return std::make_shared<OpenglTexture>(); }
-
-  std::shared_ptr<interface::Material> create_material(const std::string& type) override
-  {
-    if (type == "2d")
-      return std::make_shared<OpenglDefault2DMaterial>();
-
-    if (type == "default")
-      return std::make_shared<OpenglDefaultMaterial>();
-
-#ifdef AXGL_DEBUG
-    throw std::runtime_error("Unsupported material type: " + type);
-#else
-    return nullptr;
-#endif
-  }
 };
 
 } // namespace axgl::impl

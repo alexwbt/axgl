@@ -1,49 +1,47 @@
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 
 #include <spdlog/spdlog.h>
 
-#include <../../../../../../axgl/include/axgl/interface/services/renderer.hpp>
-#include <axgl/axgl.hpp>
-#include <axgl/common.hpp>
+#include <axgl/interface/components/mesh.hpp>
+
 #include <axgl/impl/opengl/texture.hpp>
-#include <axgl/interface/component/mesh.hpp>
 
 #include <opengl/static_shaders.hpp>
 
 namespace axgl::impl
 {
 
-class OpenglMaterial : public interface::Material
+class OpenglMaterial : public axgl::Material
 {
 protected:
   glm::vec4 color_{1.0f, 1.0f, 1.0f, 1.0f};
-  interface::CullMode cull_mode_ = interface::CullMode::kCCW;
+  axgl::Material::CullMode cull_mode_ = axgl::Material::CullMode::kCCW;
   bool enable_blend_ = false;
 
 public:
   void set_color(const glm::vec4& color) override { color_ = color; }
-  void set_cull_mode(const interface::CullMode cull_mode) override { cull_mode_ = cull_mode; }
+  void set_cull_mode(const axgl::Material::CullMode cull_mode) override { cull_mode_ = cull_mode; }
   void set_enable_blend(const bool enable_blend) override { enable_blend_ = enable_blend; }
 
-  [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
+  bool enabled_blend() const { return enable_blend_; }
 
-  virtual void use(const interface::RealmContext* context, const interface::component::Mesh* mesh)
+  virtual void use(const axgl::Realm::Context* context, const axgl::component::Mesh* mesh)
   {
     glCullFace(GL_FRONT);
     switch (cull_mode_)
     {
-    case interface::CullMode::kCW:
+    case axgl::Material::CullMode::kCW:
       glEnable(GL_CULL_FACE);
       glFrontFace(GL_CW);
       break;
-    case interface::CullMode::kCCW:
+    case axgl::Material::CullMode::kCCW:
       glEnable(GL_CULL_FACE);
       glFrontFace(GL_CCW);
       break;
-    case interface::CullMode::kNone: glDisable(GL_CULL_FACE); break;
+    case axgl::Material::CullMode::kNone: glDisable(GL_CULL_FACE); break;
     }
 
     if (enable_blend_)
@@ -77,7 +75,7 @@ public:
 #endif
   }
 
-  void add_texture(interface::TextureType type, std::shared_ptr<interface::Texture> texture) override
+  void add_texture(axgl::Material::TextureType type, std::shared_ptr<axgl::Texture> texture) override
   {
     auto texture_ = std::dynamic_pointer_cast<OpenglTexture>(texture);
     if (!texture_)
@@ -86,7 +84,7 @@ public:
 #else
       return;
 #endif
-    using enum interface::TextureType;
+    using enum axgl::Material::TextureType;
     switch (type)
     {
     case kDiffuse: diffuse_texture_ = std::move(texture_); break;
@@ -99,11 +97,11 @@ public:
     }
   }
 
-  void use(const interface::RealmContext* context, const interface::component::Mesh* mesh) override
+  void use(const axgl::Realm::Context* context, const axgl::component::Mesh* mesh) override
   {
     OpenglMaterial::use(context, mesh);
 
-    const auto model = mesh->get_parent()->get_model_matrix();
+    const auto model = mesh->get_entity()->get_model_matrix();
     const auto mvp = context->camera->projection_view_matrix() * model;
 
     shader_->use_program();
@@ -122,7 +120,7 @@ public:
   }
 
 private:
-  void use_lights(const std::vector<const interface::Light*>& lights) const
+  void use_lights(const std::vector<const axgl::Light*>& lights) const
   {
     int sun_lights_size = 0;
     int spot_lights_size = 0;
@@ -132,14 +130,14 @@ private:
     {
       switch (light->type)
       {
-      case (interface::Light::kSun):
+      case (axgl::Light::kSun):
         shader_->set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].direction", light->direction);
         shader_->set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].ambient", light->color.ambient);
         shader_->set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].diffuse", light->color.diffuse);
         shader_->set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].specular", light->color.specular);
         sun_lights_size++;
         break;
-      case (interface::Light::kPoint):
+      case (axgl::Light::kPoint):
         shader_->set_vec3("point_lights[" + std::to_string(point_lights_size) + "].position", light->position);
         shader_->set_vec3("point_lights[" + std::to_string(point_lights_size) + "].ambient", light->color.ambient);
         shader_->set_vec3("point_lights[" + std::to_string(point_lights_size) + "].diffuse", light->color.diffuse);
@@ -151,7 +149,7 @@ private:
           "point_lights[" + std::to_string(point_lights_size) + "].quadratic", light->strength.quadratic);
         point_lights_size++;
         break;
-      case (interface::Light::kSpot):
+      case (axgl::Light::kSpot):
         shader_->set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].direction", light->direction);
         shader_->set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].position", light->position);
         shader_->set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].ambient", light->color.ambient);
@@ -192,7 +190,7 @@ class OpenglDefault2DMaterial : public OpenglMaterial
 public:
   void set_prop(const std::string& key, const std::string& value) override { }
 
-  void add_texture(interface::TextureType type, std::shared_ptr<interface::Texture> texture) override
+  void add_texture(axgl::Material::TextureType type, std::shared_ptr<axgl::Texture> texture) override
   {
     texture_ = std::dynamic_pointer_cast<OpenglTexture>(texture);
 #ifdef AXGL_DEBUG
@@ -201,11 +199,11 @@ public:
 #endif
   }
 
-  void use(const interface::RealmContext* context, const interface::component::Mesh* mesh) override
+  void use(const axgl::Realm::Context* context, const axgl::component::Mesh* mesh) override
   {
     OpenglMaterial::use(context, mesh);
 
-    const auto& model = mesh->get_parent()->get_model_matrix();
+    const auto& model = mesh->get_entity()->get_model_matrix();
     const auto mvp = context->camera->projection_view_matrix() * model;
 
     shader_->use_program();
