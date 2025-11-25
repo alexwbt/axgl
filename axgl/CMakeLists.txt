@@ -1,6 +1,5 @@
 
-add_library(axgl INTERFACE
-  include/axgl/interface/domain_objects/pointer.hpp)
+add_library(axgl INTERFACE)
 
 target_include_directories(axgl
   INTERFACE
