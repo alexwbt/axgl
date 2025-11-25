@@ -7,7 +7,7 @@
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/component/mesh.hpp>
 
-#include <axgl/impl/realm_service.hpp>
+#include <../../../../../../../axgl/include/axgl/impl/services/realm_service.hpp>
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
 

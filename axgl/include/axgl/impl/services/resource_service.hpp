@@ -1,0 +1,41 @@
+#pragma once
+
+#include <cstdint>
+#include <span>
+#include <string>
+#include <unordered_map>
+
+#include <axgl/interface/services/resource_service.hpp>
+
+#include <axgl/impl/service_base.hpp>
+
+namespace axgl::impl
+{
+
+class ResourceService : public axgl::ResourceService, public ServiceBase
+{
+  std::unordered_map<std::string, std::span<const std::uint8_t>> resources_;
+
+public:
+  void load_resource(const std::string& key, std::span<const std::uint8_t> data) override { resources_[key] = data; }
+
+  void load_resources(std::unordered_map<std::string, std::span<const std::uint8_t>> data) override
+  {
+    resources_.insert(data.begin(), data.end());
+  }
+
+  void unload_resource(const std::string& key) override { resources_.erase(key); }
+
+  bool has_resource(const std::string& key) const override { return resources_.contains(key); }
+
+  const std::span<const std::uint8_t>& get_resource(const std::string& key) override
+  {
+#ifdef AXGL_DEBUG
+    if (!has_resource(key))
+      throw std::runtime_error("Resource service does not contain resource: " + key);
+#endif
+    return resources_.at(key);
+  }
+};
+
+} // namespace axgl::impl

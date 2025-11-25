@@ -1,21 +1,28 @@
 #pragma once
 
 #include <chrono>
-#include <string>
 #include <format>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
-#include <spdlog/spdlog.h>
+#ifdef AXGL_DEBUG
+#include <cpptrace/cpptrace.hpp>
+#include <cpptrace/from_current.hpp>
+#include <stdexcept>
+#endif
 
-#include <axgl/common.hpp>
-#include <axgl/interface/window.hpp>
-#include <axgl/interface/renderer.hpp>
-#include <axgl/interface/resource.hpp>
-#include <axgl/interface/realm.hpp>
-#include <axgl/interface/input.hpp>
-#include <axgl/interface/model.hpp>
-#include <axgl/impl/service.hpp>
+#include <spdlog/spdlog.h>
+#include <tracy/Tracy.hpp>
+
+#include <axgl/interface/services/input_service.hpp>
+#include <axgl/interface/services/model_service.hpp>
+#include <axgl/interface/services/realm_service.hpp>
+#include <axgl/interface/services/renderer_service.hpp>
+#include <axgl/interface/services/resource_service.hpp>
+#include <axgl/interface/services/window_service.hpp>
+
+#include "./service_container.hpp"
 
 namespace axgl
 {
@@ -33,12 +40,12 @@ constexpr auto kModel = "model";
 }; // namespace DefaultServices
 
 #define AXGL_DECLARE_SERVICE_GETTER(service_name, service_getter_name)                                                 \
-  std::shared_ptr<interface::service_name##Service> service_getter_name##_service() const                              \
+  std::shared_ptr<service_name##Service> service_getter_name##_service() const                                         \
   {                                                                                                                    \
-    return get_service<interface::service_name##Service>(DefaultServices::k##service_name);                            \
+    return get_service<service_name##Service>(DefaultServices::k##service_name);                                       \
   }
 
-class Axgl final : public impl::ServiceManager
+class Axgl final : public ServiceContainer
 {
 public:
   Axgl() { context_.axgl = this; }
@@ -95,15 +102,6 @@ public:
     {
       SPDLOG_ERROR("Exception thrown: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
     }
-#endif
-  }
-
-  template <typename ServiceType> std::shared_ptr<ServiceType> use_service()
-  {
-#ifdef AXGL_DEBUG
-    throw std::runtime_error(std::format("Service type '{}' is not supported.", typeid(ServiceType).name()));
-#else
-    return nullptr;
 #endif
   }
 

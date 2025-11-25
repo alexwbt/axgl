@@ -6,15 +6,15 @@
 #include <memory>
 #include <cstdint>
 
+#include <../../../../../../axgl/include/axgl/interface/service.hpp>
+#include <../../../../../../axgl/include/axgl/interface/services/renderer.hpp>
 #include <axgl/common.hpp>
-#include <axgl/interface/service.hpp>
-#include <axgl/interface/renderer.hpp>
-#include <axgl/interface/realm.hpp>
 #include <axgl/impl/opengl/component/mesh.hpp>
 #include <axgl/impl/service.hpp>
+#include <axgl/interface/realm.hpp>
 
-#include <opengl/text.hpp>
 #include <opengl/static_vaos.hpp>
+#include <opengl/text.hpp>
 
 namespace axgl::impl
 {

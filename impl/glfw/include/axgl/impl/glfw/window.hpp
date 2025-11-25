@@ -2,8 +2,8 @@
 
 #include <memory>
 
+#include <../../../../../../axgl/include/axgl/interface/services/window_service.hpp>
 #include <axgl/common.hpp>
-#include <axgl/interface/window.hpp>
 #include <axgl/impl/service.hpp>
 
 #include <glfw/window.hpp>

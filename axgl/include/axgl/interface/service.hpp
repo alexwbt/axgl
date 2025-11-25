@@ -2,26 +2,22 @@
 
 #include <vector>
 
-#include <axgl/common.hpp>
+namespace axgl
+{
+class Axgl;
+}
 
 namespace axgl
 {
 
-class Axgl;
-
-}
-
-namespace axgl::interface
-{
-
-struct ServiceContext final
-{
-  Axgl* axgl = nullptr;
-};
-
 class Service
 {
 public:
+  struct Context final
+  {
+    Axgl* axgl = nullptr;
+  };
+
   virtual ~Service() = default;
 
   virtual void initialize() { }
@@ -33,11 +29,10 @@ public:
   virtual bool keep_alive() { return false; }
   virtual void exec(const std::vector<std::string>& args) { }
 
-  virtual void set_context(const ServiceContext* context) = 0;
+  virtual void set_context(const Context* context) = 0;
 
 protected:
-  virtual const ServiceContext* get_context() const = 0;
+  virtual const Context* get_context() const = 0;
 };
 
-} // namespace axgl::interface
-
+} // namespace axgl

@@ -5,10 +5,10 @@
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/entity/gui_element.hpp>
 
-#include <axgl/impl/realm_service.hpp>
-#include <axgl/impl/opengl/text.hpp>
-#include <axgl/impl/opengl/component/mesh.hpp>
+#include <../../../../../../../axgl/include/axgl/impl/services/realm_service.hpp>
 #include <axgl/impl/entity/context_override.hpp>
+#include <axgl/impl/opengl/component/mesh.hpp>
+#include <axgl/impl/opengl/text.hpp>
 
 #include <opengl/static_vaos.hpp>
 

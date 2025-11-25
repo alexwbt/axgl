@@ -7,8 +7,8 @@
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
 
+#include <../../../../../../axgl/include/axgl/interface/services/renderer.hpp>
 #include <axgl/common.hpp>
-#include <axgl/interface/renderer.hpp>
 #include <axgl/impl/glfw/window.hpp>
 
 #include <axgl/impl/opengl/texture.hpp>

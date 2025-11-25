@@ -2,9 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include <axgl/common.hpp>
-
-namespace axgl::interface
+namespace axgl
 {
 
 class Light final
@@ -41,24 +39,24 @@ public:
 
   Light() : type(kSun) { }
 
-  Light(glm::vec3 direction, Color color) : type(kSun), direction(direction), color(color) { }
+  Light(glm::vec3 direction, Color color) : type(kSun), color(color), direction(direction) { }
 
   Light(glm::vec3 position, Color color, Strength strength) :
-    type(kPoint), position(position), color(color), strength(strength)
+    type(kPoint), color(color), strength(strength), position(position)
   {
   }
 
   Light(glm::vec3 position, glm::vec3 direction, Color color, Strength strength, float cut_off, float outer_cut_off) :
     type(kSpot),
-    position(position),
-    direction(direction),
     color(color),
     strength(strength),
     cut_off(glm::cos(glm::radians(cut_off))),
-    outer_cut_off(glm::cos(glm::radians(outer_cut_off)))
+    outer_cut_off(glm::cos(glm::radians(outer_cut_off))),
+    position(position),
+    direction(direction)
   {
   }
 };
 
-} // namespace axgl::interface
+} // namespace axgl
 

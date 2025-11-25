@@ -1,15 +1,11 @@
 #pragma once
 
-#include <string>
-#include <memory>
 #include <cstdint>
-
-#include <axgl/common.hpp>
-#include <axgl/interface/service.hpp>
+#include <string>
 
 #include <glm/glm.hpp>
 
-namespace axgl::interface
+namespace axgl
 {
 
 class Window
@@ -17,8 +13,8 @@ class Window
 public:
   virtual ~Window() = default;
   virtual void set_title(const std::string& title) = 0;
-  virtual void set_position(uint32_t x, uint32_t y) = 0;
-  virtual void set_size(uint32_t width, uint32_t height) = 0;
+  virtual void set_position(std::uint32_t x, std::uint32_t y) = 0;
+  virtual void set_size(std::uint32_t width, std::uint32_t height) = 0;
   virtual void maximize() = 0;
   virtual void hide() = 0;
   virtual void show() = 0;
@@ -30,11 +26,4 @@ public:
   virtual glm::ivec2 get_size() const = 0;
 };
 
-class WindowService : virtual public Service
-{
-public:
-  virtual std::shared_ptr<Window> create_window() = 0;
-};
-
-} // namespace axgl::interface
-
+} // namespace axgl

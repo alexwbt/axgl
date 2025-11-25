@@ -1,10 +1,11 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <cstdint>
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace util
 {

@@ -2,9 +2,9 @@
 
 #include <memory>
 
+#include <../../../../../../axgl/include/axgl/interface/service.hpp>
+#include <../../../../../../axgl/include/axgl/interface/services/renderer.hpp>
 #include <axgl/common.hpp>
-#include <axgl/interface/service.hpp>
-#include <axgl/interface/renderer.hpp>
 
 #include <opengl/texture.hpp>
 

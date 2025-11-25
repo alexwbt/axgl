@@ -5,11 +5,11 @@
 
 #include <spdlog/spdlog.h>
 
+#include <../../../../../../axgl/include/axgl/interface/services/renderer.hpp>
 #include <axgl/axgl.hpp>
 #include <axgl/common.hpp>
-#include <axgl/interface/renderer.hpp>
-#include <axgl/interface/component/mesh.hpp>
 #include <axgl/impl/opengl/texture.hpp>
+#include <axgl/interface/component/mesh.hpp>
 
 #include <opengl/static_shaders.hpp>
 

@@ -1,14 +1,15 @@
 #pragma once
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include <axgl/common.hpp>
-#include <axgl/interface/realm.hpp>
-#include <axgl/interface/renderer.hpp>
-#include <axgl/interface/component/mesh.hpp>
+#include <axgl/interface/components/mesh.hpp>
+#include <axgl/interface/entity.hpp>
+#include <axgl/interface/material.hpp>
+#include <axgl/interface/service.hpp>
+#include <axgl/interface/texture.hpp>
 
-namespace axgl::interface
+namespace axgl
 {
 
 class ModelService : virtual public Service
@@ -24,5 +25,5 @@ public:
   virtual ModelResources load_model(std::shared_ptr<Entity> entity, const std::string& resource_key) = 0;
 };
 
-} // namespace axgl::interface
+} // namespace axgl
 

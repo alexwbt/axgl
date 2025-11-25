@@ -18,7 +18,7 @@ AllowShortCaseLabelsOnASingleLine: true
 IndentCaseBlocks: false
 IndentCaseLabels: false
 LambdaBodyIndentation: Signature
-AllowShortLambdasOnASingleLine: All
+AllowShortLambdasOnASingleLine: Empty
 PackConstructorInitializers: NextLine
 BreakConstructorInitializers: AfterColon
 AlignAfterOpenBracket: DontAlign
@@ -42,7 +42,7 @@ BraceWrapping:
   SplitEmptyFunction: false
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
-SortIncludes: false
+SortIncludes: true
 NamespaceIndentation: None
 CompactNamespaces: false
 KeepEmptyLines:
@@ -51,3 +51,4 @@ KeepEmptyLines:
   AtStartOfFile: true
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
+BreakTemplateDeclarations: Yes

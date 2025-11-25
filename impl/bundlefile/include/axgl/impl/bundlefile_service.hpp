@@ -4,9 +4,9 @@
 #include <memory>
 #include <unordered_map>
 
+#include <../../../../../axgl/include/axgl/interface/service.hpp>
+#include <../../../../../axgl/include/axgl/interface/services/resource.hpp>
 #include <axgl/common.hpp>
-#include <axgl/interface/service.hpp>
-#include <axgl/interface/resource.hpp>
 #include <axgl/impl/service.hpp>
 
 #include <bundlefile/unbundle.hpp>

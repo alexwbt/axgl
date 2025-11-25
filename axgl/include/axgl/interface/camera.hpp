@@ -3,9 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <axgl/common.hpp>
-
-namespace axgl::interface
+namespace axgl
 {
 
 class Camera final
@@ -30,10 +28,10 @@ private:
 public:
   Camera() { update(); }
 
-  [[nodiscard]] glm::vec3 up() const { return up_; }
-  [[nodiscard]] glm::vec3 front() const { return front_; }
-  [[nodiscard]] glm::vec3 horizontal_right() const { return horizontal_right_; }
-  [[nodiscard]] glm::mat4 projection_view_matrix() const { return projection_view_matrix_; }
+  glm::vec3 up() const { return up_; }
+  glm::vec3 front() const { return front_; }
+  glm::vec3 horizontal_right() const { return horizontal_right_; }
+  glm::mat4 projection_view_matrix() const { return projection_view_matrix_; }
 
   void update()
   {
@@ -79,5 +77,4 @@ public:
   void set_projection_view_matrix(const glm::mat4& pv) { projection_view_matrix_ = pv; }
 };
 
-} // namespace axgl::interface
-
+} // namespace axgl

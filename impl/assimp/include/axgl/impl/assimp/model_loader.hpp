@@ -1,23 +1,22 @@
 #pragma once
 
+#include <cstdlib>
+#include <filesystem>
+#include <memory>
+#include <ranges>
 #include <span>
 #include <string>
 #include <utility>
 #include <vector>
-#include <memory>
-#include <ranges>
-#include <cstdlib>
-#include <filesystem>
 
-#include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
-#include <axgl/common.hpp>
-#include <axgl/interface/realm.hpp>
-#include <axgl/interface/renderer.hpp>
-#include <axgl/interface/resource.hpp>
-#include <axgl/interface/component/mesh.hpp>
+#include <axgl/interface/components/mesh.hpp>
+#include <axgl/interface/services/realm_service.hpp>
+#include <axgl/interface/services/renderer_service.hpp>
+#include <axgl/interface/services/resource_service.hpp>
 
 namespace axgl::impl
 {
@@ -28,20 +27,19 @@ class ModelLoader
 {
   friend class AssimpModelService;
 
-  std::shared_ptr<interface::RealmService> realm_service_;
-  std::shared_ptr<interface::RendererService> renderer_service_;
-  std::shared_ptr<interface::ResourceService> resource_service_;
+  std::shared_ptr<axgl::RealmService> realm_service_;
+  std::shared_ptr<axgl::RendererService> renderer_service_;
+  std::shared_ptr<axgl::ResourceService> resource_service_;
 
   std::string resource_key_;
   std::string material_type_;
-  std::vector<std::shared_ptr<interface::Texture>> embedded_textures_;
+  std::vector<std::shared_ptr<axgl::Texture>> embedded_textures_;
 
-  interface::ModelService::ModelResources resources_;
+  axgl::ModelService::ModelResources resources_;
 
-  ModelLoader(std::shared_ptr<interface::RealmService> realm_service,
-    std::shared_ptr<interface::RendererService> renderer_service,
-    std::shared_ptr<interface::ResourceService> resource_service, std::shared_ptr<interface::Entity> entity,
-    std::string resource_key, std::string material_type) :
+  ModelLoader(std::shared_ptr<axgl::RealmService> realm_service,
+    std::shared_ptr<axgl::RendererService> renderer_service, std::shared_ptr<axgl::ResourceService> resource_service,
+    std::shared_ptr<axgl::Entity> entity, std::string resource_key, std::string material_type) :
     realm_service_(std::move(realm_service)),
     renderer_service_(std::move(renderer_service)),
     resource_service_(std::move(resource_service)),
@@ -73,12 +71,12 @@ class ModelLoader
     process_node(entity, ai_scene->mRootNode, ai_scene);
   }
 
-  void process_node(std::shared_ptr<interface::Entity> entity, aiNode* ai_node, const aiScene* ai_scene)
+  void process_node(std::shared_ptr<axgl::Entity> entity, aiNode* ai_node, const aiScene* ai_scene)
   {
     for (int i = 0; i < ai_node->mNumMeshes; ++i)
     {
       aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
-      entity->add_component(load_mesh(ai_mesh, ai_scene));
+      entity->components()->add(load_mesh(ai_mesh, ai_scene));
     }
 
     // add children node mesh
@@ -86,9 +84,9 @@ class ModelLoader
       process_node(entity, ai_node->mChildren[i], ai_scene);
   }
 
-  std::shared_ptr<axgl::interface::component::Mesh> load_mesh(aiMesh* ai_mesh, const aiScene* ai_scene)
+  std::shared_ptr<axgl::component::Mesh> load_mesh(aiMesh* ai_mesh, const aiScene* ai_scene)
   {
-    auto mesh = realm_service_->create_component<axgl::interface::component::Mesh>();
+    auto mesh = realm_service_->create_component<axgl::component::Mesh>();
     resources_.meshes.push_back(mesh);
 
     std::vector<glm::vec3> vertices;
@@ -131,7 +129,7 @@ class ModelLoader
       auto ai_texture_type = static_cast<aiTextureType>(i);
       auto texture_type = map_texture_type(ai_texture_type);
 
-      if (texture_type == interface::TextureType::kUnknown)
+      if (texture_type == axgl::Material::TextureType::kUnknown)
         continue;
 
       load_textures(ai_material, ai_texture_type, material, texture_type);
@@ -142,8 +140,8 @@ class ModelLoader
     return mesh;
   }
 
-  void load_textures(aiMaterial* ai_material, aiTextureType ai_texture_type,
-    std::shared_ptr<interface::Material> material, interface::TextureType texture_type)
+  void load_textures(aiMaterial* ai_material, aiTextureType ai_texture_type, std::shared_ptr<axgl::Material> material,
+    axgl::Material::TextureType texture_type)
   {
     auto count = ai_material->GetTextureCount(ai_texture_type);
     for (int i = 0; i < count; ++i)
@@ -176,9 +174,9 @@ class ModelLoader
     }
   }
 
-  interface::TextureType map_texture_type(aiTextureType ai_texture_type)
+  axgl::Material::TextureType map_texture_type(aiTextureType ai_texture_type)
   {
-    using enum interface::TextureType;
+    using enum axgl::Material::TextureType;
     switch (ai_texture_type)
     {
     case aiTextureType_DIFFUSE: return kDiffuse;
