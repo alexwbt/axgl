@@ -22,9 +22,6 @@ public:
   {
     const Axgl* axgl = nullptr;
     Realm* realm = nullptr;
-
-    const Camera* camera = nullptr;
-    std::vector<const Light*> lights;
   };
 
   virtual ~Realm() = default;

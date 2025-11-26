@@ -15,8 +15,10 @@
 #include <spdlog/spdlog.h>
 #include <tracy/Tracy.hpp>
 
+#include <axgl/interface/services/camera_service.hpp>
 #include <axgl/interface/services/entity_service.hpp>
 #include <axgl/interface/services/input_service.hpp>
+#include <axgl/interface/services/light_service.hpp>
 #include <axgl/interface/services/model_service.hpp>
 #include <axgl/interface/services/realm_service.hpp>
 #include <axgl/interface/services/renderer_service.hpp>
@@ -39,6 +41,7 @@ constexpr auto kEntity = "entity";
 constexpr auto kInput = "input";
 constexpr auto kModel = "model";
 constexpr auto kCamera = "camera";
+constexpr auto kLight = "light";
 
 }; // namespace DefaultServices
 
@@ -65,6 +68,7 @@ public:
       auto start_time = std::chrono::high_resolution_clock::now();
       double delta_time = 0.0;
 
+      on_start();
       while (running())
       {
         ZoneScopedN("Main Loop");
@@ -94,6 +98,7 @@ public:
           render();
         }
       }
+      on_end();
 #ifdef AXGL_DEBUG
     }
     CPPTRACE_CATCH(const std::exception& e)
@@ -120,12 +125,15 @@ public:
   AXGL_DECLARE_SERVICE_GETTER(Entity, entity)
   AXGL_DECLARE_SERVICE_GETTER(Input, input)
   AXGL_DECLARE_SERVICE_GETTER(Model, model)
+  AXGL_DECLARE_SERVICE_GETTER(Camera, camera)
+  AXGL_DECLARE_SERVICE_GETTER(Light, light)
 };
 
 } // namespace axgl
 
 #include <axgl/impl/services/camera_service.hpp>
 #include <axgl/impl/services/entity_service.hpp>
+#include <axgl/impl/services/light_service.hpp>
 #include <axgl/impl/services/realm_service.hpp>
 #include <axgl/impl/services/resource_service.hpp>
 
@@ -144,4 +152,5 @@ AXGL_DECLARE_USE_SERVICE(Resource)
 AXGL_DECLARE_USE_SERVICE(Realm)
 AXGL_DECLARE_USE_SERVICE(Entity)
 AXGL_DECLARE_USE_SERVICE(Camera)
+AXGL_DECLARE_USE_SERVICE(Light)
 } // namespace axgl

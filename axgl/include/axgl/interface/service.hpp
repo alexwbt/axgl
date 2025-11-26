@@ -22,6 +22,8 @@ public:
 
   virtual void initialize() { }
   virtual void terminate() { }
+  virtual void on_start() { }
+  virtual void on_end() { }
   virtual void tick() { }
   virtual void update() { }
   virtual void render() { }

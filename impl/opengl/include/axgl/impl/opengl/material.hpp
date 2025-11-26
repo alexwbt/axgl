@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <span>
 #include <string>
 
 #include <spdlog/spdlog.h>
@@ -101,17 +102,19 @@ public:
   {
     OpenglMaterial::use(context, mesh);
 
+    const auto camera = context->axgl->camera_service()->get_camera();
+    const auto lights = context->axgl->light_service()->get_lights();
     const auto model = mesh->get_entity()->get_model_matrix();
-    const auto mvp = context->camera->projection_view_matrix() * model;
+    const auto mvp = camera->projection_view_matrix() * model;
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);
     shader_->set_mat4("model", model);
-    shader_->set_vec3("camera_pos", context->camera->position);
+    shader_->set_vec3("camera_pos", camera->position);
     shader_->set_vec4("mesh_color", color_);
     shader_->set_float("mesh_shininess", shininess_);
 
-    use_lights(context->lights);
+    use_lights(lights);
 
     use_texture(0, "diffuse", diffuse_texture_);
     use_texture(1, "specular", specular_texture_);
@@ -120,7 +123,7 @@ public:
   }
 
 private:
-  void use_lights(const std::vector<const axgl::Light*>& lights) const
+  void use_lights(const std::span<const axgl::Light*>& lights) const
   {
     int sun_lights_size = 0;
     int spot_lights_size = 0;
@@ -203,8 +206,9 @@ public:
   {
     OpenglMaterial::use(context, mesh);
 
-    const auto& model = mesh->get_entity()->get_model_matrix();
-    const auto mvp = context->camera->projection_view_matrix() * model;
+    const auto camera = context->axgl->camera_service()->get_camera();
+    const auto model = mesh->get_entity()->get_model_matrix();
+    const auto mvp = camera->projection_view_matrix() * model;
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);

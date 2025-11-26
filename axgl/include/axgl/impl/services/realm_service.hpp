@@ -35,8 +35,6 @@ public:
       return;
 
     context_.realm = realm_.get();
-    context_.camera = nullptr;
-    context_.lights.clear();
     realm_->update();
   }
 

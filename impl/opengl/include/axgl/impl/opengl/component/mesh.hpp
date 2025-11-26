@@ -47,7 +47,8 @@ public:
       // do not render and add to blend render list if enabled blending
       if (blend && !after)
       {
-        const auto distance2 = glm::distance2(get_entity()->transform()->position, context->camera->position);
+        const auto camera = context->axgl->camera_service()->get_camera();
+        const auto distance2 = glm::distance2(get_entity()->transform()->position, camera->position);
         renderer->add_blend_render(distance2, this);
         return;
       }

@@ -1,15 +1,18 @@
+#include <cstdint>
+#include <memory>
 #include <numbers>
+#include <vector>
 
-#include <../../../axgl/include/axgl/impl/services/realm_service.hpp>
+#include <glm/glm.hpp>
+
 #include <axgl/axgl.hpp>
-#include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 
-static void circle_mesh(const std::shared_ptr<axgl::interface::component::Mesh>& mesh, const size_t vert_count)
+static void circle_mesh(const std::shared_ptr<axgl::component::Mesh>& mesh, const std::size_t vert_count)
 {
   std::vector<glm::vec2> vertices;
-  std::vector<uint32_t> indices;
+  std::vector<std::uint32_t> indices;
 
   vertices.reserve(vert_count + 1);
   indices.reserve(vert_count * 3);
@@ -33,8 +36,12 @@ int main()
 {
   axgl::Axgl axgl;
   axgl.use_service<axgl::impl::GlfwWindowService>();
+  axgl.use_service<axgl::impl::GlfwInputService>();
   axgl.use_service<axgl::impl::OpenglRendererService>();
   axgl.use_service<axgl::impl::RealmService>();
+  axgl.use_service<axgl::impl::EntityService>();
+  axgl.use_service<axgl::impl::CameraService>();
+  axgl.initialize();
 
   // window
   const auto window = axgl.window_service()->create_window();
@@ -51,29 +58,34 @@ int main()
   realm->set_renderer(renderer);
 
   // circle entity
-  const auto entity = realm_service->create_entity<axgl::interface::Entity>();
+  const auto entity_service = axgl.entity_service();
+  const auto entity = entity_service->create_entity();
   {
     // material
     const auto material = renderer_service->create_material("2d");
     material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
     // circle mesh
-    const auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
+    const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
     circle_mesh(mesh_comp, 50);
     mesh_comp->set_material(material);
-    entity->add_component(mesh_comp);
+    entity->components()->add(mesh_comp);
 
     // camera
-    const auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+    const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
     camera_comp->camera.orthographic = true;
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;
-    entity->add_component(camera_comp);
+    entity->components()->add(camera_comp);
   }
   entity->transform()->scale = glm::vec3(200.0f);
   entity->update_model_matrix();
   realm->add_entity(entity);
 
+  // set camera
+  axgl.camera_service()->set_camera(entity);
+
   // start
   axgl.run();
+  axgl.terminate();
 }

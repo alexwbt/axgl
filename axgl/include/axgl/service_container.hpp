@@ -94,6 +94,18 @@ public:
       service->terminate();
   }
 
+  void on_start() const
+  {
+    for (const auto& service : services_)
+      service->on_start();
+  }
+
+  void on_end() const
+  {
+    for (const auto& service : services_)
+      service->on_end();
+  }
+
   void tick() const
   {
     for (const auto& service : services_)

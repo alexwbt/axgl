@@ -24,7 +24,7 @@ public:
 
   void render() override
   {
-    if (!context_ || !context_->camera || !renderer_ || !renderer_->ready())
+    if (!renderer_ || !renderer_->ready())
       return;
 
     renderer_->before_render();

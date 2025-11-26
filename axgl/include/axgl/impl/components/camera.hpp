@@ -20,8 +20,8 @@ public:
 
   void update() override
   {
-    const auto parent = get_entity();
-    const auto context = parent->get_context();
+    const auto entity = get_entity();
+    const auto context = entity->get_context();
     const auto renderer = context->realm->get_renderer();
 
     if (const auto viewport = glm::vec2(renderer->viewport());
@@ -32,13 +32,11 @@ public:
       camera.update_projection_view_matrix();
     }
 
-    if (camera.position != parent->transform()->position)
+    if (camera.position != entity->transform()->position)
     {
-      camera.position = parent->transform()->position;
+      camera.position = entity->transform()->position;
       camera.update_projection_view_matrix();
     }
-
-    context->camera = &camera;
   }
 };
 

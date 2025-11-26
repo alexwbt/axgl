@@ -36,11 +36,7 @@ public:
 
     // register mesh component
     const auto entity_service = axgl->entity_service();
-    entity_service->register_component_factory("component::mesh",
-      []
-      {
-        return std::make_shared<component::OpenglMesh>();
-      });
+    entity_service->register_component_t<component::OpenglMesh>();
   }
 
   std::shared_ptr<axgl::Renderer> create_renderer() override { return std::make_shared<OpenglRenderer>(); }

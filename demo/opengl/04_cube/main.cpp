@@ -1,8 +1,9 @@
+#include <memory>
+#include <vector>
 
-#include <../../../axgl/include/axgl/impl/services/realm_service.hpp>
+#include <glm/glm.hpp>
+
 #include <axgl/axgl.hpp>
-#include <axgl/impl/components/camera.hpp>
-#include <axgl/impl/components/light.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 
@@ -86,10 +87,10 @@ static std::vector cube_normals = {
 
 class Application final : public axgl::impl::ServiceBase
 {
-  std::shared_ptr<axgl::interface::Entity> cube_entity_;
+  std::shared_ptr<axgl::Entity> cube_entity_;
 
 public:
-  void initialize() override
+  void on_start() override
   {
     const auto axgl = get_context()->axgl;
 
@@ -108,36 +109,38 @@ public:
     realm->set_renderer(renderer);
 
     // cube entity
-    cube_entity_ = realm_service->create_entity<axgl::interface::Entity>();
+    const auto entity_service = axgl->entity_service();
+    cube_entity_ = entity_service->create_entity();
     {
       // material
       const auto material = renderer_service->create_material("default");
       material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
       // cube mesh
-      const auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
+      const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
       mesh_comp->set_vertices(cube_vertices);
       mesh_comp->set_normals(cube_normals);
       mesh_comp->set_material(material);
-      cube_entity_->add_component(mesh_comp);
+      cube_entity_->components()->add(mesh_comp);
     }
     realm->add_entity(cube_entity_);
 
     // camera entity
-    const auto camera_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto camera_entity = entity_service->create_entity();
     {
-      const auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
-      camera_entity->add_component(camera_comp);
+      const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+      camera_entity->components()->add(camera_comp);
     }
     camera_entity->transform()->position.z = -2;
     realm->add_entity(camera_entity);
+    axgl->camera_service()->set_camera(camera_entity);
 
     // light entity
-    const auto light_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto light_entity = entity_service->create_entity();
     {
-      const auto light_comp = realm_service->create_component<axgl::impl::component::Light>();
+      const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
-      light_entity->add_component(light_comp);
+      light_entity->components()->add(light_comp);
     }
     light_entity->transform()->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
     realm->add_entity(light_entity);
@@ -152,8 +155,15 @@ int main()
 {
   axgl::Axgl axgl;
   axgl.use_service<axgl::impl::GlfwWindowService>();
+  axgl.use_service<axgl::impl::GlfwInputService>();
   axgl.use_service<axgl::impl::OpenglRendererService>();
   axgl.use_service<axgl::impl::RealmService>();
+  axgl.use_service<axgl::impl::EntityService>();
+  axgl.use_service<axgl::impl::CameraService>();
+  axgl.use_service<axgl::impl::LightService>();
   axgl.register_service("app", std::make_shared<Application>());
+  axgl.initialize();
+
   axgl.run();
+  axgl.terminate();
 }

@@ -23,12 +23,13 @@ int main()
   const auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
 
-  const auto entity_service = axgl.entity_service();
   // realm
-  const auto realm = axgl.realm_service()->create_realm();
+  const auto realm_service = axgl.realm_service();
+  const auto realm = realm_service->create_realm();
   realm->set_renderer(renderer);
 
   // triangle entity
+  const auto entity_service = axgl.entity_service();
   const auto entity = entity_service->create_entity();
   {
     // material
@@ -51,6 +52,9 @@ int main()
   entity->transform()->scale = glm::vec3(200.0f);
   entity->update_model_matrix();
   realm->add_entity(entity);
+
+  // set camera
+  axgl.camera_service()->set_camera(entity);
 
   // start
   axgl.run();
