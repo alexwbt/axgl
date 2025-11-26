@@ -1,8 +1,6 @@
 #include <vector>
 
-#include <../../../axgl/include/axgl/impl/services/realm_service.hpp>
 #include <axgl/axgl.hpp>
-#include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 
@@ -12,8 +10,13 @@ int main()
 {
   axgl::Axgl axgl;
   axgl.use_service<axgl::impl::GlfwWindowService>();
+  axgl.use_service<axgl::impl::GlfwInputService>();
   axgl.use_service<axgl::impl::OpenglRendererService>();
   axgl.use_service<axgl::impl::RealmService>();
+  axgl.use_service<axgl::impl::EntityService>();
+  axgl.use_service<axgl::impl::CameraService>();
+  axgl.use_service<axgl::impl::LightService>();
+  axgl.initialize();
 
   // window
   const auto window = axgl.window_service()->create_window();
@@ -30,7 +33,8 @@ int main()
   realm->set_renderer(renderer);
 
   // square entity
-  const auto square_entity = realm_service->create_entity<axgl::interface::Entity>();
+  const auto entity_service = axgl.entity_service();
+  const auto square_entity = entity_service->create_entity();
   {
     // texture
     const auto texture = renderer_service->create_texture();
@@ -38,10 +42,10 @@ int main()
 
     // material
     const auto material = renderer_service->create_material("2d");
-    material->add_texture(axgl::interface::TextureType::kDiffuse, texture);
+    material->add_texture(axgl::Material::TextureType::kDiffuse, texture);
 
     // square mesh
-    const auto mesh_comp = realm_service->create_component<axgl::interface::component::Mesh>();
+    const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
     mesh_comp->set_vertices(std::vector<glm::vec2>{
       {0.5f, 0.5f},
       {0.5f, -0.5f},
@@ -56,18 +60,22 @@ int main()
     });
     mesh_comp->set_indices(std::vector<uint32_t>{0, 1, 2, 0, 2, 3});
     mesh_comp->set_material(material);
-    square_entity->add_component(mesh_comp);
+    square_entity->components()->add(mesh_comp);
 
     // camera
-    const auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
+    const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
     camera_comp->camera.orthographic = true;
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;
-    square_entity->add_component(camera_comp);
+    square_entity->components()->add(camera_comp);
   }
   square_entity->transform()->scale = glm::vec3(200.0f);
   square_entity->update_model_matrix();
   realm->add_entity(square_entity);
 
+  // set camera
+  axgl.camera_service()->set_camera(square_entity);
+
   axgl.run();
+  axgl.terminate();
 }

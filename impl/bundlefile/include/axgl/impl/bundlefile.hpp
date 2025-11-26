@@ -5,6 +5,7 @@
 
 namespace axgl
 {
+
 template <>
 inline std::shared_ptr<impl::BundlefileService> Axgl::use_service()
 {
@@ -13,4 +14,5 @@ inline std::shared_ptr<impl::BundlefileService> Axgl::use_service()
 
   return bundlefile_service;
 }
+
 } // namespace axgl

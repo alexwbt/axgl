@@ -1,7 +1,3 @@
-#include <memory>
-#include <vector>
-
-#include <glm/glm.hpp>
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>

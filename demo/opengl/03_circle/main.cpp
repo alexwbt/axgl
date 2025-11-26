@@ -1,9 +1,3 @@
-#include <cstdint>
-#include <memory>
-#include <numbers>
-#include <vector>
-
-#include <glm/glm.hpp>
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>

@@ -1,14 +1,10 @@
-#include <../../../axgl/include/axgl/impl/services/camera_service.hpp>
-#include <../../../axgl/include/axgl/impl/services/resource_service.hpp>
-#include <../../../impl/bundlefile/include/axgl/impl/services/bundlefile_service.hpp>
+
 #include <axgl/axgl.hpp>
 #include <axgl/impl/assimp.hpp>
-#include <axgl/impl/components/camera.hpp>
-#include <axgl/impl/components/light.hpp>
+#include <axgl/impl/bundlefile.hpp>
+#include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
-#include <axgl/impl/realm_service.hpp>
-#include <axgl/impl/service.hpp>
 
 class Application final : public axgl::impl::ServiceBase
 {
@@ -39,34 +35,36 @@ public:
     bundlefile_service->load_bundlefile("demo_opengl_model_res.bin");
 
     // model entity
-    const auto entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto entity_service = axgl->entity_service();
+    const auto entity = entity_service->create_entity();
     axgl->model_service()->load_model(entity, "backpack.assbin");
     entity->transform()->scale = glm::vec3(10);
     entity->update_model_matrix();
     realm->add_entity(entity);
 
     // camera entity
-    const auto camera_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto camera_entity = entity_service->create_entity();
     {
-      const auto camera_comp = realm_service->create_component<axgl::impl::component::Camera>();
-      camera_entity->add_component(camera_comp);
+      const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+      camera_entity->components()->add(camera_comp);
     }
     camera_entity->transform()->position.z = -2;
     realm->add_entity(camera_entity);
+    axgl->camera_service()->set_camera(camera_entity);
 
     // light entity
-    const auto light_entity = realm_service->create_entity<axgl::interface::Entity>();
+    const auto light_entity = entity_service->create_entity();
     {
-      const auto light_comp = realm_service->create_component<axgl::impl::component::Light>();
+      const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
-      light_entity->add_component(light_comp);
+      light_entity->components()->add(light_comp);
     }
     light_entity->transform()->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
     realm->add_entity(light_entity);
 
     // camera input
-    const auto camera_service = axgl->get_service<axgl::impl::CameraService>("camera");
-    camera_service->set_camera_mode(std::make_shared<axgl::impl::Keyboard3DFreeFlyCameraMode>());
+    const auto camera_service = axgl->camera_service();
+    camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
   }
 };
@@ -74,6 +72,7 @@ public:
 int main()
 {
   axgl::Axgl axgl;
+  axgl.use_service<axgl::impl::EntityService>();
   axgl.use_service<axgl::impl::RealmService>();
   axgl.use_service<axgl::impl::CameraService>();
   axgl.use_service<axgl::impl::ResourceService>();
@@ -83,5 +82,8 @@ int main()
   axgl.use_service<axgl::impl::OpenglRendererService>();
   axgl.use_service<axgl::impl::AssimpModelService>();
   axgl.register_service("app", std::make_shared<Application>());
+  axgl.initialize();
+
   axgl.run();
+  axgl.terminate();
 }

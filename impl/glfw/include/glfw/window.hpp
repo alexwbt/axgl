@@ -1,12 +1,12 @@
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 #define GLFW_INCLUDE_NONE
-#include <ranges>
 #include <GLFW/glfw3.h>
+#include <ranges>
 
 #include <glm/glm.hpp>
 #include <spdlog/spdlog.h>
@@ -32,7 +32,7 @@ class Window final
   inline static std::unordered_map<GLFWwindow*, std::shared_ptr<Window>> windows_;
 
 public:
-  static std::shared_ptr<Window> create(int width, int height, const std::string& title)
+  static std::shared_ptr<Window> create(const int width, const int height, const std::string& title)
   {
     std::shared_ptr<Window> window(new Window(width, height, title));
     windows_.insert({window->glfw_window_, window});
