@@ -28,10 +28,10 @@ private:
 public:
   Camera() { update(); }
 
-  glm::vec3 up() const { return up_; }
-  glm::vec3 front() const { return front_; }
-  glm::vec3 horizontal_right() const { return horizontal_right_; }
-  glm::mat4 projection_view_matrix() const { return projection_view_matrix_; }
+  [[nodiscard]] glm::vec3 up() const { return up_; }
+  [[nodiscard]] glm::vec3 front() const { return front_; }
+  [[nodiscard]] glm::vec3 horizontal_right() const { return horizontal_right_; }
+  [[nodiscard]] glm::mat4 projection_view_matrix() const { return projection_view_matrix_; }
 
   void update()
   {

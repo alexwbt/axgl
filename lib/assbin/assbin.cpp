@@ -1,10 +1,10 @@
 
 #include <args.hxx>
-#include <spdlog/spdlog.h>
 #include <spdlog/fmt/bundled/color.h>
+#include <spdlog/spdlog.h>
 
-#include <assimp/Importer.hpp>
 #include <assimp/Exporter.hpp>
+#include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 

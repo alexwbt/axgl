@@ -1,25 +1,25 @@
 #pragma once
 
-#include <span>
-#include <memory>
-#include <format>
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
+#include <format>
+#include <memory>
+#include <span>
 #include <stdexcept>
 #include <unordered_map>
 
-#include <utf8.h>
 #include <ft2build.h>
+#include <utf8.h>
 #include FT_FREETYPE_H
-#include <spdlog/spdlog.h>
 #include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
+#include <spdlog/spdlog.h>
 
-#include <opengl/texture.hpp>
 #include <opengl/framebuffer.hpp>
-#include <opengl/static_vaos.hpp>
 #include <opengl/static_shaders.hpp>
+#include <opengl/static_vaos.hpp>
+#include <opengl/texture.hpp>
 
 namespace opengl
 {
@@ -129,7 +129,7 @@ public:
     character.load(face_, options.vertical);
   }
 
-  bool has_char(uint32_t code) const { return FT_Get_Char_Index(face_, code) > 0; }
+  [[nodiscard]] bool has_char(uint32_t code) const { return FT_Get_Char_Index(face_, code) > 0; }
 };
 
 class TextRenderer final
@@ -189,9 +189,9 @@ public:
 
   void unload_font(const std::string& name) { fonts_.erase(name); }
 
-  bool has_font(const std::string& name) const { return fonts_.contains(name); }
+  [[nodiscard]] bool has_font(const std::string& name) const { return fonts_.contains(name); }
 
-  int get_renderable_font(const std::vector<std::string>& font, uint32_t c) const
+  [[nodiscard]] int get_renderable_font(const std::vector<std::string>& font, uint32_t c) const
   {
     for (int i = 0; i < font.size(); ++i)
       if (has_font(font[i]) && fonts_.at(font[i])->has_char(c))

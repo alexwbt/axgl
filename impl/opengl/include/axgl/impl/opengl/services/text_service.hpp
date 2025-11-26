@@ -36,7 +36,7 @@ public:
     entity_service_ = context->axgl->entity_service();
   }
 
-  bool has_font(const std::string& name) const { return text_renderer_.has_font(name); }
+  [[nodiscard]] bool has_font(const std::string& name) const { return text_renderer_.has_font(name); }
 
   void load_font(const std::string& name, std::span<const uint8_t> data, int index = 0)
   {
@@ -56,7 +56,7 @@ public:
     text_renderer_.unload_font(name);
   }
 
-  std::shared_ptr<axgl::Entity> create_text(
+  [[nodiscard]] std::shared_ptr<axgl::Entity> create_text(
     const std::string& value, const std::vector<std::string>& font, const opengl::TextOptions& options) const
   {
     opengl::Text text;

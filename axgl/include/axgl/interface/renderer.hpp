@@ -17,7 +17,7 @@ public:
   virtual void before_render() = 0;
   virtual void after_render() = 0;
   virtual void set_window(std::shared_ptr<Window> window) = 0;
-  virtual glm::ivec2 viewport() const = 0;
+  [[nodiscard]] virtual glm::ivec2 viewport() const = 0;
 };
 
 } // namespace axgl

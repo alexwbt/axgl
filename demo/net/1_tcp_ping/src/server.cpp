@@ -51,18 +51,17 @@ int main()
     Server server(io_context, 10000);
     server.start();
 
-    std::thread thread(
-      [&]
+    std::thread thread([&]
+    {
+      try
       {
-        try
-        {
-          io_context->run();
-        }
-        catch (const std::exception& e)
-        {
-          SPDLOG_CRITICAL(e.what());
-        }
-      });
+        io_context->run();
+      }
+      catch (const std::exception& e)
+      {
+        SPDLOG_CRITICAL(e.what());
+      }
+    });
 
     while (server.running())
       server.update();

@@ -32,7 +32,7 @@ public:
     blend_renders_.emplace_back(distance2, component);
   }
 
-  bool is_after_render() const { return after_render_; }
+  [[nodiscard]] bool is_after_render() const { return after_render_; }
 
   bool ready() override { return window_ && window_->ready(); }
 
@@ -66,11 +66,10 @@ public:
       ZoneScopedN("Renderer Render Blending Components");
 
       // sort blend_renders_ by distance descending
-      std::ranges::sort(blend_renders_,
-        [](const auto& a, const auto& b)
-        {
-          return a.first > b.first;
-        });
+      std::ranges::sort(blend_renders_, [](const auto& a, const auto& b)
+      {
+        return a.first > b.first;
+      });
       // render blending components
       for (const auto& component : blend_renders_ | std::views::values)
         component->render();
@@ -108,7 +107,7 @@ public:
     initialized_glad_ = true;
   }
 
-  glm::ivec2 viewport() const override { return window_->get_size(); }
+  [[nodiscard]] glm::ivec2 viewport() const override { return window_->get_size(); }
 };
 
 } // namespace axgl::impl

@@ -62,7 +62,7 @@ public:
 
   void remove(const std::shared_ptr<Component>& component) override { std::erase(components_, component); }
 
-  util::Iterable<std::shared_ptr<Component>> get() const override
+  [[nodiscard]] util::Iterable<std::shared_ptr<Component>> get() const override
   {
     return util::to_iterable_t<std::shared_ptr<Component>>(components_);
   }

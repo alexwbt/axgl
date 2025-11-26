@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <glm/glm.hpp>
+#include <vector>
 
 #include <axgl/axgl.hpp>
 #include <axgl/interface/component/mesh.hpp>

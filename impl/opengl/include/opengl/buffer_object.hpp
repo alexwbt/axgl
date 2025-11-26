@@ -1,7 +1,7 @@
 #pragma once
 
-#include <span>
 #include <cstdint>
+#include <span>
 
 #include <glad/glad.h>
 
@@ -15,7 +15,8 @@ private:
   size_t size_;
 
 public:
-  template <typename DataType> BufferObject(GLenum target, const std::span<const DataType>& data, GLenum usage)
+  template <typename DataType>
+  BufferObject(GLenum target, const std::span<const DataType>& data, GLenum usage)
   {
     size_ = data.size();
 
@@ -55,7 +56,7 @@ public:
       glDeleteBuffers(1, &id_);
   }
 
-  size_t size() const { return size_; }
+  [[nodiscard]] size_t size() const { return size_; }
 };
 
 struct VertexAttribute
@@ -118,7 +119,7 @@ public:
     }
   }
 
-  size_t attribute_size() const { return attribute_size_; }
+  [[nodiscard]] size_t attribute_size() const { return attribute_size_; }
 };
 
 class ElementBufferObject final : public BufferObject

@@ -43,7 +43,7 @@ public:
 
   void close() override { }
 
-  bool ready() const override { return !window_->is_destroyed(); }
+  [[nodiscard]] bool ready() const override { return !window_->is_destroyed(); }
 
   void use() const override
   {
@@ -57,7 +57,7 @@ public:
       window_->swap_buffers();
   }
 
-  glm::ivec2 get_size() const override { return window_->get_size(); }
+  [[nodiscard]] glm::ivec2 get_size() const override { return window_->get_size(); }
 
   auto glfw_window() const { return window_; }
 };

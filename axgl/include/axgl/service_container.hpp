@@ -27,7 +27,7 @@ protected:
 public:
   virtual ~ServiceContainer() = default;
 
-  virtual bool has_service(const std::string& id) const;
+  [[nodiscard]] virtual bool has_service(const std::string& id) const;
 
   virtual void register_service(const std::string& id, std::shared_ptr<Service> service)
   {
@@ -46,16 +46,15 @@ public:
     if (!has_service(id))
       throw std::runtime_error(std::format("Trying to remove service but service with id '{}' does not exist.", id));
 #endif
-    std::erase_if(services_,
-      [&](const auto& ptr)
-      {
-        return ptr == service_map_[id];
-      });
+    std::erase_if(services_, [&](const auto& ptr)
+    {
+      return ptr == service_map_[id];
+    });
     service_map_.erase(id);
   }
 
   template <typename ServiceType>
-  bool has_service_type(const std::string& id) const
+  [[nodiscard]] bool has_service_type(const std::string& id) const
   {
     if (!has_service(id))
       return false;
@@ -127,13 +126,12 @@ public:
         service->render();
   }
 
-  virtual bool running() const
+  [[nodiscard]] virtual bool running() const
   {
-    return std::ranges::any_of(services_,
-      [&](const auto& service)
-      {
-        return service->keep_alive();
-      });
+    return std::ranges::any_of(services_, [&](const auto& service)
+    {
+      return service->keep_alive();
+    });
   }
 
   virtual void exec(const std::string& command) const

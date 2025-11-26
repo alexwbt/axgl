@@ -5,7 +5,8 @@
 namespace util
 {
 
-template <typename ValueType> class AnyIterator final
+template <typename ValueType>
+class AnyIterator final
 {
 public:
   using iterator_category = std::input_iterator_tag;
@@ -28,7 +29,8 @@ public:
     virtual std::unique_ptr<IteratorWrapper> clone() const = 0;
   };
 
-  template <typename Iterator> class Adaptor : public IteratorWrapper
+  template <typename Iterator>
+  class Adaptor : public IteratorWrapper
   {
     Iterator iterator_;
 
@@ -76,7 +78,8 @@ public:
   bool operator!=(const AnyIterator& rhs) const { return !(*this == rhs); }
 };
 
-template <typename ValueType> class Iterable
+template <typename ValueType>
+class Iterable
 {
   AnyIterator<ValueType> begin_;
   AnyIterator<ValueType> end_;
@@ -94,7 +97,8 @@ public:
   AnyIterator<ValueType> end() const { return end_; }
 };
 
-template <typename ValueType, typename ContainerType> Iterable<ValueType> to_iterable_t(const ContainerType& data)
+template <typename ValueType, typename ContainerType>
+Iterable<ValueType> to_iterable_t(const ContainerType& data)
 {
   using WrapperType = typename AnyIterator<ValueType>::template Adaptor<decltype(std::begin(data))>;
   return {AnyIterator<ValueType>(std::make_unique<WrapperType>(std::begin(data))),

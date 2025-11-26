@@ -25,21 +25,19 @@ public:
   template <typename EntityType>
   void register_entity_t()
   {
-    register_entity_factory(EntityType::kType.data(),
-      []
-      {
-        return std::make_shared<EntityType>();
-      });
+    register_entity_factory(EntityType::kType.data(), []
+    {
+      return std::make_shared<EntityType>();
+    });
   }
 
   template <typename ComponentType>
   void register_component_t()
   {
-    register_component_factory(ComponentType::kType.data(),
-      []
-      {
-        return std::make_shared<ComponentType>();
-      });
+    register_component_factory(ComponentType::kType.data(), []
+    {
+      return std::make_shared<ComponentType>();
+    });
   }
 
   template <typename EntityType>

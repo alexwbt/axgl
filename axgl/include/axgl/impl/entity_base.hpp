@@ -44,12 +44,12 @@ public:
   void on_create() override { components_.on_create(); }
   void on_remove() override { components_.on_remove(); }
 
-  uint32_t ticks() const override { return ticks_; }
+  [[nodiscard]] uint32_t ticks() const override { return ticks_; }
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
-  bool is_disabled() const override { return disabled_; }
+  [[nodiscard]] bool is_disabled() const override { return disabled_; }
 
   void set_id(const std::string& id) override { id_ = id; }
-  std::string get_id() const override { return id_; }
+  [[nodiscard]] std::string get_id() const override { return id_; }
 
   Transform* transform() override { return &transform_; }
   void update_model_matrix() override
@@ -57,10 +57,10 @@ public:
     model_matrix_ = glm::translate(glm::mat4(1.0f), transform_.position) * glm::toMat4(glm::quat(transform_.rotation)) *
                     glm::scale(transform_.scale);
   }
-  glm::mat4 get_model_matrix() const override { return model_matrix_; }
+  [[nodiscard]] glm::mat4 get_model_matrix() const override { return model_matrix_; }
 
   void mark_remove(const bool should_remove) override { should_remove_ = should_remove; }
-  bool should_remove() const override { return should_remove_; }
+  [[nodiscard]] bool should_remove() const override { return should_remove_; }
 
   ComponentManager* components() override { return &components_; }
 

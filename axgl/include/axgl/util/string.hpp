@@ -1,14 +1,15 @@
 #pragma once
 
-#include <string>
-#include <sstream>
-#include <vector>
 #include <iterator>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace util
 {
 
-template <typename result_t> inline void split(const std::string& s, char delim, result_t result)
+template <typename result_t>
+inline void split(const std::string& s, char delim, result_t result)
 {
   std::istringstream iss(s);
   std::string item;
@@ -26,13 +27,21 @@ inline std::vector<std::string> split(const std::string& s, char delim)
 // trim from start (in place)
 inline void ltrim(std::string& s)
 {
-  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
+  {
+    return !std::isspace(ch);
+  }));
 }
 
 // trim from end (in place)
 inline void rtrim(std::string& s)
 {
-  s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+  s.erase(std::find_if(s.rbegin(), s.rend(),
+            [](unsigned char ch)
+  {
+    return !std::isspace(ch);
+  }).base(),
+    s.end());
 }
 
 // trim from both ends (in place)

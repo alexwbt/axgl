@@ -53,7 +53,7 @@ public:
     return realm_;
   }
 
-  std::shared_ptr<axgl::Realm> get_active_realm() const override { return realm_; }
+  [[nodiscard]] std::shared_ptr<axgl::Realm> get_active_realm() const override { return realm_; }
 
   void set_active_realm(std::shared_ptr<axgl::Realm> realm) override
   {

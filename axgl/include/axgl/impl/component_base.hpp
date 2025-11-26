@@ -22,15 +22,15 @@ protected:
 
 public:
   void set_id(const std::string& id) override { id_ = id; }
-  std::string get_id() const override { return id_; }
+  [[nodiscard]] std::string get_id() const override { return id_; }
 
   void tick() override { ++ticks_; }
-  std::uint32_t ticks() const override { return ticks_; }
+  [[nodiscard]] std::uint32_t ticks() const override { return ticks_; }
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
-  bool is_disabled() const override { return disabled_; }
+  [[nodiscard]] bool is_disabled() const override { return disabled_; }
 
   void set_entity(Entity* entity) override { entity_ = entity; }
-  Entity* get_entity() const override
+  [[nodiscard]] Entity* get_entity() const override
   {
 #ifdef AXGL_DEBUG
     if (!entity_)

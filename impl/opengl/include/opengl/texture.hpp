@@ -1,13 +1,13 @@
 #pragma once
 
-#include <span>
 #include <array>
 #include <cstdint>
+#include <span>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
+#include <stb_image.h>
 
 namespace opengl
 {

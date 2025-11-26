@@ -56,39 +56,27 @@ class Axgl final : public ServiceContainer
 public:
   Axgl() { context_.axgl = this; }
 
+#ifdef AXGL_DEBUG
   void initialize() const override
   {
-#ifdef AXGL_DEBUG
-    CPPTRACE_TRY
-    {
-#endif
-      ServiceContainer::initialize();
-#ifdef AXGL_DEBUG
-    }
+    CPPTRACE_TRY { ServiceContainer::initialize(); }
     CPPTRACE_CATCH(const std::exception& e)
     {
       SPDLOG_ERROR("Exception thrown duration initialization: {}\n{}", e.what(),
         cpptrace::from_current_exception().to_string(true));
     }
-#endif
   }
 
   void terminate() const override
   {
-#ifdef AXGL_DEBUG
-    CPPTRACE_TRY
-    {
-#endif
-      ServiceContainer::terminate();
-#ifdef AXGL_DEBUG
-    }
+    CPPTRACE_TRY { ServiceContainer::terminate(); }
     CPPTRACE_CATCH(const std::exception& e)
     {
       SPDLOG_ERROR(
         "Exception thrown duration termination: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
     }
-#endif
   }
+#endif
 
   void run() const
   {

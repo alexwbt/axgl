@@ -1,6 +1,6 @@
 
-#include <fstream>
 #include <filesystem>
+#include <fstream>
 
 #include <args.hxx>
 #include <spdlog/spdlog.h>

@@ -18,7 +18,7 @@ public:
 
   virtual void remove(const std::shared_ptr<Component>& component) = 0;
 
-  virtual util::Iterable<std::shared_ptr<Component>> get() const = 0;
+  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Component>> get() const = 0;
 
   template <typename ComponentType>
   std::shared_ptr<ComponentType> get_t()

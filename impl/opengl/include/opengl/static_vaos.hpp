@@ -1,8 +1,8 @@
 #pragma once
 
 #include <array>
-#include <memory>
 #include <glm/glm.hpp>
+#include <memory>
 #include <opengl/vertex_array_object.hpp>
 
 namespace opengl
@@ -22,7 +22,7 @@ public:
   StaticVAOs(const StaticVAOs&&) = delete;
   StaticVAOs& operator=(const StaticVAOs&&) = delete;
 
-  std::shared_ptr<VertexArrayObject> quad() const { return quad_; }
+  [[nodiscard]] std::shared_ptr<VertexArrayObject> quad() const { return quad_; }
 
 private:
   std::shared_ptr<VertexArrayObject> quad_;

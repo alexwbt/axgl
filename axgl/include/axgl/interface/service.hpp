@@ -34,7 +34,7 @@ public:
   virtual void set_context(const Context* context) = 0;
 
 protected:
-  virtual const Context* get_context() const = 0;
+  [[nodiscard]] virtual const Context* get_context() const = 0;
 };
 
 } // namespace axgl

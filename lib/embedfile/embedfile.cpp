@@ -1,13 +1,13 @@
-#include <format>
-#include <vector>
-#include <string>
 #include <cstdint>
+#include <filesystem>
+#include <format>
 #include <fstream>
 #include <iostream>
-#include <filesystem>
+#include <string>
+#include <vector>
 
-#include <spdlog/spdlog.h>
 #include <args.hxx>
+#include <spdlog/spdlog.h>
 
 struct File
 {

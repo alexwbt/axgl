@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <net/tcp.hpp>
 #include <spdlog/spdlog.h>

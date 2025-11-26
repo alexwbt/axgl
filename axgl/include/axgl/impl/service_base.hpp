@@ -24,7 +24,7 @@ public:
   }
 
 protected:
-  const Context* get_context() const override
+  [[nodiscard]] const Context* get_context() const override
   {
 #ifdef AXGL_DEBUG
     if (!context_)

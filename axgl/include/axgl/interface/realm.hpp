@@ -27,7 +27,7 @@ public:
   virtual ~Realm() = default;
   virtual void set_context(Context* context) = 0;
   virtual void set_renderer(std::shared_ptr<Renderer> renderer) = 0;
-  virtual std::shared_ptr<Renderer> get_renderer() const = 0;
+  [[nodiscard]] virtual std::shared_ptr<Renderer> get_renderer() const = 0;
 
   virtual void tick() = 0;
   virtual void update() = 0;
@@ -35,7 +35,7 @@ public:
 
   virtual void add_entity(std::shared_ptr<Entity> entity) = 0;
   virtual void remove_entity(std::shared_ptr<Entity> entity) = 0;
-  virtual util::Iterable<std::shared_ptr<Entity>> get_entities() const = 0;
+  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Entity>> get_entities() const = 0;
 };
 
 } // namespace axgl

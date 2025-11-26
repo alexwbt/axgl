@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
+#include <axgl_opengl_impl/res.hpp>
 #include <memory>
 #include <opengl/shader_program.hpp>
-#include <axgl_opengl_impl/res.hpp>
+#include <vector>
 
 namespace opengl
 {
@@ -22,9 +22,9 @@ public:
   StaticShaders(const StaticShaders&&) = delete;
   StaticShaders& operator=(const StaticShaders&&) = delete;
 
-  std::shared_ptr<ShaderProgram> mesh_2d() const { return mesh_2d_; }
-  std::shared_ptr<ShaderProgram> mesh_3d() const { return mesh_3d_; }
-  std::shared_ptr<ShaderProgram> text() const { return text_; }
+  [[nodiscard]] std::shared_ptr<ShaderProgram> mesh_2d() const { return mesh_2d_; }
+  [[nodiscard]] std::shared_ptr<ShaderProgram> mesh_3d() const { return mesh_3d_; }
+  [[nodiscard]] std::shared_ptr<ShaderProgram> text() const { return text_; }
 
 private:
   std::shared_ptr<ShaderProgram> mesh_2d_;

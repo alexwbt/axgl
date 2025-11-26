@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 
 #include <opengl/buffer_object.hpp>
 

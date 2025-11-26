@@ -29,7 +29,7 @@ public:
 
   void unload_resource(const std::string& key) override { resources_.erase(key); }
 
-  bool has_resource(const std::string& key) const override { return resources_.contains(key); }
+  [[nodiscard]] bool has_resource(const std::string& key) const override { return resources_.contains(key); }
 
   const std::span<const std::uint8_t>& get_resource(const std::string& key) override
   {

@@ -28,7 +28,7 @@ public:
     input_stream.read(reinterpret_cast<char*>(data_.data()), size);
   }
 
-  const auto* get_bundle() const { return fbs::bundlefile::GetBundle(data_.data()); }
+  [[nodiscard]] const auto* get_bundle() const { return fbs::bundlefile::GetBundle(data_.data()); }
 };
 
 } // namespace bundlefile

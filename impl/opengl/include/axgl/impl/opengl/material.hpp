@@ -27,7 +27,7 @@ public:
   void set_cull_mode(const axgl::Material::CullMode cull_mode) override { cull_mode_ = cull_mode; }
   void set_enable_blend(const bool enable_blend) override { enable_blend_ = enable_blend; }
 
-  bool enabled_blend() const { return enable_blend_; }
+  [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
 
   virtual void use(const axgl::Realm::Context* context, const axgl::component::Mesh* mesh)
   {

@@ -16,7 +16,7 @@ class Realm : public axgl::Realm
 
 public:
   void set_renderer(std::shared_ptr<Renderer> renderer) override { renderer_ = std::move(renderer); }
-  std::shared_ptr<Renderer> get_renderer() const override { return renderer_; }
+  [[nodiscard]] std::shared_ptr<Renderer> get_renderer() const override { return renderer_; }
 
   void tick() override { entities_.tick(); }
 

@@ -93,7 +93,7 @@ public:
 #endif
   }
 
-  std::shared_ptr<axgl::Material> get_material() const override { return material_; }
+  [[nodiscard]] std::shared_ptr<axgl::Material> get_material() const override { return material_; }
 
   void replace_vao(std::shared_ptr<opengl::VertexArrayObject> vertex_array) { vertex_array_ = std::move(vertex_array); }
 };
