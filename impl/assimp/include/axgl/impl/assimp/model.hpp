@@ -28,7 +28,7 @@ public:
     resource_service_ = context->axgl->resource_service();
   }
 
-  ModelResources load_model(std::shared_ptr<axgl::Entity> entity, const std::string& resource_key) override
+  ModelResources load_model(const std::shared_ptr<axgl::Entity> entity, const std::string& resource_key) override
   {
     ModelLoader loader(entity_service_, renderer_service_, resource_service_, entity, resource_key, "default");
     return loader.resources_;

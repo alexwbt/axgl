@@ -73,6 +73,7 @@ int main()
 {
   axgl::Axgl axgl;
   axgl.use_service<axgl::impl::EntityService>();
+  axgl.use_service<axgl::impl::LightService>();
   axgl.use_service<axgl::impl::RealmService>();
   axgl.use_service<axgl::impl::CameraService>();
   axgl.use_service<axgl::impl::ResourceService>();

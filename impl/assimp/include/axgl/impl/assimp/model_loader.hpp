@@ -47,7 +47,7 @@ class ModelLoader
     material_type_(std::move(material_type))
   {
     Assimp::Importer importer;
-    const auto& data = resource_service_->get_resource(resource_key);
+    const auto& data = resource_service_->get_resource(resource_key_);
     const auto* ai_scene = importer.ReadFileFromMemory(data.data(), data.size(), 0);
 #ifdef AXGL_DEBUG
     if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode)
@@ -122,12 +122,12 @@ class ModelLoader
       mesh->set_indices(indices);
     }
 
-    auto material = renderer_service_->create_material(material_type_);
-    aiMaterial* ai_material = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
+    const auto material = renderer_service_->create_material(material_type_);
+    const aiMaterial* ai_material = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
     for (int i = aiTextureType_DIFFUSE; i < aiTextureType_UNKNOWN; ++i)
     {
-      auto ai_texture_type = static_cast<aiTextureType>(i);
-      auto texture_type = map_texture_type(ai_texture_type);
+      const auto ai_texture_type = static_cast<aiTextureType>(i);
+      const auto texture_type = map_texture_type(ai_texture_type);
 
       if (texture_type == axgl::Material::TextureType::kUnknown)
         continue;
@@ -160,8 +160,8 @@ class ModelLoader
       }
       else
       {
-        std::filesystem::path base_path = std::filesystem::path(resource_key_);
-        std::filesystem::path relative_path = std::filesystem::path(texture_path.C_Str());
+        const auto base_path = std::filesystem::path(resource_key_);
+        const auto relative_path = std::filesystem::path(texture_path.C_Str());
 
         std::string path = (base_path.parent_path() / relative_path).string();
         std::ranges::replace(path, '\\', '/');

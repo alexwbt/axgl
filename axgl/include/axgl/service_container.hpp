@@ -27,9 +27,9 @@ protected:
 public:
   virtual ~ServiceContainer() = default;
 
-  bool has_service(const std::string& id) const { return service_map_.contains(id); }
+  virtual bool has_service(const std::string& id) const;
 
-  void register_service(const std::string& id, std::shared_ptr<Service> service)
+  virtual void register_service(const std::string& id, std::shared_ptr<Service> service)
   {
 #ifdef AXGL_DEBUG
     if (has_service(id))
@@ -40,7 +40,7 @@ public:
     services_.push_back(std::move(service));
   }
 
-  void remove_service(const std::string& id)
+  virtual void remove_service(const std::string& id)
   {
 #ifdef AXGL_DEBUG
     if (!has_service(id))
@@ -82,52 +82,52 @@ public:
     return service;
   }
 
-  void initialize() const
+  virtual void initialize() const
   {
     for (const auto& service : services_)
       service->initialize();
   }
 
-  void terminate() const
+  virtual void terminate() const
   {
     for (const auto& service : services_)
       service->terminate();
   }
 
-  void on_start() const
+  virtual void on_start() const
   {
     for (const auto& service : services_)
       service->on_start();
   }
 
-  void on_end() const
+  virtual void on_end() const
   {
     for (const auto& service : services_)
       service->on_end();
   }
 
-  void tick() const
+  virtual void tick() const
   {
     for (const auto& service : services_)
       if (service->running())
         service->tick();
   }
 
-  void update() const
+  virtual void update() const
   {
     for (const auto& service : services_)
       if (service->running())
         service->update();
   }
 
-  void render() const
+  virtual void render() const
   {
     for (const auto& service : services_)
       if (service->running())
         service->render();
   }
 
-  bool running() const
+  virtual bool running() const
   {
     return std::ranges::any_of(services_,
       [&](const auto& service)
@@ -136,7 +136,7 @@ public:
       });
   }
 
-  void exec(const std::string& command) const
+  virtual void exec(const std::string& command) const
   {
     const auto args = util::split(command, ' ');
     if (args.empty())
@@ -147,4 +147,5 @@ public:
   }
 };
 
+inline bool ServiceContainer::has_service(const std::string& id) const { return service_map_.contains(id); }
 } // namespace axgl
