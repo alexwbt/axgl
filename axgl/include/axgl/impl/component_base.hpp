@@ -11,7 +11,7 @@
 namespace axgl::impl
 {
 
-class ComponentBase : virtual public Component
+class ComponentBase : virtual public axgl::Component
 {
   bool disabled_ = false;
   std::uint32_t ticks_ = 0;

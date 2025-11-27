@@ -37,12 +37,12 @@ public:
   void add_entity(std::shared_ptr<Entity> entity) override
   {
     entity->set_context(context_);
-    entities_.add_entity(std::move(entity));
+    entities_.add(std::move(entity));
   }
 
-  void remove_entity(const std::shared_ptr<Entity> entity) override { entities_.remove_entity(entity); }
+  void remove_entity(const std::shared_ptr<Entity> entity) override { entities_.remove(entity); }
 
-  util::Iterable<std::shared_ptr<Entity>> get_entities() const override { return entities_.get_entities(); }
+  util::Iterable<std::shared_ptr<Entity>> get_entities() const override { return entities_.get(); }
 
   void set_context(Context* context) override
   {

@@ -116,9 +116,9 @@ public:
     glTexImage2D(target_, level, internalformat, width, height, border, format, type, pixels);
   }
 
-  void load_image_texture(std::span<const uint8_t> data)
+  void load_image_texture(const std::span<const uint8_t> data)
   {
-    StbiImage texture(data);
+    const StbiImage texture(data);
     if (!texture.stbi_ptr)
     {
       SPDLOG_ERROR("Failed to load texture image.");

@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include <axgl/interface/component_manager.hpp>
+#include <axgl/interface/container.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/transform.hpp>
 
@@ -37,7 +37,7 @@ public:
   virtual void mark_remove(bool should_remove) = 0;
   [[nodiscard]] virtual bool should_remove() const = 0;
 
-  virtual ComponentManager* components() = 0;
+  virtual Container<Component>* components() = 0;
 
   virtual void set_context(Realm::Context* context) = 0;
   virtual Realm::Context* get_context() = 0;

@@ -62,7 +62,7 @@ public:
   void mark_remove(const bool should_remove) override { should_remove_ = should_remove; }
   [[nodiscard]] bool should_remove() const override { return should_remove_; }
 
-  ComponentManager* components() override { return &components_; }
+  ComponentContainer* components() override { return &components_; }
 
   void set_context(Realm::Context* context) override { context_ = context; }
   Realm::Context* get_context() override

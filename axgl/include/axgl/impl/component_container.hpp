@@ -4,20 +4,20 @@
 #include <vector>
 
 #include <axgl/interface/component.hpp>
-#include <axgl/interface/component_manager.hpp>
+#include <axgl/interface/container.hpp>
 
 #include <axgl/util/iterable.hpp>
 
 namespace axgl::impl
 {
 
-class ComponentContainer : virtual public ComponentManager
+class ComponentContainer : virtual public Container<axgl::Component>
 {
-  Entity* entity_;
-  std::vector<std::shared_ptr<Component>> components_;
+  axgl::Entity* entity_;
+  std::vector<std::shared_ptr<axgl::Component>> components_;
 
 public:
-  explicit ComponentContainer(Entity* entity) : entity_(entity) { }
+  explicit ComponentContainer(axgl::Entity* entity) : entity_(entity) { }
 
   void tick() const
   {
@@ -54,17 +54,17 @@ public:
         comp->on_remove();
   }
 
-  void add(std::shared_ptr<Component> component) override
+  void add(std::shared_ptr<axgl::Component> component) override
   {
     component->set_entity(entity_);
     components_.push_back(std::move(component));
   }
 
-  void remove(const std::shared_ptr<Component>& component) override { std::erase(components_, component); }
+  void remove(const std::shared_ptr<axgl::Component>& component) override { std::erase(components_, component); }
 
-  [[nodiscard]] util::Iterable<std::shared_ptr<Component>> get() const override
+  [[nodiscard]] util::Iterable<std::shared_ptr<axgl::Component>> get() const override
   {
-    return util::to_iterable_t<std::shared_ptr<Component>>(components_);
+    return util::to_iterable_t<std::shared_ptr<axgl::Component>>(components_);
   }
 };
 

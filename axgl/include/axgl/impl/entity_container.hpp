@@ -3,14 +3,15 @@
 #include <memory>
 #include <vector>
 
+#include <axgl/interface/container.hpp>
 #include <axgl/interface/entity.hpp>
 
 namespace axgl::impl
 {
 
-class EntityContainer
+class EntityContainer : public virtual Container<axgl::Entity>
 {
-  std::vector<std::shared_ptr<Entity>> entities_;
+  std::vector<std::shared_ptr<axgl::Entity>> entities_;
 
 public:
   void tick() const
@@ -60,9 +61,9 @@ public:
       entity->on_remove();
   }
 
-  void add_entity(std::shared_ptr<Entity> entity) { entities_.push_back(std::move(entity)); }
+  void add(std::shared_ptr<axgl::Entity> entity) override { entities_.push_back(std::move(entity)); }
 
-  void remove_entity(const std::shared_ptr<Entity>& entity) const
+  void remove(const std::shared_ptr<axgl::Entity>& entity) override
   {
     for (auto& e : entities_)
     {
@@ -74,9 +75,9 @@ public:
     }
   }
 
-  [[nodiscard]] util::Iterable<std::shared_ptr<Entity>> get_entities() const
+  [[nodiscard]] util::Iterable<std::shared_ptr<axgl::Entity>> get() const override
   {
-    return util::to_iterable_t<std::shared_ptr<Entity>>(entities_);
+    return util::to_iterable_t<std::shared_ptr<axgl::Entity>>(entities_);
   }
 };
 

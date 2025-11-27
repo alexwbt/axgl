@@ -2,6 +2,8 @@
   <dictionary name="project">
     <words>
       <w>bundlefile</w>
+      <w>cubemap</w>
+      <w>stbi</w>
     </words>
   </dictionary>
 </component>
