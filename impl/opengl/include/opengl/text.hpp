@@ -54,8 +54,9 @@ class Character final
     const auto& bitmap = glyph->bitmap;
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    texture.load_texture(0, GL_RED, static_cast<GLsizei>(bitmap.width), static_cast<GLsizei>(bitmap.rows), 0, GL_RED,
-      GL_UNSIGNED_BYTE, bitmap.buffer);
+    texture.load_texture(
+      0, GL_RED, static_cast<GLsizei>(bitmap.width), static_cast<GLsizei>(bitmap.rows), 0, GL_RED, GL_UNSIGNED_BYTE,
+      bitmap.buffer);
     texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);

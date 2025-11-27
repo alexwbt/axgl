@@ -66,7 +66,8 @@ public:
       ZoneScopedN("Renderer Render Blending Components");
 
       // sort blend_renders_ by distance descending
-      std::ranges::sort(blend_renders_, [](const auto& a, const auto& b)
+      std::ranges::sort(
+        blend_renders_, [](const auto& a, const auto& b)
       {
         return a.first > b.first;
       });
@@ -93,8 +94,9 @@ public:
     window_ = std::dynamic_pointer_cast<GlfwWindow>(std::move(window));
     if (!window_)
 #ifdef AXGL_DEBUG
-      throw std::runtime_error("The provided window is not a valid GlfwWindow instance. "
-                               "GlfwWindow is required for OpenglRenderer.");
+      throw std::runtime_error(
+        "The provided window is not a valid GlfwWindow instance. "
+        "GlfwWindow is required for OpenglRenderer.");
 #else
       return;
 #endif

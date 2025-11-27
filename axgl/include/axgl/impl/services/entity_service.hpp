@@ -18,8 +18,8 @@ class EntityService : virtual public axgl::EntityService, public ServiceBase
   std::unordered_map<std::string, std::function<std::shared_ptr<Component>()>> component_factories_;
 
 public:
-  void register_entity_factory(
-    const std::string& type, std::function<std::shared_ptr<Entity>()> entity_factory) override
+  void
+  register_entity_factory(const std::string& type, std::function<std::shared_ptr<Entity>()> entity_factory) override
   {
     entity_factories_.insert({type, entity_factory});
   }

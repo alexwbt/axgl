@@ -25,7 +25,7 @@ public:
     const auto renderer = context->realm->get_renderer();
 
     if (const auto viewport = glm::vec2(renderer->viewport());
-      viewport.x != camera.viewport.x || viewport.y != camera.viewport.y)
+        viewport.x != camera.viewport.x || viewport.y != camera.viewport.y)
     {
       camera.viewport.x = viewport.x;
       camera.viewport.y = viewport.y;

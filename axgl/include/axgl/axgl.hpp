@@ -62,7 +62,8 @@ public:
     CPPTRACE_TRY { ServiceContainer::initialize(); }
     CPPTRACE_CATCH(const std::exception& e)
     {
-      SPDLOG_ERROR("Exception thrown duration initialization: {}\n{}", e.what(),
+      SPDLOG_ERROR(
+        "Exception thrown duration initialization: {}\n{}", e.what(),
         cpptrace::from_current_exception().to_string(true));
     }
   }

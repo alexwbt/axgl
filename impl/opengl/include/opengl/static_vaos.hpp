@@ -31,9 +31,10 @@ private:
 
   void init_quad()
   {
-    std::array vertices{
-      glm::vec2{0, 0}, glm::vec2{0, 1}, glm::vec2{1, 0}, glm::vec2{1, 0}, glm::vec2{0, 1}, glm::vec2{1, 1}};
-    std::array attributes{VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0},
+    std::array vertices{glm::vec2{0, 0}, glm::vec2{0, 1}, glm::vec2{1, 0},
+                        glm::vec2{1, 0}, glm::vec2{0, 1}, glm::vec2{1, 1}};
+    std::array attributes{
+      VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0},
       VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0}};
     quad_ = std::make_shared<VertexArrayObject>();
     quad_->create_vertex_buffer<glm::vec2>(vertices, attributes, 0);

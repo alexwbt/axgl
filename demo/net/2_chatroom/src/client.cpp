@@ -23,7 +23,8 @@ int main()
     return false;
   });
 
-  const auto renderer = Renderer(input, [&]
+  const auto renderer = Renderer(
+    input, [&]
   {
     std::vector<Element> message_elements;
     message_elements.reserve(message_values.size());

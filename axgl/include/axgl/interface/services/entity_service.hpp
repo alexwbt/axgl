@@ -13,8 +13,8 @@ namespace axgl
 class EntityService : virtual public Service
 {
 public:
-  virtual void register_entity_factory(
-    const std::string& type, std::function<std::shared_ptr<Entity>()> entity_factory) = 0;
+  virtual void
+  register_entity_factory(const std::string& type, std::function<std::shared_ptr<Entity>()> entity_factory) = 0;
   virtual void register_component_factory(
     const std::string& type, std::function<std::shared_ptr<Component>()> component_factory) = 0;
 
@@ -25,7 +25,8 @@ public:
   template <typename EntityType>
   void register_entity_t()
   {
-    register_entity_factory(EntityType::kType.data(), []
+    register_entity_factory(
+      EntityType::kType.data(), []
     {
       return std::make_shared<EntityType>();
     });
@@ -34,7 +35,8 @@ public:
   template <typename ComponentType>
   void register_component_t()
   {
-    register_component_factory(ComponentType::kType.data(), []
+    register_component_factory(
+      ComponentType::kType.data(), []
     {
       return std::make_shared<ComponentType>();
     });

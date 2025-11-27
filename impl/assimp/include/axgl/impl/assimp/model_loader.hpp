@@ -37,9 +37,13 @@ class ModelLoader
 
   axgl::ModelService::ModelResources resources_;
 
-  ModelLoader(std::shared_ptr<axgl::EntityService> entity_service,
-    std::shared_ptr<axgl::RendererService> renderer_service, std::shared_ptr<axgl::ResourceService> resource_service,
-    const std::shared_ptr<axgl::Entity>& entity, std::string resource_key, std::string material_type) :
+  ModelLoader(
+    std::shared_ptr<axgl::EntityService> entity_service,
+    std::shared_ptr<axgl::RendererService> renderer_service,
+    std::shared_ptr<axgl::ResourceService> resource_service,
+    const std::shared_ptr<axgl::Entity>& entity,
+    std::string resource_key,
+    std::string material_type) :
     entity_service_(std::move(entity_service)),
     renderer_service_(std::move(renderer_service)),
     resource_service_(std::move(resource_service)),
@@ -140,8 +144,11 @@ class ModelLoader
     return mesh;
   }
 
-  void load_textures(const aiMaterial* ai_material, const aiTextureType ai_texture_type,
-    const std::shared_ptr<axgl::Material>& material, const axgl::Material::TextureType texture_type)
+  void load_textures(
+    const aiMaterial* ai_material,
+    const aiTextureType ai_texture_type,
+    const std::shared_ptr<axgl::Material>& material,
+    const axgl::Material::TextureType texture_type)
   {
     auto count = ai_material->GetTextureCount(ai_texture_type);
     for (int i = 0; i < count; ++i)

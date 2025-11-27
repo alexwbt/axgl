@@ -58,7 +58,8 @@ public:
 
   void connect(const std::string& host, const asio::ip::port_type& port) override
   {
-    asio::co_spawn(*io_context_, [this, host, port]() -> asio::awaitable<void>
+    asio::co_spawn(
+      *io_context_, [this, host, port]() -> asio::awaitable<void>
     {
       asio::error_code ec;
       asio::ip::tcp::endpoint endpoint(asio::ip::make_address(host, ec), port);

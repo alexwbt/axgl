@@ -46,18 +46,20 @@ int main()
 
     // square mesh
     const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
-    mesh_comp->set_vertices(std::vector<glm::vec2>{
-      {0.5f, 0.5f},
-      {0.5f, -0.5f},
-      {-0.5f, -0.5f},
-      {-0.5f, 0.5f},
-    });
-    mesh_comp->set_uv(std::vector<glm::vec2>{
-      {1.0f, 1.0f},
-      {1.0f, 0.0f},
-      {0.0f, 0.0f},
-      {0.0f, 1.0f},
-    });
+    mesh_comp->set_vertices(
+      std::vector<glm::vec2>{
+        {0.5f, 0.5f},
+        {0.5f, -0.5f},
+        {-0.5f, -0.5f},
+        {-0.5f, 0.5f},
+      });
+    mesh_comp->set_uv(
+      std::vector<glm::vec2>{
+        {1.0f, 1.0f},
+        {1.0f, 0.0f},
+        {0.0f, 0.0f},
+        {0.0f, 1.0f},
+      });
     mesh_comp->set_indices(std::vector<uint32_t>{0, 1, 2, 0, 2, 3});
     mesh_comp->set_material(material);
     square_entity->components()->add(mesh_comp);

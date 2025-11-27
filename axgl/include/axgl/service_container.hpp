@@ -46,7 +46,8 @@ public:
     if (!has_service(id))
       throw std::runtime_error(std::format("Trying to remove service but service with id '{}' does not exist.", id));
 #endif
-    std::erase_if(services_, [&](const auto& ptr)
+    std::erase_if(
+      services_, [&](const auto& ptr)
     {
       return ptr == service_map_[id];
     });
@@ -128,7 +129,8 @@ public:
 
   [[nodiscard]] virtual bool running() const
   {
-    return std::ranges::any_of(services_, [&](const auto& service)
+    return std::ranges::any_of(
+      services_, [&](const auto& service)
     {
       return service->keep_alive();
     });

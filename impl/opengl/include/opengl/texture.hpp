@@ -92,8 +92,15 @@ public:
 
   void generate_mipmap() const { glGenerateMipmap(target_); }
 
-  void load_texture(const GLint level, const GLint internalformat, const GLsizei width, const GLsizei height,
-    const GLint border, const GLenum format, const GLenum type, const void* pixels)
+  void load_texture(
+    const GLint level,
+    const GLint internalformat,
+    const GLsizei width,
+    const GLsizei height,
+    const GLint border,
+    const GLenum format,
+    const GLenum type,
+    const void* pixels)
   {
     if (target_ > 0)
     {
@@ -132,12 +139,8 @@ public:
     target_ = GL_TEXTURE_CUBE_MAP;
 
     const StbiImage texture[6] = {
-      StbiImage(data[0]),
-      StbiImage(data[1]),
-      StbiImage(data[2]),
-      StbiImage(data[3]),
-      StbiImage(data[4]),
-      StbiImage(data[5]),
+      StbiImage(data[0]), StbiImage(data[1]), StbiImage(data[2]),
+      StbiImage(data[3]), StbiImage(data[4]), StbiImage(data[5]),
     };
     for (int i = 0; i < 6; i++)
     {
@@ -156,7 +159,8 @@ public:
     set_parameteri(GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     for (int i = 0; i < 6; i++)
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, texture[i].format, texture[i].width, texture[i].height, 0,
+      glTexImage2D(
+        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, texture[i].format, texture[i].width, texture[i].height, 0,
         texture[i].format, GL_UNSIGNED_BYTE, texture[i].stbi_ptr);
   }
 };

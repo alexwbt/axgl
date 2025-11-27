@@ -101,7 +101,8 @@ template <typename ValueType, typename ContainerType>
 Iterable<ValueType> to_iterable_t(const ContainerType& data)
 {
   using WrapperType = typename AnyIterator<ValueType>::template Adaptor<decltype(std::begin(data))>;
-  return {AnyIterator<ValueType>(std::make_unique<WrapperType>(std::begin(data))),
+  return {
+    AnyIterator<ValueType>(std::make_unique<WrapperType>(std::begin(data))),
     AnyIterator<ValueType>(std::make_unique<WrapperType>(std::end(data)))};
 }
 

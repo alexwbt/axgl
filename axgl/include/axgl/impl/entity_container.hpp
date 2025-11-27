@@ -31,7 +31,8 @@ public:
 
     if (!entities_.empty())
     {
-      std::erase_if(entities_, [](const auto& entity)
+      std::erase_if(
+        entities_, [](const auto& entity)
       {
         const auto should_remove = entity->should_remove();
         if (should_remove)

@@ -17,10 +17,10 @@ class Keyboard2DFreeFlyCameraMode : public CameraMode
   std::shared_ptr<Input> left_;
   std::shared_ptr<Input> right_;
 
-  float camera_speed_ = 2.0f;
+  float movement_speed_;
 
 public:
-  Keyboard2DFreeFlyCameraMode()
+  explicit Keyboard2DFreeFlyCameraMode(const float movement_speed = 2.0f) : movement_speed_(movement_speed)
   {
     up_ = std::make_shared<Input>("Move Up", Input::Source::kKeyW);
     down_ = std::make_shared<Input>("Move Down", Input::Source::kKeyS);
@@ -47,13 +47,13 @@ public:
   void update(Camera& camera) override
   {
     if (up_->tick > 0)
-      camera.position += glm::vec3(0, 1, 0) * camera_speed_;
+      camera.position += glm::vec3(0, 1, 0) * movement_speed_;
     if (down_->tick > 0)
-      camera.position -= glm::vec3(0, 1, 0) * camera_speed_;
+      camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
     if (right_->tick > 0)
-      camera.position += glm::vec3(1, 0, 0) * camera_speed_;
+      camera.position += glm::vec3(1, 0, 0) * movement_speed_;
     if (left_->tick > 0)
-      camera.position -= glm::vec3(1, 0, 0) * camera_speed_;
+      camera.position -= glm::vec3(1, 0, 0) * movement_speed_;
 
     camera.update();
   }

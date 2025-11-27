@@ -154,8 +154,9 @@ public:
     window_ = dynamic_pointer_cast<GlfwWindow>(window);
 #ifdef AXGL_DEBUG
     if (!window_)
-      throw std::runtime_error("The provided window is not a valid GlfwWindow instance. "
-                               "GlfwWindow is required for GlfwInputService.");
+      throw std::runtime_error(
+        "The provided window is not a valid GlfwWindow instance. "
+        "GlfwWindow is required for GlfwInputService.");
 #endif
   }
 

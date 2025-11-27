@@ -24,12 +24,13 @@ class Keyboard3DFreeFlyCameraMode : public CameraMode
   std::shared_ptr<Input> left_;
   std::shared_ptr<Input> right_;
 
-  float view_movement_speed_ = 0.2f;
-  float camera_speed_ = 0.2f;
+  float movement_speed_;
+  float view_sensitivity_;
   bool controlling_ = true;
 
 public:
-  Keyboard3DFreeFlyCameraMode()
+  explicit Keyboard3DFreeFlyCameraMode(const float movement_speed = 0.2f, const float view_sensitivity = 0.2f) :
+    movement_speed_(movement_speed), view_sensitivity_(view_sensitivity)
   {
     escape_ = std::make_shared<Input>("Toggle Camera Control", Input::Source::kKeyEscape);
     pointer_ = std::make_shared<Pointer>("View Movement", Pointer::Source::kMouseMove);
@@ -83,23 +84,23 @@ public:
       return;
 
     if (pointer_->tick > 1 && pointer_->delta.x != 0)
-      camera.yaw += pointer_->delta.x * view_movement_speed_;
+      camera.yaw += pointer_->delta.x * view_sensitivity_;
 
     if (pointer_->tick > 1 && pointer_->delta.y != 0)
-      camera.pitch = std::min(std::max(camera.pitch + (pointer_->delta.y * view_movement_speed_), 1.0f), 179.0f);
+      camera.pitch = std::min(std::max(camera.pitch + (pointer_->delta.y * view_sensitivity_), 1.0f), 179.0f);
 
     if (forward_->tick > 0)
-      camera.position += camera.front() * camera_speed_;
+      camera.position += camera.front() * movement_speed_;
     if (backward_->tick > 0)
-      camera.position -= camera.front() * camera_speed_;
+      camera.position -= camera.front() * movement_speed_;
     if (up_->tick > 0)
-      camera.position += glm::vec3(0, 1, 0) * camera_speed_;
+      camera.position += glm::vec3(0, 1, 0) * movement_speed_;
     if (down_->tick > 0)
-      camera.position -= glm::vec3(0, 1, 0) * camera_speed_;
+      camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
     if (right_->tick > 0)
-      camera.position += camera.horizontal_right() * camera_speed_;
+      camera.position += camera.horizontal_right() * movement_speed_;
     if (left_->tick > 0)
-      camera.position -= camera.horizontal_right() * camera_speed_;
+      camera.position -= camera.horizontal_right() * movement_speed_;
 
     camera.update();
   }

@@ -21,7 +21,9 @@ LambdaBodyIndentation: OuterScope
 AllowShortLambdasOnASingleLine: Empty
 PackConstructorInitializers: NextLine
 BreakConstructorInitializers: AfterColon
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: AlwaysBreak
+BinPackParameters: OnePerLine
+AllowAllParametersOfDeclarationOnNextLine: true
 AllowAllArgumentsOnNextLine: true
 BreakBeforeBraces: Allman
 BraceWrapping:

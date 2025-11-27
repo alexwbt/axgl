@@ -60,8 +60,9 @@ public:
     auto realm_impl = std::dynamic_pointer_cast<Realm>(realm);
 #ifdef AXGL_DEBUG
     if (!realm_impl)
-      throw std::runtime_error("Failed to set active realm. "
-                               "Default Realm is required for default RealmService");
+      throw std::runtime_error(
+        "Failed to set active realm. "
+        "Default Realm is required for default RealmService");
 #endif
     realm_ = std::move(realm_impl);
   }
