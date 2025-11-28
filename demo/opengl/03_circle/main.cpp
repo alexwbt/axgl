@@ -1,4 +1,6 @@
 
+#include <numbers>
+
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
@@ -37,22 +39,25 @@ int main()
   axgl.use_service<axgl::impl::CameraService>();
   axgl.initialize();
 
+  const auto window_service = axgl.window_service();
+  const auto renderer_service = axgl.renderer_service();
+  const auto realm_service = axgl.realm_service();
+  const auto entity_service = axgl.entity_service();
+  const auto camera_service = axgl.camera_service();
+
   // window
-  const auto window = axgl.window_service()->create_window();
+  const auto window = window_service->create_window();
   window->set_title("Hello circle!");
 
   // renderer
-  const auto renderer_service = axgl.renderer_service();
   const auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
 
   // realm
-  const auto realm_service = axgl.realm_service();
   const auto realm = realm_service->create_realm();
   realm->set_renderer(renderer);
 
   // circle entity
-  const auto entity_service = axgl.entity_service();
   const auto entity = entity_service->create_entity();
   {
     // material
@@ -77,7 +82,7 @@ int main()
   realm->add_entity(entity);
 
   // set camera
-  axgl.camera_service()->set_camera(entity);
+  camera_service->set_camera(entity);
 
   // start
   axgl.run();

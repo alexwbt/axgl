@@ -18,6 +18,7 @@ int main()
   const auto window_service = axgl.window_service();
   const auto renderer_service = axgl.renderer_service();
   const auto entity_service = axgl.entity_service();
+  const auto camera_service = axgl.camera_service();
 
   // window
   const auto window = window_service->create_window();
@@ -56,7 +57,7 @@ int main()
   realm->add_entity(entity);
 
   // set camera
-  axgl.camera_service()->set_camera(entity);
+  camera_service->set_camera(entity);
 
   // start
   axgl.run();

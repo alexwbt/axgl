@@ -58,6 +58,7 @@ public:
     const auto renderer_service = axgl->renderer_service();
     const auto realm_service = axgl->realm_service();
     const auto entity_service = axgl->entity_service();
+    const auto camera_service = axgl->camera_service();
 
     // window
     const auto window = window_service->create_window();
@@ -77,9 +78,9 @@ public:
       const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
       camera_entity->components()->add(camera_comp);
     }
-    camera_entity->transform()->position.z = -2;
     realm->add_entity(camera_entity);
-    axgl->camera_service()->set_camera(camera_entity);
+    camera_entity->transform()->position.z = -2;
+    camera_service->set_camera(camera_entity);
 
     // light entity
     const auto light_entity = entity_service->create_entity();
