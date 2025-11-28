@@ -12,35 +12,26 @@ public:
   void initialize() override
   {
     const auto axgl = get_context()->axgl;
+    const auto window_service = axgl->window_service();
+    const auto input_service = axgl->input_service();
+    const auto renderer_service = axgl->renderer_service();
+    const auto realm_service = axgl->realm_service();
+    const auto entity_service = axgl->entity_service();
 
     // window
-    const auto window = axgl->window_service()->create_window();
+    const auto window = window_service->create_window();
     window->set_title("Hello model!");
 
     // input
-    axgl->input_service()->set_window(window);
+    input_service->set_window(window);
 
     // renderer
-    const auto renderer_service = axgl->renderer_service();
     const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
-    const auto realm_service = axgl->realm_service();
     const auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
-
-    // load bundlefile
-    const auto bundlefile_service = axgl->get_service<axgl::impl::BundlefileService>("bundlefile");
-    bundlefile_service->load_bundlefile("demo_opengl_model_res.bin");
-
-    // model entity
-    const auto entity_service = axgl->entity_service();
-    const auto entity = entity_service->create_entity();
-    axgl->model_service()->load_model(entity, "backpack.assbin");
-    entity->transform()->scale = glm::vec3(10);
-    entity->update_model_matrix();
-    realm->add_entity(entity);
 
     // camera entity
     const auto camera_entity = entity_service->create_entity();
@@ -66,6 +57,17 @@ public:
     const auto camera_service = axgl->camera_service();
     camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
+
+    // load bundlefile
+    const auto bundlefile_service = axgl->get_service<axgl::impl::BundlefileService>("bundlefile");
+    bundlefile_service->load_bundlefile("demo_opengl_model_res.bin");
+
+    // model entity
+    const auto entity = entity_service->create_entity();
+    axgl->model_service()->load_model(entity, "backpack.assbin");
+    entity->transform()->scale = glm::vec3(10);
+    entity->update_model_matrix();
+    realm->add_entity(entity);
   }
 };
 

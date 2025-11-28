@@ -2,7 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/_build/Debug/_deps/libdwarf-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/_external/args" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/_external/asio" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/_external/assimp" vcs="Git" />

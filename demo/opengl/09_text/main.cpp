@@ -30,19 +30,6 @@ public:
     const auto realm = axgl.realm_service()->create_realm();
     realm->set_renderer(renderer);
 
-    // load fonts
-    const auto text_service = axgl.get_service<axgl::impl::OpenglTextService>("text");
-    text_service->load_font("arial", demo_opengl_text_res::get("font/arial.ttf"));
-    text_service->load_font("noto-tc", demo_opengl_text_res::get("font/noto-tc.ttf"));
-
-    // text entity
-    const auto text_entity = text_service->create_entity(
-      reinterpret_cast<const char*>(
-        u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
-        u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。"),
-      {"arial", "noto-tc"}, {.size = 48, .color = {1.0f, 0.5f, 0.2f, 1.0f}}, 0.01f);
-    realm->add_entity(text_entity);
-
     // camera entity
     const auto entity_service = axgl.entity_service();
     const auto camera_entity = entity_service->create_entity();
@@ -68,6 +55,19 @@ public:
     const auto camera_service = axgl.camera_service();
     camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
+
+    // load fonts
+    const auto text_service = axgl.get_service<axgl::impl::OpenglTextService>("text");
+    text_service->load_font("arial", demo_opengl_text_res::get("font/arial.ttf"));
+    text_service->load_font("noto-tc", demo_opengl_text_res::get("font/noto-tc.ttf"));
+
+    // text entity
+    const auto text_entity = text_service->create_entity(
+      reinterpret_cast<const char*>(
+        u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
+        u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。"),
+      {"arial", "noto-tc"}, {.size = 48, .color = {1.0f, 0.5f, 0.2f, 1.0f}}, 0.01f);
+    realm->add_entity(text_entity);
   }
 };
 

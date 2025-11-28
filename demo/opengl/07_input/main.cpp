@@ -42,40 +42,26 @@ public:
   void on_start() override
   {
     const auto axgl = get_context()->axgl;
+    const auto window_service = axgl->window_service();
+    const auto input_service = axgl->input_service();
+    const auto renderer_service = axgl->renderer_service();
+    const auto realm_service = axgl->realm_service();
+    const auto entity_service = axgl->entity_service();
 
     // window
-    const auto window = axgl->window_service()->create_window();
+    const auto window = window_service->create_window();
     window->set_title("Hello input!");
 
     // input
-    axgl->input_service()->set_window(window);
+    input_service->set_window(window);
 
     // renderer
-    const auto renderer_service = axgl->renderer_service();
     const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
-    const auto realm_service = axgl->realm_service();
     const auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
-
-    // cube entity
-    const auto entity_service = axgl->entity_service();
-    cube_entity_ = entity_service->create_entity();
-    {
-      // material
-      const auto material = renderer_service->create_material("default");
-      material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
-
-      // cube mesh
-      const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
-      mesh->set_vertices(cube_vertices);
-      mesh->set_normals(cube_normals);
-      mesh->set_material(material);
-      cube_entity_->components()->add(mesh);
-    }
-    realm->add_entity(cube_entity_);
 
     // camera entity
     const auto camera_entity = entity_service->create_entity();
@@ -101,6 +87,22 @@ public:
     const auto camera_service = axgl->camera_service();
     camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
+
+    // cube entity
+    cube_entity_ = entity_service->create_entity();
+    {
+      // material
+      const auto material = renderer_service->create_material("default");
+      material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
+
+      // cube mesh
+      const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+      mesh->set_vertices(cube_vertices);
+      mesh->set_normals(cube_normals);
+      mesh->set_material(material);
+      cube_entity_->components()->add(mesh);
+    }
+    realm->add_entity(cube_entity_);
   }
 
   void tick() override { cube_entity_->transform()->rotation += glm::vec3(0.01f, 0.02f, 0.05f); }

@@ -54,23 +54,44 @@ public:
   void on_start() override
   {
     const auto axgl = get_context()->axgl;
+    const auto window_service = axgl->window_service();
+    const auto renderer_service = axgl->renderer_service();
+    const auto realm_service = axgl->realm_service();
+    const auto entity_service = axgl->entity_service();
 
     // window
-    const auto window = axgl->window_service()->create_window();
+    const auto window = window_service->create_window();
     window->set_title("Hello textured cube!");
 
     // renderer
-    const auto renderer_service = axgl->renderer_service();
     const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
-    const auto realm_service = axgl->realm_service();
     const auto realm = axgl->realm_service()->create_realm();
     realm->set_renderer(renderer);
 
+    // camera entity
+    const auto camera_entity = entity_service->create_entity();
+    {
+      const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+      camera_entity->components()->add(camera_comp);
+    }
+    camera_entity->transform()->position.z = -2;
+    realm->add_entity(camera_entity);
+    axgl->camera_service()->set_camera(camera_entity);
+
+    // light entity
+    const auto light_entity = entity_service->create_entity();
+    {
+      const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
+      light_comp->light.color.ambient = glm::vec3(0.3f);
+      light_entity->components()->add(light_comp);
+    }
+    light_entity->transform()->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
+    realm->add_entity(light_entity);
+
     // cube entity
-    const auto entity_service = axgl->entity_service();
     cube_entity_ = entity_service->create_entity();
     {
       // diffuse texture
@@ -94,26 +115,6 @@ public:
       cube_entity_->components()->add(mesh);
     }
     realm->add_entity(cube_entity_);
-
-    // camera entity
-    const auto camera_entity = entity_service->create_entity();
-    {
-      const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
-      camera_entity->components()->add(camera_comp);
-    }
-    camera_entity->transform()->position.z = -2;
-    realm->add_entity(camera_entity);
-    axgl->camera_service()->set_camera(camera_entity);
-
-    // light entity
-    const auto light_entity = entity_service->create_entity();
-    {
-      const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
-      light_comp->light.color.ambient = glm::vec3(0.3f);
-      light_entity->components()->add(light_comp);
-    }
-    light_entity->transform()->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
-    realm->add_entity(light_entity);
   }
 
   void tick() override { cube_entity_->transform()->rotation += glm::vec3(0.01f, 0.02f, 0.05f); }

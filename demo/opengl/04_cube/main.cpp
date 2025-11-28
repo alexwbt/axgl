@@ -41,37 +41,22 @@ public:
   void on_start() override
   {
     const auto axgl = get_context()->axgl;
+    const auto window_service = axgl->window_service();
+    const auto renderer_service = axgl->renderer_service();
+    const auto realm_service = axgl->realm_service();
+    const auto entity_service = axgl->entity_service();
 
     // window
-    const auto window = axgl->window_service()->create_window();
+    const auto window = window_service->create_window();
     window->set_title("Hello cube!");
 
     // renderer
-    const auto renderer_service = axgl->renderer_service();
     const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
-    const auto realm_service = axgl->realm_service();
     const auto realm = realm_service->create_realm();
     realm->set_renderer(renderer);
-
-    // cube entity
-    const auto entity_service = axgl->entity_service();
-    cube_entity_ = entity_service->create_entity();
-    {
-      // material
-      const auto material = renderer_service->create_material("default");
-      material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
-
-      // cube mesh
-      const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
-      mesh_comp->set_vertices(cube_vertices);
-      mesh_comp->set_normals(cube_normals);
-      mesh_comp->set_material(material);
-      cube_entity_->components()->add(mesh_comp);
-    }
-    realm->add_entity(cube_entity_);
 
     // camera entity
     const auto camera_entity = entity_service->create_entity();
@@ -92,6 +77,22 @@ public:
     }
     light_entity->transform()->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
     realm->add_entity(light_entity);
+
+    // cube entity
+    cube_entity_ = entity_service->create_entity();
+    {
+      // material
+      const auto material = renderer_service->create_material("default");
+      material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
+
+      // cube mesh
+      const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
+      mesh_comp->set_vertices(cube_vertices);
+      mesh_comp->set_normals(cube_normals);
+      mesh_comp->set_material(material);
+      cube_entity_->components()->add(mesh_comp);
+    }
+    realm->add_entity(cube_entity_);
   }
 
   void tick() override { cube_entity_->transform()->rotation += glm::vec3(0.01f, 0.02f, 0.05f); }
