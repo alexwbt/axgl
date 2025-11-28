@@ -18,7 +18,7 @@ class ComponentBase : virtual public axgl::Component
 
 protected:
   std::string id_;
-  Entity* entity_ = nullptr;
+  std::weak_ptr<Entity> entity_;
 
 public:
   void set_id(const std::string& id) override { id_ = id; }
@@ -29,14 +29,14 @@ public:
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
   [[nodiscard]] bool is_disabled() const override { return disabled_; }
 
-  void set_entity(Entity* entity) override { entity_ = entity; }
-  [[nodiscard]] Entity* get_entity() const override
+  void set_entity(std::weak_ptr<Entity> entity) override { entity_ = std::move(entity); }
+  [[nodiscard]] std::shared_ptr<Entity> get_entity() const override
   {
 #ifdef AXGL_DEBUG
-    if (!entity_)
+    if (!entity_.expired())
       throw std::runtime_error("Component entity is not set.");
 #endif
-    return entity_;
+    return entity_.lock();
   }
 };
 
