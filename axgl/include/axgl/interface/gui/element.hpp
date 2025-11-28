@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <memory>
 
 #include <axgl/interface/container.hpp>
 
@@ -20,20 +20,8 @@ public:
 
   virtual Container<Element>* children() = 0;
 
-  virtual std::shared_ptr<Element> parent() = 0;
-  virtual void set_parent(std::shared_ptr<Element> parent) = 0;
+  virtual void set_parent(std::weak_ptr<Element> parent) = 0;
+  virtual std::shared_ptr<Element> get_parent() = 0;
 };
-
-template <typename ElementType>
-std::shared_ptr<Element> element(const std::vector<std::shared_ptr<Element>>& children = {})
-{
-  const auto element = std::make_shared<ElementType>();
-
-  for (const auto child : children)
-    child->set_parent(element);
-
-  element->children()->add_all(children);
-  return element;
-}
 
 } // namespace axgl::gui
