@@ -11,27 +11,31 @@ class Application : public axgl::impl::ServiceBase
 public:
   void on_start() override
   {
-    const auto& axgl = *get_context()->axgl;
+    const auto axgl = get_context()->axgl;
+    const auto window_service = axgl->window_service();
+    const auto input_service = axgl->input_service();
+    const auto renderer_service = axgl->renderer_service();
+    const auto realm_service = axgl->realm_service();
+    const auto entity_service = axgl->entity_service();
+    const auto camera_service = axgl->camera_service();
+    const auto text_service = axgl->get_service<axgl::impl::OpenglTextService>("text");
 
     // window
-    const auto window = axgl.window_service()->create_window();
+    const auto window = window_service->create_window();
     window->set_title("Hello text!");
 
     // input
-    axgl.input_service()->set_window(window);
+    input_service->set_window(window);
 
     // renderer
-    const auto renderer_service = axgl.renderer_service();
     const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
 
     // realm
-    const auto realm_service = axgl.realm_service();
-    const auto realm = axgl.realm_service()->create_realm();
+    const auto realm = realm_service->create_realm();
     realm->set_renderer(renderer);
 
     // camera entity
-    const auto entity_service = axgl.entity_service();
     const auto camera_entity = entity_service->create_entity();
     {
       const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
@@ -52,12 +56,10 @@ public:
     realm->add_entity(light_entity);
 
     // camera input
-    const auto camera_service = axgl.camera_service();
     camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
 
     // load fonts
-    const auto text_service = axgl.get_service<axgl::impl::OpenglTextService>("text");
     text_service->load_font("arial", demo_opengl_text_res::get("font/arial.ttf"));
     text_service->load_font("noto-tc", demo_opengl_text_res::get("font/noto-tc.ttf"));
 

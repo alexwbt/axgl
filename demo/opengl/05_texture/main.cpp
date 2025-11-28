@@ -18,22 +18,24 @@ int main()
   axgl.use_service<axgl::impl::LightService>();
   axgl.initialize();
 
+  const auto window_service = axgl.window_service();
+  const auto renderer_service = axgl.renderer_service();
+  const auto realm_service = axgl.realm_service();
+  const auto entity_service = axgl.entity_service();
+
   // window
-  const auto window = axgl.window_service()->create_window();
+  const auto window = window_service->create_window();
   window->set_title("Hello texture!");
 
   // renderer
-  const auto renderer_service = axgl.renderer_service();
   const auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
 
   // realm
-  const auto realm_service = axgl.realm_service();
-  const auto realm = axgl.realm_service()->create_realm();
+  const auto realm = realm_service->create_realm();
   realm->set_renderer(renderer);
 
   // square entity
-  const auto entity_service = axgl.entity_service();
   const auto square_entity = entity_service->create_entity();
   {
     // texture
