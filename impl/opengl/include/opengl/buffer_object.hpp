@@ -70,7 +70,6 @@ struct VertexAttribute
 
 class VertexBufferObject final : public BufferObject
 {
-private:
   size_t attribute_size_ = 0;
 
 public:

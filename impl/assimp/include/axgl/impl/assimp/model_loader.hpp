@@ -18,14 +18,14 @@
 #include <axgl/interface/services/renderer_service.hpp>
 #include <axgl/interface/services/resource_service.hpp>
 
-namespace axgl::impl
+namespace axgl::impl::assimp
 {
 
-class AssimpModelService;
+class ModelService;
 
 class ModelLoader
 {
-  friend class AssimpModelService;
+  friend class ModelService;
 
   std::shared_ptr<axgl::EntityService> entity_service_;
   std::shared_ptr<axgl::RendererService> renderer_service_;
@@ -213,5 +213,5 @@ class ModelLoader
   }
 };
 
-} // namespace axgl::impl
+} // namespace axgl::impl::assimp
 

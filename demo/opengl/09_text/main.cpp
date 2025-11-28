@@ -18,7 +18,7 @@ public:
     const auto realm_service = axgl->realm_service();
     const auto entity_service = axgl->entity_service();
     const auto camera_service = axgl->camera_service();
-    const auto text_service = axgl->get_service<axgl::impl::OpenglTextService>("text");
+    const auto text_service = axgl->get_service<axgl::impl::opengl::TextService>("text");
 
     // window
     const auto window = window_service->create_window();
@@ -80,10 +80,10 @@ int main()
   axgl.use_service<axgl::impl::EntityService>();
   axgl.use_service<axgl::impl::CameraService>();
   axgl.use_service<axgl::impl::LightService>();
-  axgl.use_service<axgl::impl::GlfwWindowService>();
-  axgl.use_service<axgl::impl::GlfwInputService>();
-  axgl.use_service<axgl::impl::OpenglRendererService>();
-  axgl.use_service<axgl::impl::OpenglTextService>();
+  axgl.use_service<axgl::impl::glfw::WindowService>();
+  axgl.use_service<axgl::impl::glfw::InputService>();
+  axgl.use_service<axgl::impl::opengl::RendererService>();
+  axgl.use_service<axgl::impl::opengl::TextService>();
   axgl.register_service("app", std::make_shared<Application>());
   axgl.initialize();
 

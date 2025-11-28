@@ -13,7 +13,7 @@
 namespace axgl::impl
 {
 
-class LightService : virtual public axgl::LightService, public ServiceBase
+class LightService : virtual public axgl::LightService, public impl::ServiceBase
 {
   std::vector<const axgl::Light*> lights_;
 

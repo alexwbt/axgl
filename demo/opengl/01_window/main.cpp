@@ -7,7 +7,7 @@ int main()
   axgl::Axgl axgl;
 
   // register window service
-  axgl.use_service<axgl::impl::GlfwWindowService>();
+  axgl.use_service<axgl::impl::glfw::WindowService>();
   const auto window_service = axgl.window_service();
 
   axgl.initialize();

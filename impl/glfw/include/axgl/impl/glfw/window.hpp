@@ -7,15 +7,15 @@
 
 #include <glfw/window.hpp>
 
-namespace axgl::impl
+namespace axgl::impl::glfw
 {
 
-class GlfwWindow : public axgl::Window
+class Window : public axgl::Window
 {
-  std::shared_ptr<glfw::Window> window_;
+  std::shared_ptr<::glfw::Window> window_;
 
 public:
-  explicit GlfwWindow(std::shared_ptr<glfw::Window> window) : window_(std::move(window)) { }
+  explicit Window(std::shared_ptr<::glfw::Window> window) : window_(std::move(window)) { }
 
   void set_title(const std::string& title) override
   {
@@ -62,5 +62,4 @@ public:
   auto glfw_window() const { return window_; }
 };
 
-} // namespace axgl::impl
-
+} // namespace axgl::impl::glfw

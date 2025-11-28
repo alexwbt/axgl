@@ -8,15 +8,15 @@
 
 #include <opengl/texture.hpp>
 
-namespace axgl::impl
+namespace axgl::impl::opengl
 {
 
-class OpenglTexture : public axgl::Texture
+class Texture : public axgl::Texture
 {
-  std::shared_ptr<opengl::Texture> texture_;
+  std::shared_ptr<::opengl::Texture> texture_;
 
 public:
-  OpenglTexture() { texture_ = std::make_shared<opengl::Texture>(); }
+  Texture() { texture_ = std::make_shared<::opengl::Texture>(); }
 
   void use() const { texture_->use(); }
 
@@ -30,8 +30,8 @@ public:
     texture_->generate_mipmap();
   }
 
-  void replace_texture(std::shared_ptr<opengl::Texture> texture) { texture_ = std::move(texture); }
+  void replace_texture(std::shared_ptr<::opengl::Texture> texture) { texture_ = std::move(texture); }
 };
 
-} // namespace axgl::impl
+} // namespace axgl::impl::opengl
 

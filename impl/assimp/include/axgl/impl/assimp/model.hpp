@@ -10,10 +10,10 @@
 
 #include "./model_loader.hpp"
 
-namespace axgl::impl
+namespace axgl::impl::assimp
 {
 
-class AssimpModelService : virtual public axgl::ModelService, public ServiceBase
+class ModelService : virtual public axgl::ModelService, public ServiceBase
 {
   std::shared_ptr<axgl::EntityService> entity_service_;
   std::shared_ptr<axgl::RendererService> renderer_service_;
@@ -35,5 +35,4 @@ public:
   }
 };
 
-} // namespace axgl::impl
-
+} // namespace axgl::impl::assimp

@@ -17,7 +17,7 @@
 namespace axgl::impl
 {
 
-class CameraService : virtual public axgl::CameraService, public ServiceBase
+class CameraService : virtual public axgl::CameraService, public impl::ServiceBase
 {
   std::shared_ptr<axgl::CameraMode> camera_mode_;
   std::shared_ptr<axgl::InputService> input_service_;

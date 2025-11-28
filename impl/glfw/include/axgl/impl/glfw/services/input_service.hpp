@@ -10,12 +10,12 @@
 #include <axgl/impl/glfw/window.hpp>
 #include <axgl/impl/service_base.hpp>
 
-namespace axgl::impl
+namespace axgl::impl::glfw
 {
 
-class GlfwInputService : public axgl::InputService, public ServiceBase
+class InputService : public axgl::InputService, public impl::ServiceBase
 {
-  std::shared_ptr<GlfwWindow> window_;
+  std::shared_ptr<Window> window_;
   std::list<std::shared_ptr<axgl::Input>> inputs_;
   std::list<std::shared_ptr<axgl::Pointer>> pointers_;
 
@@ -149,9 +149,9 @@ class GlfwInputService : public axgl::InputService, public ServiceBase
   }
 
 public:
-  void set_window(std::shared_ptr<axgl::Window> window) override
+  void set_window(const std::shared_ptr<axgl::Window> window) override
   {
-    window_ = dynamic_pointer_cast<GlfwWindow>(window);
+    window_ = dynamic_pointer_cast<Window>(window);
 #ifdef AXGL_DEBUG
     if (!window_)
       throw std::runtime_error(
@@ -160,7 +160,7 @@ public:
 #endif
   }
 
-  void set_cursor_mode(axgl::InputService::CursorMode mode) override
+  void set_cursor_mode(const axgl::InputService::CursorMode mode) override
   {
     if (!window_)
 #ifdef AXGL_DEBUG
@@ -226,5 +226,5 @@ public:
   }
 };
 
-} // namespace axgl::impl
+} // namespace axgl::impl::glfw
 

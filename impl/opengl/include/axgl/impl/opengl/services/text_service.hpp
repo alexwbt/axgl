@@ -13,18 +13,18 @@
 #include <axgl/interface/services/renderer_service.hpp>
 #include <axgl/interface/texture.hpp>
 
-#include <axgl/impl/opengl/component/mesh.hpp>
+#include <axgl/impl/opengl/components/mesh.hpp>
 #include <axgl/impl/service_base.hpp>
 
 #include <opengl/static_vaos.hpp>
 #include <opengl/text.hpp>
 
-namespace axgl::impl
+namespace axgl::impl::opengl
 {
 
-class OpenglTextService : public ServiceBase
+class TextService : public impl::ServiceBase
 {
-  opengl::TextRenderer text_renderer_;
+  ::opengl::TextRenderer text_renderer_;
 
   std::shared_ptr<axgl::RendererService> renderer_service_;
   std::shared_ptr<axgl::EntityService> entity_service_;
@@ -60,17 +60,17 @@ public:
   [[nodiscard]] std::shared_ptr<axgl::Texture> create_texture(
     const std::string& value,
     const std::vector<std::string>& font,
-    const opengl::TextOptions& options,
-    opengl::Text& text) const
+    const ::opengl::TextOptions& options,
+    ::opengl::Text& text) const
   {
     text_renderer_.render_text(text, value, font, options);
 
-    const auto texture = std::dynamic_pointer_cast<OpenglTexture>(renderer_service_->create_texture());
+    const auto texture = std::dynamic_pointer_cast<impl::opengl::Texture>(renderer_service_->create_texture());
 #ifdef AXGL_DEBUG
     if (!texture)
       throw std::runtime_error("OpenglTexture is required to use OpenglTextService");
 #endif
-    auto texture_ptr = std::make_shared<opengl::Texture>();
+    auto texture_ptr = std::make_shared<::opengl::Texture>();
     *texture_ptr = std::move(text.texture);
     texture->replace_texture(std::move(texture_ptr));
 
@@ -80,8 +80,8 @@ public:
   [[nodiscard]] std::shared_ptr<axgl::Material> create_material(
     const std::string& value,
     const std::vector<std::string>& font,
-    const opengl::TextOptions& options,
-    opengl::Text& text) const
+    const ::opengl::TextOptions& options,
+    ::opengl::Text& text) const
   {
     const auto texture = create_texture(value, font, options, text);
     const auto material = renderer_service_->create_material("2d");
@@ -93,12 +93,12 @@ public:
   [[nodiscard]] std::shared_ptr<axgl::component::Mesh> create_mesh(
     const std::string& value,
     const std::vector<std::string>& font,
-    const opengl::TextOptions& options,
-    opengl::Text& text) const
+    const ::opengl::TextOptions& options,
+    ::opengl::Text& text) const
   {
     const auto material = create_material(value, font, options, text);
-    const auto mesh = entity_service_->create_component_t<component::OpenglMesh>();
-    mesh->replace_vao(opengl::StaticVAOs::instance().quad());
+    const auto mesh = entity_service_->create_component_t<impl::opengl::component::Mesh>();
+    mesh->replace_vao(::opengl::StaticVAOs::instance().quad());
     mesh->set_material(material);
     return mesh;
   }
@@ -106,10 +106,10 @@ public:
   [[nodiscard]] std::shared_ptr<axgl::Entity> create_entity(
     const std::string& value,
     const std::vector<std::string>& font,
-    const opengl::TextOptions& options,
+    const ::opengl::TextOptions& options,
     const float scale = 1.0f) const
   {
-    opengl::Text text;
+    ::opengl::Text text;
     const auto mesh = create_mesh(value, font, options, text);
     const auto entity = entity_service_->create_entity();
     entity->components()->add(mesh);
@@ -119,5 +119,5 @@ public:
   }
 };
 
-} // namespace axgl::impl
+} // namespace axgl::impl::opengl
 

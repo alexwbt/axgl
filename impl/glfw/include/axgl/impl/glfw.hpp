@@ -9,23 +9,23 @@ namespace axgl
 {
 
 template <>
-inline std::shared_ptr<impl::GlfwWindowService> Axgl::use_service()
+inline std::shared_ptr<impl::glfw::WindowService> Axgl::use_service()
 {
   glfw::Window::initialize();
 
-  auto glfw_service = std::make_shared<impl::GlfwWindowService>();
-  register_service(DefaultServices::kWindow, glfw_service);
+  auto service = std::make_shared<impl::glfw::WindowService>();
+  register_service(DefaultServices::kWindow, service);
 
-  return glfw_service;
+  return service;
 }
 
 template <>
-inline std::shared_ptr<impl::GlfwInputService> Axgl::use_service()
+inline std::shared_ptr<impl::glfw::InputService> Axgl::use_service()
 {
-  auto input_service = std::make_shared<impl::GlfwInputService>();
-  register_service(DefaultServices::kInput, input_service);
+  auto service = std::make_shared<impl::glfw::InputService>();
+  register_service(DefaultServices::kInput, service);
 
-  return input_service;
+  return service;
 }
 
 } // namespace axgl

@@ -8,10 +8,10 @@
 
 #include <axgl/impl/glfw/window.hpp>
 
-namespace axgl::impl
+namespace axgl::impl::opengl
 {
 
-class OpenglRenderer : public axgl::Renderer
+class Renderer : public axgl::Renderer
 {
   int clear_bit_ = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
   GLfloat clear_color_r_ = 0.0f;
@@ -20,7 +20,7 @@ class OpenglRenderer : public axgl::Renderer
   GLfloat clear_color_a_ = 0.0f;
 
   bool initialized_glad_ = false;
-  std::shared_ptr<GlfwWindow> window_;
+  std::shared_ptr<glfw::Window> window_;
 
   bool after_render_ = false;
   std::vector<std::pair<float, axgl::Component*>> blend_renders_;
@@ -91,7 +91,7 @@ public:
 
   void set_window(std::shared_ptr<axgl::Window> window) override
   {
-    window_ = std::dynamic_pointer_cast<GlfwWindow>(std::move(window));
+    window_ = std::dynamic_pointer_cast<glfw::Window>(std::move(window));
     if (!window_)
 #ifdef AXGL_DEBUG
       throw std::runtime_error(
@@ -112,5 +112,5 @@ public:
   [[nodiscard]] glm::ivec2 viewport() const override { return window_->get_size(); }
 };
 
-} // namespace axgl::impl
+} // namespace axgl::impl::opengl
 

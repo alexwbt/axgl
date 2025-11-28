@@ -8,9 +8,9 @@ namespace axgl
 {
 
 template <>
-inline std::shared_ptr<impl::AssimpModelService> Axgl::use_service()
+inline std::shared_ptr<impl::assimp::ModelService> Axgl::use_service()
 {
-  auto service = std::make_shared<impl::AssimpModelService>();
+  auto service = std::make_shared<impl::assimp::ModelService>();
   register_service(DefaultServices::kModel, service);
 
   return service;

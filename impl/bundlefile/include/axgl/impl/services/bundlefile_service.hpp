@@ -12,13 +12,13 @@
 
 #include <bundlefile/unbundle.hpp>
 
-namespace axgl::impl
+namespace axgl::impl::bundlefile
 {
 
-class BundlefileService : public ServiceBase
+class BundlefileService : public impl::ServiceBase
 {
   std::shared_ptr<axgl::ResourceService> resource_service_;
-  std::unordered_map<std::string, std::unique_ptr<bundlefile::Bundle>> bundles_;
+  std::unordered_map<std::string, std::unique_ptr<::bundlefile::Bundle>> bundles_;
 
 public:
   void initialize() override
@@ -29,7 +29,7 @@ public:
 
   void load_bundlefile(const std::string& path)
   {
-    bundles_[path] = std::make_unique<bundlefile::Bundle>(path);
+    bundles_[path] = std::make_unique<::bundlefile::Bundle>(path);
 
     for (const auto bundle = bundles_[path]->get_bundle(); const auto& file : *bundle->files())
       resource_service_->load_resource(file->key()->str(), flatbuffers::make_span(file->data()));
@@ -44,4 +44,4 @@ public:
   }
 };
 
-} // namespace axgl::impl
+} // namespace axgl::impl::bundlefile

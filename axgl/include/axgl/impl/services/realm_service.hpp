@@ -12,7 +12,7 @@
 namespace axgl::impl
 {
 
-class RealmService : virtual public axgl::RealmService, public ServiceBase
+class RealmService : virtual public axgl::RealmService, public impl::ServiceBase
 {
   std::shared_ptr<Realm> realm_;
   std::vector<std::shared_ptr<Realm>> realms_;

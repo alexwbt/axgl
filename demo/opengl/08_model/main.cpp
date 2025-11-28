@@ -59,7 +59,7 @@ public:
     camera_service->set_camera(camera_entity);
 
     // load bundlefile
-    const auto bundlefile_service = axgl->get_service<axgl::impl::BundlefileService>("bundlefile");
+    const auto bundlefile_service = axgl->get_service<axgl::impl::bundlefile::BundlefileService>("bundlefile");
     bundlefile_service->load_bundlefile("demo_opengl_model_res.bin");
 
     // model entity
@@ -79,11 +79,11 @@ int main()
   axgl.use_service<axgl::impl::RealmService>();
   axgl.use_service<axgl::impl::CameraService>();
   axgl.use_service<axgl::impl::ResourceService>();
-  axgl.use_service<axgl::impl::BundlefileService>();
-  axgl.use_service<axgl::impl::GlfwInputService>();
-  axgl.use_service<axgl::impl::GlfwWindowService>();
-  axgl.use_service<axgl::impl::OpenglRendererService>();
-  axgl.use_service<axgl::impl::AssimpModelService>();
+  axgl.use_service<axgl::impl::bundlefile::BundlefileService>();
+  axgl.use_service<axgl::impl::glfw::InputService>();
+  axgl.use_service<axgl::impl::glfw::WindowService>();
+  axgl.use_service<axgl::impl::opengl::RendererService>();
+  axgl.use_service<axgl::impl::assimp::ModelService>();
   axgl.register_service("app", std::make_shared<Application>());
   axgl.initialize();
 

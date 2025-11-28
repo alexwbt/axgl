@@ -6,13 +6,13 @@
 
 #include <axgl/impl/opengl/texture.hpp>
 
-namespace axgl::impl
+namespace axgl::impl::opengl
 {
 
-struct OpenglText final
+struct Text final
 {
-  std::shared_ptr<OpenglTexture> texture;
+  std::shared_ptr<Texture> texture;
   glm::vec2 offset{0};
 };
 
-} // namespace axgl::impl
+} // namespace axgl::impl::opengl

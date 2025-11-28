@@ -7,12 +7,12 @@ namespace axgl
 {
 
 template <>
-inline std::shared_ptr<impl::BundlefileService> Axgl::use_service()
+inline std::shared_ptr<impl::bundlefile::BundlefileService> Axgl::use_service()
 {
-  auto bundlefile_service = std::make_shared<impl::BundlefileService>();
-  register_service("bundlefile", bundlefile_service);
+  auto service = std::make_shared<impl::bundlefile::BundlefileService>();
+  register_service("bundlefile", service);
 
-  return bundlefile_service;
+  return service;
 }
 
 } // namespace axgl

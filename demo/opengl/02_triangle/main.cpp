@@ -6,9 +6,9 @@
 int main()
 {
   axgl::Axgl axgl;
-  axgl.use_service<axgl::impl::GlfwWindowService>();
-  axgl.use_service<axgl::impl::GlfwInputService>();
-  axgl.use_service<axgl::impl::OpenglRendererService>();
+  axgl.use_service<axgl::impl::glfw::WindowService>();
+  axgl.use_service<axgl::impl::glfw::InputService>();
+  axgl.use_service<axgl::impl::opengl::RendererService>();
   axgl.use_service<axgl::impl::RealmService>();
   axgl.use_service<axgl::impl::EntityService>();
   axgl.use_service<axgl::impl::CameraService>();
@@ -40,7 +40,7 @@ int main()
     material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
     // triangle mesh
-    const auto mesh_comp = entity_service->create_component_t<axgl::impl::component::OpenglMesh>();
+    const auto mesh_comp = entity_service->create_component_t<axgl::impl::opengl::component::Mesh>();
     mesh_comp->set_vertices(std::vector<glm::vec2>{{0.8f, -0.5f}, {-0.8f, -0.5f}, {0.0f, 0.5f}});
     mesh_comp->set_material(material);
     entity->components()->add(mesh_comp);
