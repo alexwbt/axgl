@@ -14,55 +14,54 @@ class EntityContainer : public virtual Container<axgl::Entity>
   std::vector<std::shared_ptr<axgl::Entity>> entities_;
 
 public:
-  void tick() const
+  void tick(const Realm::Context& context) const
   {
     for (const auto& entity : entities_)
-      entity->tick();
+      entity->tick(context);
   }
 
-  void update()
+  void update(const Realm::Context& context)
   {
     for (const auto& entity : entities_)
     {
       if (entity->ticks() == 0)
-        entity->on_create();
+        entity->on_create(context);
 
-      entity->update();
+      entity->update(context);
     }
 
     if (!entities_.empty())
     {
       std::erase_if(
-        entities_, [](const auto& entity)
+        entities_, [&context](const auto& entity)
       {
         const auto should_remove = entity->should_remove();
         if (should_remove)
-          entity->on_remove();
+          entity->on_remove(context);
         return should_remove;
       });
     }
   }
 
-  void render() const
+  void render(const Realm::Context& context) const
   {
     for (const auto& entity : entities_)
-      entity->render();
+      entity->render(context);
   }
 
-  void on_create() const
+  void on_create(const Realm::Context& context) const
   {
     for (const auto& entity : entities_)
-      entity->on_create();
+      entity->on_create(context);
   }
 
-  void on_remove() const
+  void on_remove(const Realm::Context& context) const
   {
     for (const auto& entity : entities_)
-      entity->on_remove();
+      entity->on_remove(context);
   }
 
   void add(std::shared_ptr<axgl::Entity> entity) override { entities_.push_back(std::move(entity)); }
-
   void remove(const std::shared_ptr<axgl::Entity>& entity) override
   {
     for (auto& e : entities_)
@@ -74,7 +73,6 @@ public:
       }
     }
   }
-
   [[nodiscard]] util::Iterable<std::shared_ptr<axgl::Entity>> get() const override
   {
     return util::to_iterable_t<std::shared_ptr<axgl::Entity>>(entities_);

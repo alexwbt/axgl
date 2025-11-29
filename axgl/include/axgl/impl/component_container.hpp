@@ -13,55 +13,46 @@ namespace axgl::impl
 
 class ComponentContainer : virtual public Container<axgl::Component>
 {
-  axgl::Entity* entity_;
   std::vector<std::shared_ptr<axgl::Component>> components_;
 
 public:
-  explicit ComponentContainer(axgl::Entity* entity) : entity_(entity) { }
-
-  void tick() const
+  void tick(const Entity::Context& context) const
   {
     for (const auto& comp : components_)
       if (!comp->is_disabled())
-        comp->tick();
+        comp->tick(context);
   }
 
-  void update() const
+  void update(const Entity::Context& context) const
   {
     for (const auto& comp : components_)
       if (!comp->is_disabled())
-        comp->update();
+        comp->update(context);
   }
 
-  void render() const
+  void render(const Entity::Context& context) const
   {
     for (const auto& comp : components_)
       if (!comp->is_disabled())
-        comp->render();
+        comp->render(context);
   }
 
-  void on_create() const
+  void on_entity_create(const Entity::Context& context) const
   {
     for (const auto& comp : components_)
       if (!comp->is_disabled())
-        comp->on_create();
+        comp->on_entity_create(context);
   }
 
-  void on_remove() const
+  void on_entity_remove(const Entity::Context& context) const
   {
     for (const auto& comp : components_)
       if (!comp->is_disabled())
-        comp->on_remove();
+        comp->on_entity_remove(context);
   }
 
-  void add(std::shared_ptr<axgl::Component> component) override
-  {
-    component->set_entity(entity_);
-    components_.push_back(std::move(component));
-  }
-
+  void add(std::shared_ptr<axgl::Component> component) override { components_.push_back(std::move(component)); }
   void remove(const std::shared_ptr<axgl::Component>& component) override { std::erase(components_, component); }
-
   [[nodiscard]] util::Iterable<std::shared_ptr<axgl::Component>> get() const override
   {
     return util::to_iterable_t<std::shared_ptr<axgl::Component>>(components_);

@@ -18,11 +18,9 @@ public:
 
   axgl::Camera camera;
 
-  void update() override
+  void update(const Entity::Context& context) override
   {
-    const auto entity = get_entity();
-    const auto context = entity->get_context();
-    const auto renderer = context->realm->get_renderer();
+    const auto renderer = context.realm.get_renderer();
 
     if (const auto viewport = glm::vec2(renderer->viewport());
         viewport.x != camera.viewport.x || viewport.y != camera.viewport.y)
@@ -32,9 +30,9 @@ public:
       camera.update_projection_view_matrix();
     }
 
-    if (camera.position != entity->transform()->position)
+    if (camera.position != context.entity.transform().position)
     {
-      camera.position = entity->transform()->position;
+      camera.position = context.entity.transform().position;
       camera.update_projection_view_matrix();
     }
   }

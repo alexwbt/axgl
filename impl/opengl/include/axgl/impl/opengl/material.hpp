@@ -23,7 +23,7 @@ public:
 
   [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
 
-  virtual void use(const axgl::Realm::Context* context, const axgl::component::Mesh* mesh)
+  virtual void use(const axgl::Entity::Context& context, const axgl::component::Mesh& mesh)
   {
     glCullFace(GL_FRONT);
     switch (cull_mode_)

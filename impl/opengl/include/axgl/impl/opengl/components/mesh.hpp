@@ -9,6 +9,7 @@
 
 #include <axgl/interface/components/mesh.hpp>
 
+#include <axgl/axgl.hpp>
 #include <axgl/impl/component_base.hpp>
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
@@ -22,38 +23,37 @@ class Mesh : virtual public axgl::component::Mesh, public ComponentBase
 {
   int attribute_offset_ = 0;
   std::shared_ptr<impl::opengl::Material> material_;
+  std::shared_ptr<impl::opengl::RendererService> renderer_service_;
   std::shared_ptr<::opengl::VertexArrayObject> vertex_array_;
 
 public:
   Mesh() { vertex_array_ = std::make_shared<::opengl::VertexArrayObject>(); }
 
-  void render() override
+  void on_entity_create(const Entity::Context& context) override
+  {
+    renderer_service_ = context.axgl.renderer_service();
+  }
+
+  void render(const Entity::Context& context) override
   {
     ZoneScopedN("OpenglMesh Render");
 
     if (material_)
     {
-      const auto context = get_entity()->get_context();
-      const auto renderer = std::dynamic_pointer_cast<impl::opengl::Renderer>(context->realm->get_renderer());
-#ifdef AXGL_DEBUG
-      if (!renderer)
-        throw std::runtime_error("OpenglRenderer is required to render OpenglMesh.");
-#endif
-      const bool blend = material_->enabled_blend();
-      const bool after = renderer->is_after_render();
-      // do not render if blend is not enabled and is after render
-      if (!blend && after)
-        return;
-      // do not render and add to blend render list if enabled blending
-      if (blend && !after)
+      // do not render and add sorted render if enabled blending
+      if (material_->enabled_blend())
       {
-        const auto camera = context->axgl->camera_service()->get_camera();
-        const auto distance2 = glm::distance2(get_entity()->transform()->position, camera->position);
-        renderer->add_blend_render(distance2, this);
+        const auto camera = context.axgl.camera_service()->get_camera();
+        const auto distance2 = glm::distance2(context.entity.transform().position, camera->position);
+        renderer_service_->add_sorted_render(
+          distance2, [this, &context]
+        {
+          this->render(context);
+        });
         return;
       }
       // use material and render
-      material_->use(context, this);
+      material_->use(context, *this);
     }
     vertex_array_->draw();
   }

@@ -13,28 +13,22 @@ namespace axgl
 class Service
 {
 public:
-  struct Context final
+  struct Context
   {
-    Axgl* axgl = nullptr;
+    Axgl& axgl;
   };
 
   virtual ~Service() = default;
-
-  virtual void initialize() { }
-  virtual void terminate() { }
-  virtual void on_start() { }
-  virtual void on_end() { }
-  virtual void tick() { }
-  virtual void update() { }
-  virtual void render() { }
-  virtual bool running() { return true; }
-  virtual bool keep_alive() { return false; }
-  virtual void exec(const std::vector<std::string>& args) { }
-
-  virtual void set_context(const Context* context) = 0;
-
-protected:
-  [[nodiscard]] virtual const Context* get_context() const = 0;
+  virtual void initialize(const Context& context) { }
+  virtual void terminate(const Context& context) { }
+  virtual void on_start(const Context& context) { }
+  virtual void on_end(const Context& context) { }
+  virtual void tick(const Context& context) { }
+  virtual void update(const Context& context) { }
+  virtual void render(const Context& context) { }
+  virtual bool running(const Context& context) { return true; }
+  virtual bool keep_alive(const Context& context) { return false; }
+  virtual void exec(const Context& context, const std::vector<std::string>& args) { }
 };
 
 } // namespace axgl

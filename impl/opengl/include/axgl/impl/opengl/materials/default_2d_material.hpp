@@ -6,10 +6,10 @@
 #include <memory>
 #include <string>
 
-#include <axgl/axgl.hpp>
 #include <axgl/interface/components/mesh.hpp>
-#include <axgl/interface/realm.hpp>
+#include <axgl/interface/entity.hpp>
 
+#include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
@@ -33,12 +33,12 @@ public:
 #endif
   }
 
-  void use(const axgl::Realm::Context* context, const axgl::component::Mesh* mesh) override
+  void use(const axgl::Entity::Context& context, const axgl::component::Mesh& mesh) override
   {
     Material::use(context, mesh);
 
-    const auto camera = context->axgl->camera_service()->get_camera();
-    const auto model = mesh->get_entity()->get_model_matrix();
+    const auto camera = context.axgl.camera_service()->get_camera();
+    const auto model = context.entity.get_model_matrix();
     const auto mvp = camera->projection_view_matrix() * model;
 
     shader_->use_program();

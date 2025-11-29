@@ -55,6 +55,7 @@ int main()
 
   // realm
   const auto realm = realm_service->create_realm();
+  realm_service->set_active_realm(realm);
   realm->set_renderer(renderer);
 
   // circle entity
@@ -77,7 +78,7 @@ int main()
     camera_comp->camera.far_clip = 1;
     entity->components()->add(camera_comp);
   }
-  entity->transform()->scale = glm::vec3(200.0f);
+  entity->transform().scale = glm::vec3(200.0f);
   entity->update_model_matrix();
   realm->add_entity(entity);
 

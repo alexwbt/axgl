@@ -14,7 +14,6 @@
 #include <axgl/interface/texture.hpp>
 
 #include <axgl/impl/opengl/components/mesh.hpp>
-#include <axgl/impl/service_base.hpp>
 
 #include <opengl/static_vaos.hpp>
 #include <opengl/text.hpp>
@@ -22,7 +21,7 @@
 namespace axgl::impl::opengl
 {
 
-class TextService : public impl::ServiceBase
+class TextService : public axgl::Service
 {
   ::opengl::TextRenderer text_renderer_;
 
@@ -30,11 +29,10 @@ class TextService : public impl::ServiceBase
   std::shared_ptr<axgl::EntityService> entity_service_;
 
 public:
-  void initialize() override
+  void initialize(const Service::Context& context) override
   {
-    const auto context = get_context();
-    renderer_service_ = context->axgl->renderer_service();
-    entity_service_ = context->axgl->entity_service();
+    renderer_service_ = context.axgl.renderer_service();
+    entity_service_ = context.axgl.entity_service();
   }
 
   [[nodiscard]] bool has_font(const std::string& name) const { return text_renderer_.has_font(name); }
@@ -113,7 +111,7 @@ public:
     const auto mesh = create_mesh(value, font, options, text);
     const auto entity = entity_service_->create_entity();
     entity->components()->add(mesh);
-    entity->transform()->scale = glm::vec3(text.size, 1.0f) * scale;
+    entity->transform().scale = glm::vec3(text.size, 1.0f) * scale;
     entity->update_model_matrix();
     return entity;
   }

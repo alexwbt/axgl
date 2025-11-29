@@ -20,38 +20,36 @@ namespace axgl::impl
 class EntityBase : virtual public Entity
 {
   std::string id_;
-  Realm::Context* context_ = nullptr;
-
+  std::uint64_t ticks_ = 0;
   bool disabled_ = false;
-  std::uint32_t ticks_ = 0;
-
-  glm::mat4 model_matrix_{1.0f};
-  Transform transform_;
-
   bool should_remove_ = false;
 
+  Transform transform_;
+  glm::mat4 model_matrix_{1.0f};
+
 protected:
-  ComponentContainer components_{this};
+  ComponentContainer components_;
 
 public:
-  void tick() override
+  void tick(const Realm::Context& context) override
   {
     ++ticks_;
-    components_.tick();
+    components_.tick({context, *this});
   }
-  void update() override { components_.update(); }
-  void render() override { components_.render(); }
-  void on_create() override { components_.on_create(); }
-  void on_remove() override { components_.on_remove(); }
+  void update(const Realm::Context& context) override { components_.update({context, *this}); }
+  void render(const Realm::Context& context) override { components_.render({context, *this}); }
+  void on_create(const Realm::Context& context) override { components_.on_entity_create({context, *this}); }
+  void on_remove(const Realm::Context& context) override { components_.on_entity_remove({context, *this}); }
 
-  [[nodiscard]] uint32_t ticks() const override { return ticks_; }
+  [[nodiscard]] std::uint64_t ticks() const override { return ticks_; }
+
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
   [[nodiscard]] bool is_disabled() const override { return disabled_; }
 
   void set_id(const std::string& id) override { id_ = id; }
   [[nodiscard]] std::string get_id() const override { return id_; }
 
-  Transform* transform() override { return &transform_; }
+  Transform& transform() override { return transform_; }
   void update_model_matrix() override
   {
     model_matrix_ = glm::translate(glm::mat4(1.0f), transform_.position) * glm::toMat4(glm::quat(transform_.rotation)) *
@@ -63,16 +61,6 @@ public:
   [[nodiscard]] bool should_remove() const override { return should_remove_; }
 
   ComponentContainer* components() override { return &components_; }
-
-  void set_context(Realm::Context* context) override { context_ = context; }
-  Realm::Context* get_context() override
-  {
-#ifdef AXGL_DEBUG
-    if (!context_)
-      throw std::runtime_error("Entity context is not set.");
-#endif
-    return context_;
-  }
 };
 
 } // namespace axgl::impl

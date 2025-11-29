@@ -54,33 +54,44 @@ constexpr auto kLight = "light";
 class Axgl final : public ServiceContainer
 {
 public:
-  Axgl() { context_.axgl = this; }
-
-#ifdef AXGL_DEBUG
-  void initialize() const override
+  void initialize()
   {
-    CPPTRACE_TRY { ServiceContainer::initialize(); }
+#ifdef AXGL_DEBUG
+    CPPTRACE_TRY
+    {
+#endif
+      ServiceContainer::initialize({*this});
+#ifdef AXGL_DEBUG
+    }
     CPPTRACE_CATCH(const std::exception& e)
     {
       SPDLOG_ERROR(
         "Exception thrown duration initialization: {}\n{}", e.what(),
         cpptrace::from_current_exception().to_string(true));
     }
+#endif
   }
 
-  void terminate() const override
+  void terminate()
   {
-    CPPTRACE_TRY { ServiceContainer::terminate(); }
+#ifdef AXGL_DEBUG
+    CPPTRACE_TRY
+    {
+#endif
+      ServiceContainer::terminate({*this});
+#ifdef AXGL_DEBUG
+    }
     CPPTRACE_CATCH(const std::exception& e)
     {
       SPDLOG_ERROR(
         "Exception thrown duration termination: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
     }
-  }
 #endif
+  }
 
-  void run() const
+  void run()
   {
+    const Service::Context context{*this};
 #ifdef AXGL_DEBUG
     CPPTRACE_TRY
     {
@@ -91,8 +102,8 @@ public:
       auto start_time = std::chrono::high_resolution_clock::now();
       double delta_time = 0.0;
 
-      on_start();
-      while (running())
+      on_start(context);
+      while (running(context))
       {
         ZoneScopedN("Main Loop");
 
@@ -105,23 +116,23 @@ public:
         if (should_update)
         {
           ZoneScopedN("Update");
-          update();
+          update(context);
         }
 
         while (delta_time >= 1)
         {
           ZoneScopedN("Tick");
-          tick();
+          tick(context);
           delta_time--;
         }
 
         if (should_update)
         {
           ZoneScopedN("Render");
-          render();
+          render(context);
         }
       }
-      on_end();
+      on_end(context);
 #ifdef AXGL_DEBUG
     }
     CPPTRACE_CATCH(const std::exception& e)

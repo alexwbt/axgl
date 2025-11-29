@@ -9,6 +9,8 @@
 namespace axgl
 {
 
+class Realm;
+
 class Renderer
 {
 public:

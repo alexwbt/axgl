@@ -8,24 +8,19 @@
 #include <axgl/interface/services/resource_service.hpp>
 
 #include <axgl/axgl.hpp>
-#include <axgl/impl/service_base.hpp>
 
 #include <bundlefile/unbundle.hpp>
 
 namespace axgl::impl::bundlefile
 {
 
-class BundlefileService : public impl::ServiceBase
+class BundlefileService : public axgl::Service
 {
   std::shared_ptr<axgl::ResourceService> resource_service_;
   std::unordered_map<std::string, std::unique_ptr<::bundlefile::Bundle>> bundles_;
 
 public:
-  void initialize() override
-  {
-    const auto context = get_context();
-    resource_service_ = context->axgl->resource_service();
-  }
+  void initialize(const Service::Context& context) override { resource_service_ = context.axgl.resource_service(); }
 
   void load_bundlefile(const std::string& path)
   {

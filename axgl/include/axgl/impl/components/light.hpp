@@ -19,19 +19,19 @@ private:
 public:
   axgl::Light light;
 
-  void on_create() override
+  void on_entity_create(const Entity::Context& context) override
   {
-    light_service_ = get_entity()->get_context()->axgl->light_service();
+    light_service_ = context.axgl.light_service();
     light_service_->add_light(&light);
   }
 
-  void on_remove() override { light_service_->remove_light(&light); }
+  void on_entity_remove(const Entity::Context& context) override { light_service_->remove_light(&light); }
 
-  void update() override
+  void update(const Entity::Context& context) override
   {
-    const auto transform = get_entity()->transform();
-    light.position = transform->position;
-    light.direction = transform->rotation;
+    const auto& transform = context.entity.transform();
+    light.position = transform.position;
+    light.direction = transform.rotation;
   }
 };
 

@@ -1,63 +1,49 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/services/realm_service.hpp>
 
 #include <axgl/impl/realm.hpp>
-#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl
 {
 
-class RealmService : virtual public axgl::RealmService, public impl::ServiceBase
+class RealmService : virtual public axgl::RealmService
 {
-  std::shared_ptr<Realm> realm_;
-  std::vector<std::shared_ptr<Realm>> realms_;
-
-  Realm::Context context_;
+  std::shared_ptr<impl::Realm> realm_;
 
 public:
-  void initialize() override { context_.axgl = get_context()->axgl; }
-
-  void tick() override
+  void tick(const Service::Context& context) override
   {
     if (!realm_)
       return;
-    realm_->tick();
+    realm_->tick(context);
   }
 
-  void update() override
+  void update(const Service::Context& context) override
   {
     if (!realm_)
       return;
 
-    context_.realm = realm_.get();
-    realm_->update();
+    realm_->update(context);
   }
 
-  void render() override
+  void render(const Service::Context& context) override
   {
     if (!realm_)
       return;
-    realm_->render();
+    realm_->render(context);
   }
 
-  std::shared_ptr<axgl::Realm> create_realm() override
-  {
-    realm_ = std::make_shared<Realm>();
-    realm_->set_context(&context_);
-    realms_.push_back(realm_);
-    return realm_;
-  }
+  std::shared_ptr<axgl::Realm> create_realm() override { return std::make_shared<impl::Realm>(); }
 
   [[nodiscard]] std::shared_ptr<axgl::Realm> get_active_realm() const override { return realm_; }
 
-  void set_active_realm(std::shared_ptr<axgl::Realm> realm) override
+  void set_active_realm(const std::shared_ptr<axgl::Realm> realm) override
   {
-    auto realm_impl = std::dynamic_pointer_cast<Realm>(realm);
+    auto realm_impl = std::dynamic_pointer_cast<impl::Realm>(realm);
 #ifdef AXGL_DEBUG
     if (!realm_impl)
       throw std::runtime_error(

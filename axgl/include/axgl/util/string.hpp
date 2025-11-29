@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <iterator>
 #include <sstream>
 #include <string>
@@ -9,7 +10,7 @@ namespace util
 {
 
 template <typename result_t>
-inline void split(const std::string& s, char delim, result_t result)
+void split(const std::string& s, const char delim, result_t result)
 {
   std::istringstream iss(s);
   std::string item;
@@ -27,12 +28,11 @@ inline std::vector<std::string> split(const std::string& s, char delim)
 // trim from start (in place)
 inline void ltrim(std::string& s)
 {
-  s.erase(
-    s.begin(), std::find_if(
-                 s.begin(), s.end(), [](unsigned char ch)
+  const auto char_is_space = [](const unsigned char ch)
   {
     return !std::isspace(ch);
-  }));
+  };
+  s.erase(s.begin(), std::ranges::find_if(s, char_is_space));
 }
 
 // trim from end (in place)
@@ -76,18 +76,17 @@ inline std::string trim_copy(std::string s)
   return s;
 }
 
-constexpr std::size_t hash_string(const char* str, std::size_t hash = 5381)
+constexpr std::size_t hash_string(const char* str, const std::size_t hash = 5381)
 {
   return (*str == '\0') ? hash : hash_string(str + 1, (hash * 33) ^ static_cast<std::size_t>(*str));
 }
 
 constexpr std::size_t hash_string(const std::string& str) { return hash_string(str.c_str()); }
 
-void string_to_vec3(const std::string& str, float& x, float& y, float& z)
+inline void string_to_vec3(const std::string& str, float& x, float& y, float& z)
 {
   std::istringstream iss(str);
-  char comma;
-  if (!(iss >> x >> comma >> y >> comma >> z))
+  if (char comma; !(iss >> x >> comma >> y >> comma >> z))
   {
     x = 0;
     y = 0;

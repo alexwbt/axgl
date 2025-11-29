@@ -18,26 +18,24 @@
 #include <axgl/impl/opengl/materials/default_material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/opengl/texture.hpp>
-#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl::opengl
 {
 
-class RendererService : virtual public axgl::RendererService, public impl::ServiceBase
+class RendererService : virtual public axgl::RendererService
 {
-public:
-  void initialize() override
-  {
-    const auto axgl = get_context()->axgl;
+  std::vector<std::pair<float, std::function<void()>>> sorted_renders_;
 
+public:
+  void initialize(const Service::Context& context) override
+  {
     // set glfw context
-    const auto window_service = axgl->get_service<impl::glfw::WindowService>(DefaultServices::kWindow);
-    window_service->set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    window_service->set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    window_service->set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    impl::glfw::WindowService::set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // register mesh component
-    const auto entity_service = axgl->entity_service();
+    const auto entity_service = context.axgl.entity_service();
     entity_service->register_component_t<impl::opengl::component::Mesh>();
   }
 
@@ -59,5 +57,34 @@ public:
     return nullptr;
 #endif
   }
+
+  void add_sorted_render(float key, std::function<void()> render_func)
+  {
+    ZoneScopedN("Add Sorted Render");
+    sorted_renders_.emplace_back(key, std::move(render_func));
+  }
+
+  void sorted_render()
+  {
+    if (sorted_renders_.empty())
+      return;
+
+    ZoneScopedN("Sorted Render");
+
+    // sort sorted_renders_ by key descending
+    std::ranges::sort(
+      sorted_renders_, [](const auto& a, const auto& b)
+    {
+      return a.first > b.first;
+    });
+
+    // render
+    for (const auto& render_func : sorted_renders_ | std::views::values)
+      render_func();
+
+    // clear list
+    sorted_renders_.clear();
+  }
 };
+
 } // namespace axgl::impl::opengl

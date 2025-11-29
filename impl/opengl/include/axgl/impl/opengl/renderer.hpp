@@ -6,6 +6,9 @@
 #include <glm/glm.hpp>
 #include <spdlog/spdlog.h>
 
+#include <axgl/interface/renderer.hpp>
+
+#include <axgl/axgl.hpp>
 #include <axgl/impl/glfw/window.hpp>
 
 namespace axgl::impl::opengl
@@ -22,18 +25,7 @@ class Renderer : public axgl::Renderer
   bool initialized_glad_ = false;
   std::shared_ptr<glfw::Window> window_;
 
-  bool after_render_ = false;
-  std::vector<std::pair<float, axgl::Component*>> blend_renders_;
-
 public:
-  void add_blend_render(float distance2, axgl::Component* component)
-  {
-    ZoneScopedN("Add Blend Render");
-    blend_renders_.emplace_back(distance2, component);
-  }
-
-  [[nodiscard]] bool is_after_render() const { return after_render_; }
-
   bool ready() override { return window_ && window_->ready(); }
 
   void before_render() override
@@ -53,31 +45,10 @@ public:
 
     glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
     glClear(clear_bit_);
-
-    after_render_ = false;
   }
 
   void after_render() override
   {
-    after_render_ = true;
-
-    if (!blend_renders_.empty())
-    {
-      ZoneScopedN("Renderer Render Blending Components");
-
-      // sort blend_renders_ by distance descending
-      std::ranges::sort(
-        blend_renders_, [](const auto& a, const auto& b)
-      {
-        return a.first > b.first;
-      });
-      // render blending components
-      for (const auto& component : blend_renders_ | std::views::values)
-        component->render();
-      // clear list
-      blend_renders_.clear();
-    }
-
     ZoneScopedN("Renderer After Render");
     if (!window_)
       return;

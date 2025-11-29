@@ -1,18 +1,18 @@
 #pragma once
 
-#include <axgl/axgl.hpp>
+#include <axgl/interface/service.hpp>
+
 #include <axgl/impl/opengl/components/gui.hpp>
-#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl::opengl
 {
 
-class GuiService : public impl::ServiceBase
+class GuiService : public axgl::Service
 {
 public:
-  void initialize() override
+  void initialize(const Service::Context& context) override
   {
-    get_context()->axgl->entity_service()->register_component_t<axgl::impl::opengl::component::Gui>();
+    context.axgl.entity_service()->register_component_t<axgl::impl::opengl::component::Gui>();
   }
 };
 

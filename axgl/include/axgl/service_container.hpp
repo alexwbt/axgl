@@ -21,13 +21,10 @@ class ServiceContainer
   std::vector<std::shared_ptr<Service>> services_;
   std::unordered_map<std::string, std::shared_ptr<Service>> service_map_;
 
-protected:
-  Service::Context context_;
-
 public:
   virtual ~ServiceContainer() = default;
 
-  [[nodiscard]] virtual bool has_service(const std::string& id) const;
+  [[nodiscard]] virtual bool has_service(const std::string& id) const { return service_map_.contains(id); }
 
   virtual void register_service(const std::string& id, std::shared_ptr<Service> service)
   {
@@ -35,7 +32,6 @@ public:
     if (has_service(id))
       throw std::runtime_error(std::format("Trying to register service but service with id '{}' already exists.", id));
 #endif
-    service->set_context(&context_);
     service_map_.insert({id, service});
     services_.push_back(std::move(service));
   }
@@ -65,7 +61,7 @@ public:
   }
 
   template <typename ServiceType>
-  std::shared_ptr<ServiceType> get_service(const std::string& id) const
+  [[nodiscard]] std::shared_ptr<ServiceType> get_service(const std::string& id) const
   {
 #ifdef AXGL_DEBUG
     if (!has_service(id))
@@ -82,70 +78,69 @@ public:
     return service;
   }
 
-  virtual void initialize() const
+  virtual void initialize(const Service::Context& context) const
   {
     for (const auto& service : services_)
-      service->initialize();
+      service->initialize(context);
   }
 
-  virtual void terminate() const
+  virtual void terminate(const Service::Context& context) const
   {
     for (const auto& service : services_)
-      service->terminate();
+      service->terminate(context);
   }
 
-  virtual void on_start() const
+  virtual void on_start(const Service::Context& context) const
   {
     for (const auto& service : services_)
-      service->on_start();
+      service->on_start(context);
   }
 
-  virtual void on_end() const
+  virtual void on_end(const Service::Context& context) const
   {
     for (const auto& service : services_)
-      service->on_end();
+      service->on_end(context);
   }
 
-  virtual void tick() const
+  virtual void tick(const Service::Context& context) const
   {
     for (const auto& service : services_)
-      if (service->running())
-        service->tick();
+      if (service->running(context))
+        service->tick(context);
   }
 
-  virtual void update() const
+  virtual void update(const Service::Context& context) const
   {
     for (const auto& service : services_)
-      if (service->running())
-        service->update();
+      if (service->running(context))
+        service->update(context);
   }
 
-  virtual void render() const
+  virtual void render(const Service::Context& context) const
   {
     for (const auto& service : services_)
-      if (service->running())
-        service->render();
+      if (service->running(context))
+        service->render(context);
   }
 
-  [[nodiscard]] virtual bool running() const
+  [[nodiscard]] virtual bool running(const Service::Context& context) const
   {
     return std::ranges::any_of(
       services_, [&](const auto& service)
     {
-      return service->keep_alive();
+      return service->keep_alive(context);
     });
   }
 
-  virtual void exec(const std::string& command) const
+  virtual void exec(const Service::Context& context, const std::string& command) const
   {
     const auto args = util::split(command, ' ');
     if (args.empty())
       return;
 
     if (const auto service = get_service<Service>(args[0]))
-      service->exec(args);
+      service->exec(context, args);
   }
 };
 
-inline bool ServiceContainer::has_service(const std::string& id) const { return service_map_.contains(id); }
 } // namespace axgl

@@ -6,18 +6,15 @@
 
 #include <axgl/interface/camera.hpp>
 #include <axgl/interface/camera_mode.hpp>
-#include <axgl/interface/service.hpp>
 #include <axgl/interface/services/camera_service.hpp>
 #include <axgl/interface/services/input_service.hpp>
 
-#include <axgl/axgl.hpp>
 #include <axgl/impl/components/camera.hpp>
-#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl
 {
 
-class CameraService : virtual public axgl::CameraService, public impl::ServiceBase
+class CameraService : virtual public axgl::CameraService
 {
   std::shared_ptr<axgl::CameraMode> camera_mode_;
   std::shared_ptr<axgl::InputService> input_service_;
@@ -50,20 +47,18 @@ public:
     return camera_comp_ ? &camera_comp_->camera : nullptr;
   }
 
-  void initialize() override
+  void initialize(const Service::Context& context) override
   {
-    const auto axgl = get_context()->axgl;
-    input_service_ = axgl->input_service();
-
-    axgl->entity_service()->register_component_t<component::Camera>();
+    input_service_ = context.axgl.input_service();
+    context.axgl.entity_service()->register_component_t<component::Camera>();
   }
 
-  void update() override
+  void update(const Service::Context& context) override
   {
     if (!camera_mode_ || !camera_entity_)
       return;
     camera_mode_->update(camera_comp_->camera);
-    camera_entity_->transform()->position = camera_comp_->camera.position;
+    camera_entity_->transform().position = camera_comp_->camera.position;
   }
 };
 

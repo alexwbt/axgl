@@ -8,12 +8,11 @@
 #include <axgl/interface/services/input_service.hpp>
 
 #include <axgl/impl/glfw/window.hpp>
-#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl::glfw
 {
 
-class InputService : public axgl::InputService, public impl::ServiceBase
+class InputService : public axgl::InputService
 {
   std::shared_ptr<Window> window_;
   std::list<std::shared_ptr<axgl::Input>> inputs_;
@@ -197,7 +196,7 @@ public:
     });
   }
 
-  void update() override
+  void update(const Service::Context& context) override
   {
     if (!window_)
       return;

@@ -8,19 +8,19 @@
 
 #include <demo_opengl_gui/res.hpp>
 
-class Application : public axgl::impl::ServiceBase
+class Application : public axgl::Service
 {
 public:
-  void on_start() override
+  void on_start(const Context& context) override
   {
-    const auto axgl = get_context()->axgl;
-    const auto window_service = axgl->window_service();
-    const auto input_service = axgl->input_service();
-    const auto renderer_service = axgl->renderer_service();
-    const auto realm_service = axgl->realm_service();
-    const auto entity_service = axgl->entity_service();
-    const auto camera_service = axgl->camera_service();
-    const auto text_service = axgl->get_service<axgl::impl::opengl::TextService>("text");
+    const auto axgl = context.axgl;
+    const auto window_service = axgl.window_service();
+    const auto input_service = axgl.input_service();
+    const auto renderer_service = axgl.renderer_service();
+    const auto realm_service = axgl.realm_service();
+    const auto entity_service = axgl.entity_service();
+    const auto camera_service = axgl.camera_service();
+    const auto text_service = axgl.get_service<axgl::impl::opengl::TextService>("text");
 
     // window
     const auto window = window_service->create_window();
@@ -35,6 +35,7 @@ public:
 
     // realm
     const auto realm = realm_service->create_realm();
+    realm_service->set_active_realm(realm);
     realm->set_renderer(renderer);
 
     // camera entity
@@ -44,7 +45,7 @@ public:
       camera_entity->components()->add(camera_comp);
     }
     realm->add_entity(camera_entity);
-    camera_entity->transform()->position.z = -2;
+    camera_entity->transform().position.z = -2;
     camera_service->set_camera(camera_entity);
 
     // light entity
@@ -54,7 +55,7 @@ public:
       light_comp->light.color.ambient = glm::vec3(0.3f);
       light_entity->components()->add(light_comp);
     }
-    light_entity->transform()->rotation = glm::vec3(0.2f, -1.0f, 1.2f);
+    light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
     realm->add_entity(light_entity);
 
     // camera input
