@@ -4,6 +4,7 @@
 #include <memory>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <axgl/axgl.hpp>
@@ -23,6 +24,10 @@ namespace axgl::impl::opengl
 
 class TextService : public axgl::Service
 {
+public:
+  static constexpr std::string_view kTypeId = "service::text";
+
+private:
   ::opengl::TextRenderer text_renderer_;
 
   std::shared_ptr<axgl::RendererService> renderer_service_;

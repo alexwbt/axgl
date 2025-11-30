@@ -47,11 +47,7 @@ public:
     return camera_comp_ ? &camera_comp_->camera : nullptr;
   }
 
-  void initialize(const Service::Context& context) override
-  {
-    input_service_ = context.axgl.input_service();
-    context.axgl.entity_service()->register_component_t<component::Camera>();
-  }
+  void initialize(const Service::Context& context) override { input_service_ = context.axgl.input_service(); }
 
   void update(const Service::Context& context) override
   {

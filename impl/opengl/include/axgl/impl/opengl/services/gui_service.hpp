@@ -1,8 +1,8 @@
 #pragma once
 
-#include <axgl/interface/service.hpp>
+#include <string_view>
 
-#include <axgl/impl/opengl/components/gui.hpp>
+#include <axgl/interface/service.hpp>
 
 namespace axgl::impl::opengl
 {
@@ -10,10 +10,7 @@ namespace axgl::impl::opengl
 class GuiService : public axgl::Service
 {
 public:
-  void initialize(const Service::Context& context) override
-  {
-    context.axgl.entity_service()->register_component_t<axgl::impl::opengl::component::Gui>();
-  }
+  static constexpr std::string_view kTypeId = "service::gui";
 };
 
 } // namespace axgl::impl::opengl

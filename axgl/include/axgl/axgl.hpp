@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 #include <format>
 #include <memory>
 #include <string>
@@ -30,25 +31,10 @@
 namespace axgl
 {
 
-namespace DefaultServices
-{
-
-constexpr auto kWindow = "window";
-constexpr auto kRenderer = "renderer";
-constexpr auto kResource = "resource";
-constexpr auto kRealm = "realm";
-constexpr auto kEntity = "entity";
-constexpr auto kInput = "input";
-constexpr auto kModel = "model";
-constexpr auto kCamera = "camera";
-constexpr auto kLight = "light";
-
-}; // namespace DefaultServices
-
-#define AXGL_DECLARE_SERVICE_GETTER(service_name, service_getter_name)                                                 \
-  std::shared_ptr<service_name##Service> service_getter_name##_service() const                                         \
+#define AXGL_DECLARE_SERVICE_GETTER(service_type, service_getter_name)                                                 \
+  std::shared_ptr<service_type> service_getter_name##_service() const                                                  \
   {                                                                                                                    \
-    return get_service<service_name##Service>(DefaultServices::k##service_name);                                       \
+    return get_service<service_type>(service_type::kTypeId.data());                                                    \
   }
 
 class Axgl final : public ServiceContainer
@@ -96,10 +82,11 @@ public:
     CPPTRACE_TRY
     {
 #endif
-      constexpr int64_t kOneSecond = 1000000000;
+      using namespace std::chrono;
+      constexpr std::int64_t kOneSecond = 1000000000;
       constexpr double kTimeStep = kOneSecond / 60.0;
 
-      auto start_time = std::chrono::high_resolution_clock::now();
+      auto start_time = high_resolution_clock::now();
       double delta_time = 0.0;
 
       on_start(context);
@@ -107,8 +94,8 @@ public:
       {
         ZoneScopedN("Main Loop");
 
-        const auto now = std::chrono::high_resolution_clock::now();
-        delta_time += std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time).count() / kTimeStep;
+        const auto now = high_resolution_clock::now();
+        delta_time += static_cast<double>(duration_cast<nanoseconds>(now - start_time).count()) / kTimeStep;
         start_time = now;
 
         const auto should_update = delta_time >= 1;
@@ -137,54 +124,27 @@ public:
     }
     CPPTRACE_CATCH(const std::exception& e)
     {
-      SPDLOG_ERROR("Exception thrown: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
+      SPDLOG_CRITICAL("Exception thrown: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
     }
 #endif
   }
 
   template <typename ServiceType>
-  std::shared_ptr<ServiceType> use_service()
+  std::shared_ptr<ServiceType> register_service_t()
   {
-#ifdef AXGL_DEBUG
-    throw std::runtime_error(std::format("Service type '{}' is not supported.", typeid(ServiceType).name()));
-#else
+    SPDLOG_CRITICAL("Service type '{}' is not supported.", typeid(ServiceType).name());
     return nullptr;
-#endif
   }
 
-  AXGL_DECLARE_SERVICE_GETTER(Window, window)
-  AXGL_DECLARE_SERVICE_GETTER(Renderer, renderer)
-  AXGL_DECLARE_SERVICE_GETTER(Resource, resource)
-  AXGL_DECLARE_SERVICE_GETTER(Realm, realm)
-  AXGL_DECLARE_SERVICE_GETTER(Entity, entity)
-  AXGL_DECLARE_SERVICE_GETTER(Input, input)
-  AXGL_DECLARE_SERVICE_GETTER(Model, model)
-  AXGL_DECLARE_SERVICE_GETTER(Camera, camera)
-  AXGL_DECLARE_SERVICE_GETTER(Light, light)
+  AXGL_DECLARE_SERVICE_GETTER(axgl::WindowService, window)
+  AXGL_DECLARE_SERVICE_GETTER(axgl::RendererService, renderer)
+  AXGL_DECLARE_SERVICE_GETTER(axgl::ResourceService, resource)
+  AXGL_DECLARE_SERVICE_GETTER(axgl::RealmService, realm)
+  AXGL_DECLARE_SERVICE_GETTER(axgl::EntityService, entity)
+  AXGL_DECLARE_SERVICE_GETTER(axgl::InputService, input)
+  AXGL_DECLARE_SERVICE_GETTER(axgl::ModelService, model)
+  AXGL_DECLARE_SERVICE_GETTER(axgl::CameraService, camera)
+  AXGL_DECLARE_SERVICE_GETTER(axgl::LightService, light)
 };
 
-} // namespace axgl
-
-#include <axgl/impl/services/camera_service.hpp>
-#include <axgl/impl/services/entity_service.hpp>
-#include <axgl/impl/services/light_service.hpp>
-#include <axgl/impl/services/realm_service.hpp>
-#include <axgl/impl/services/resource_service.hpp>
-
-#define AXGL_DECLARE_USE_SERVICE(service_name)                                                                         \
-  template <>                                                                                                          \
-  inline std::shared_ptr<impl::service_name##Service> Axgl::use_service()                                              \
-  {                                                                                                                    \
-    const auto service = std::make_shared<impl::service_name##Service>();                                              \
-    register_service(DefaultServices::k##service_name, service);                                                       \
-    return service;                                                                                                    \
-  }
-
-namespace axgl
-{
-AXGL_DECLARE_USE_SERVICE(Resource)
-AXGL_DECLARE_USE_SERVICE(Realm)
-AXGL_DECLARE_USE_SERVICE(Entity)
-AXGL_DECLARE_USE_SERVICE(Camera)
-AXGL_DECLARE_USE_SERVICE(Light)
 } // namespace axgl

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include <axgl/interface/components/mesh.hpp>
@@ -15,6 +16,8 @@ namespace axgl
 class ModelService : virtual public Service
 {
 public:
+  static constexpr std::string_view kTypeId = "service::model";
+
   struct ModelResources
   {
     std::vector<std::shared_ptr<Texture>> textures;

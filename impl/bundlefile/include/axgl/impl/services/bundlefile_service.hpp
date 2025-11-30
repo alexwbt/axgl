@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include <axgl/interface/service.hpp>
@@ -16,6 +17,10 @@ namespace axgl::impl::bundlefile
 
 class BundlefileService : public axgl::Service
 {
+public:
+  static constexpr std::string_view kTypeId = "service::bundlefile";
+
+private:
   std::shared_ptr<axgl::ResourceService> resource_service_;
   std::unordered_map<std::string, std::unique_ptr<::bundlefile::Bundle>> bundles_;
 

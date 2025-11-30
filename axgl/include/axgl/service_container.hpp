@@ -24,51 +24,53 @@ class ServiceContainer
 public:
   virtual ~ServiceContainer() = default;
 
-  [[nodiscard]] virtual bool has_service(const std::string& id) const { return service_map_.contains(id); }
+  [[nodiscard]] virtual bool has_service(const std::string& type_id) const { return service_map_.contains(type_id); }
 
-  virtual void register_service(const std::string& id, std::shared_ptr<Service> service)
+  virtual void register_service(const std::string& type_id, std::shared_ptr<Service> service)
   {
 #ifdef AXGL_DEBUG
-    if (has_service(id))
-      throw std::runtime_error(std::format("Trying to register service but service with id '{}' already exists.", id));
+    if (has_service(type_id))
+      throw std::runtime_error(
+        std::format("Trying to register service but service with id '{}' already exists.", type_id));
 #endif
-    service_map_.insert({id, service});
+    service_map_.insert({type_id, service});
     services_.push_back(std::move(service));
   }
 
-  virtual void remove_service(const std::string& id)
+  virtual void remove_service(const std::string& type_id)
   {
 #ifdef AXGL_DEBUG
-    if (!has_service(id))
-      throw std::runtime_error(std::format("Trying to remove service but service with id '{}' does not exist.", id));
+    if (!has_service(type_id))
+      throw std::runtime_error(
+        std::format("Trying to remove service but service with id '{}' does not exist.", type_id));
 #endif
     std::erase_if(
       services_, [&](const auto& ptr)
     {
-      return ptr == service_map_[id];
+      return ptr == service_map_[type_id];
     });
-    service_map_.erase(id);
+    service_map_.erase(type_id);
   }
 
   template <typename ServiceType>
-  [[nodiscard]] bool has_service_type(const std::string& id) const
+  [[nodiscard]] bool has_service_type(const std::string& type_id) const
   {
-    if (!has_service(id))
+    if (!has_service(type_id))
       return false;
 
-    const auto& service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(id));
+    const auto& service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(type_id));
     return service != nullptr;
   }
 
   template <typename ServiceType>
-  [[nodiscard]] std::shared_ptr<ServiceType> get_service(const std::string& id) const
+  [[nodiscard]] std::shared_ptr<ServiceType> get_service(const std::string& type_id) const
   {
 #ifdef AXGL_DEBUG
-    if (!has_service(id))
-      throw std::runtime_error(std::format("Service with id '{}' is required, but does not exist.", id));
+    if (!has_service(type_id))
+      throw std::runtime_error(std::format("Service with id '{}' is required, but does not exist.", type_id));
 #endif
 
-    auto service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(id));
+    auto service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(type_id));
 #ifdef AXGL_DEBUG
     if (!service)
       throw std::runtime_error(
@@ -76,6 +78,12 @@ public:
 #endif
 
     return service;
+  }
+
+  template <typename ServiceType>
+  [[nodiscard]] std::shared_ptr<ServiceType> get_service_t() const
+  {
+    return get_service<ServiceType>(ServiceType::kTypeId.data());
   }
 
   virtual void initialize(const Service::Context& context) const

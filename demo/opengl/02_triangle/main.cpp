@@ -6,12 +6,12 @@
 int main()
 {
   axgl::Axgl axgl;
-  axgl.use_service<axgl::impl::glfw::WindowService>();
-  axgl.use_service<axgl::impl::glfw::InputService>();
-  axgl.use_service<axgl::impl::opengl::RendererService>();
-  axgl.use_service<axgl::impl::RealmService>();
-  axgl.use_service<axgl::impl::EntityService>();
-  axgl.use_service<axgl::impl::CameraService>();
+  axgl.register_service_t<axgl::impl::glfw::WindowService>();
+  axgl.register_service_t<axgl::impl::glfw::InputService>();
+  axgl.register_service_t<axgl::impl::opengl::RendererService>();
+  axgl.register_service_t<axgl::impl::RealmService>();
+  axgl.register_service_t<axgl::impl::EntityService>();
+  axgl.register_service_t<axgl::impl::CameraService>();
   axgl.initialize();
 
   const auto realm_service = axgl.realm_service();

@@ -11,6 +11,8 @@ namespace axgl
 class WindowService : virtual public Service
 {
 public:
+  static constexpr std::string_view kTypeId = "service::window";
+
   virtual std::shared_ptr<Window> create_window() = 0;
 };
 

@@ -3,6 +3,8 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
+#include <axgl/impl/components/camera.hpp>
+#include <axgl/impl/components/light.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 
@@ -20,7 +22,7 @@ public:
     const auto realm_service = axgl.realm_service();
     const auto entity_service = axgl.entity_service();
     const auto camera_service = axgl.camera_service();
-    const auto text_service = axgl.get_service<axgl::impl::opengl::TextService>("text");
+    const auto text_service = axgl.get_service_t<axgl::impl::opengl::TextService>();
 
     // window
     const auto window = window_service->create_window();
@@ -78,14 +80,14 @@ public:
 int main()
 {
   axgl::Axgl axgl;
-  axgl.use_service<axgl::impl::RealmService>();
-  axgl.use_service<axgl::impl::EntityService>();
-  axgl.use_service<axgl::impl::CameraService>();
-  axgl.use_service<axgl::impl::LightService>();
-  axgl.use_service<axgl::impl::glfw::WindowService>();
-  axgl.use_service<axgl::impl::glfw::InputService>();
-  axgl.use_service<axgl::impl::opengl::RendererService>();
-  axgl.use_service<axgl::impl::opengl::TextService>();
+  axgl.register_service_t<axgl::impl::RealmService>();
+  axgl.register_service_t<axgl::impl::EntityService>();
+  axgl.register_service_t<axgl::impl::CameraService>();
+  axgl.register_service_t<axgl::impl::LightService>();
+  axgl.register_service_t<axgl::impl::glfw::WindowService>();
+  axgl.register_service_t<axgl::impl::glfw::InputService>();
+  axgl.register_service_t<axgl::impl::opengl::RendererService>();
+  axgl.register_service_t<axgl::impl::opengl::TextService>();
   axgl.register_service("app", std::make_shared<Application>());
   axgl.initialize();
 

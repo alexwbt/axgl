@@ -14,7 +14,7 @@ namespace axgl::impl::component
 class Camera : public ComponentBase
 {
 public:
-  static constexpr std::string_view kType = "component::camera";
+  static constexpr std::string_view kTypeId = "component::camera";
 
   axgl::Camera camera;
 

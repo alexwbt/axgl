@@ -3,6 +3,7 @@
 #include <axgl/impl/assimp.hpp>
 #include <axgl/impl/bundlefile.hpp>
 #include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
+#include <axgl/impl/components/light.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 
@@ -60,7 +61,7 @@ public:
     camera_service->set_camera(camera_entity);
 
     // load bundlefile
-    const auto bundlefile_service = axgl.get_service<axgl::impl::bundlefile::BundlefileService>("bundlefile");
+    const auto bundlefile_service = axgl.get_service_t<axgl::impl::bundlefile::BundlefileService>();
     bundlefile_service->load_bundlefile("demo_opengl_model_res.bin");
 
     // model entity
@@ -75,16 +76,16 @@ public:
 int main()
 {
   axgl::Axgl axgl;
-  axgl.use_service<axgl::impl::EntityService>();
-  axgl.use_service<axgl::impl::LightService>();
-  axgl.use_service<axgl::impl::RealmService>();
-  axgl.use_service<axgl::impl::CameraService>();
-  axgl.use_service<axgl::impl::ResourceService>();
-  axgl.use_service<axgl::impl::bundlefile::BundlefileService>();
-  axgl.use_service<axgl::impl::glfw::InputService>();
-  axgl.use_service<axgl::impl::glfw::WindowService>();
-  axgl.use_service<axgl::impl::opengl::RendererService>();
-  axgl.use_service<axgl::impl::assimp::ModelService>();
+  axgl.register_service_t<axgl::impl::EntityService>();
+  axgl.register_service_t<axgl::impl::LightService>();
+  axgl.register_service_t<axgl::impl::RealmService>();
+  axgl.register_service_t<axgl::impl::CameraService>();
+  axgl.register_service_t<axgl::impl::ResourceService>();
+  axgl.register_service_t<axgl::impl::bundlefile::BundlefileService>();
+  axgl.register_service_t<axgl::impl::glfw::InputService>();
+  axgl.register_service_t<axgl::impl::glfw::WindowService>();
+  axgl.register_service_t<axgl::impl::opengl::RendererService>();
+  axgl.register_service_t<axgl::impl::assimp::ModelService>();
   axgl.register_service("app", std::make_shared<Application>());
   axgl.initialize();
 

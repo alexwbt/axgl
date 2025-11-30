@@ -11,7 +11,7 @@ namespace axgl::impl::component
 class Light : public ComponentBase
 {
 public:
-  static constexpr std::string_view kType = "component::light";
+  static constexpr std::string_view kTypeId = "component::light";
 
 private:
   std::shared_ptr<axgl::LightService> light_service_;

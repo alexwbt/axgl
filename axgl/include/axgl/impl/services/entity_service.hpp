@@ -35,7 +35,7 @@ public:
   {
 #ifdef AXGL_DEBUG
     if (!entity_factories_.contains(type))
-      throw std::runtime_error(std::format("Entity factory for '{}' not found.", type));
+      throw std::runtime_error(std::format("Entity factory for '{}' not registered.", type));
 #endif
     return entity_factories_.at(type)();
   }
@@ -44,7 +44,7 @@ public:
   {
 #ifdef AXGL_DEBUG
     if (!component_factories_.contains(type))
-      throw std::runtime_error(std::format("Component factory for '{}' not found.", type));
+      throw std::runtime_error(std::format("Component factory for '{}' not registered.", type));
 #endif
     return component_factories_.at(type)();
   }

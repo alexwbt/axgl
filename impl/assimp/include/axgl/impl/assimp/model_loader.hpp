@@ -15,8 +15,11 @@
 
 #include <axgl/interface/components/mesh.hpp>
 #include <axgl/interface/services/entity_service.hpp>
+#include <axgl/interface/services/model_service.hpp>
 #include <axgl/interface/services/renderer_service.hpp>
 #include <axgl/interface/services/resource_service.hpp>
+
+#include <axgl/axgl.hpp>
 
 namespace axgl::impl::assimp
 {

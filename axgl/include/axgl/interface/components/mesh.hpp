@@ -15,7 +15,7 @@ namespace axgl::component
 class Mesh : virtual public Component
 {
 public:
-  static constexpr std::string_view kType = "component::mesh";
+  static constexpr std::string_view kTypeId = "component::mesh";
 
   virtual void set_vertices(const std::span<const glm::vec2>& vertices) = 0;
   virtual void set_vertices(const std::span<const glm::vec3>& vertices) = 0;

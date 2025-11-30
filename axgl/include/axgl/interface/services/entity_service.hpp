@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <memory>
+#include <string_view>
 
 #include <axgl/interface/component.hpp>
 #include <axgl/interface/entity.hpp>
@@ -13,20 +14,22 @@ namespace axgl
 class EntityService : virtual public Service
 {
 public:
+  static constexpr std::string_view kTypeId = "service::entity";
+
   virtual void
-  register_entity_factory(const std::string& type, std::function<std::shared_ptr<Entity>()> entity_factory) = 0;
+  register_entity_factory(const std::string& type_id, std::function<std::shared_ptr<Entity>()> entity_factory) = 0;
   virtual void register_component_factory(
-    const std::string& type, std::function<std::shared_ptr<Component>()> component_factory) = 0;
+    const std::string& type_id, std::function<std::shared_ptr<Component>()> component_factory) = 0;
 
   virtual std::shared_ptr<Entity> create_entity() = 0;
-  virtual std::shared_ptr<Entity> create_entity(const std::string& type) = 0;
-  virtual std::shared_ptr<Component> create_component(const std::string& type) = 0;
+  virtual std::shared_ptr<Entity> create_entity(const std::string& type_id) = 0;
+  virtual std::shared_ptr<Component> create_component(const std::string& type_id) = 0;
 
   template <typename EntityType>
   void register_entity_t()
   {
     register_entity_factory(
-      EntityType::kType.data(), []
+      EntityType::kTypeId.data(), []
     {
       return std::make_shared<EntityType>();
     });
@@ -36,7 +39,7 @@ public:
   void register_component_t()
   {
     register_component_factory(
-      ComponentType::kType.data(), []
+      ComponentType::kTypeId.data(), []
     {
       return std::make_shared<ComponentType>();
     });
@@ -45,7 +48,7 @@ public:
   template <typename EntityType>
   std::shared_ptr<EntityType> create_entity_t()
   {
-    const auto type = EntityType::kType.data();
+    const auto type = EntityType::kTypeId.data();
     auto entity = std::dynamic_pointer_cast<EntityType>(create_entity(type));
 #ifdef AXGL_DEBUG
     if (!entity)
@@ -57,7 +60,7 @@ public:
   template <typename ComponentType>
   std::shared_ptr<ComponentType> create_component_t()
   {
-    const auto type = ComponentType::kType.data();
+    const auto type = ComponentType::kTypeId.data();
     auto component = std::dynamic_pointer_cast<ComponentType>(create_component(type));
 #ifdef AXGL_DEBUG
     if (!component)

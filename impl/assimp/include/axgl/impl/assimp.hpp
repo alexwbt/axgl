@@ -1,19 +1,22 @@
 #pragma once
 
-#include <axgl/axgl.hpp>
-
-#include <axgl/impl/assimp/model.hpp>
+#include <axgl/configure.hpp>
+#include <axgl/impl/assimp/model_service.hpp>
 
 namespace axgl
 {
+AXGL_DECLARE_REGISTER_SERVICE(impl::assimp::ModelService)
 
-template <>
-inline std::shared_ptr<impl::assimp::ModelService> Axgl::use_service()
+inline void auto_config(Axgl& axgl)
 {
-  auto service = std::make_shared<impl::assimp::ModelService>();
-  register_service(DefaultServices::kModel, service);
+  axgl.register_service_t<impl::RealmService>();
+  axgl.register_service_t<impl::EntityService>();
+  axgl.register_service_t<impl::CameraService>();
+  axgl.register_service_t<impl::LightService>();
+  axgl.register_service_t<impl::SortedRenderService>();
 
-  return service;
+  axgl.entity_service()->register_component_t<impl::component::Camera>();
+  axgl.entity_service()->register_component_t<impl::component::Light>();
 }
 
 } // namespace axgl

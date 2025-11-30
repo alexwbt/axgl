@@ -15,9 +15,6 @@ class Realm : public axgl::Realm
   std::shared_ptr<SortedRenderService> sorted_render_service_;
 
 public:
-  void set_renderer(std::shared_ptr<Renderer> renderer) override { renderer_ = std::move(renderer); }
-  [[nodiscard]] std::shared_ptr<Renderer> get_renderer() const override { return renderer_; }
-
   void tick(const Service::Context& context) override { entities_.tick({context, *this}); }
 
   void update(const Service::Context& context) override { entities_.update({context, *this}); }
@@ -27,10 +24,17 @@ public:
     if (!renderer_ || !renderer_->ready())
       return;
 
+    if (!sorted_render_service_)
+      sorted_render_service_ = context.axgl.get_service_t<SortedRenderService>();
+
     renderer_->before_render();
     entities_.render({context, *this});
+    sorted_render_service_->render();
     renderer_->after_render();
   }
+
+  void set_renderer(std::shared_ptr<Renderer> renderer) override { renderer_ = std::move(renderer); }
+  [[nodiscard]] std::shared_ptr<Renderer> get_renderer() const override { return renderer_; }
 
   void add_entity(std::shared_ptr<Entity> entity) override { entities_.add(std::move(entity)); }
   void remove_entity(const std::shared_ptr<Entity> entity) override { entities_.remove(entity); }

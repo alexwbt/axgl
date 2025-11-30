@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string_view>
 
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/pointer.hpp>
@@ -13,6 +14,8 @@ namespace axgl
 class InputService : virtual public Service
 {
 public:
+  static constexpr std::string_view kTypeId = "service::input";
+
   enum class CursorMode
   {
     kLocked,

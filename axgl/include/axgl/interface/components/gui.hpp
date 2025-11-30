@@ -11,7 +11,7 @@ namespace axgl::component
 class Gui : virtual public Component
 {
 public:
-  static constexpr std::string_view kType = "component::gui";
+  static constexpr std::string_view kTypeId = "component::gui";
 
   virtual std::shared_ptr<axgl::gui::Element> root() = 0;
   virtual void set_root(std::shared_ptr<axgl::gui::Element> root) = 0;

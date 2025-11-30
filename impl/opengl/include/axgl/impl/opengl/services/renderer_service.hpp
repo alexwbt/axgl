@@ -24,8 +24,6 @@ namespace axgl::impl::opengl
 
 class RendererService : virtual public axgl::RendererService
 {
-  std::vector<std::pair<float, std::function<void()>>> sorted_renders_;
-
 public:
   void initialize(const Service::Context& context) override
   {
@@ -33,10 +31,6 @@ public:
     impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 3);
     impl::glfw::WindowService::set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    // register mesh component
-    const auto entity_service = context.axgl.entity_service();
-    entity_service->register_component_t<impl::opengl::component::Mesh>();
   }
 
   std::shared_ptr<axgl::Renderer> create_renderer() override { return std::make_shared<Renderer>(); }
@@ -56,34 +50,6 @@ public:
 #else
     return nullptr;
 #endif
-  }
-
-  void add_sorted_render(float key, std::function<void()> render_func)
-  {
-    ZoneScopedN("Add Sorted Render");
-    sorted_renders_.emplace_back(key, std::move(render_func));
-  }
-
-  void sorted_render()
-  {
-    if (sorted_renders_.empty())
-      return;
-
-    ZoneScopedN("Sorted Render");
-
-    // sort sorted_renders_ by key descending
-    std::ranges::sort(
-      sorted_renders_, [](const auto& a, const auto& b)
-    {
-      return a.first > b.first;
-    });
-
-    // render
-    for (const auto& render_func : sorted_renders_ | std::views::values)
-      render_func();
-
-    // clear list
-    sorted_renders_.clear();
   }
 };
 
