@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <format>
 #include <memory>
+#include <ranges>
 #include <unordered_map>
 #include <vector>
 
@@ -18,11 +19,12 @@ namespace axgl
 
 class ServiceContainer
 {
-  std::vector<std::shared_ptr<Service>> services_;
   std::unordered_map<std::string, std::shared_ptr<Service>> service_map_;
 
 public:
   virtual ~ServiceContainer() = default;
+
+  [[nodiscard]] auto services() const { return service_map_ | std::views::values; }
 
   [[nodiscard]] virtual bool has_service(const std::string& type_id) const { return service_map_.contains(type_id); }
 
@@ -34,7 +36,6 @@ public:
         std::format("Trying to register service but service with id '{}' already exists.", type_id));
 #endif
     service_map_.insert({type_id, service});
-    services_.push_back(std::move(service));
   }
 
   virtual void remove_service(const std::string& type_id)
@@ -44,11 +45,6 @@ public:
       throw std::runtime_error(
         std::format("Trying to remove service but service with id '{}' does not exist.", type_id));
 #endif
-    std::erase_if(
-      services_, [&](const auto& ptr)
-    {
-      return ptr == service_map_[type_id];
-    });
     service_map_.erase(type_id);
   }
 
@@ -88,45 +84,45 @@ public:
 
   virtual void initialize(const Service::Context& context) const
   {
-    for (const auto& service : services_)
+    for (const auto& service : services())
       service->initialize(context);
   }
 
   virtual void terminate(const Service::Context& context) const
   {
-    for (const auto& service : services_)
+    for (const auto& service : services())
       service->terminate(context);
   }
 
   virtual void on_start(const Service::Context& context) const
   {
-    for (const auto& service : services_)
+    for (const auto& service : services())
       service->on_start(context);
   }
 
   virtual void on_end(const Service::Context& context) const
   {
-    for (const auto& service : services_)
+    for (const auto& service : services())
       service->on_end(context);
   }
 
   virtual void tick(const Service::Context& context) const
   {
-    for (const auto& service : services_)
+    for (const auto& service : services())
       if (service->running(context))
         service->tick(context);
   }
 
   virtual void update(const Service::Context& context) const
   {
-    for (const auto& service : services_)
+    for (const auto& service : services())
       if (service->running(context))
         service->update(context);
   }
 
   virtual void render(const Service::Context& context) const
   {
-    for (const auto& service : services_)
+    for (const auto& service : services())
       if (service->running(context))
         service->render(context);
   }
@@ -134,7 +130,7 @@ public:
   [[nodiscard]] virtual bool running(const Service::Context& context) const
   {
     return std::ranges::any_of(
-      services_, [&](const auto& service)
+      services(), [&](const auto& service)
     {
       return service->keep_alive(context);
     });
