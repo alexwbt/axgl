@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
 #include <string_view>
 #include <vector>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
 #include <axgl/interface/entity.hpp>
 #include <axgl/interface/material.hpp>
@@ -13,19 +13,20 @@
 namespace axgl
 {
 
-class ModelService : virtual public Service
+class ModelService : virtual public axgl::Service
 {
 public:
   static constexpr std::string_view kTypeId = "service::model";
 
   struct ModelResources
   {
-    std::vector<std::shared_ptr<Texture>> textures;
-    std::vector<std::shared_ptr<Material>> materials;
-    std::vector<std::shared_ptr<component::Mesh>> meshes;
+    std::vector<axgl::ptr_t<axgl::Texture>> textures;
+    std::vector<axgl::ptr_t<axgl::Material>> materials;
+    std::vector<axgl::ptr_t<axgl::component::Mesh>> meshes;
   };
 
-  virtual ModelResources load_model(std::shared_ptr<Entity> entity, const std::string& resource_key) = 0;
+  virtual axgl::ModelService::ModelResources
+  load_model(axgl::ptr_t<axgl::Entity> entity, const std::string& resource_key) = 0;
 };
 
 } // namespace axgl

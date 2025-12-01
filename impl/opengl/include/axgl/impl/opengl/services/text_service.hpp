@@ -30,8 +30,8 @@ public:
 private:
   ::opengl::TextRenderer text_renderer_;
 
-  std::shared_ptr<axgl::RendererService> renderer_service_;
-  std::shared_ptr<axgl::EntityService> entity_service_;
+  axgl::ptr_t<axgl::RendererService> renderer_service_;
+  axgl::ptr_t<axgl::EntityService> entity_service_;
 
 public:
   void initialize(const Service::Context& context) override
@@ -60,7 +60,7 @@ public:
     text_renderer_.unload_font(name);
   }
 
-  [[nodiscard]] std::shared_ptr<axgl::Texture> create_texture(
+  [[nodiscard]] axgl::ptr_t<axgl::Texture> create_texture(
     const std::string& value,
     const std::vector<std::string>& font,
     const ::opengl::TextOptions& options,
@@ -80,7 +80,7 @@ public:
     return texture;
   }
 
-  [[nodiscard]] std::shared_ptr<axgl::Material> create_material(
+  [[nodiscard]] axgl::ptr_t<axgl::Material> create_material(
     const std::string& value,
     const std::vector<std::string>& font,
     const ::opengl::TextOptions& options,
@@ -93,7 +93,7 @@ public:
     return material;
   }
 
-  [[nodiscard]] std::shared_ptr<axgl::component::Mesh> create_mesh(
+  [[nodiscard]] axgl::ptr_t<axgl::component::Mesh> create_mesh(
     const std::string& value,
     const std::vector<std::string>& font,
     const ::opengl::TextOptions& options,
@@ -106,7 +106,7 @@ public:
     return mesh;
   }
 
-  [[nodiscard]] std::shared_ptr<axgl::Entity> create_entity(
+  [[nodiscard]] axgl::ptr_t<axgl::Entity> create_entity(
     const std::string& value,
     const std::vector<std::string>& font,
     const ::opengl::TextOptions& options,

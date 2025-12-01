@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <memory>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/window.hpp>
 
 #include <glfw/window.hpp>
@@ -12,10 +10,10 @@ namespace axgl::impl::glfw
 
 class Window : public axgl::Window
 {
-  std::shared_ptr<::glfw::Window> window_;
+  axgl::ptr_t<::glfw::Window> window_;
 
 public:
-  explicit Window(std::shared_ptr<::glfw::Window> window) : window_(std::move(window)) { }
+  explicit Window(axgl::ptr_t<::glfw::Window> window) : window_(std::move(window)) { }
 
   void set_title(const std::string& title) override
   {
@@ -59,7 +57,7 @@ public:
 
   [[nodiscard]] glm::ivec2 get_size() const override { return window_->get_size(); }
 
-  auto glfw_window() const { return window_; }
+  [[nodiscard]] auto glfw_window() const { return window_; }
 };
 
 } // namespace axgl::impl::glfw

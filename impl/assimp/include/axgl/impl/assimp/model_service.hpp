@@ -1,22 +1,21 @@
 #pragma once
 
-#include <memory>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/services/entity_service.hpp>
 #include <axgl/interface/services/model_service.hpp>
 #include <axgl/interface/services/renderer_service.hpp>
 #include <axgl/interface/services/resource_service.hpp>
 
-#include "./model_loader.hpp"
+#include "model_loader.hpp"
 
 namespace axgl::impl::assimp
 {
 
 class ModelService : virtual public axgl::ModelService
 {
-  std::shared_ptr<axgl::EntityService> entity_service_;
-  std::shared_ptr<axgl::RendererService> renderer_service_;
-  std::shared_ptr<axgl::ResourceService> resource_service_;
+  axgl::ptr_t<axgl::EntityService> entity_service_;
+  axgl::ptr_t<axgl::RendererService> renderer_service_;
+  axgl::ptr_t<axgl::ResourceService> resource_service_;
 
 public:
   void initialize(const Service::Context& context) override
@@ -26,7 +25,7 @@ public:
     resource_service_ = context.axgl.resource_service();
   }
 
-  ModelResources load_model(const std::shared_ptr<axgl::Entity> entity, const std::string& resource_key) override
+  ModelResources load_model(const axgl::ptr_t<axgl::Entity> entity, const std::string& resource_key) override
   {
     ModelLoader loader(entity_service_, renderer_service_, resource_service_, entity, resource_key, "default");
     return loader.resources_;

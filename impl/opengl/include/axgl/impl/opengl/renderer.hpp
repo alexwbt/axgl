@@ -23,10 +23,10 @@ class Renderer : public axgl::Renderer
   GLfloat clear_color_a_ = 0.0f;
 
   bool initialized_glad_ = false;
-  std::shared_ptr<glfw::Window> window_;
+  axgl::ptr_t<glfw::Window> window_;
 
-  std::vector<const Renderable*> default_renderables_;
-  std::vector<const Renderable*> blend_renderables_;
+  // std::vector<const Renderable*> default_renderables_;
+  // std::vector<const Renderable*> blend_renderables_;
 
 public:
   bool ready() override { return window_ && window_->ready(); }
@@ -49,21 +49,21 @@ public:
     glClear(clear_bit_);
 
     // render
-    {
-      ZoneScopedN("Renderer Render");
-
-      for (const auto* renderable : default_renderables_)
-        renderable->render();
-
-      // render blended
-      std::ranges::sort(
-        blend_renderables_, [](const auto* a, const auto* b)
-      {
-        return a->sorted > b->sorted;
-      });
-      for (const auto* renderable : blend_renderables_)
-        renderable->render();
-    }
+    // {
+    //   ZoneScopedN("Renderer Render");
+    //
+    //   for (const auto* renderable : default_renderables_)
+    //     renderable->render();
+    //
+    //   // render blended
+    //   std::ranges::sort(
+    //     blend_renderables_, [](const auto* a, const auto* b)
+    //   {
+    //     return a->sorted > b->sorted;
+    //   });
+    //   for (const auto* renderable : blend_renderables_)
+    //     renderable->render();
+    // }
 
     window_->swap_buffers();
 
@@ -72,25 +72,25 @@ public:
     glDisable(GL_STENCIL_TEST);
   }
 
-  void add_renderable(const Renderable* renderable) override
-  {
-    switch (renderable->stage)
-    {
-    case Stage::kBlend: blend_renderables_.push_back(renderable); break;
-    default: default_renderables_.push_back(renderable); break;
-    }
-  }
+  // void add_renderable(const Renderable* renderable) override
+  // {
+  //   switch (renderable->stage)
+  //   {
+  //   case Stage::kBlend: blend_renderables_.push_back(renderable); break;
+  //   default: default_renderables_.push_back(renderable); break;
+  //   }
+  // }
+  //
+  // void remove_renderable(const Renderable* renderable) override
+  // {
+  //   switch (renderable->stage)
+  //   {
+  //   case Stage::kBlend: blend_renderables_.erase(std::ranges::find(blend_renderables_, renderable)); break;
+  //   default: default_renderables_.erase(std::ranges::find(default_renderables_, renderable)); break;
+  //   }
+  // }
 
-  void remove_renderable(const Renderable* renderable) override
-  {
-    switch (renderable->stage)
-    {
-    case Stage::kBlend: blend_renderables_.erase(std::ranges::find(blend_renderables_, renderable)); break;
-    default: default_renderables_.erase(std::ranges::find(default_renderables_, renderable)); break;
-    }
-  }
-
-  void set_window(std::shared_ptr<axgl::Window> window) override
+  void set_window(axgl::ptr_t<axgl::Window> window) override
   {
     window_ = std::dynamic_pointer_cast<glfw::Window>(std::move(window));
     if (!window_)

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <memory>
-
-#include <axgl/interface/container.hpp>
+// #include <axgl/common.hpp>
+// #include <axgl/interface/container.hpp>
 
 namespace axgl::gui
 {
@@ -18,10 +17,10 @@ public:
   virtual void on_create() { }
   virtual void on_remove() { }
 
-  virtual Container<Element>* children() = 0;
-
-  virtual void set_parent(std::weak_ptr<Element> parent) = 0;
-  virtual std::shared_ptr<Element> get_parent() = 0;
+  // virtual Container<Element>* children() = 0;
+  //
+  // virtual void set_parent(std::weak_ptr<Element> parent) = 0;
+  // virtual ptr_t<Element> get_parent() = 0;
 };
 
 } // namespace axgl::gui

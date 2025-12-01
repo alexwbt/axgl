@@ -7,15 +7,7 @@
 #include <string>
 #include <unordered_map>
 
-#ifdef AXGL_DEBUG
-#include <cpptrace/cpptrace.hpp>
-#include <cpptrace/from_current.hpp>
-#include <stdexcept>
-#endif
-
-#include <spdlog/spdlog.h>
-#include <tracy/Tracy.hpp>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/services/camera_service.hpp>
 #include <axgl/interface/services/entity_service.hpp>
 #include <axgl/interface/services/input_service.hpp>
@@ -32,7 +24,7 @@ namespace axgl
 {
 
 #define AXGL_DECLARE_SERVICE_GETTER(service_type, service_getter_name)                                                 \
-  std::shared_ptr<service_type> service_getter_name##_service() const                                                  \
+  ptr_t<service_type> service_getter_name##_service() const                                                            \
   {                                                                                                                    \
     return get_service<service_type>(service_type::kTypeId.data());                                                    \
   }
@@ -130,7 +122,7 @@ public:
   }
 
   template <typename ServiceType>
-  std::shared_ptr<ServiceType> register_service_t()
+  ptr_t<ServiceType> register_service_t()
   {
     SPDLOG_CRITICAL("Service type '{}' is not supported.", typeid(ServiceType).name());
     return nullptr;
@@ -149,19 +141,16 @@ public:
 
 } // namespace axgl
 
-#include <axgl/impl/camera_modes/keyboard_2d_free_fly_camera_mode.hpp>
-#include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
 #include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/components/light.hpp>
 #include <axgl/impl/services/camera_service.hpp>
 #include <axgl/impl/services/entity_service.hpp>
-#include <axgl/impl/services/light_service.hpp>
 #include <axgl/impl/services/realm_service.hpp>
 #include <axgl/impl/services/resource_service.hpp>
 
 #define AXGL_DECLARE_REGISTER_SERVICE(service_type)                                                                    \
   template <>                                                                                                          \
-  inline std::shared_ptr<service_type> Axgl::register_service_t()                                                      \
+  inline ptr_t<service_type> Axgl::register_service_t()                                                                \
   {                                                                                                                    \
     const auto service = std::make_shared<service_type>();                                                             \
     register_service(service_type::kTypeId.data(), service);                                                           \
@@ -172,7 +161,6 @@ namespace axgl
 {
 AXGL_DECLARE_REGISTER_SERVICE(impl::CameraService)
 AXGL_DECLARE_REGISTER_SERVICE(impl::EntityService)
-AXGL_DECLARE_REGISTER_SERVICE(impl::LightService)
 AXGL_DECLARE_REGISTER_SERVICE(impl::RealmService)
 AXGL_DECLARE_REGISTER_SERVICE(impl::ResourceService)
 
@@ -180,7 +168,6 @@ inline void configure_default(Axgl& axgl)
 {
   axgl.register_service_t<impl::CameraService>();
   axgl.register_service_t<impl::EntityService>();
-  axgl.register_service_t<impl::LightService>();
   axgl.register_service_t<impl::RealmService>();
   axgl.register_service_t<impl::ResourceService>();
 

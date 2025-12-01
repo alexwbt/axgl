@@ -1,8 +1,8 @@
 #pragma once
 
 #include <list>
-#include <memory>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/pointer.hpp>
 #include <axgl/interface/services/input_service.hpp>
@@ -14,9 +14,9 @@ namespace axgl::impl::glfw
 
 class InputService : public axgl::InputService
 {
-  std::shared_ptr<Window> window_;
-  std::list<std::shared_ptr<axgl::Input>> inputs_;
-  std::list<std::shared_ptr<axgl::Pointer>> pointers_;
+  axgl::ptr_t<axgl::impl::glfw::Window> window_;
+  std::list<axgl::ptr_t<axgl::Input>> inputs_;
+  std::list<axgl::ptr_t<axgl::Pointer>> pointers_;
 
   static int to_glfw_keycode(const axgl::Input::Source source)
   {
@@ -148,9 +148,9 @@ class InputService : public axgl::InputService
   }
 
 public:
-  void set_window(const std::shared_ptr<axgl::Window> window) override
+  void set_window(const axgl::ptr_t<axgl::Window> window) override
   {
-    window_ = dynamic_pointer_cast<Window>(window);
+    window_ = dynamic_pointer_cast<axgl::impl::glfw::Window>(window);
 #ifdef AXGL_DEBUG
     if (!window_)
       throw std::runtime_error(
@@ -176,11 +176,11 @@ public:
     }
   }
 
-  void add_input(std::shared_ptr<axgl::Input> input) override { inputs_.push_back(std::move(input)); }
+  void add_input(axgl::ptr_t<axgl::Input> input) override { inputs_.push_back(std::move(input)); }
 
-  void add_pointer(std::shared_ptr<axgl::Pointer> pointer) override { pointers_.push_back(std::move(pointer)); }
+  void add_pointer(axgl::ptr_t<axgl::Pointer> pointer) override { pointers_.push_back(std::move(pointer)); }
 
-  void remove_input(uint32_t id) override
+  void remove_input(std::uint32_t id) override
   {
     inputs_.remove_if([id](const auto& input)
     {
@@ -188,7 +188,7 @@ public:
     });
   }
 
-  void remove_pointer(uint32_t id) override
+  void remove_pointer(std::uint32_t id) override
   {
     pointers_.remove_if([id](const auto& pointer)
     {
@@ -196,7 +196,7 @@ public:
     });
   }
 
-  void update(const Service::Context& context) override
+  void update(const axgl::Service::Context& context) override
   {
     if (!window_)
       return;

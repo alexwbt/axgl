@@ -19,34 +19,12 @@ public:
     GLenum type;
     std::string_view source_code;
 
-    Shader(GLenum type, const std::string& data) : type(type), source_code(data) { }
-    Shader(GLenum type, const std::span<const uint8_t>& data) :
+    Shader(const GLenum type, const std::string& data) : type(type), source_code(data) { }
+    Shader(const GLenum type, const std::span<const uint8_t>& data) :
       type(type), source_code(reinterpret_cast<const char*>(data.data()), data.size())
     {
     }
   };
-
-private:
-  inline static GLuint create_shader(const Shader& shader)
-  {
-    GLuint id = glCreateShader(shader.type);
-
-    const GLchar* code = shader.source_code.data();
-    const GLint size = shader.source_code.size();
-    glShaderSource(id, 1, &code, &size);
-
-    glCompileShader(id);
-
-    int success;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-      char log[512] = {};
-      glGetShaderInfoLog(id, sizeof(log), NULL, log);
-      SPDLOG_CRITICAL("Failed to compile shader: {}", log);
-    }
-    return id;
-  }
 
 private:
   GLuint program_id_;
@@ -77,7 +55,7 @@ public:
       SPDLOG_CRITICAL("Failed to link shader program: {}", log);
     }
 
-    for (auto shader_id : shader_ids)
+    for (const auto shader_id : shader_ids)
       glDeleteShader(shader_id);
   }
 
@@ -146,6 +124,8 @@ public:
     glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]);
   }
 
+  void use_program() const { glUseProgram(program_id_); }
+
 private:
   GLuint get_uniform_location(const std::string& name)
   {
@@ -155,8 +135,26 @@ private:
     return uniform_locations_[name];
   }
 
-public:
-  void use_program() const { glUseProgram(program_id_); }
+  static GLuint create_shader(const Shader& shader)
+  {
+    const GLuint id = glCreateShader(shader.type);
+
+    const GLchar* code = shader.source_code.data();
+    const GLint size = static_cast<GLint>(shader.source_code.size());
+    glShaderSource(id, 1, &code, &size);
+
+    glCompileShader(id);
+
+    int success;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+      char log[512] = {};
+      glGetShaderInfoLog(id, sizeof(log), nullptr, log);
+      SPDLOG_CRITICAL("Failed to compile shader: {}", log);
+    }
+    return id;
+  }
 };
 
 } // namespace opengl

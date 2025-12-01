@@ -23,37 +23,32 @@ namespace axgl::impl::opengl::component
 class Mesh : virtual public axgl::component::Mesh, public ComponentBase
 {
   int attribute_offset_ = 0;
-  std::shared_ptr<impl::opengl::Material> material_;
-  std::shared_ptr<::opengl::VertexArrayObject> vertex_array_;
-
-  struct Renderable : Renderer::Renderable
-  {
-    Axgl* axgl;
-    Realm* realm;
-    Entity* entity;
-    Mesh* mesh;
-    void render() const override
-    {
-      if (mesh->material_)
-      {
-        // use material and render
-        mesh->material_->use(context, *this);
-      }
-      mesh->vertex_array_->draw();
-    }
-  };
-  Renderable renderable_;
+  axgl::ptr_t<impl::opengl::Material> material_;
+  axgl::ptr_t<::opengl::VertexArrayObject> vertex_array_;
 
 public:
   Mesh() { vertex_array_ = std::make_shared<::opengl::VertexArrayObject>(); }
 
   void render(const Entity::Context& context) override
   {
-    renderable_.axgl = &context.axgl;
-    renderable_.realm = &context.realm;
-    renderable_.entity = &context.entity;
-    renderable_.mesh = this;
-    context.realm.get_renderer()->add_renderable(&renderable_);
+    if (material_)
+    {
+      // do not render and add sorted render if enabled blending
+      // if (material_->enabled_blend())
+      // {
+      //   const auto camera = context.axgl.camera_service()->get_camera();
+      //   const auto distance2 = glm::distance2(context.entity.transform().position, camera->position);
+      //   sorted_render_service_->add_sorted_render(
+      //     distance2, [this, &context]
+      //   {
+      //     this->render(context);
+      //   });
+      //   return;
+      // }
+      // use material and render
+      material_->use(context, *this);
+    }
+    vertex_array_->draw();
   }
 
   void set_vertices(const std::span<const glm::vec3>& vertices) override
@@ -82,7 +77,7 @@ public:
 
   void set_indices(const std::span<const uint32_t>& indices) override { vertex_array_->create_element_buffer(indices); }
 
-  void set_material(const std::shared_ptr<axgl::Material> material) override
+  void set_material(const axgl::ptr_t<axgl::Material> material) override
   {
     material_ = std::dynamic_pointer_cast<impl::opengl::Material>(material);
 #ifdef AXGL_DEBUG
@@ -91,12 +86,9 @@ public:
 #endif
   }
 
-  [[nodiscard]] std::shared_ptr<axgl::Material> get_material() const override { return material_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override { return material_; }
 
-  void replace_vao(std::shared_ptr<::opengl::VertexArrayObject> vertex_array)
-  {
-    vertex_array_ = std::move(vertex_array);
-  }
+  void replace_vao(axgl::ptr_t<::opengl::VertexArrayObject> vertex_array) { vertex_array_ = std::move(vertex_array); }
 };
 
 } // namespace axgl::impl::opengl::component

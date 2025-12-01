@@ -19,7 +19,8 @@ namespace axgl::impl
 
 class EntityBase : virtual public Entity
 {
-  std::string id_;
+  std::uint64_t id_ = 0;
+  std::string name_;
   std::uint64_t ticks_ = 0;
   bool disabled_ = false;
   bool should_remove_ = false;
@@ -43,24 +44,23 @@ public:
 
   [[nodiscard]] std::uint64_t ticks() const override { return ticks_; }
 
+  void set_name(const std::string& name) override { name_ = name; }
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
-  [[nodiscard]] bool is_disabled() const override { return disabled_; }
-
-  void set_id(const std::string& id) override { id_ = id; }
-  [[nodiscard]] std::string get_id() const override { return id_; }
-
-  Transform& transform() override { return transform_; }
   void update_model_matrix() override
   {
     model_matrix_ = glm::translate(glm::mat4(1.0f), transform_.position) * glm::toMat4(glm::quat(transform_.rotation)) *
                     glm::scale(transform_.scale);
   }
-  [[nodiscard]] glm::mat4 get_model_matrix() const override { return model_matrix_; }
-
   void mark_remove(const bool should_remove) override { should_remove_ = should_remove; }
+
+  [[nodiscard]] std::uint64_t get_id() const override { return id_; }
+  [[nodiscard]] std::string get_name() const override { return name_; }
+  [[nodiscard]] bool is_disabled() const override { return disabled_; }
+  [[nodiscard]] glm::mat4 get_model_matrix() const override { return model_matrix_; }
+  [[nodiscard]] Transform& transform() override { return transform_; }
   [[nodiscard]] bool should_remove() const override { return should_remove_; }
 
-  ComponentContainer* components() override { return &components_; }
+  ComponentContainer& components() override { return components_; }
 };
 
 } // namespace axgl::impl

@@ -2,8 +2,6 @@
 
 #include <cstdlib>
 #include <filesystem>
-#include <memory>
-#include <ranges>
 #include <span>
 #include <string>
 #include <utility>
@@ -13,6 +11,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
 #include <axgl/interface/services/entity_service.hpp>
 #include <axgl/interface/services/model_service.hpp>
@@ -30,21 +29,21 @@ class ModelLoader
 {
   friend class ModelService;
 
-  std::shared_ptr<axgl::EntityService> entity_service_;
-  std::shared_ptr<axgl::RendererService> renderer_service_;
-  std::shared_ptr<axgl::ResourceService> resource_service_;
+  axgl::ptr_t<axgl::EntityService> entity_service_;
+  axgl::ptr_t<axgl::RendererService> renderer_service_;
+  axgl::ptr_t<axgl::ResourceService> resource_service_;
 
   std::string resource_key_;
   std::string material_type_;
-  std::vector<std::shared_ptr<axgl::Texture>> embedded_textures_;
+  std::vector<axgl::ptr_t<axgl::Texture>> embedded_textures_;
 
   axgl::ModelService::ModelResources resources_;
 
   ModelLoader(
-    std::shared_ptr<axgl::EntityService> entity_service,
-    std::shared_ptr<axgl::RendererService> renderer_service,
-    std::shared_ptr<axgl::ResourceService> resource_service,
-    const std::shared_ptr<axgl::Entity>& entity,
+    axgl::ptr_t<axgl::EntityService> entity_service,
+    axgl::ptr_t<axgl::RendererService> renderer_service,
+    axgl::ptr_t<axgl::ResourceService> resource_service,
+    const axgl::ptr_t<axgl::Entity>& entity,
     std::string resource_key,
     std::string material_type) :
     entity_service_(std::move(entity_service)),
@@ -78,12 +77,12 @@ class ModelLoader
     process_node(entity, ai_scene->mRootNode, ai_scene);
   }
 
-  void process_node(const std::shared_ptr<axgl::Entity>& entity, const aiNode* ai_node, const aiScene* ai_scene)
+  void process_node(const axgl::ptr_t<axgl::Entity>& entity, const aiNode* ai_node, const aiScene* ai_scene)
   {
     for (int i = 0; i < ai_node->mNumMeshes; ++i)
     {
-      aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
-      entity->components()->add(load_mesh(ai_mesh, ai_scene));
+      const aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
+      entity->components().add(load_mesh(ai_mesh, ai_scene));
     }
 
     // add children node mesh
@@ -91,7 +90,7 @@ class ModelLoader
       process_node(entity, ai_node->mChildren[i], ai_scene);
   }
 
-  std::shared_ptr<axgl::component::Mesh> load_mesh(const aiMesh* ai_mesh, const aiScene* ai_scene)
+  axgl::ptr_t<axgl::component::Mesh> load_mesh(const aiMesh* ai_mesh, const aiScene* ai_scene)
   {
     auto mesh = entity_service_->create_component_t<axgl::component::Mesh>();
     resources_.meshes.push_back(mesh);
@@ -150,10 +149,10 @@ class ModelLoader
   void load_textures(
     const aiMaterial* ai_material,
     const aiTextureType ai_texture_type,
-    const std::shared_ptr<axgl::Material>& material,
+    const axgl::ptr_t<axgl::Material>& material,
     const axgl::Material::TextureType texture_type)
   {
-    auto count = ai_material->GetTextureCount(ai_texture_type);
+    const auto count = ai_material->GetTextureCount(ai_texture_type);
     for (int i = 0; i < count; ++i)
     {
       aiString texture_path;

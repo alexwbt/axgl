@@ -2,8 +2,7 @@
 
 #include <string_view>
 
-#include <glm/glm.hpp>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/camera.hpp>
 
 #include <axgl/impl/component_base.hpp>
@@ -11,14 +10,14 @@
 namespace axgl::impl::component
 {
 
-class Camera : public ComponentBase
+class Camera : public axgl::impl::ComponentBase
 {
 public:
   static constexpr std::string_view kTypeId = "component::camera";
 
   axgl::Camera camera;
 
-  void update(const Entity::Context& context) override
+  void update(const axgl::Entity::Context& context) override
   {
     const auto renderer = context.realm.get_renderer();
 

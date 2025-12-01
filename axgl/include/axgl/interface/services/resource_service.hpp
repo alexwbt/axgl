@@ -1,16 +1,16 @@
 #pragma once
 
-#include <cstdint>
 #include <span>
 #include <string>
 #include <unordered_map>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
 
 namespace axgl
 {
 
-class ResourceService : virtual public Service
+class ResourceService : virtual public axgl::Service
 {
 public:
   static constexpr std::string_view kTypeId = "service::resource";

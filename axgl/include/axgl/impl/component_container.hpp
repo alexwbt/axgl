@@ -13,7 +13,7 @@ namespace axgl::impl
 
 class ComponentContainer : virtual public Container<axgl::Component>
 {
-  std::vector<std::shared_ptr<axgl::Component>> components_;
+  std::vector<ptr_t<axgl::Component>> components_;
 
 public:
   void tick(const Entity::Context& context) const
@@ -51,11 +51,11 @@ public:
         comp->on_entity_remove(context);
   }
 
-  void add(std::shared_ptr<axgl::Component> component) override { components_.push_back(std::move(component)); }
-  void remove(const std::shared_ptr<axgl::Component>& component) override { std::erase(components_, component); }
-  [[nodiscard]] util::Iterable<std::shared_ptr<axgl::Component>> get() const override
+  void add(ptr_t<axgl::Component> component) override { components_.push_back(std::move(component)); }
+  void remove(const ptr_t<axgl::Component>& component) override { std::erase(components_, component); }
+  [[nodiscard]] util::Iterable<ptr_t<axgl::Component>> get() const override
   {
-    return util::to_iterable_t<std::shared_ptr<axgl::Component>>(components_);
+    return util::to_iterable_t<ptr_t<axgl::Component>>(components_);
   }
 };
 

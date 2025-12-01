@@ -11,7 +11,6 @@ namespace opengl
 
 class VertexArrayObject final
 {
-private:
   GLuint id_;
   GLenum usage_;
   std::vector<std::unique_ptr<const BufferObject>> buffer_objects_;
@@ -21,7 +20,7 @@ private:
   size_t attribute_size_ = 0;
 
 public:
-  explicit VertexArrayObject(GLenum usage = GL_STATIC_DRAW) : usage_(usage) { glGenVertexArrays(1, &id_); }
+  explicit VertexArrayObject(const GLenum usage = GL_STATIC_DRAW) : usage_(usage) { glGenVertexArrays(1, &id_); }
   VertexArrayObject(const VertexArrayObject&) = delete;
   VertexArrayObject& operator=(const VertexArrayObject&) = delete;
 
@@ -70,7 +69,7 @@ public:
   }
 
   template <typename VertexType>
-  int create_vertex_buffer(
+  size_t create_vertex_buffer(
     const std::span<const VertexType>& data, const std::span<const VertexAttribute>& attributes, int attributes_offset)
   {
     use();
@@ -87,7 +86,7 @@ public:
     return buffer_objects_.size() - 1;
   }
 
-  int create_element_buffer(const std::span<const uint32_t>& data)
+  size_t create_element_buffer(const std::span<const uint32_t>& data)
   {
     use();
     auto buffer = std::make_unique<ElementBufferObject>(data, usage_);
@@ -98,18 +97,13 @@ public:
     return buffer_objects_.size() - 1;
   }
 
-  // const BufferObject& get_buffer_object()
-  // {
-
-  // }
-
   void draw() const
   {
     use();
     if (element_size_ > 0)
-      glDrawElements(GL_TRIANGLES, element_size_, GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, 0);
     else if (vertex_size_ > 0)
-      glDrawArrays(GL_TRIANGLES, 0, vertex_size_);
+      glDrawArrays(GL_TRIANGLES, 0, static_cast<GLint>(vertex_size_));
   }
 
 private:

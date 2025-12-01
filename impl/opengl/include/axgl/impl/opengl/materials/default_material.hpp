@@ -21,13 +21,13 @@ namespace axgl::impl::opengl
 
 class DefaultMaterial : public Material
 {
-  std::shared_ptr<::opengl::ShaderProgram> shader_ = ::opengl::StaticShaders::instance().mesh_3d();
+  axgl::ptr_t<::opengl::ShaderProgram> shader_ = ::opengl::StaticShaders::instance().mesh_3d();
   float shininess_ = 1.0f;
 
-  std::shared_ptr<impl::opengl::Texture> diffuse_texture_;
-  std::shared_ptr<impl::opengl::Texture> specular_texture_;
-  std::shared_ptr<impl::opengl::Texture> normal_texture_;
-  std::shared_ptr<impl::opengl::Texture> height_texture_;
+  axgl::ptr_t<impl::opengl::Texture> diffuse_texture_;
+  axgl::ptr_t<impl::opengl::Texture> specular_texture_;
+  axgl::ptr_t<impl::opengl::Texture> normal_texture_;
+  axgl::ptr_t<impl::opengl::Texture> height_texture_;
 
 public:
   void set_prop(const std::string& key, const std::string& value) override
@@ -40,7 +40,7 @@ public:
 #endif
   }
 
-  void add_texture(const axgl::Material::TextureType type, const std::shared_ptr<axgl::Texture> texture) override
+  void add_texture(const axgl::Material::TextureType type, const axgl::ptr_t<axgl::Texture> texture) override
   {
     auto texture_ = std::dynamic_pointer_cast<impl::opengl::Texture>(texture);
     if (!texture_)
@@ -62,9 +62,9 @@ public:
     }
   }
 
-  void use(const axgl::Camera* camera, const axgl::Entity* entity, const axgl::component::Mesh& mesh) override
+  void use(const axgl::Entity::Context& context, const axgl::component::Mesh& mesh) override
   {
-    Material::use(camera, entity, mesh);
+    Material::use(context, mesh);
 
     const auto camera = context.axgl.camera_service()->get_camera();
     const auto lights = context.axgl.light_service()->get_lights();
@@ -137,7 +137,7 @@ private:
     shader_->set_int("point_lights_size", point_lights_size);
   }
 
-  void use_texture(const int i, const std::string& name, const std::shared_ptr<impl::opengl::Texture>& texture) const
+  void use_texture(const int i, const std::string& name, const axgl::ptr_t<impl::opengl::Texture>& texture) const
   {
     if (!texture)
       return;

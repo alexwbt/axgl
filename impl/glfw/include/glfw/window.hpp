@@ -29,12 +29,12 @@ class Window final
 {
   inline static bool initialized_ = false;
   inline static bool terminated_ = false;
-  inline static std::unordered_map<GLFWwindow*, std::shared_ptr<Window>> windows_;
+  inline static std::unordered_map<GLFWwindow*, axgl::ptr_t<Window>> windows_;
 
 public:
-  static std::shared_ptr<Window> create(const int width, const int height, const std::string& title)
+  static axgl::ptr_t<Window> create(const int width, const int height, const std::string& title)
   {
-    std::shared_ptr<Window> window(new Window(width, height, title));
+    axgl::ptr_t<Window> window(new Window(width, height, title));
     windows_.insert({window->glfw_window_, window});
     return window;
   }
@@ -140,7 +140,7 @@ private:
       listener->on_resize(width, height);
   }
 
-  static std::shared_ptr<Window> get_window(GLFWwindow* glfw_window)
+  static axgl::ptr_t<Window> get_window(GLFWwindow* glfw_window)
   {
     try
     {
@@ -153,7 +153,7 @@ private:
     }
   }
 
-  static std::shared_ptr<EventListener> get_window_event_listener(GLFWwindow* glfw_window)
+  static axgl::ptr_t<EventListener> get_window_event_listener(GLFWwindow* glfw_window)
   {
     auto window = get_window(glfw_window);
     if (!window)
@@ -164,7 +164,7 @@ private:
 
   GLFWwindow* glfw_window_;
 
-  std::shared_ptr<EventListener> event_listener_;
+  axgl::ptr_t<EventListener> event_listener_;
 
   bool destroyed_ = false;
 
@@ -200,10 +200,7 @@ public:
 
   void set_input_mode(int mode, int value) const { glfwSetInputMode(glfw_window_, mode, value); }
 
-  void set_event_listener(std::shared_ptr<EventListener> event_listener)
-  {
-    event_listener_ = std::move(event_listener);
-  }
+  void set_event_listener(axgl::ptr_t<EventListener> event_listener) { event_listener_ = std::move(event_listener); }
 
   [[nodiscard]] GLFWwindow* get_glfw_window() const { return glfw_window_; }
   [[nodiscard]] bool is_destroyed() const { return destroyed_; }

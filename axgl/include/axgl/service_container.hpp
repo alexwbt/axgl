@@ -1,8 +1,5 @@
 #pragma once
 
-#ifdef AXGL_DEBUG
-#include <stdexcept>
-#endif
 #include <algorithm>
 #include <format>
 #include <memory>
@@ -10,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
 
 #include <axgl/util/string.hpp>
@@ -19,7 +17,7 @@ namespace axgl
 
 class ServiceContainer
 {
-  std::unordered_map<std::string, std::shared_ptr<Service>> service_map_;
+  std::unordered_map<std::string, ptr_t<Service>> service_map_;
 
 public:
   virtual ~ServiceContainer() = default;
@@ -28,7 +26,7 @@ public:
 
   [[nodiscard]] virtual bool has_service(const std::string& type_id) const { return service_map_.contains(type_id); }
 
-  virtual void register_service(const std::string& type_id, std::shared_ptr<Service> service)
+  virtual void register_service(const std::string& type_id, ptr_t<Service> service)
   {
 #ifdef AXGL_DEBUG
     if (has_service(type_id))
@@ -59,7 +57,7 @@ public:
   }
 
   template <typename ServiceType>
-  [[nodiscard]] std::shared_ptr<ServiceType> get_service(const std::string& type_id) const
+  [[nodiscard]] ptr_t<ServiceType> get_service(const std::string& type_id) const
   {
 #ifdef AXGL_DEBUG
     if (!has_service(type_id))
@@ -77,7 +75,7 @@ public:
   }
 
   template <typename ServiceType>
-  [[nodiscard]] std::shared_ptr<ServiceType> get_service_t() const
+  [[nodiscard]] ptr_t<ServiceType> get_service_t() const
   {
     return get_service<ServiceType>(ServiceType::kTypeId.data());
   }

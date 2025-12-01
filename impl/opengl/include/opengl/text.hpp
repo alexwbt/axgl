@@ -48,7 +48,7 @@ class Character final
   glm::ivec2 offset{0};
   glm::ivec2 advance{0};
 
-  void load(FT_Face face, bool vertical)
+  void load(const FT_Face face, bool vertical)
   {
     const auto& glyph = face->glyph;
     const auto& bitmap = glyph->bitmap;
@@ -76,20 +76,19 @@ class Character final
 
 class Font final
 {
-private:
   FT_Face face_;
 
 public:
-  Font(FT_Library library, const std::string& path, int index)
+  Font(const FT_Library library, const std::string& path, const int index)
   {
     if (FT_New_Face(library, path.c_str(), index, &face_))
       throw std::runtime_error("Failed to load fontface: " + path);
   }
 
-  Font(FT_Library library, std::span<const uint8_t> buffer, int index)
+  Font(const FT_Library library, const std::span<const uint8_t> buffer, const int index)
   {
     if (FT_New_Memory_Face(library, buffer.data(), buffer.size(), index, &face_))
-      throw std::runtime_error("Failed to load fontface from memory.");
+      throw std::runtime_error("Failed to load font face from memory.");
   }
 
   Font(const Font&) = delete;
@@ -135,7 +134,6 @@ public:
 
 class TextRenderer final
 {
-private:
   FT_Library library_;
   std::unordered_map<std::string, std::unique_ptr<Font>> fonts_;
 

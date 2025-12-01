@@ -1,8 +1,10 @@
 #pragma once
 
 #include <array>
-#include <glm/glm.hpp>
 #include <memory>
+
+#include <glm/glm.hpp>
+
 #include <opengl/vertex_array_object.hpp>
 
 namespace opengl
@@ -22,10 +24,10 @@ public:
   StaticVAOs(const StaticVAOs&&) = delete;
   StaticVAOs& operator=(const StaticVAOs&&) = delete;
 
-  [[nodiscard]] std::shared_ptr<VertexArrayObject> quad() const { return quad_; }
+  [[nodiscard]] axgl::ptr_t<VertexArrayObject> quad() const { return quad_; }
 
 private:
-  std::shared_ptr<VertexArrayObject> quad_;
+  axgl::ptr_t<VertexArrayObject> quad_;
 
   StaticVAOs() { init_quad(); }
 

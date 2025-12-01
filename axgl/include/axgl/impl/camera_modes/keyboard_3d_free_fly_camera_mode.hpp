@@ -1,9 +1,6 @@
 #pragma once
 
-#include <memory>
-
-#include <glm/glm.hpp>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/camera_mode.hpp>
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/pointer.hpp>
@@ -12,17 +9,17 @@
 namespace axgl::impl::camera_modes
 {
 
-class Keyboard3DFreeFlyCameraMode : public CameraMode
+class Keyboard3DFreeFlyCameraMode : public axgl::CameraMode
 {
-  std::shared_ptr<InputService> input_service_;
-  std::shared_ptr<Input> escape_;
-  std::shared_ptr<Pointer> pointer_;
-  std::shared_ptr<Input> forward_;
-  std::shared_ptr<Input> backward_;
-  std::shared_ptr<Input> up_;
-  std::shared_ptr<Input> down_;
-  std::shared_ptr<Input> left_;
-  std::shared_ptr<Input> right_;
+  axgl::ptr_t<axgl::InputService> input_service_;
+  axgl::ptr_t<axgl::Input> escape_;
+  axgl::ptr_t<axgl::Pointer> pointer_;
+  axgl::ptr_t<axgl::Input> forward_;
+  axgl::ptr_t<axgl::Input> backward_;
+  axgl::ptr_t<axgl::Input> up_;
+  axgl::ptr_t<axgl::Input> down_;
+  axgl::ptr_t<axgl::Input> left_;
+  axgl::ptr_t<axgl::Input> right_;
 
   float movement_speed_;
   float view_sensitivity_;
@@ -32,17 +29,17 @@ public:
   explicit Keyboard3DFreeFlyCameraMode(const float movement_speed = 0.2f, const float view_sensitivity = 0.2f) :
     movement_speed_(movement_speed), view_sensitivity_(view_sensitivity)
   {
-    escape_ = std::make_shared<Input>("Toggle Camera Control", Input::Source::kKeyEscape);
-    pointer_ = std::make_shared<Pointer>("View Movement", Pointer::Source::kMouseMove);
-    forward_ = std::make_shared<Input>("Move Forward", Input::Source::kKeyW);
-    backward_ = std::make_shared<Input>("Move Backward", Input::Source::kKeyS);
-    up_ = std::make_shared<Input>("Move Up", Input::Source::kKeySpace);
-    down_ = std::make_shared<Input>("Move Down", Input::Source::kKeyLeftShift);
-    left_ = std::make_shared<Input>("Move Left", Input::Source::kKeyA);
-    right_ = std::make_shared<Input>("Move Right", Input::Source::kKeyD);
+    escape_ = axgl::create_ptr<Input>("Toggle Camera Control", Input::Source::kKeyEscape);
+    pointer_ = axgl::create_ptr<Pointer>("View Movement", Pointer::Source::kMouseMove);
+    forward_ = axgl::create_ptr<Input>("Move Forward", Input::Source::kKeyW);
+    backward_ = axgl::create_ptr<Input>("Move Backward", Input::Source::kKeyS);
+    up_ = axgl::create_ptr<Input>("Move Up", Input::Source::kKeySpace);
+    down_ = axgl::create_ptr<Input>("Move Down", Input::Source::kKeyLeftShift);
+    left_ = axgl::create_ptr<Input>("Move Left", Input::Source::kKeyA);
+    right_ = axgl::create_ptr<Input>("Move Right", Input::Source::kKeyD);
   }
 
-  void bind_inputs(std::shared_ptr<InputService> input_service) override
+  void bind_inputs(ptr_t<InputService> input_service) override
   {
     input_service->add_input(escape_);
     input_service->add_pointer(pointer_);
@@ -56,7 +53,7 @@ public:
     input_service_ = std::move(input_service);
   }
 
-  void unbind_inputs(std::shared_ptr<InputService> input_service) override
+  void unbind_inputs(ptr_t<InputService> input_service) override
   {
     input_service->remove_pointer(escape_->id);
     input_service->remove_pointer(pointer_->id);

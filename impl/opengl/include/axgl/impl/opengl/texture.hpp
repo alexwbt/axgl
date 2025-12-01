@@ -13,7 +13,7 @@ namespace axgl::impl::opengl
 
 class Texture : public axgl::Texture
 {
-  std::shared_ptr<::opengl::Texture> texture_;
+  axgl::ptr_t<::opengl::Texture> texture_;
 
 public:
   Texture() { texture_ = std::make_shared<::opengl::Texture>(); }
@@ -30,7 +30,7 @@ public:
     texture_->generate_mipmap();
   }
 
-  void replace_texture(std::shared_ptr<::opengl::Texture> texture) { texture_ = std::move(texture); }
+  void replace_texture(axgl::ptr_t<::opengl::Texture> texture) { texture_ = std::move(texture); }
 };
 
 } // namespace axgl::impl::opengl

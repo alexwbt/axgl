@@ -18,13 +18,13 @@ namespace axgl::impl::opengl
 
 class Default2DMaterial : public Material
 {
-  std::shared_ptr<::opengl::ShaderProgram> shader_ = ::opengl::StaticShaders::instance().mesh_2d();
-  std::shared_ptr<impl::opengl::Texture> texture_;
+  axgl::ptr_t<::opengl::ShaderProgram> shader_ = ::opengl::StaticShaders::instance().mesh_2d();
+  axgl::ptr_t<impl::opengl::Texture> texture_;
 
 public:
   void set_prop(const std::string& key, const std::string& value) override { }
 
-  void add_texture(axgl::Material::TextureType type, std::shared_ptr<axgl::Texture> texture) override
+  void add_texture(axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture) override
   {
     texture_ = std::dynamic_pointer_cast<Texture>(texture);
 #ifdef AXGL_DEBUG
@@ -33,11 +33,12 @@ public:
 #endif
   }
 
-  void use(const axgl::Camera* camera, const axgl::Entity* entity, const axgl::component::Mesh& mesh) override
+  void use(const axgl::Entity::Context& context, const axgl::component::Mesh& mesh) override
   {
-    Material::use(camera, entity, mesh);
+    Material::use(context, mesh);
 
-    const auto model = entity->get_model_matrix();
+    const auto camera = context.axgl.camera_service()->get_camera();
+    const auto model = context.entity.get_model_matrix();
     const auto mvp = camera->projection_view_matrix() * model;
 
     shader_->use_program();

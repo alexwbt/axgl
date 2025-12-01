@@ -1,9 +1,6 @@
 #pragma once
 
-#ifdef AXGL_DEBUG
-#include <stdexcept>
-#endif
-
+#include <axgl/common.hpp>
 #include <axgl/interface/camera.hpp>
 #include <axgl/interface/camera_mode.hpp>
 #include <axgl/interface/services/camera_service.hpp>
@@ -16,14 +13,14 @@ namespace axgl::impl
 
 class CameraService : virtual public axgl::CameraService
 {
-  std::shared_ptr<axgl::CameraMode> camera_mode_;
-  std::shared_ptr<axgl::InputService> input_service_;
+  axgl::ptr_t<axgl::CameraMode> camera_mode_;
+  axgl::ptr_t<axgl::InputService> input_service_;
 
-  std::shared_ptr<axgl::Entity> camera_entity_;
-  std::shared_ptr<component::Camera> camera_comp_;
+  axgl::ptr_t<axgl::Entity> camera_entity_;
+  axgl::ptr_t<axgl::impl::component::Camera> camera_comp_;
 
 public:
-  void set_camera_mode(std::shared_ptr<axgl::CameraMode> camera_mode) override
+  void set_camera_mode(axgl::ptr_t<axgl::CameraMode> camera_mode) override
   {
     if (camera_mode_)
       camera_mode_->unbind_inputs(input_service_);
@@ -32,10 +29,10 @@ public:
     camera_mode_->bind_inputs(input_service_);
   }
 
-  void set_camera(std::shared_ptr<axgl::Entity> camera_entity) override
+  void set_camera(axgl::ptr_t<axgl::Entity> camera_entity) override
   {
     camera_entity_ = std::move(camera_entity);
-    camera_comp_ = camera_entity_->components()->get_t<component::Camera>();
+    camera_comp_ = camera_entity_->components().get_t<component::Camera>();
   }
 
   axgl::Camera* get_camera() override

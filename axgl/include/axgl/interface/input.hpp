@@ -143,10 +143,13 @@ private:
 public:
   const std::uint32_t id;
   std::string name;
-  Source source;
+  axgl::Input::Source source;
   std::uint32_t tick;
 
-  Input(std::string name, const Source source) : id(next_id()), name(std::move(name)), source(source), tick(0) { }
+  Input(std::string name, const axgl::Input::Source source) :
+    id(next_id()), name(std::move(name)), source(source), tick(0)
+  {
+  }
 };
 
 } // namespace axgl

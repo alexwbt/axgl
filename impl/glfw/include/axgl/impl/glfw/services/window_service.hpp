@@ -1,7 +1,6 @@
 #pragma once
 
-#include <memory>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/services/window_service.hpp>
 
 #include <axgl/impl/glfw/window.hpp>
@@ -13,17 +12,17 @@ namespace axgl::impl::glfw
 class WindowService final : public axgl::WindowService
 {
 public:
-  void initialize(const Service::Context& context) override { ::glfw::Window::initialize(); }
+  void initialize(const axgl::Service::Context& context) override { ::glfw::Window::initialize(); }
 
-  void terminate(const Service::Context& context) override { ::glfw::Window::terminate(); }
+  void terminate(const axgl::Service::Context& context) override { ::glfw::Window::terminate(); }
 
-  void render(const Service::Context& context) override { ::glfw::Window::update_all(); }
+  void render(const axgl::Service::Context& context) override { ::glfw::Window::update_all(); }
 
-  bool running(const Service::Context& context) override { return !::glfw::Window::should_close_all(); }
+  bool running(const axgl::Service::Context& context) override { return !::glfw::Window::should_close_all(); }
 
-  bool keep_alive(const Service::Context& context) override { return running(context); }
+  bool keep_alive(const axgl::Service::Context& context) override { return running(context); }
 
-  std::shared_ptr<axgl::Window> create_window() override
+  axgl::ptr_t<axgl::Window> create_window() override
   {
     return std::make_shared<Window>(::glfw::Window::create(800, 600, ""));
   }

@@ -8,7 +8,6 @@ namespace opengl
 
 class Framebuffer final
 {
-private:
   GLuint id_ = 0;
 
 public:
@@ -43,13 +42,13 @@ public:
 
   void use() const { glBindFramebuffer(GL_FRAMEBUFFER, id_); }
 
-  void attach_texture(GLuint attachment, const Texture& texture) const
+  void attach_texture(const GLuint attachment, const Texture& texture) const
   {
     use();
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment, texture.get_id(), 0);
   }
 
-  void set_draw_buffers(const std::vector<GLuint> attachments) const
+  void set_draw_buffers(const std::vector<GLuint>& attachments) const
   {
     std::vector<GLenum> buffers(attachments.size());
     for (int i = 0; i < attachments.size(); i++)

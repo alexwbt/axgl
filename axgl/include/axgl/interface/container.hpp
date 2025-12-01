@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
 #include <vector>
+
+#include <axgl/common.hpp>
 
 #include <axgl/util/iterable.hpp>
 
@@ -16,23 +17,23 @@ class Container
 public:
   virtual ~Container() = default;
 
-  virtual void add(std::shared_ptr<Item> item) = 0;
+  virtual void add(axgl::ptr_t<Item> item) = 0;
 
-  virtual void add_all(const std::vector<std::shared_ptr<Item>>& item)
+  virtual void add_all(const std::vector<axgl::ptr_t<Item>>& item)
   {
     for (auto& item_ : item)
       add(item_);
   }
 
-  virtual void remove(const std::shared_ptr<Item>& item) = 0;
+  virtual void remove(const axgl::ptr_t<Item>& item) = 0;
 
-  [[nodiscard]] virtual util::Iterable<std::shared_ptr<Item>> get() const = 0;
+  [[nodiscard]] virtual util::Iterable<axgl::ptr_t<Item>> get() const = 0;
 
   template <typename ItemType>
-  std::shared_ptr<ItemType> get_t()
+  axgl::ptr_t<ItemType> get_t()
   {
     for (const auto& item : get())
-      if (auto item_t = std::dynamic_pointer_cast<ItemType>(item))
+      if (auto item_t = axgl::ptr_cast<ItemType>(item))
         return item_t;
     return nullptr;
   }

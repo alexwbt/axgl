@@ -11,7 +11,7 @@ namespace axgl::impl
 
 class EntityContainer : public virtual Container<axgl::Entity>
 {
-  std::vector<std::shared_ptr<axgl::Entity>> entities_;
+  std::vector<ptr_t<axgl::Entity>> entities_;
 
 public:
   void tick(const Realm::Context& context) const
@@ -61,8 +61,8 @@ public:
       entity->on_remove(context);
   }
 
-  void add(std::shared_ptr<axgl::Entity> entity) override { entities_.push_back(std::move(entity)); }
-  void remove(const std::shared_ptr<axgl::Entity>& entity) override
+  void add(ptr_t<axgl::Entity> entity) override { entities_.push_back(std::move(entity)); }
+  void remove(const ptr_t<axgl::Entity>& entity) override
   {
     for (auto& e : entities_)
     {
@@ -73,9 +73,9 @@ public:
       }
     }
   }
-  [[nodiscard]] util::Iterable<std::shared_ptr<axgl::Entity>> get() const override
+  [[nodiscard]] util::Iterable<ptr_t<axgl::Entity>> get() const override
   {
-    return util::to_iterable_t<std::shared_ptr<axgl::Entity>>(entities_);
+    return util::to_iterable_t<ptr_t<axgl::Entity>>(entities_);
   }
 };
 

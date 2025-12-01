@@ -10,13 +10,12 @@ namespace opengl
 
 class BufferObject
 {
-private:
   GLuint id_;
   size_t size_;
 
 public:
   template <typename DataType>
-  BufferObject(GLenum target, const std::span<const DataType>& data, GLenum usage)
+  BufferObject(const GLenum target, const std::span<const DataType>& data, const GLenum usage)
   {
     size_ = data.size();
 
@@ -81,7 +80,7 @@ public:
   VertexBufferObject(const VertexBufferObject&) = delete;
   VertexBufferObject& operator=(const VertexBufferObject&) = delete;
 
-  void set_attributes(const std::span<const VertexAttribute>& attributes, int attribute_offset = 0)
+  void set_attributes(const std::span<const VertexAttribute>& attributes, const int attribute_offset = 0)
   {
     if (attribute_size_ > 0)
     {
@@ -92,28 +91,29 @@ public:
     attribute_size_ = attributes.size();
     for (int i = 0; i < attribute_size_; i++)
     {
-      auto index = attribute_offset + i;
-      const auto& attr = attributes[i];
+      const auto index = attribute_offset + i;
+      const auto& [size, type, normalized, stride, pointer] = attributes[i];
       glEnableVertexAttribArray(index);
-      switch (attr.type)
+      switch (type)
       {
       case GL_BYTE:
       case GL_UNSIGNED_BYTE:
       case GL_SHORT:
       case GL_UNSIGNED_SHORT:
       case GL_INT:
-      case GL_UNSIGNED_INT: glVertexAttribIPointer(index, attr.size, attr.type, attr.stride, attr.pointer); break;
+      case GL_UNSIGNED_INT: glVertexAttribIPointer(index, size, type, stride, pointer); break;
       case GL_HALF_FLOAT:
       case GL_FLOAT:
       case GL_FIXED:
       case GL_INT_2_10_10_10_REV:
       case GL_UNSIGNED_INT_2_10_10_10_REV:
       case GL_UNSIGNED_INT_10F_11F_11F_REV:
-        glVertexAttribPointer(index, attr.size, attr.type, attr.normalized, attr.stride, attr.pointer);
+        glVertexAttribPointer(index, size, type, normalized, stride, pointer);
         break;
         // case GL_DOUBLE:
         //   glVertexAttribLPointer(index, attr.size, attr.type, attr.normalized, attr.stride, attr.pointer);
         //   break;
+      default:;
       }
     }
   }

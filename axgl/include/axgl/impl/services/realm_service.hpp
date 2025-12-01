@@ -1,7 +1,6 @@
 #pragma once
 
-#include <memory>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/services/realm_service.hpp>
 
@@ -12,7 +11,7 @@ namespace axgl::impl
 
 class RealmService : virtual public axgl::RealmService
 {
-  std::shared_ptr<impl::Realm> realm_;
+  ptr_t<impl::Realm> realm_;
 
 public:
   void tick(const Service::Context& context) override
@@ -30,13 +29,13 @@ public:
     realm_->update(context);
   }
 
-  std::shared_ptr<axgl::Realm> create_realm() override { return std::make_shared<impl::Realm>(); }
+  axgl::ptr_t<axgl::Realm> create_realm() override { return axgl::create_ptr<impl::Realm>(); }
 
-  [[nodiscard]] std::shared_ptr<axgl::Realm> get_active_realm() const override { return realm_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Realm> get_active_realm() const override { return realm_; }
 
-  void set_active_realm(const std::shared_ptr<axgl::Realm> realm) override
+  void set_active_realm(const axgl::ptr_t<axgl::Realm> realm) override
   {
-    auto realm_impl = std::dynamic_pointer_cast<impl::Realm>(realm);
+    auto realm_impl = axgl::ptr_cast<impl::Realm>(realm);
 #ifdef AXGL_DEBUG
     if (!realm_impl)
       throw std::runtime_error(

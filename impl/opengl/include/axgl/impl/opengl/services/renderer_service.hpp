@@ -12,6 +12,8 @@
 #include <axgl/interface/texture.hpp>
 
 #include <axgl/impl/glfw.hpp>
+#include <axgl/impl/opengl/components/mesh.hpp>
+#include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/materials/default_2d_material.hpp>
 #include <axgl/impl/opengl/materials/default_material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
@@ -31,11 +33,11 @@ public:
     impl::glfw::WindowService::set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   }
 
-  std::shared_ptr<axgl::Renderer> create_renderer() override { return std::make_shared<Renderer>(); }
+  axgl::ptr_t<axgl::Renderer> create_renderer() override { return std::make_shared<Renderer>(); }
 
-  std::shared_ptr<axgl::Texture> create_texture() override { return std::make_shared<Texture>(); }
+  axgl::ptr_t<axgl::Texture> create_texture() override { return std::make_shared<Texture>(); }
 
-  std::shared_ptr<axgl::Material> create_material(const std::string& type) override
+  axgl::ptr_t<axgl::Material> create_material(const std::string& type) override
   {
     if (type == "2d")
       return std::make_shared<impl::opengl::Default2DMaterial>();

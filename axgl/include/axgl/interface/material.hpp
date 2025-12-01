@@ -1,10 +1,8 @@
 #pragma once
 
-#include <memory>
 #include <string>
 
-#include <glm/glm.hpp>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/texture.hpp>
 
 namespace axgl
@@ -33,10 +31,10 @@ public:
   // default color should be white
   virtual void set_color(const glm::vec4& color) = 0;
   // default cull mode should be kCCW
-  virtual void set_cull_mode(CullMode cull_mode) = 0;
+  virtual void set_cull_mode(axgl::Material::CullMode cull_mode) = 0;
   virtual void set_enable_blend(bool enable_blend) = 0;
   virtual void set_prop(const std::string& key, const std::string& value) = 0;
-  virtual void add_texture(TextureType type, std::shared_ptr<Texture> texture) = 0;
+  virtual void add_texture(axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture) = 0;
 };
 
 } // namespace axgl
