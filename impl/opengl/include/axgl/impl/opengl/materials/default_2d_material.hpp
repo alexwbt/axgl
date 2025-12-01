@@ -1,11 +1,8 @@
 #pragma once
 
-#ifdef AXGL_DEBUG
-#include <stdexcept>
-#endif
-#include <memory>
 #include <string>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
 #include <axgl/interface/entity.hpp>
 

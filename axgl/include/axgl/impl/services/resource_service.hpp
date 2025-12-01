@@ -1,10 +1,9 @@
 #pragma once
 
-#include <cstdint>
 #include <span>
-#include <string>
 #include <unordered_map>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/services/resource_service.hpp>
 
 namespace axgl::impl

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string_view>
-
 #include <axgl/common.hpp>
 #include <axgl/interface/camera.hpp>
 

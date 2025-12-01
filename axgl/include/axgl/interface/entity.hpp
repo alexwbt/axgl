@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include <axgl/common.hpp>
 #include <axgl/interface/container.hpp>
 #include <axgl/interface/realm.hpp>

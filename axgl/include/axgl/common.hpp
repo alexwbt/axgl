@@ -7,9 +7,11 @@
 #endif
 
 #include <cstdint>
+#include <string>
+#include <string_view>
+
 #include <spdlog/spdlog.h>
 #include <tracy/Tracy.hpp>
-
 #include <glm/glm.hpp>
 
 namespace axgl

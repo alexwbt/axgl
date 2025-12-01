@@ -1,5 +1,6 @@
 #pragma once
 
+#include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 
 #include <axgl/impl/entity_container.hpp>
@@ -10,7 +11,7 @@ namespace axgl::impl
 class Realm : public axgl::Realm
 {
   EntityContainer entities_;
-  ptr_t<Renderer> renderer_;
+  axgl::ptr_t<Renderer> renderer_;
 
 public:
   void tick(const Service::Context& context) override { entities_.tick({context, *this, renderer_.get()}); }
@@ -26,12 +27,10 @@ public:
     renderer_->render();
   }
 
-  void set_renderer(ptr_t<Renderer> renderer) override { renderer_ = std::move(renderer); }
-  [[nodiscard]] ptr_t<Renderer> get_renderer() const override { return renderer_; }
+  void set_renderer(axgl::ptr_t<Renderer> renderer) override { renderer_ = std::move(renderer); }
+  [[nodiscard]] axgl::ptr_t<Renderer> get_renderer() const override { return renderer_; }
 
-  void add_entity(ptr_t<Entity> entity) override { entities_.add(std::move(entity)); }
-  void remove_entity(const ptr_t<Entity> entity) override { entities_.remove(entity); }
-  [[nodiscard]] util::Iterable<ptr_t<Entity>> get_entities() const override { return entities_.get(); }
+  [[nodiscard]] EntityContainer& entities() override { return entities_; }
 };
 
 } // namespace axgl::impl

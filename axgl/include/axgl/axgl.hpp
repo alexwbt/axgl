@@ -11,7 +11,6 @@
 #include <axgl/interface/services/camera_service.hpp>
 #include <axgl/interface/services/entity_service.hpp>
 #include <axgl/interface/services/input_service.hpp>
-#include <axgl/interface/services/light_service.hpp>
 #include <axgl/interface/services/model_service.hpp>
 #include <axgl/interface/services/realm_service.hpp>
 #include <axgl/interface/services/renderer_service.hpp>
@@ -136,7 +135,6 @@ public:
   AXGL_DECLARE_SERVICE_GETTER(axgl::InputService, input)
   AXGL_DECLARE_SERVICE_GETTER(axgl::ModelService, model)
   AXGL_DECLARE_SERVICE_GETTER(axgl::CameraService, camera)
-  AXGL_DECLARE_SERVICE_GETTER(axgl::LightService, light)
 };
 
 } // namespace axgl

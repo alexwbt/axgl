@@ -1,26 +1,26 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/container.hpp>
 #include <axgl/interface/entity.hpp>
 
 namespace axgl::impl
 {
 
-class EntityContainer : public virtual Container<axgl::Entity>
+class EntityContainer : public virtual axgl::Container<axgl::Entity>
 {
-  std::vector<ptr_t<axgl::Entity>> entities_;
+  std::vector<axgl::ptr_t<axgl::Entity>> entities_;
 
 public:
-  void tick(const Realm::Context& context) const
+  void tick(const axgl::Realm::Context& context) const
   {
     for (const auto& entity : entities_)
       entity->tick(context);
   }
 
-  void update(const Realm::Context& context)
+  void update(const axgl::Realm::Context& context)
   {
     for (const auto& entity : entities_)
     {
@@ -43,26 +43,26 @@ public:
     }
   }
 
-  void render(const Realm::Context& context) const
+  void render(const axgl::Realm::Context& context) const
   {
     for (const auto& entity : entities_)
       entity->render(context);
   }
 
-  void on_create(const Realm::Context& context) const
+  void on_create(const axgl::Realm::Context& context) const
   {
     for (const auto& entity : entities_)
       entity->on_create(context);
   }
 
-  void on_remove(const Realm::Context& context) const
+  void on_remove(const axgl::Realm::Context& context) const
   {
     for (const auto& entity : entities_)
       entity->on_remove(context);
   }
 
-  void add(ptr_t<axgl::Entity> entity) override { entities_.push_back(std::move(entity)); }
-  void remove(const ptr_t<axgl::Entity>& entity) override
+  void add(axgl::ptr_t<axgl::Entity> entity) override { entities_.push_back(std::move(entity)); }
+  void remove(const axgl::ptr_t<axgl::Entity>& entity) override
   {
     for (auto& e : entities_)
     {
@@ -73,9 +73,9 @@ public:
       }
     }
   }
-  [[nodiscard]] util::Iterable<ptr_t<axgl::Entity>> get() const override
+  [[nodiscard]] util::Iterable<axgl::ptr_t<axgl::Entity>> get() const override
   {
-    return util::to_iterable_t<ptr_t<axgl::Entity>>(entities_);
+    return util::to_iterable_t<axgl::ptr_t<axgl::Entity>>(entities_);
   }
 };
 

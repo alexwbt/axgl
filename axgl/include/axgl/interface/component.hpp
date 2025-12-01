@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/entity.hpp>
 
 namespace axgl

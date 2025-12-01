@@ -1,12 +1,9 @@
 #pragma once
 
-#include <memory>
-
 #include <axgl/common.hpp>
+#include <axgl/interface/container.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/service.hpp>
-
-#include <axgl/util/iterable.hpp>
 
 namespace axgl
 {

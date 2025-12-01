@@ -1,10 +1,6 @@
 #pragma once
 
-#ifdef AXGL_DEBUG
-#include <stdexcept>
-#endif
-#include <cstdint>
-
+#include <axgl/common.hpp>
 #include <axgl/interface/component.hpp>
 #include <axgl/interface/entity.hpp>
 
