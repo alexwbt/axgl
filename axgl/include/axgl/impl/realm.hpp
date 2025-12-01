@@ -3,7 +3,6 @@
 #include <axgl/interface/realm.hpp>
 
 #include <axgl/impl/entity_container.hpp>
-#include <axgl/impl/services/sorted_render_service.hpp>
 
 namespace axgl::impl
 {
@@ -12,7 +11,6 @@ class Realm : public axgl::Realm
 {
   EntityContainer entities_;
   std::shared_ptr<Renderer> renderer_;
-  std::shared_ptr<SortedRenderService> sorted_render_service_;
 
 public:
   void tick(const Service::Context& context) override { entities_.tick({context, *this}); }
@@ -24,13 +22,8 @@ public:
     if (!renderer_ || !renderer_->ready())
       return;
 
-    if (!sorted_render_service_)
-      sorted_render_service_ = context.axgl.get_service_t<SortedRenderService>();
-
-    renderer_->before_render();
     entities_.render({context, *this});
-    sorted_render_service_->render();
-    renderer_->after_render();
+    renderer_->render();
   }
 
   void set_renderer(std::shared_ptr<Renderer> renderer) override { renderer_ = std::move(renderer); }

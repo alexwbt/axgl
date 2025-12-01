@@ -31,12 +31,9 @@ static void circle_mesh(const std::shared_ptr<axgl::component::Mesh>& mesh, cons
 int main()
 {
   axgl::Axgl axgl;
-  axgl.register_service_t<axgl::impl::glfw::WindowService>();
-  axgl.register_service_t<axgl::impl::glfw::InputService>();
-  axgl.register_service_t<axgl::impl::opengl::RendererService>();
-  axgl.register_service_t<axgl::impl::RealmService>();
-  axgl.register_service_t<axgl::impl::EntityService>();
-  axgl.register_service_t<axgl::impl::CameraService>();
+  axgl::configure_default(axgl);
+  axgl::configure_glfw(axgl);
+  axgl::configure_opengl(axgl);
   axgl.initialize();
 
   const auto window_service = axgl.window_service();

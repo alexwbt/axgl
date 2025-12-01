@@ -8,12 +8,12 @@
 #include <glm/gtx/norm.hpp>
 
 #include <axgl/interface/components/mesh.hpp>
+#include <axgl/interface/renderer.hpp>
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/component_base.hpp>
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
-#include <axgl/impl/services/sorted_render_service.hpp>
 
 #include <opengl/vertex_array_object.hpp>
 
@@ -26,38 +26,34 @@ class Mesh : virtual public axgl::component::Mesh, public ComponentBase
   std::shared_ptr<impl::opengl::Material> material_;
   std::shared_ptr<::opengl::VertexArrayObject> vertex_array_;
 
-  std::shared_ptr<impl::SortedRenderService> sorted_render_service_;
+  struct Renderable : Renderer::Renderable
+  {
+    Axgl* axgl;
+    Realm* realm;
+    Entity* entity;
+    Mesh* mesh;
+    void render() const override
+    {
+      if (mesh->material_)
+      {
+        // use material and render
+        mesh->material_->use(context, *this);
+      }
+      mesh->vertex_array_->draw();
+    }
+  };
+  Renderable renderable_;
 
 public:
   Mesh() { vertex_array_ = std::make_shared<::opengl::VertexArrayObject>(); }
 
-  void on_entity_create(const Entity::Context& context) override
-  {
-    sorted_render_service_ = context.axgl.get_service_t<impl::SortedRenderService>();
-  }
-
   void render(const Entity::Context& context) override
   {
-    ZoneScopedN("OpenglMesh Render");
-
-    if (material_)
-    {
-      // do not render and add sorted render if enabled blending
-      if (material_->enabled_blend())
-      {
-        const auto camera = context.axgl.camera_service()->get_camera();
-        const auto distance2 = glm::distance2(context.entity.transform().position, camera->position);
-        sorted_render_service_->add_sorted_render(
-          distance2, [this, &context]
-        {
-          this->render(context);
-        });
-        return;
-      }
-      // use material and render
-      material_->use(context, *this);
-    }
-    vertex_array_->draw();
+    renderable_.axgl = &context.axgl;
+    renderable_.realm = &context.realm;
+    renderable_.entity = &context.entity;
+    renderable_.mesh = this;
+    context.realm.get_renderer()->add_renderable(&renderable_);
   }
 
   void set_vertices(const std::span<const glm::vec3>& vertices) override

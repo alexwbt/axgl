@@ -12,8 +12,6 @@
 #include <axgl/interface/texture.hpp>
 
 #include <axgl/impl/glfw.hpp>
-#include <axgl/impl/opengl/components/mesh.hpp>
-#include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/materials/default_2d_material.hpp>
 #include <axgl/impl/opengl/materials/default_material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>

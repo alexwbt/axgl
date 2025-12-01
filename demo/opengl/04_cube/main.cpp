@@ -77,13 +77,9 @@ public:
 int main()
 {
   axgl::Axgl axgl;
-  axgl.register_service_t<axgl::impl::glfw::WindowService>();
-  axgl.register_service_t<axgl::impl::glfw::InputService>();
-  axgl.register_service_t<axgl::impl::opengl::RendererService>();
-  axgl.register_service_t<axgl::impl::RealmService>();
-  axgl.register_service_t<axgl::impl::EntityService>();
-  axgl.register_service_t<axgl::impl::CameraService>();
-  axgl.register_service_t<axgl::impl::LightService>();
+  axgl::configure_default(axgl);
+  axgl::configure_glfw(axgl);
+  axgl::configure_opengl(axgl);
   axgl.register_service("app", std::make_shared<Application>());
   axgl.initialize();
 

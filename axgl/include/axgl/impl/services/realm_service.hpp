@@ -30,13 +30,6 @@ public:
     realm_->update(context);
   }
 
-  void render(const Service::Context& context) override
-  {
-    if (!realm_)
-      return;
-    realm_->render(context);
-  }
-
   std::shared_ptr<axgl::Realm> create_realm() override { return std::make_shared<impl::Realm>(); }
 
   [[nodiscard]] std::shared_ptr<axgl::Realm> get_active_realm() const override { return realm_; }

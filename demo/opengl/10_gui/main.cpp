@@ -1,10 +1,5 @@
 ﻿
-#include <axgl/interface/components/gui.hpp>
-
 #include <axgl/axgl.hpp>
-#include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
-#include <axgl/impl/components/camera.hpp>
-#include <axgl/impl/components/light.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 

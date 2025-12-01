@@ -62,9 +62,9 @@ public:
     }
   }
 
-  void use(const axgl::Entity::Context& context, const axgl::component::Mesh& mesh) override
+  void use(const axgl::Camera* camera, const axgl::Entity* entity, const axgl::component::Mesh& mesh) override
   {
-    Material::use(context, mesh);
+    Material::use(camera, entity, mesh);
 
     const auto camera = context.axgl.camera_service()->get_camera();
     const auto lights = context.axgl.light_service()->get_lights();
