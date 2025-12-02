@@ -55,7 +55,7 @@ public:
       buffers[i] = GL_COLOR_ATTACHMENT0 + attachments[i];
 
     use();
-    glDrawBuffers(buffers.size(), buffers.data());
+    glDrawBuffers(static_cast<GLsizei>(buffers.size()), buffers.data());
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       SPDLOG_ERROR("Framebuffer status is incomplete.");

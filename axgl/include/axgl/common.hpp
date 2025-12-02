@@ -10,9 +10,9 @@
 #include <string>
 #include <string_view>
 
+#include <glm/glm.hpp>
 #include <spdlog/spdlog.h>
 #include <tracy/Tracy.hpp>
-#include <glm/glm.hpp>
 
 namespace axgl
 {
@@ -33,3 +33,5 @@ ptr_t<T1> ptr_cast(ptr_t<T2> ptr) noexcept
 }
 
 } // namespace axgl
+
+#define AXGL_PROFILE_SCOPE(scope_name)

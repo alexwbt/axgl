@@ -15,7 +15,7 @@ class ComponentBase : virtual public axgl::Component
   bool disabled_ = false;
 
 public:
-  void tick(const Entity::Context& context) override { ++ticks_; }
+  void tick(const axgl::Entity::Context& context) override { ++ticks_; }
 
   void set_name(const std::string& name) override { name_ = name; }
   void set_disabled(const bool disabled) override { disabled_ = disabled; }

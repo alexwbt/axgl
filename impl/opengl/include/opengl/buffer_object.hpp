@@ -124,7 +124,7 @@ public:
 class ElementBufferObject final : public BufferObject
 {
 public:
-  ElementBufferObject(const std::span<const uint32_t>& data, GLenum usage) :
+  ElementBufferObject(const std::span<const uint32_t>& data, const GLenum usage) :
     BufferObject(GL_ELEMENT_ARRAY_BUFFER, data, usage)
   {
   }

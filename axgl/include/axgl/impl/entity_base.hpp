@@ -1,14 +1,10 @@
 #pragma once
 
-#ifdef AXGL_DEBUG
-#include <stdexcept>
-#endif
-
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/entity.hpp>
 #include <axgl/interface/transform.hpp>
 

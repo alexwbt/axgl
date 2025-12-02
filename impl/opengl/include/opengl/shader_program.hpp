@@ -86,7 +86,6 @@ public:
       glDeleteProgram(program_id_);
   }
 
-public:
   void set_int(const std::string& name, int value) { glUniform1i(get_uniform_location(name), value); }
   void set_bool(const std::string& name, bool value) { glUniform1i(get_uniform_location(name), (int)value); }
   void set_float(const std::string& name, float value) { glUniform1f(get_uniform_location(name), value); }
