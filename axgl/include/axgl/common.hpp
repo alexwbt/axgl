@@ -34,4 +34,8 @@ ptr_t<T1> ptr_cast(ptr_t<T2> ptr) noexcept
 
 } // namespace axgl
 
+#ifdef AXGL_DEBUG
+#define AXGL_PROFILE_SCOPE(scope_name) ZoneScopedN(scope_name)
+#else
 #define AXGL_PROFILE_SCOPE(scope_name)
+#endif

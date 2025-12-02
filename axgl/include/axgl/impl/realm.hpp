@@ -18,11 +18,15 @@ class Realm : public axgl::Realm
 public:
   void tick(const Service::Context& context) override
   {
+    AXGL_PROFILE_SCOPE("Realm Tick");
+
     entities_.tick({context, *this, renderer_, camera_service_->get_camera(), lights_});
   }
 
   void update(const Service::Context& context) override
   {
+    AXGL_PROFILE_SCOPE("Realm Update");
+
     if (!camera_service_)
       camera_service_ = context.axgl.camera_service();
 
@@ -31,6 +35,8 @@ public:
 
   void render(const Service::Context& context) override
   {
+    AXGL_PROFILE_SCOPE("Realm Render");
+
     const auto* camera = camera_service_->get_camera();
 
     if (!renderer_ || !renderer_->ready() || !camera)

@@ -83,7 +83,7 @@ public:
       on_start(context);
       while (running(context))
       {
-        ZoneScopedN("Main Loop");
+        AXGL_PROFILE_SCOPE("Main Loop");
 
         const auto now = high_resolution_clock::now();
         delta_time += static_cast<double>(duration_cast<nanoseconds>(now - start_time).count()) / kTimeStep;
@@ -93,20 +93,20 @@ public:
 
         if (should_update)
         {
-          ZoneScopedN("Update");
+          AXGL_PROFILE_SCOPE("Update");
           update(context);
         }
 
         while (delta_time >= 1)
         {
-          ZoneScopedN("Tick");
+          AXGL_PROFILE_SCOPE("Tick");
           tick(context);
           delta_time--;
         }
 
         if (should_update)
         {
-          ZoneScopedN("Render");
+          AXGL_PROFILE_SCOPE("Render");
           render(context);
         }
       }
