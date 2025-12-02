@@ -3,6 +3,8 @@
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 
+#include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
+
 #include <demo_opengl_text/res.hpp>
 
 class Application : public axgl::Service

@@ -39,7 +39,7 @@ public:
   {
 #ifdef AXGL_DEBUG
     if (!camera_comp_)
-      throw std::runtime_error("Camera not set.");
+      SPDLOG_WARN("Camera is not set.");
 #endif
     return camera_comp_ ? &camera_comp_->camera : nullptr;
   }
@@ -50,8 +50,12 @@ public:
   {
     if (!camera_mode_ || !camera_entity_)
       return;
+
+    auto& transform = camera_entity_->transform();
+    camera_comp_->camera.position = transform.position;
+
     camera_mode_->update(camera_comp_->camera);
-    camera_entity_->transform().position = camera_comp_->camera.position;
+    transform.position = camera_comp_->camera.position;
   }
 };
 

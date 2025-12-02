@@ -3,6 +3,8 @@
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 
+#include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
+
 #include <demo_opengl_gui/res.hpp>
 
 class Application : public axgl::Service
@@ -75,14 +77,9 @@ public:
 int main()
 {
   axgl::Axgl axgl;
-  axgl.register_service_t<axgl::impl::RealmService>();
-  axgl.register_service_t<axgl::impl::EntityService>();
-  axgl.register_service_t<axgl::impl::CameraService>();
-  axgl.register_service_t<axgl::impl::LightService>();
-  axgl.register_service_t<axgl::impl::glfw::WindowService>();
-  axgl.register_service_t<axgl::impl::glfw::InputService>();
-  axgl.register_service_t<axgl::impl::opengl::RendererService>();
-  axgl.register_service_t<axgl::impl::opengl::TextService>();
+  axgl::configure_default(axgl);
+  axgl::configure_glfw(axgl);
+  axgl::configure_opengl(axgl);
   axgl.register_service("app", std::make_shared<Application>());
   axgl.initialize();
 

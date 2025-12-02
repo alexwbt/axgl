@@ -30,7 +30,7 @@ class Renderer : public axgl::Renderer
 public:
   bool ready() override { return window_ && window_->ready(); }
 
-  void render() override
+  void before_render() override
   {
     if (!window_)
       return;
@@ -46,23 +46,12 @@ public:
 
     glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
     glClear(clear_bit_);
+  }
 
-    // render
-    // {
-    //   ZoneScopedN("Renderer Render");
-    //
-    //   for (const auto* renderable : default_renderables_)
-    //     renderable->render();
-    //
-    //   // render blended
-    //   std::ranges::sort(
-    //     blend_renderables_, [](const auto* a, const auto* b)
-    //   {
-    //     return a->sorted > b->sorted;
-    //   });
-    //   for (const auto* renderable : blend_renderables_)
-    //     renderable->render();
-    // }
+  void after_render() override
+  {
+    if (!window_)
+      return;
 
     window_->swap_buffers();
 
@@ -92,9 +81,6 @@ public:
   }
 
   [[nodiscard]] glm::ivec2 viewport() const override { return window_->get_size(); }
-
-  void add_light(const axgl::Light* light) override { lights_.push_back(light); }
-  [[nodiscard]] std::span<const axgl::Light* const> lights() const override { return lights_; }
 };
 
 } // namespace axgl::impl::opengl

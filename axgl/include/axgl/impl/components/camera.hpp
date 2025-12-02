@@ -17,9 +17,7 @@ public:
 
   void update(const axgl::Entity::Context& context) override
   {
-    const auto renderer = context.realm.get_renderer();
-
-    if (const auto viewport = glm::vec2(renderer->viewport());
+    if (const auto viewport = glm::vec2(context.renderer->viewport());
         viewport.x != camera.viewport.x || viewport.y != camera.viewport.y)
     {
       camera.viewport.x = viewport.x;

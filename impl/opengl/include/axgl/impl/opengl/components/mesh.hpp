@@ -33,18 +33,7 @@ public:
   {
     if (material_)
     {
-      // do not render and add sorted render if enabled blending
-      // if (material_->enabled_blend())
-      // {
-      //   const auto camera = context.axgl.camera_service()->get_camera();
-      //   const auto distance2 = glm::distance2(context.entity.transform().position, camera->position);
-      //   sorted_render_service_->add_sorted_render(
-      //     distance2, [this, &context]
-      //   {
-      //     this->render(context);
-      //   });
-      //   return;
-      // }
+      // TODO: Handle blending
       // use material and render
       material_->use(context, *this);
     }

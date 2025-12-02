@@ -15,6 +15,10 @@ public:
 
   axgl::Light light;
 
+  void on_entity_create(const axgl::Entity::Context& context) override { context.lights.push_back(&light); }
+
+  void on_entity_remove(const axgl::Entity::Context& context) override { std::erase(context.lights, &light); }
+
   void update(const axgl::Entity::Context& context) override
   {
     const auto& transform = context.entity.transform();

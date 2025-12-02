@@ -18,6 +18,7 @@ public:
   {
     if (!realm_)
       return;
+
     realm_->tick(context);
   }
 
@@ -27,6 +28,14 @@ public:
       return;
 
     realm_->update(context);
+  }
+
+  void render(const Service::Context& context) override
+  {
+    if (!realm_)
+      return;
+
+    realm_->render(context);
   }
 
   axgl::ptr_t<axgl::Realm> create_realm() override { return axgl::create_ptr<impl::Realm>(); }

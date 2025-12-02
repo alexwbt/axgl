@@ -10,21 +10,41 @@ namespace axgl::impl
 
 class Realm : public axgl::Realm
 {
-  EntityContainer entities_;
-  axgl::ptr_t<Renderer> renderer_;
+  axgl::impl::EntityContainer entities_;
+  axgl::ptr_t<axgl::Renderer> renderer_;
+  axgl::ptr_t<axgl::CameraService> camera_service_;
+  std::vector<const axgl::Light*> lights_;
 
 public:
-  void tick(const Service::Context& context) override { entities_.tick({context, *this, renderer_.get()}); }
+  void tick(const Service::Context& context) override
+  {
+    entities_.tick({context, *this, renderer_, camera_service_->get_camera(), lights_});
+  }
 
-  void update(const Service::Context& context) override { entities_.update({context, *this, renderer_.get()}); }
+  void update(const Service::Context& context) override
+  {
+    if (!camera_service_)
+      camera_service_ = context.axgl.camera_service();
+
+    entities_.update({context, *this, renderer_, camera_service_->get_camera(), lights_});
+  }
 
   void render(const Service::Context& context) override
   {
-    if (!renderer_ || !renderer_->ready())
+    const auto* camera = camera_service_->get_camera();
+
+    if (!renderer_ || !renderer_->ready() || !camera)
       return;
 
-    entities_.render({context, *this, renderer_.get()});
-    renderer_->render();
+    renderer_->before_render();
+    entities_.render({
+      context,
+      *this,
+      renderer_,
+      camera,
+      lights_,
+    });
+    renderer_->after_render();
   }
 
   void set_renderer(axgl::ptr_t<Renderer> renderer) override { renderer_ = std::move(renderer); }

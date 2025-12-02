@@ -34,9 +34,8 @@ public:
   {
     Material::use(context, mesh);
 
-    const auto camera = context.axgl.camera_service()->get_camera();
     const auto model = context.entity.get_model_matrix();
-    const auto mvp = camera->projection_view_matrix() * model;
+    const auto mvp = context.camera->projection_view_matrix() * model;
 
     shader_->use_program();
     shader_->set_mat4("mvp", mvp);
