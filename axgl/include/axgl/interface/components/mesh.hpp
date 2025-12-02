@@ -1,7 +1,6 @@
 #pragma once
 
 #include <span>
-#include <string_view>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/component.hpp>
@@ -21,8 +20,8 @@ public:
   virtual void set_uv(const std::span<const glm::vec2>& uv) = 0;
   virtual void set_indices(const std::span<const std::uint32_t>& indices) = 0;
 
-  virtual void set_material(ptr_t<Material> material) = 0;
-  [[nodiscard]] virtual ptr_t<Material> get_material() const = 0;
+  virtual void set_material(axgl::ptr_t<axgl::Material> material) = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Material> get_material() const = 0;
 };
 
 } // namespace axgl::component

@@ -25,8 +25,7 @@ class Renderer : public axgl::Renderer
   bool initialized_glad_ = false;
   axgl::ptr_t<glfw::Window> window_;
 
-  // std::vector<const Renderable*> default_renderables_;
-  // std::vector<const Renderable*> blend_renderables_;
+  std::vector<const axgl::Light*> lights_;
 
 public:
   bool ready() override { return window_ && window_->ready(); }
@@ -72,24 +71,6 @@ public:
     glDisable(GL_STENCIL_TEST);
   }
 
-  // void add_renderable(const Renderable* renderable) override
-  // {
-  //   switch (renderable->stage)
-  //   {
-  //   case Stage::kBlend: blend_renderables_.push_back(renderable); break;
-  //   default: default_renderables_.push_back(renderable); break;
-  //   }
-  // }
-  //
-  // void remove_renderable(const Renderable* renderable) override
-  // {
-  //   switch (renderable->stage)
-  //   {
-  //   case Stage::kBlend: blend_renderables_.erase(std::ranges::find(blend_renderables_, renderable)); break;
-  //   default: default_renderables_.erase(std::ranges::find(default_renderables_, renderable)); break;
-  //   }
-  // }
-
   void set_window(axgl::ptr_t<axgl::Window> window) override
   {
     window_ = std::dynamic_pointer_cast<glfw::Window>(std::move(window));
@@ -111,7 +92,9 @@ public:
   }
 
   [[nodiscard]] glm::ivec2 viewport() const override { return window_->get_size(); }
+
+  void add_light(const axgl::Light* light) override { lights_.push_back(light); }
+  [[nodiscard]] std::span<const axgl::Light* const> lights() const override { return lights_; }
 };
 
 } // namespace axgl::impl::opengl
-

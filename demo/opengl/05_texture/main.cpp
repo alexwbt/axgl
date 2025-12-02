@@ -62,18 +62,18 @@ int main()
       });
     mesh_comp->set_indices(std::vector<uint32_t>{0, 1, 2, 0, 2, 3});
     mesh_comp->set_material(material);
-    square_entity->components()->add(mesh_comp);
+    square_entity->components().add(mesh_comp);
 
     // camera
     const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
     camera_comp->camera.orthographic = true;
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;
-    square_entity->components()->add(camera_comp);
+    square_entity->components().add(camera_comp);
   }
   square_entity->transform().scale = glm::vec3(200.0f);
   square_entity->update_model_matrix();
-  realm->add_entity(square_entity);
+  realm->entities().add(square_entity);
 
   // set camera
   camera_service->set_camera(square_entity);

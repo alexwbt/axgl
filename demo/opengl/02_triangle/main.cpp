@@ -41,18 +41,18 @@ int main()
     const auto mesh_comp = entity_service->create_component_t<axgl::impl::opengl::component::Mesh>();
     mesh_comp->set_vertices(std::vector<glm::vec2>{{0.8f, -0.5f}, {-0.8f, -0.5f}, {0.0f, 0.5f}});
     mesh_comp->set_material(material);
-    entity->components()->add(mesh_comp);
+    entity->components().add(mesh_comp);
 
     // camera
     const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
     camera_comp->camera.orthographic = true;
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;
-    entity->components()->add(camera_comp);
+    entity->components().add(camera_comp);
   }
   entity->transform().scale = glm::vec3(200.0f);
   entity->update_model_matrix();
-  realm->add_entity(entity);
+  realm->entities().add(entity);
 
   // set camera
   camera_service->set_camera(entity);

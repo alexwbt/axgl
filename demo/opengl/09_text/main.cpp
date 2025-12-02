@@ -38,9 +38,9 @@ public:
     const auto camera_entity = entity_service->create_entity();
     {
       const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
-      camera_entity->components()->add(camera_comp);
+      camera_entity->components().add(camera_comp);
     }
-    realm->add_entity(camera_entity);
+    realm->entities().add(camera_entity);
     camera_entity->transform().position.z = -2;
     camera_service->set_camera(camera_entity);
 
@@ -49,10 +49,10 @@ public:
     {
       const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
-      light_entity->components()->add(light_comp);
+      light_entity->components().add(light_comp);
     }
     light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
-    realm->add_entity(light_entity);
+    realm->entities().add(light_entity);
 
     // camera input
     camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
@@ -68,7 +68,7 @@ public:
         u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
         u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。"),
       {"arial", "noto-tc"}, {.size = 48, .color = {1.0f, 0.5f, 0.2f, 1.0f}}, 0.01f);
-    realm->add_entity(text_entity);
+    realm->entities().add(text_entity);
   }
 };
 

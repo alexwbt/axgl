@@ -39,9 +39,9 @@ public:
     const auto camera_entity = entity_service->create_entity();
     {
       const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
-      camera_entity->components()->add(camera_comp);
+      camera_entity->components().add(camera_comp);
     }
-    realm->add_entity(camera_entity);
+    realm->entities().add(camera_entity);
     camera_entity->transform().position.z = -2;
     camera_service->set_camera(camera_entity);
 
@@ -50,10 +50,10 @@ public:
     {
       const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
-      light_entity->components()->add(light_comp);
+      light_entity->components().add(light_comp);
     }
     light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
-    realm->add_entity(light_entity);
+    realm->entities().add(light_entity);
 
     // camera input
     camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());

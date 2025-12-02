@@ -36,9 +36,9 @@ public:
     const auto camera_entity = entity_service->create_entity();
     {
       const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
-      camera_entity->components()->add(camera_comp);
+      camera_entity->components().add(camera_comp);
     }
-    realm->add_entity(camera_entity);
+    realm->entities().add(camera_entity);
     camera_entity->transform().position.z = -2;
     camera_service->set_camera(camera_entity);
 
@@ -47,10 +47,10 @@ public:
     {
       const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
-      light_entity->components()->add(light_comp);
+      light_entity->components().add(light_comp);
     }
     light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
-    realm->add_entity(light_entity);
+    realm->entities().add(light_entity);
 
     // cube entity
     cube_entity_ = entity_service->create_entity();
@@ -64,9 +64,9 @@ public:
       mesh_comp->set_vertices(cube_vertices);
       mesh_comp->set_normals(cube_normals);
       mesh_comp->set_material(material);
-      cube_entity_->components()->add(mesh_comp);
+      cube_entity_->components().add(mesh_comp);
     }
-    realm->add_entity(cube_entity_);
+    realm->entities().add(cube_entity_);
   }
 
   void tick(const Context& context) override { cube_entity_->transform().rotation += glm::vec3(0.01f, 0.02f, 0.05f); }

@@ -115,7 +115,7 @@ public:
     ::opengl::Text text;
     const auto mesh = create_mesh(value, font, options, text);
     const auto entity = entity_service_->create_entity();
-    entity->components()->add(mesh);
+    entity->components().add(mesh);
     entity->transform().scale = glm::vec3(text.size, 1.0f) * scale;
     entity->update_model_matrix();
     return entity;

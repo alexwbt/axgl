@@ -62,7 +62,7 @@ public:
     Material::use(context, mesh);
 
     const auto camera = context.axgl.camera_service()->get_camera();
-    const auto lights = context.axgl.light_service()->get_lights();
+    const auto lights = context.renderer->lights();
     const auto model = context.entity.get_model_matrix();
     const auto mvp = camera->projection_view_matrix() * model;
 
@@ -82,7 +82,7 @@ public:
   }
 
 private:
-  void use_lights(const std::span<const axgl::Light*>& lights) const
+  void use_lights(const std::span<const axgl::Light* const>& lights) const
   {
     int sun_lights_size = 0;
     int spot_lights_size = 0;
