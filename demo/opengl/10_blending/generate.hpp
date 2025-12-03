@@ -71,10 +71,11 @@ inline axgl::ptr_t<axgl::Entity> create_pane(const axgl::Axgl& axgl)
 }
 
 inline void generate_entities(
-  float y,
   const axgl::Axgl& axgl,
   const axgl::ptr_t<axgl::Realm>& realm,
-  const std::function<axgl::ptr_t<axgl::Entity>(const axgl::Axgl&)>& create_entity)
+  const std::function<axgl::ptr_t<axgl::Entity>(const axgl::Axgl&)>& create_entity,
+  const float y,
+  const bool rotate3d)
 {
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -89,6 +90,8 @@ inline void generate_entities(
     transform.position.y = y;
     transform.position.z = pos_dis(gen);
     transform.rotation.y = rot_dis(gen);
+    if (rotate3d)
+      transform.rotation.x = rot_dis(gen);
     entity->update_model_matrix();
     realm->entities().add(entity);
   }
@@ -96,6 +99,6 @@ inline void generate_entities(
 
 inline void generate(const axgl::Axgl& axgl, const axgl::ptr_t<axgl::Realm>& realm)
 {
-  generate_entities(-2.0f, axgl, realm, create_grass);
-  generate_entities(-1.0f, axgl, realm, create_pane);
+  generate_entities(axgl, realm, create_grass, 0.0f, false);
+  generate_entities(axgl, realm, create_pane, 5.0f, false);
 }

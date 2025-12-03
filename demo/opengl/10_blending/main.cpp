@@ -49,7 +49,6 @@ public:
       camera_entity->components().add(camera_comp);
     }
     realm->entities().add(camera_entity);
-    camera_entity->transform().position.z = -2;
     camera_service->set_camera(camera_entity);
 
     // light entity

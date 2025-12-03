@@ -10,6 +10,7 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/opengl/renderable.hpp>
 
 namespace axgl::impl::opengl
 {
@@ -66,10 +67,14 @@ public:
     glEnable(GL_STENCIL_TEST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // render realm
     for (const auto& entity : realm->entities().get())
       for (const auto& component : entity->components().get())
-        if (const auto renderable = axgl::ptr_cast<axgl::Renderable>(component))
+        if (const auto light_comp = axgl::ptr_cast<axgl::impl::component::Light>(component))
+          render_context.lights.push_back(&light_comp->light);
+
+    for (const auto& entity : realm->entities().get())
+      for (const auto& component : entity->components().get())
+        if (const auto renderable = axgl::ptr_cast<axgl::impl::opengl::Renderable>(component))
           renderable->render(render_context, *entity);
 
     window_->swap_buffers();

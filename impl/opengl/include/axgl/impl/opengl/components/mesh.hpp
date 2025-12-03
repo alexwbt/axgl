@@ -6,11 +6,11 @@
 
 #include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
-#include <axgl/interface/renderable.hpp>
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/component_base.hpp>
 #include <axgl/impl/opengl/material.hpp>
+#include <axgl/impl/opengl/renderable.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
 
 #include <opengl/vertex_array_object.hpp>
@@ -18,7 +18,9 @@
 namespace axgl::impl::opengl::component
 {
 
-class Mesh : virtual public axgl::component::Mesh, virtual public axgl::Renderable, public axgl::impl::ComponentBase
+class Mesh : virtual public axgl::component::Mesh,
+             virtual public axgl::impl::opengl::Renderable,
+             public axgl::impl::ComponentBase
 {
   int attribute_offset_ = 0;
   axgl::ptr_t<axgl::impl::opengl::Material> material_;
@@ -61,7 +63,7 @@ public:
   }
   [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override { return material_; }
 
-  void render(const axgl::Renderer::Context& context, const axgl::Entity& entity) override
+  void render(const axgl::Renderer::Context& context, const axgl::Entity& entity) const override
   {
     if (material_)
     {
@@ -71,6 +73,8 @@ public:
     }
     vertex_array_->draw();
   }
+
+  bool enabled_blend() override { return material_ && material_->enabled_blend(); }
 };
 
 } // namespace axgl::impl::opengl::component
