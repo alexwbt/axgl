@@ -34,7 +34,6 @@ public:
     components_.tick({context, *this});
   }
   void update(const Realm::Context& context) override { components_.update({context, *this}); }
-  void render(const Realm::Context& context) override { components_.render({context, *this}); }
   void on_create(const Realm::Context& context) override { components_.on_entity_create({context, *this}); }
   void on_remove(const Realm::Context& context) override { components_.on_entity_remove({context, *this}); }
 

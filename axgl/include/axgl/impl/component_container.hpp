@@ -30,13 +30,6 @@ public:
         comp->update(context);
   }
 
-  void render(const axgl::Entity::Context& context) const
-  {
-    for (const auto& comp : components_)
-      if (!comp->is_disabled())
-        comp->render(context);
-  }
-
   void on_entity_create(const axgl::Entity::Context& context) const
   {
     for (const auto& comp : components_)

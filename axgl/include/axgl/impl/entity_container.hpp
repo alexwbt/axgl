@@ -43,12 +43,6 @@ public:
     }
   }
 
-  void render(const axgl::Realm::Context& context) const
-  {
-    for (const auto& entity : entities_)
-      entity->render(context);
-  }
-
   void on_create(const axgl::Realm::Context& context) const
   {
     for (const auto& entity : entities_)

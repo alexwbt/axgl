@@ -12,7 +12,6 @@ public:
   virtual ~Component() = default;
   virtual void tick(const axgl::Entity::Context& context) { }
   virtual void update(const axgl::Entity::Context& context) { }
-  virtual void render(const axgl::Entity::Context& context) { }
   virtual void on_entity_create(const axgl::Entity::Context& context) { }
   virtual void on_entity_remove(const axgl::Entity::Context& context) { }
 

@@ -30,9 +30,9 @@ public:
 #endif
   }
 
-  void use(const axgl::Entity::Context& context, const axgl::component::Mesh& mesh) override
+  void use(const Context& context) override
   {
-    Material::use(context, mesh);
+    Material::use(context);
 
     const auto model = context.entity.get_model_matrix();
     const auto mvp = context.camera->projection_view_matrix() * model;

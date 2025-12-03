@@ -19,6 +19,9 @@ public:
   virtual axgl::ptr_t<axgl::Renderer> create_renderer() = 0;
   virtual axgl::ptr_t<axgl::Texture> create_texture() = 0;
   virtual axgl::ptr_t<axgl::Material> create_material(const std::string& type) = 0;
+
+  virtual void set_active_renderer(axgl::ptr_t<axgl::Renderer> renderer) = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Renderer> get_active_renderer() const = 0;
 };
 
 } // namespace axgl

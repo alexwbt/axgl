@@ -28,30 +28,49 @@ class Renderer : public axgl::Renderer
   std::vector<const axgl::Light*> lights_;
 
 public:
-  bool ready() override { return window_ && window_->ready(); }
-
-  void before_render() override
+  void render(const axgl::Service::Context& context, axgl::ptr_t<axgl::Realm> realm) override
   {
-    if (!window_)
+    if (!window_ || !window_->ready())
+    {
+#ifdef AXGL_DEBUG
+      SPDLOG_WARN("Unable to render realm: window is not set or not ready.");
+#endif
       return;
+    }
+
+    auto* camera = context.axgl.camera_service()->get_camera();
+    if (!camera)
+    {
+#ifdef AXGL_DEBUG
+      SPDLOG_WARN("Unable to render realm: camera is not set.");
+#endif
+      return;
+    }
+
+    axgl::Renderer::Context render_context{context, *this, *realm, *camera};
+
+    const auto viewport = window_->get_size();
+    if (const auto v = glm::vec2(viewport); camera->viewport != v)
+    {
+      camera->viewport.x = v.x;
+      camera->viewport.y = v.y;
+      camera->update_projection_view_matrix();
+    }
+
+    glViewport(0, 0, viewport.x, viewport.y);
+    glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
+    glClear(clear_bit_);
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    const auto size = window_->get_size();
-    glViewport(0, 0, size.x, size.y);
-
-    glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
-    glClear(clear_bit_);
-  }
-
-  void after_render() override
-  {
-    if (!window_)
-      return;
+    // render realm
+    for (const auto& entity : realm->entities().get())
+      for (const auto& component : entity->components().get())
+        if (const auto renderable = axgl::ptr_cast<axgl::Renderable>(component))
+          renderable->render(render_context, *entity);
 
     window_->swap_buffers();
 
@@ -79,8 +98,6 @@ public:
       SPDLOG_CRITICAL("Failed to initialize GLAD.");
     initialized_glad_ = true;
   }
-
-  [[nodiscard]] glm::ivec2 viewport() const override { return window_->get_size(); }
 };
 
 } // namespace axgl::impl::opengl

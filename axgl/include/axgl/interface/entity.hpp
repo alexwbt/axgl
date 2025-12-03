@@ -22,7 +22,6 @@ public:
   virtual ~Entity() = default;
   virtual void tick(const axgl::Realm::Context& context) { }
   virtual void update(const axgl::Realm::Context& context) { }
-  virtual void render(const axgl::Realm::Context& context) { }
   virtual void on_create(const axgl::Realm::Context& context) { }
   virtual void on_remove(const axgl::Realm::Context& context) { }
 

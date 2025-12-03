@@ -11,6 +11,14 @@ namespace axgl::impl::opengl
 
 class Material : public axgl::Material
 {
+public:
+  struct Context
+  {
+    const axgl::Entity& entity;
+    const axgl::Camera* camera;
+    const std::vector<const axgl::Light*>& lights;
+  };
+
 protected:
   glm::vec4 color_{1.0f, 1.0f, 1.0f, 1.0f};
   axgl::Material::CullMode cull_mode_ = axgl::Material::CullMode::kCCW;
@@ -23,7 +31,7 @@ public:
 
   [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
 
-  virtual void use(const axgl::Entity::Context& context, const axgl::component::Mesh& mesh)
+  virtual void use(const Context& context)
   {
     glCullFace(GL_FRONT);
     switch (cull_mode_)

@@ -22,7 +22,7 @@ AllowShortLambdasOnASingleLine: Empty
 PackConstructorInitializers: NextLine
 BreakConstructorInitializers: AfterColon
 AlignAfterOpenBracket: AlwaysBreak
-BinPackParameters: AlwaysOnePerLine
+BinPackParameters: OnePerLine
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowAllArgumentsOnNextLine: true
 BreakBeforeBraces: Allman

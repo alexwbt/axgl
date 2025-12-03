@@ -12,9 +12,7 @@ inline axgl::ptr_t<axgl::Texture> create_grass_texture(const axgl::Axgl& axgl)
   return texture;
 }
 
-inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
-  const axgl::Axgl& axgl,
-  const axgl::ptr_t<axgl::Texture>& texture)
+inline axgl::ptr_t<axgl::component::Mesh> create_mesh(const axgl::Axgl& axgl, const axgl::ptr_t<axgl::Texture>& texture)
 {
   const auto entity_service = axgl.entity_service();
   const auto renderer_service = axgl.renderer_service();
@@ -74,8 +72,9 @@ inline axgl::ptr_t<axgl::Entity> create_pane(const axgl::Axgl& axgl)
 
 inline void generate_entities(
   float y,
+  const axgl::Axgl& axgl,
   const axgl::ptr_t<axgl::Realm>& realm,
-  const std::function<axgl::ptr_t<axgl::Entity>()>& create_entity)
+  const std::function<axgl::ptr_t<axgl::Entity>(const axgl::Axgl&)>& create_entity)
 {
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -84,7 +83,7 @@ inline void generate_entities(
   // grass entities
   for (int i = 0; i < 1000; i++)
   {
-    const auto entity = create_entity();
+    const auto entity = create_entity(axgl);
     auto& transform = entity->transform();
     transform.position.x = pos_dis(gen);
     transform.position.y = y;
@@ -95,10 +94,8 @@ inline void generate_entities(
   }
 }
 
-inline void generate(
-  const axgl::Axgl& axgl,
-  const axgl::ptr_t<axgl::Realm>& realm)
+inline void generate(const axgl::Axgl& axgl, const axgl::ptr_t<axgl::Realm>& realm)
 {
-  generate_entities(-2.0f, realm, std::bind(create_grass, axgl));
-  generate_entities(-1.0f, realm, std::bind(create_pane, axgl));
+  generate_entities(-2.0f, axgl, realm, create_grass);
+  generate_entities(-1.0f, axgl, realm, create_pane);
 }

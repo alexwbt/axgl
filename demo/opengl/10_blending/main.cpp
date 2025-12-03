@@ -36,11 +36,11 @@ public:
     // renderer
     const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
+    renderer_service->set_active_renderer(renderer);
 
     // realm
     const auto realm = realm_service->create_realm();
     realm_service->set_active_realm(realm);
-    realm->set_renderer(renderer);
 
     // camera entity
     const auto camera_entity = entity_service->create_entity();
