@@ -53,6 +53,17 @@ public:
       shader_->set_bool("use_texture", false);
     }
   }
+
+  [[nodiscard]] int get_attribute_offset(const Attribute attribute) const override
+  {
+    switch (attribute)
+    {
+    case kVertices: return 0;
+    case kUv: return 1;
+    case kModels: return 2;
+    default: return 3;
+    }
+  }
 };
 
 } // namespace axgl::impl::opengl

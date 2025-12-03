@@ -79,6 +79,18 @@ public:
     use_texture(3, "height", height_texture_);
   }
 
+  [[nodiscard]] int get_attribute_offset(const Attribute attribute) const override
+  {
+    switch (attribute)
+    {
+    case kVertices: return 0;
+    case kNormals: return 1;
+    case kUv: return 2;
+    case kModels: return 3;
+    default: return 4;
+    }
+  }
+
 private:
   void use_lights(const std::span<const axgl::Light* const>& lights) const
   {

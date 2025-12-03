@@ -29,7 +29,7 @@ class Renderer : public axgl::Renderer
   std::vector<const axgl::Light*> lights_;
 
 public:
-  void render(const axgl::Service::Context& context, axgl::ptr_t<axgl::Realm> realm) override
+  void render(const axgl::Service::Context& context, const axgl::ptr_t<axgl::Realm> realm) override
   {
     if (!window_ || !window_->ready())
     {
@@ -48,8 +48,6 @@ public:
       return;
     }
 
-    axgl::Renderer::Context render_context{context, *this, *realm, *camera};
-
     const auto viewport = window_->get_size();
     if (const auto v = glm::vec2(viewport); camera->viewport != v)
     {
@@ -67,15 +65,23 @@ public:
     glEnable(GL_STENCIL_TEST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    for (const auto& entity : realm->entities().get())
-      for (const auto& component : entity->components().get())
-        if (const auto light_comp = axgl::ptr_cast<axgl::impl::component::Light>(component))
-          render_context.lights.push_back(&light_comp->light);
+    {
+      AXGL_PROFILE_SCOPE("Opengl Renderer Collect Lights");
 
-    for (const auto& entity : realm->entities().get())
-      for (const auto& component : entity->components().get())
-        if (const auto renderable = axgl::ptr_cast<axgl::impl::opengl::Renderable>(component))
-          renderable->render(render_context, *entity);
+      for (const auto& entity : realm->entities().get())
+        for (const auto& component : entity->components().get())
+          if (const auto* light_comp = dynamic_cast<axgl::impl::component::Light*>(component.get()))
+            render_context.lights.push_back(&light_comp->light);
+    }
+
+    {
+      AXGL_PROFILE_SCOPE("Opengl Renderer Render Renderables");
+
+      for (const auto& entity : realm->entities().get())
+        for (const auto& component : entity->components().get())
+          if (const auto* renderable = dynamic_cast<axgl::impl::opengl::Renderable*>(component.get()))
+            renderable->render(render_context, *entity);
+    }
 
     window_->swap_buffers();
 

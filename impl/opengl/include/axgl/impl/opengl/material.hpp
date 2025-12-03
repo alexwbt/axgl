@@ -19,6 +19,14 @@ public:
     const std::vector<const axgl::Light*>& lights;
   };
 
+  enum Attribute
+  {
+    kVertices,
+    kNormals,
+    kUv,
+    kModels,
+  };
+
 protected:
   glm::vec4 color_{1.0f, 1.0f, 1.0f, 1.0f};
   axgl::Material::CullMode cull_mode_ = axgl::Material::CullMode::kCCW;
@@ -55,6 +63,8 @@ public:
     else
       glDisable(GL_BLEND);
   }
+
+  [[nodiscard]] virtual int get_attribute_offset(Attribute attribute) const = 0;
 };
 
 } // namespace axgl::impl::opengl

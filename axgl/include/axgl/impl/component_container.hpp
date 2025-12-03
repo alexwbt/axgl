@@ -6,8 +6,6 @@
 #include <axgl/interface/component.hpp>
 #include <axgl/interface/container.hpp>
 
-#include <axgl/util/iterable.hpp>
-
 namespace axgl::impl
 {
 
@@ -25,7 +23,7 @@ public:
 
   void update(const axgl::Entity::Context& context) const
   {
-    for (const auto& comp : components_)
+    for (const auto& comp : get())
       if (!comp->is_disabled())
         comp->update(context);
   }
@@ -46,10 +44,7 @@ public:
 
   void add(axgl::ptr_t<axgl::Component> component) override { components_.push_back(std::move(component)); }
   void remove(const axgl::ptr_t<axgl::Component>& component) override { std::erase(components_, component); }
-  [[nodiscard]] util::Iterable<axgl::ptr_t<axgl::Component>> get() const override
-  {
-    return util::to_iterable_t<axgl::ptr_t<axgl::Component>>(components_);
-  }
+  [[nodiscard]] std::span<const ptr_t<Component>> get() const override { return components_; }
 };
 
 } // namespace axgl::impl

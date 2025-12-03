@@ -28,21 +28,13 @@ public:
   template <typename EntityType>
   void register_entity_t()
   {
-    register_entity_factory(
-      EntityType::kTypeId.data(), []
-    {
-      return axgl::create_ptr<EntityType>();
-    });
+    register_entity_factory(EntityType::kTypeId.data(), [] { return axgl::create_ptr<EntityType>(); });
   }
 
   template <typename ComponentType>
   void register_component_t()
   {
-    register_component_factory(
-      ComponentType::kTypeId.data(), []
-    {
-      return axgl::create_ptr<ComponentType>();
-    });
+    register_component_factory(ComponentType::kTypeId.data(), [] { return axgl::create_ptr<ComponentType>(); });
   }
 
   template <typename EntityType>

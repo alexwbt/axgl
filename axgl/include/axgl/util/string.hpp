@@ -28,24 +28,14 @@ inline std::vector<std::string> split(const std::string& s, char delim)
 // trim from start (in place)
 inline void ltrim(std::string& s)
 {
-  const auto char_is_space = [](const unsigned char ch)
-  {
-    return !std::isspace(ch);
-  };
+  const auto char_is_space = [](const unsigned char ch) { return !std::isspace(ch); };
   s.erase(s.begin(), std::ranges::find_if(s, char_is_space));
 }
 
 // trim from end (in place)
 inline void rtrim(std::string& s)
 {
-  s.erase(
-    std::find_if(
-      s.rbegin(), s.rend(),
-      [](unsigned char ch)
-  {
-    return !std::isspace(ch);
-  }).base(),
-    s.end());
+  s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
 }
 
 // trim from both ends (in place)

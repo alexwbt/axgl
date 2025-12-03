@@ -182,18 +182,12 @@ public:
 
   void remove_input(std::uint32_t id) override
   {
-    inputs_.remove_if([id](const auto& input)
-    {
-      return input->id == id;
-    });
+    inputs_.remove_if([id](const auto& input) { return input->id == id; });
   }
 
   void remove_pointer(std::uint32_t id) override
   {
-    pointers_.remove_if([id](const auto& pointer)
-    {
-      return pointer->id == id;
-    });
+    pointers_.remove_if([id](const auto& pointer) { return pointer->id == id; });
   }
 
   void update(const axgl::Service::Context& context) override

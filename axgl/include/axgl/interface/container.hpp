@@ -1,10 +1,6 @@
 #pragma once
 
-#include <vector>
-
 #include <axgl/common.hpp>
-
-#include <axgl/util/iterable.hpp>
 
 namespace axgl
 {
@@ -19,7 +15,7 @@ public:
 
   virtual void add(axgl::ptr_t<Item> item) = 0;
 
-  virtual void add_all(const std::vector<axgl::ptr_t<Item>>& item)
+  virtual void add_all(const std::span<const axgl::ptr_t<Item>>& item)
   {
     for (auto& item_ : item)
       add(item_);
@@ -27,13 +23,13 @@ public:
 
   virtual void remove(const axgl::ptr_t<Item>& item) = 0;
 
-  [[nodiscard]] virtual util::Iterable<axgl::ptr_t<Item>> get() const = 0;
+  [[nodiscard]] virtual std::span<const axgl::ptr_t<Item>> get() const = 0;
 
   template <typename ItemType>
   axgl::ptr_t<ItemType> get_t()
   {
     for (const auto& item : get())
-      if (auto item_t = axgl::ptr_cast<ItemType>(item))
+      if (auto* item_t = dynamic_cast<ItemType*>(item.get()))
         return item_t;
     return nullptr;
   }

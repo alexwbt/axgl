@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include <axgl/common.hpp>
 #include <axgl/interface/container.hpp>
 #include <axgl/interface/entity.hpp>
@@ -67,10 +65,7 @@ public:
       }
     }
   }
-  [[nodiscard]] util::Iterable<axgl::ptr_t<axgl::Entity>> get() const override
-  {
-    return util::to_iterable_t<axgl::ptr_t<axgl::Entity>>(entities_);
-  }
+  [[nodiscard]] std::span<const axgl::ptr_t<axgl::Entity>> get() const override { return entities_; }
 };
 
 } // namespace axgl::impl

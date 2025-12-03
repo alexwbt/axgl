@@ -127,11 +127,7 @@ public:
 
   [[nodiscard]] virtual bool running(const Service::Context& context) const
   {
-    return std::ranges::any_of(
-      services(), [&](const auto& service)
-    {
-      return service->keep_alive(context);
-    });
+    return std::ranges::any_of(services(), [&](const auto& service) { return service->keep_alive(context); });
   }
 
   virtual void exec(const Service::Context& context, const std::string& command) const

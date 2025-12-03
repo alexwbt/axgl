@@ -18,7 +18,7 @@ AllowShortCaseLabelsOnASingleLine: true
 IndentCaseBlocks: false
 IndentCaseLabels: false
 LambdaBodyIndentation: OuterScope
-AllowShortLambdasOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: All
 PackConstructorInitializers: NextLine
 BreakConstructorInitializers: AfterColon
 AlignAfterOpenBracket: AlwaysBreak

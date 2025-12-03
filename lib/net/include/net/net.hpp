@@ -99,16 +99,12 @@ public:
     const std::shared_ptr<Session> session(new Session(id, std::move(socket)));
     // start read loop
     asio::co_spawn(
-      session->socket_->get_executor(), [session]() -> asio::awaitable<void>
-    {
-      return session->read_buffers();
-    }, asio::detached);
+      session->socket_->get_executor(), [session]() -> asio::awaitable<void> { return session->read_buffers(); },
+      asio::detached);
     // start write loop
     asio::co_spawn(
-      session->socket_->get_executor(), [session]() -> asio::awaitable<void>
-    {
-      return session->write_buffers();
-    }, asio::detached);
+      session->socket_->get_executor(), [session]() -> asio::awaitable<void> { return session->write_buffers(); },
+      asio::detached);
 
     return session;
   }
@@ -161,10 +157,7 @@ public:
   {
     for (auto it = sessions_.begin(); it != sessions_.end();)
     {
-      it->second->handle_input([this, &it](DataPtr buffer)
-      {
-        on_receive(it->first, std::move(buffer));
-      });
+      it->second->handle_input([this, &it](DataPtr buffer) { on_receive(it->first, std::move(buffer)); });
 
       if (!it->second->connected())
       {
@@ -228,10 +221,7 @@ public:
     if (!session_)
       return;
 
-    session_->handle_input([this](DataPtr buffer)
-    {
-      on_receive(std::move(buffer));
-    });
+    session_->handle_input([this](DataPtr buffer) { on_receive(std::move(buffer)); });
 
     if (!session_->connected())
     {

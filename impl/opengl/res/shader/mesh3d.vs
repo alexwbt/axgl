@@ -3,17 +3,17 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 uv;
+layout (location = 3) in mat4 model;
 
 out vec3 vert_position;
 out vec3 vert_normal;
 out vec2 vert_uv;
 
-uniform mat4 mvp;
-uniform mat4 model;
+uniform mat4 projection_view;
 
 void main()
 {
-  gl_Position = mvp * vec4(position, 1.0);
+  gl_Position = projection_view * model * vec4(position, 1.0);
   gl_Position.x = -gl_Position.x;
 
   vert_position = vec3(model * vec4(position, 1.0));
