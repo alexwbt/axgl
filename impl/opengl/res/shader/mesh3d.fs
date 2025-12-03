@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 
 struct SunLight
 {
@@ -65,7 +65,7 @@ uniform SpotLight spot_lights[32];
 uniform int point_lights_size;
 uniform PointLight point_lights[32];
 
-out vec4 FragColor;
+out vec4 frag_color;
 
 vec3 get_mesh_diffuse()
 {
@@ -158,5 +158,5 @@ void main()
   // point lights
   for (int i = 0; i < point_lights_size; ++i) result += calc_point_light(point_lights[i], view_dir);
 
-  FragColor = vec4(result, mesh_color.a);
+  frag_color = vec4(result, mesh_color.a);
 }

@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 
 uniform vec4 text_color;
 uniform sampler2D text_texture;

@@ -1,16 +1,16 @@
-#version 330 core
+#version 420 core
 
 uniform vec4 mesh_color;
 uniform bool use_texture;
 uniform sampler2D mesh_texture;
 
-out vec4 FragColor;
-
 in vec2 vert_uv;
+
+out vec4 frag_color;
 
 void main()
 {
-  FragColor = use_texture
-   ? texture(mesh_texture, vert_uv) * mesh_color
-   : mesh_color;
+  frag_color = use_texture
+    ? texture(mesh_texture, vert_uv) * mesh_color
+    : mesh_color;
 }

@@ -22,7 +22,7 @@ public:
   explicit StbiImage(const std::span<const uint8_t>& data)
   {
     int nrChannels;
-    stbi_ptr = stbi_load_from_memory(data.data(), data.size(), &width, &height, &nrChannels, 0);
+    stbi_ptr = stbi_load_from_memory(data.data(), static_cast<int>(data.size()), &width, &height, &nrChannels, 0);
 
     switch (nrChannels)
     {
@@ -88,7 +88,7 @@ public:
 
   void use() const { glBindTexture(target_, id_); }
 
-  void set_parameteri(GLenum param, GLint value) const { glTexParameteri(target_, param, value); }
+  void set_parameteri(const GLenum param, const GLint value) const { glTexParameteri(target_, param, value); }
 
   void generate_mipmap() const { glGenerateMipmap(target_); }
 

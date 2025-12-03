@@ -7,7 +7,7 @@
 
 #include <demo_opengl_blending/res.hpp>
 
-#include "grass.hpp"
+#include "generate.hpp"
 
 class Application : public axgl::Service
 {
@@ -66,8 +66,8 @@ public:
     camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
 
-    // grass
-    generate_grass(realm, axgl);
+    // transparent entities
+    generate(axgl, realm);
   }
 };
 

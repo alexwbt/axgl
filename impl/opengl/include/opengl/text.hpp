@@ -277,9 +277,9 @@ public:
       quad->draw();
 
       if (options.vertical)
-        advance.y += chars[c].advance.y;
+        advance.y += static_cast<float>(chars[c].advance.y);
       else
-        advance.x += chars[c].advance.x;
+        advance.x += static_cast<float>(chars[c].advance.x);
     }
 
     glDisable(GL_BLEND);

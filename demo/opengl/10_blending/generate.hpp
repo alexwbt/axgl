@@ -1,0 +1,104 @@
+#pragma once
+
+#include <random>
+
+#include <axgl/axgl.hpp>
+
+inline axgl::ptr_t<axgl::Texture> create_grass_texture(const axgl::Axgl& axgl)
+{
+  // texture
+  const auto texture = axgl.renderer_service()->create_texture();
+  texture->load_texture(axgl.resource_service()->get_resource("grass.png"));
+  return texture;
+}
+
+inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
+  const axgl::Axgl& axgl,
+  const axgl::ptr_t<axgl::Texture>& texture)
+{
+  const auto entity_service = axgl.entity_service();
+  const auto renderer_service = axgl.renderer_service();
+  // material
+  const auto material = renderer_service->create_material("2d");
+  if (texture)
+    material->add_texture(axgl::Material::TextureType::kDiffuse, texture);
+  material->set_cull_mode(axgl::Material::CullMode::kNone);
+  material->set_enable_blend(true);
+  // mesh
+  const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+  mesh->set_vertices(
+    std::vector<glm::vec2>{
+      {0.5f, 0.5f},
+      {0.5f, -0.5f},
+      {-0.5f, -0.5f},
+      {-0.5f, 0.5f},
+    });
+  mesh->set_uv(
+    std::vector<glm::vec2>{
+      {1.0f, 1.0f},
+      {1.0f, 0.0f},
+      {0.0f, 0.0f},
+      {0.0f, 1.0f},
+    });
+  mesh->set_indices(std::vector<uint32_t>{0, 1, 2, 0, 2, 3});
+  mesh->set_material(material);
+  return mesh;
+}
+
+inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl)
+{
+  static const auto texture = create_grass_texture(axgl);
+  static const auto mesh = create_mesh(axgl, texture);
+
+  // grass entity
+  const auto grass = axgl.entity_service()->create_entity();
+  grass->components().add(mesh);
+  return grass;
+}
+
+inline axgl::ptr_t<axgl::Entity> create_pane(const axgl::Axgl& axgl)
+{
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
+  static std::uniform_real_distribution color_dis(0.0f, 1.0f);
+
+  // pane mesh with random colors
+  const auto mesh = create_mesh(axgl, nullptr);
+  mesh->get_material()->set_color(glm::vec4(color_dis(gen), color_dis(gen), color_dis(gen), color_dis(gen)));
+
+  // pane entity
+  const auto pane = axgl.entity_service()->create_entity();
+  pane->components().add(mesh);
+  return pane;
+}
+
+inline void generate_entities(
+  float y,
+  const axgl::ptr_t<axgl::Realm>& realm,
+  const std::function<axgl::ptr_t<axgl::Entity>()>& create_entity)
+{
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution pos_dis(-10.0f, 10.0f);
+  std::uniform_real_distribution rot_dis(0.0f, 3.1415f);
+  // grass entities
+  for (int i = 0; i < 1000; i++)
+  {
+    const auto entity = create_entity();
+    auto& transform = entity->transform();
+    transform.position.x = pos_dis(gen);
+    transform.position.y = y;
+    transform.position.z = pos_dis(gen);
+    transform.rotation.y = rot_dis(gen);
+    entity->update_model_matrix();
+    realm->entities().add(entity);
+  }
+}
+
+inline void generate(
+  const axgl::Axgl& axgl,
+  const axgl::ptr_t<axgl::Realm>& realm)
+{
+  generate_entities(-2.0f, realm, std::bind(create_grass, axgl));
+  generate_entities(-1.0f, realm, std::bind(create_pane, axgl));
+}

@@ -28,8 +28,8 @@ public:
   void initialize(const Service::Context& context) override
   {
     // set glfw context
-    impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 6);
     impl::glfw::WindowService::set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   }
 

@@ -22,7 +22,7 @@ AllowShortLambdasOnASingleLine: Empty
 PackConstructorInitializers: NextLine
 BreakConstructorInitializers: AfterColon
 AlignAfterOpenBracket: AlwaysBreak
-BinPackParameters: OnePerLine
+BinPackParameters: AlwaysOnePerLine
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowAllArgumentsOnNextLine: true
 BreakBeforeBraces: Allman
@@ -54,3 +54,5 @@ KeepEmptyLines:
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 BreakTemplateDeclarations: Yes
+BreakAfterAttributes: Never
+PenaltyReturnTypeOnItsOwnLine: 9999
