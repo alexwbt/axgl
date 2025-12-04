@@ -56,3 +56,4 @@ MaxEmptyLinesToKeep: 1
 BreakTemplateDeclarations: Yes
 BreakAfterAttributes: Never
 PenaltyReturnTypeOnItsOwnLine: 9999
+BreakBeforeTernaryOperators: true

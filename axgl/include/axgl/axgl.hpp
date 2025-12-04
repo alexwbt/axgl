@@ -33,6 +33,9 @@ class Axgl final : public ServiceContainer
 public:
   void initialize()
   {
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
+    spdlog::set_level(spdlog::level::debug);
+#endif
 #ifdef AXGL_DEBUG
     CPPTRACE_TRY
     {
@@ -78,7 +81,11 @@ public:
       constexpr double kTimeStep = kOneSecond / 60.0;
 
       auto start_time = high_resolution_clock::now();
-      double delta_time = 0.0;
+      double delta_tick = 0.0;
+#ifdef AXGL_DEBUG
+      double debug_delta_time = 0.0;
+      std::int64_t update_count = 0;
+#endif
 
       on_start(context);
       while (running(context))
@@ -86,22 +93,36 @@ public:
         AXGL_PROFILE_SCOPE("Main Loop");
 
         const auto now = high_resolution_clock::now();
-        delta_time += static_cast<double>(duration_cast<nanoseconds>(now - start_time).count()) / kTimeStep;
+        const auto delta_time = static_cast<double>(duration_cast<nanoseconds>(now - start_time).count());
+        delta_tick += delta_time / kTimeStep;
         start_time = now;
+#ifdef AXGL_DEBUG
+        debug_delta_time += delta_time;
+        if (debug_delta_time >= kOneSecond)
+        {
+          AXGL_PLOT("Update hz", update_count);
+          update_count = 0;
+          debug_delta_time = 0;
+        }
+#endif
 
-        const auto should_update = delta_time >= 1;
-
+        const auto should_update = delta_tick >= 1;
         if (should_update)
         {
+          AXGL_PLOT("Delta time (ns)", delta_time);
+          AXGL_PLOT("Delta tick", std::round(delta_tick * 100.0) / 100.0);
           AXGL_PROFILE_SCOPE("Update");
           update(context);
+#ifdef AXGL_DEBUG
+          ++update_count;
+#endif
         }
 
-        while (delta_time >= 1)
+        while (delta_tick >= 1)
         {
           AXGL_PROFILE_SCOPE("Tick");
           tick(context);
-          delta_time--;
+          delta_tick--;
         }
 
         if (should_update)

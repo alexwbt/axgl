@@ -33,18 +33,14 @@ public:
   {
     if (!window_ || !window_->ready())
     {
-#ifdef AXGL_DEBUG
-      SPDLOG_WARN("Unable to render realm: window is not set or not ready.");
-#endif
+      SPDLOG_DEBUG("Unable to render realm: window is not set or not ready.");
       return;
     }
 
     auto* camera = context.axgl.camera_service()->get_camera();
     if (!camera)
     {
-#ifdef AXGL_DEBUG
-      SPDLOG_WARN("Unable to render realm: camera is not set.");
-#endif
+      SPDLOG_DEBUG("Unable to render realm: camera is not set.");
       return;
     }
 

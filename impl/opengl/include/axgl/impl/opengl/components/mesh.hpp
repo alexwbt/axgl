@@ -77,7 +77,8 @@ public:
       SPDLOG_DEBUG("Material not assigned to mesh, skip rendering.");
       return;
     }
-    model_matrices_.push_back(entity.get_model_matrix());
+    if (!vao_)
+      model_matrices_.push_back(entity.get_model_matrix());
   }
 
   void build(RenderComponent::Context& context) override
@@ -85,20 +86,22 @@ public:
     if (!material_)
       return;
 
-    create_vao();
+    if (!vao_)
+    {
+      AXGL_PROFILE_SCOPE("Mesh create vao");
+      SPDLOG_DEBUG(model_matrices_.size());
+      create_vao();
+    }
 
+    const auto draw_func = [this](const auto& c)
+    {
+      material_->use(c);
+      vao_->draw_instanced(static_cast<GLsizei>(model_matrices_.size()));
+    };
     if (material_->enabled_blend())
-      context.blend_pass.emplace_back([this](const auto& c)
-      {
-        material_->use(c);
-        vao_->draw_instanced(static_cast<GLsizei>(model_matrices_.size()));
-      });
+      context.blend_pass.emplace_back(std::move(draw_func));
     else
-      context.opaque_pass.emplace_back([this](const auto& c)
-      {
-        material_->use(c);
-        vao_->draw_instanced(static_cast<GLsizei>(model_matrices_.size()));
-      });
+      context.opaque_pass.emplace_back(std::move(draw_func));
   }
 
   std::uint64_t get_id() override { return ComponentBase::get_id(); }
@@ -149,6 +152,8 @@ private:
       };
       vao_->create_vertex_buffer<glm::mat4>(
         model_matrices_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kModels), 1);
+
+      model_matrices_.clear();
     }
   }
 };
