@@ -28,7 +28,7 @@ public:
 
 private:
   GLuint program_id_;
-  std::unordered_map<std::string, GLuint> uniform_locations_;
+  std::unordered_map<std::string, GLint> uniform_locations_;
 
 public:
   explicit ShaderProgram(const std::vector<Shader>& shaders)
@@ -51,7 +51,7 @@ public:
     if (!success)
     {
       char log[512] = {};
-      glGetProgramInfoLog(program_id_, sizeof(log), NULL, log);
+      glGetProgramInfoLog(program_id_, sizeof(log), nullptr, log);
       SPDLOG_CRITICAL("Failed to link shader program: {}", log);
     }
 
@@ -86,9 +86,12 @@ public:
       glDeleteProgram(program_id_);
   }
 
-  void set_int(const std::string& name, int value) { glUniform1i(get_uniform_location(name), value); }
-  void set_bool(const std::string& name, bool value) { glUniform1i(get_uniform_location(name), (int)value); }
-  void set_float(const std::string& name, float value) { glUniform1f(get_uniform_location(name), value); }
+  void set_int(const std::string& name, const int value) { glUniform1i(get_uniform_location(name), value); }
+  void set_bool(const std::string& name, const bool value)
+  {
+    glUniform1i(get_uniform_location(name), static_cast<GLint>(value));
+  }
+  void set_float(const std::string& name, const float value) { glUniform1f(get_uniform_location(name), value); }
   void set_vec2(const std::string& name, const glm::vec2& value)
   {
     glUniform2fv(get_uniform_location(name), 1, &value[0]);
@@ -101,12 +104,15 @@ public:
   {
     glUniform4fv(get_uniform_location(name), 1, &value[0]);
   }
-  void set_vec2(const std::string& name, float x, float y) { glUniform2f(get_uniform_location(name), x, y); }
-  void set_vec3(const std::string& name, float x, float y, float z)
+  void set_vec2(const std::string& name, const float x, const float y)
+  {
+    glUniform2f(get_uniform_location(name), x, y);
+  }
+  void set_vec3(const std::string& name, const float x, const float y, const float z)
   {
     glUniform3f(get_uniform_location(name), x, y, z);
   }
-  void set_vec4(const std::string& name, float x, float y, float z, float w)
+  void set_vec4(const std::string& name, const float x, const float y, const float z, const float w)
   {
     glUniform4f(get_uniform_location(name), x, y, z, w);
   }
@@ -126,7 +132,7 @@ public:
   void use_program() const { glUseProgram(program_id_); }
 
 private:
-  GLuint get_uniform_location(const std::string& name)
+  GLint get_uniform_location(const std::string& name)
   {
     if (!uniform_locations_.contains(name))
       uniform_locations_[name] = glGetUniformLocation(program_id_, name.c_str());
@@ -139,7 +145,7 @@ private:
     const GLuint id = glCreateShader(shader.type);
 
     const GLchar* code = shader.source_code.data();
-    const GLint size = static_cast<GLint>(shader.source_code.size());
+    const auto size = static_cast<GLint>(shader.source_code.size());
     glShaderSource(id, 1, &code, &size);
 
     glCompileShader(id);

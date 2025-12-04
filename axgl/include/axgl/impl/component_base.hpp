@@ -15,6 +15,12 @@ class ComponentBase : virtual public axgl::Component
   bool disabled_ = false;
 
 public:
+  ComponentBase()
+  {
+    static std::uint64_t next_id_ = 0;
+    id_ = ++next_id_;
+  }
+
   void tick(const axgl::Entity::Context& context) override { ++ticks_; }
 
   void set_name(const std::string& name) override { name_ = name; }

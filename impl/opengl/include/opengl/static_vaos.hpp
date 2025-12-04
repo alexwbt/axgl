@@ -24,10 +24,10 @@ public:
   StaticVAOs(const StaticVAOs&&) = delete;
   StaticVAOs& operator=(const StaticVAOs&&) = delete;
 
-  [[nodiscard]] axgl::ptr_t<VertexArrayObject> quad() const { return quad_; }
+  [[nodiscard]] VertexArrayObject& quad() const { return *quad_; }
 
 private:
-  axgl::ptr_t<VertexArrayObject> quad_;
+  std::unique_ptr<VertexArrayObject> quad_;
 
   StaticVAOs() { init_quad(); }
 
@@ -36,9 +36,9 @@ private:
     std::array vertices{glm::vec2{0, 0}, glm::vec2{0, 1}, glm::vec2{1, 0},
                         glm::vec2{1, 0}, glm::vec2{0, 1}, glm::vec2{1, 1}};
     std::array attributes{
-      VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0},
-      VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0}};
-    quad_ = std::make_shared<VertexArrayObject>();
+      VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr},
+      VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}};
+    quad_ = std::make_unique<VertexArrayObject>();
     quad_->create_vertex_buffer<glm::vec2>(vertices, attributes, 0);
   }
 };

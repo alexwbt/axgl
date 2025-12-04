@@ -1,7 +1,5 @@
 #pragma once
 
-#include <span>
-
 #include <axgl/common.hpp>
 #include <axgl/interface/component.hpp>
 #include <axgl/interface/material.hpp>

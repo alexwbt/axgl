@@ -10,10 +10,13 @@ out vec3 vert_normal;
 out vec2 vert_uv;
 
 uniform mat4 projection_view;
+uniform mat4 projection_view_model;
+uniform bool use_instancing;
 
 void main()
 {
-  gl_Position = projection_view * model * vec4(position, 1.0);
+  mat4 mvp = use_instancing ? projection_view * model : projection_view_model;
+  gl_Position = mvp * vec4(position, 1.0);
   gl_Position.x = -gl_Position.x;
 
   vert_position = vec3(model * vec4(position, 1.0));

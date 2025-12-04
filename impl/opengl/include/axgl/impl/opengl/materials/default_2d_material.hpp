@@ -1,10 +1,6 @@
 #pragma once
 
-#include <string>
-
 #include <axgl/common.hpp>
-#include <axgl/interface/components/mesh.hpp>
-#include <axgl/interface/entity.hpp>
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/material.hpp>
@@ -15,7 +11,7 @@ namespace axgl::impl::opengl
 
 class Default2DMaterial : public Material
 {
-  axgl::ptr_t<::opengl::ShaderProgram> shader_ = ::opengl::StaticShaders::instance().mesh_2d();
+  ::opengl::ShaderProgram& shader_ = ::opengl::StaticShaders::instance().mesh_2d();
   axgl::ptr_t<impl::opengl::Texture> texture_;
 
 public:
@@ -30,27 +26,25 @@ public:
 #endif
   }
 
-  void use(const Context& context) override
+  void use(const RenderComponent::Context& context) override
   {
     Material::use(context);
 
-    const auto model = context.entity.get_model_matrix();
-    const auto mvp = context.camera->projection_view_matrix() * model;
-
-    shader_->use_program();
-    shader_->set_mat4("mvp", mvp);
-    shader_->set_vec4("mesh_color", color_);
+    shader_.use_program();
+    shader_.set_bool("use_instancing", true);
+    shader_.set_mat4("projection_view", context.camera->projection_view_matrix());
+    shader_.set_vec4("mesh_color", color_);
 
     if (texture_)
     {
       glActiveTexture(GL_TEXTURE0);
       texture_->use();
-      shader_->set_int("mesh_texture", 0);
-      shader_->set_bool("use_texture", true);
+      shader_.set_int("mesh_texture", 0);
+      shader_.set_bool("use_texture", true);
     }
     else
     {
-      shader_->set_bool("use_texture", false);
+      shader_.set_bool("use_texture", false);
     }
   }
 

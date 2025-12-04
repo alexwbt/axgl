@@ -15,6 +15,7 @@
 #include <axgl/interface/texture.hpp>
 
 #include <axgl/impl/opengl/components/mesh.hpp>
+#include <axgl/util/mesh.hpp>
 
 #include <opengl/static_vaos.hpp>
 #include <opengl/text.hpp>
@@ -101,7 +102,7 @@ public:
   {
     const auto material = create_material(value, font, options, text);
     const auto mesh = entity_service_->create_component_t<impl::opengl::component::Mesh>();
-    mesh->replace_vao(::opengl::StaticVAOs::instance().quad());
+    axgl::util::init_quad(*mesh);
     mesh->set_material(material);
     return mesh;
   }

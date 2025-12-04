@@ -3,6 +3,7 @@
 #include <random>
 
 #include <axgl/axgl.hpp>
+#include <axgl/util/mesh.hpp>
 
 inline axgl::ptr_t<axgl::Texture> create_grass_texture(const axgl::Axgl& axgl)
 {
@@ -24,21 +25,7 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(const axgl::Axgl& axgl, co
   material->set_enable_blend(true);
   // mesh
   const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
-  mesh->set_vertices(
-    std::vector<glm::vec2>{
-      {0.5f, 0.5f},
-      {0.5f, -0.5f},
-      {-0.5f, -0.5f},
-      {-0.5f, 0.5f},
-    });
-  mesh->set_uv(
-    std::vector<glm::vec2>{
-      {1.0f, 1.0f},
-      {1.0f, 0.0f},
-      {0.0f, 0.0f},
-      {0.0f, 1.0f},
-    });
-  mesh->set_indices(std::vector<uint32_t>{0, 1, 2, 0, 2, 3});
+  axgl::util::init_quad(*mesh);
   mesh->set_material(material);
   return mesh;
 }
@@ -61,8 +48,8 @@ inline axgl::ptr_t<axgl::Entity> create_pane(const axgl::Axgl& axgl)
   static std::uniform_real_distribution color_dis(0.0f, 1.0f);
 
   // pane mesh with random colors
-  const auto mesh = create_mesh(axgl, nullptr);
-  mesh->get_material()->set_color(glm::vec4(color_dis(gen), color_dis(gen), color_dis(gen), color_dis(gen)));
+  static const auto mesh = create_mesh(axgl, nullptr);
+  // mesh->get_material()->set_color(glm::vec4(color_dis(gen), color_dis(gen), color_dis(gen), color_dis(gen)));
 
   // pane entity
   const auto pane = axgl.entity_service()->create_entity();

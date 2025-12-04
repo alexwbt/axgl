@@ -7,12 +7,12 @@
 #include <string>
 #include <vector>
 
-namespace util
+namespace axgl::util
 {
 
 inline std::string read_text_file(const std::string& path)
 {
-  std::ifstream file(path, std::ifstream::in);
+  const std::ifstream file(path, std::ifstream::in);
   if (!file.is_open())
     throw std::runtime_error("Could not open file: " + path);
 
@@ -28,7 +28,7 @@ inline std::vector<uint8_t> read_file(const std::string& path)
     throw std::runtime_error("Could not open file: " + path);
 
   file.seekg(0, std::ios::end);
-  size_t size = file.tellg();
+  const size_t size = file.tellg();
   file.seekg(0, std::ios::beg);
 
   std::vector<uint8_t> buffer(size);
@@ -37,4 +37,4 @@ inline std::vector<uint8_t> read_file(const std::string& path)
   return buffer;
 }
 
-} // namespace util
+} // namespace axgl::util

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace util
+namespace axgl::util
 {
 
 template <typename result_t>
@@ -84,4 +84,4 @@ inline void string_to_vec3(const std::string& str, float& x, float& y, float& z)
   }
 }
 
-} // namespace util
+} // namespace axgl::util

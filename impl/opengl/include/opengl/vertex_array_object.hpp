@@ -9,6 +9,15 @@
 namespace opengl
 {
 
+struct VertexAttribute
+{
+  GLint size;
+  GLenum type;
+  GLboolean normalized;
+  GLsizei stride;
+  const void* pointer;
+};
+
 class VertexArrayObject final
 {
   GLuint id_;
@@ -70,17 +79,51 @@ public:
 
   template <typename VertexType>
   size_t create_vertex_buffer(
-    const std::span<const VertexType>& data, const std::span<const VertexAttribute>& attributes, int attributes_offset)
+    const std::span<const VertexType>& data,
+    const std::span<const VertexAttribute>& attributes,
+    const int attributes_offset,
+    const GLuint divisor = 0)
   {
-    use();
-    auto buffer = std::make_unique<VertexBufferObject>(data, usage_);
-    buffer->set_attributes(attributes, attributes_offset);
+    bind();
+    auto buffer = std::make_unique<BufferObject>(GL_ARRAY_BUFFER);
+    buffer->set_data(data, usage_);
+    for (int i = 0; i < attributes.size(); i++)
+    {
+      const auto index = attributes_offset + i;
+      const auto& [size, type, normalized, stride, pointer] = attributes[i];
+      glEnableVertexAttribArray(index);
+      switch (type)
+      {
+      case GL_BYTE:
+      case GL_UNSIGNED_BYTE:
+      case GL_SHORT:
+      case GL_UNSIGNED_SHORT:
+      case GL_INT:
+      case GL_UNSIGNED_INT: glVertexAttribIPointer(index, size, type, stride, pointer); break;
+      case GL_HALF_FLOAT:
+      case GL_FLOAT:
+      case GL_FIXED:
+      case GL_INT_2_10_10_10_REV:
+      case GL_UNSIGNED_INT_2_10_10_10_REV:
+      case GL_UNSIGNED_INT_10F_11F_11F_REV:
+        glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+        break;
+        // case GL_DOUBLE:
+        //   glVertexAttribLPointer(index, attr.size, attr.type, attr.normalized, attr.stride, attr.pointer);
+        //   break;
+      default:;
+      }
+      if (divisor > 0)
+        glVertexAttribDivisor(index, divisor);
+    }
 
-    if (vertex_size_ > 0 && buffer->size() != vertex_size_)
-      throw std::runtime_error("Size of all vertex buffer should be equal.");
-
-    vertex_size_ = buffer->size();
-    attribute_size_ += buffer->attribute_size();
+    if (divisor == 0)
+    {
+      if (vertex_size_ > 0 && buffer->size() != vertex_size_)
+        throw std::runtime_error("Size of all vertex buffer should be equal.");
+      vertex_size_ = buffer->size();
+    }
+    attribute_size_ += attributes.size();
     buffer_objects_.push_back(std::move(buffer));
 
     return buffer_objects_.size() - 1;
@@ -88,8 +131,9 @@ public:
 
   size_t create_element_buffer(const std::span<const uint32_t>& data)
   {
-    use();
-    auto buffer = std::make_unique<ElementBufferObject>(data, usage_);
+    bind();
+    auto buffer = std::make_unique<BufferObject>(GL_ELEMENT_ARRAY_BUFFER);
+    buffer->set_data(data, usage_);
 
     element_size_ = buffer->size();
     buffer_objects_.push_back(std::move(buffer));
@@ -99,15 +143,24 @@ public:
 
   void draw() const
   {
-    use();
+    bind();
     if (element_size_ > 0)
-      glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr);
     else if (vertex_size_ > 0)
       glDrawArrays(GL_TRIANGLES, 0, static_cast<GLint>(vertex_size_));
   }
 
+  void draw_instanced(const GLsizei count) const
+  {
+    bind();
+    if (element_size_ > 0)
+      glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr, count);
+    else if (vertex_size_ > 0)
+      glDrawArraysInstanced(GL_TRIANGLES, 0, static_cast<GLint>(vertex_size_), count);
+  }
+
 private:
-  void use() const { glBindVertexArray(id_); }
+  void bind() const { glBindVertexArray(id_); }
 };
 
 } // namespace opengl

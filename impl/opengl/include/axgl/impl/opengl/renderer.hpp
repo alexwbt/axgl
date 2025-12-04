@@ -10,7 +10,7 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw/window.hpp>
-#include <axgl/impl/opengl/renderable.hpp>
+#include <axgl/impl/opengl/render_component.hpp>
 
 namespace axgl::impl::opengl
 {
@@ -65,22 +65,41 @@ public:
     glEnable(GL_STENCIL_TEST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    {
-      AXGL_PROFILE_SCOPE("Opengl Renderer Collect Lights");
+    RenderComponent::Context render_context{camera};
+    std::unordered_map<std::uint64_t, RenderComponent*> render_components;
 
+    {
+      AXGL_PROFILE_SCOPE("Renderer Collection Stage");
       for (const auto& entity : realm->entities().get())
+      {
         for (const auto& component : entity->components().get())
-          if (const auto* light_comp = dynamic_cast<axgl::impl::component::Light*>(component.get()))
+        {
+          if (auto* render_comp = dynamic_cast<RenderComponent*>(component.get()))
+          {
+            render_comp->collect(*entity);
+
+            const auto id = render_comp->get_id();
+            render_components[id] = render_comp;
+          }
+          else if (const auto* light_comp = dynamic_cast<axgl::impl::component::Light*>(component.get()))
             render_context.lights.push_back(&light_comp->light);
+        }
+      }
     }
-
     {
-      AXGL_PROFILE_SCOPE("Opengl Renderer Render Renderables");
-
-      for (const auto& entity : realm->entities().get())
-        for (const auto& component : entity->components().get())
-          if (const auto* renderable = dynamic_cast<axgl::impl::opengl::Renderable*>(component.get()))
-            renderable->render(render_context, *entity);
+      AXGL_PROFILE_SCOPE("Renderer Build Stage");
+      for (auto* render_comp : render_components | std::views::values)
+        render_comp->build(render_context);
+    }
+    {
+      AXGL_PROFILE_SCOPE("Renderer Opaque Render Pass");
+      for (const auto& render_func : render_context.opaque_pass)
+        render_func(render_context);
+    }
+    {
+      AXGL_PROFILE_SCOPE("Renderer Opaque Blend Pass");
+      for (const auto& render_func : render_context.blend_pass)
+        render_func(render_context);
     }
 
     window_->swap_buffers();

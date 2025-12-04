@@ -253,14 +253,15 @@ public:
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glActiveTexture(GL_TEXTURE0);
-    auto shader = StaticShaders::instance().text();
-    shader->use_program();
-    shader->set_int("text_texture", 0);
-    shader->set_vec4("text_color", options.color);
+    auto& shader = StaticShaders::instance().text();
+    shader.use_program();
+    shader.set_int("text_texture", 0);
+    shader.set_bool("use_instancing", false);
+    shader.set_vec4("text_color", options.color);
 
     glm::vec3 advance(0);
     glm::mat4 projection = glm::ortho(static_cast<float>(width), 0.0f, static_cast<float>(height), 0.0f);
-    auto quad = StaticVAOs::instance().quad();
+    auto& quad = StaticVAOs::instance().quad();
 
     for (auto it = value.begin(), end = value.end(); it != end;)
     {
@@ -272,9 +273,9 @@ public:
       glm::vec3 scale(chars[c].size, 1);
       glm::vec3 offset(chars[c].offset - min_offset, 0);
       auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
-      shader->set_mat4("mvp", projection * model);
+      shader.set_mat4("projection_view_model", projection * model);
 
-      quad->draw();
+      quad.draw();
 
       if (options.vertical)
         advance.y += static_cast<float>(chars[c].advance.y);

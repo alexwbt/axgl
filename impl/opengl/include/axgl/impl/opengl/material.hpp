@@ -1,8 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <axgl/interface/material.hpp>
 
-#include <axgl/interface/components/mesh.hpp>
+#include <axgl/impl/opengl/render_component.hpp>
 
 #include <opengl/static_shaders.hpp>
 
@@ -12,13 +12,6 @@ namespace axgl::impl::opengl
 class Material : public axgl::Material
 {
 public:
-  struct Context
-  {
-    const axgl::Entity& entity;
-    const axgl::Camera* camera;
-    const std::vector<const axgl::Light*>& lights;
-  };
-
   enum Attribute
   {
     kVertices,
@@ -39,7 +32,7 @@ public:
 
   [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
 
-  virtual void use(const Context& context)
+  virtual void use(const RenderComponent::Context& context)
   {
     glCullFace(GL_FRONT);
     switch (cull_mode_)

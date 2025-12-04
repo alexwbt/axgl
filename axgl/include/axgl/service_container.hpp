@@ -132,7 +132,7 @@ public:
 
   virtual void exec(const Service::Context& context, const std::string& command) const
   {
-    const auto args = util::split(command, ' ');
+    const auto args = axgl::util::split(command, ' ');
     if (args.empty())
       return;
 
