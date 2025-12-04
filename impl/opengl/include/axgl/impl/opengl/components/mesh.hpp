@@ -31,7 +31,7 @@ class Mesh : virtual public axgl::component::Mesh,
   std::vector<glm::vec2> uv_;
   std::vector<std::uint32_t> indices_;
   std::vector<glm::mat4> model_matrices_;
-  std::uint32_t instance_count_ = 0;
+  GLsizei instance_count_ = 0;
   // mesh data stored in GPU memory
   std::unique_ptr<::opengl::VertexArrayObject> vao_;
 
@@ -94,7 +94,8 @@ public:
     const auto draw_func = [this](const auto& c)
     {
       material_->use(c);
-      vao_->draw_instanced(static_cast<GLsizei>(instance_count_));
+      vao_->draw_instanced(instance_count_);
+      instance_count_ = 0;
     };
     if (material_->enabled_blend())
       context.blend_pass.emplace_back(std::move(draw_func));
