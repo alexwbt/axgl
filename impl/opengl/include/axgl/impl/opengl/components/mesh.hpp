@@ -31,6 +31,7 @@ class Mesh : virtual public axgl::component::Mesh,
   std::vector<glm::vec2> uv_;
   std::vector<std::uint32_t> indices_;
   std::vector<glm::mat4> model_matrices_;
+  std::uint32_t instance_count_ = 0;
   // mesh data stored in GPU memory
   std::unique_ptr<::opengl::VertexArrayObject> vao_;
 
@@ -77,8 +78,9 @@ public:
       SPDLOG_DEBUG("Material not assigned to mesh, skip rendering.");
       return;
     }
+    ++instance_count_;
     if (!vao_)
-      model_matrices_.push_back(entity.get_model_matrix());
+      model_matrices_.emplace_back(entity.get_model_matrix());
   }
 
   void build(RenderComponent::Context& context) override
@@ -87,16 +89,12 @@ public:
       return;
 
     if (!vao_)
-    {
-      AXGL_PROFILE_SCOPE("Mesh create vao");
-      SPDLOG_DEBUG(model_matrices_.size());
       create_vao();
-    }
 
     const auto draw_func = [this](const auto& c)
     {
       material_->use(c);
-      vao_->draw_instanced(static_cast<GLsizei>(model_matrices_.size()));
+      vao_->draw_instanced(static_cast<GLsizei>(instance_count_));
     };
     if (material_->enabled_blend())
       context.blend_pass.emplace_back(std::move(draw_func));
