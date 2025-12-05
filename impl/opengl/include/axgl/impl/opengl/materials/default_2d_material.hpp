@@ -53,7 +53,7 @@ public:
     switch (attribute)
     {
     case kVertices: return 0;
-    case kUv: return 1;
+    case kUV: return 1;
     case kModels: return 2;
     default: return 3;
     }

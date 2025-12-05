@@ -17,6 +17,7 @@ class ComponentBase : virtual public axgl::Component
 public:
   ComponentBase()
   {
+    // TODO: move this to entity service
     static std::uint64_t next_id_ = 0;
     id_ = ++next_id_;
   }

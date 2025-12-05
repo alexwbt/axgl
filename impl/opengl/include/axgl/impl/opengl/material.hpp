@@ -16,7 +16,7 @@ public:
   {
     kVertices,
     kNormals,
-    kUv,
+    kUV,
     kModels,
   };
 

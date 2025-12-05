@@ -31,7 +31,6 @@ class Mesh : virtual public axgl::component::Mesh,
   std::vector<glm::vec2> uv_;
   std::vector<std::uint32_t> indices_;
   std::vector<glm::mat4> model_matrices_;
-  GLsizei instance_count_ = 0;
   // mesh data stored in GPU memory
   std::unique_ptr<::opengl::VertexArrayObject> vao_;
 
@@ -78,7 +77,6 @@ public:
       SPDLOG_DEBUG("Material not assigned to mesh, skip rendering.");
       return;
     }
-    ++instance_count_;
     if (!vao_)
       model_matrices_.emplace_back(entity.get_model_matrix());
   }
@@ -94,8 +92,7 @@ public:
     const auto draw_func = [this](const auto& c)
     {
       material_->use(c);
-      vao_->draw_instanced(instance_count_);
-      instance_count_ = 0;
+      vao_->draw_instanced(model_matrices_.size());
     };
     if (material_->enabled_blend())
       context.blend_pass.emplace_back(std::move(draw_func));
@@ -134,7 +131,7 @@ private:
     {
       std::array attributes{::opengl::VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}};
       vao_->create_vertex_buffer<glm::vec2>(
-        uv_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kUv));
+        uv_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kUV));
     }
 
     if (!indices_.empty())
@@ -151,8 +148,6 @@ private:
       };
       vao_->create_vertex_buffer<glm::mat4>(
         model_matrices_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kModels), 1);
-
-      model_matrices_.clear();
     }
   }
 };

@@ -48,8 +48,8 @@ inline axgl::ptr_t<axgl::Entity> create_pane(const axgl::Axgl& axgl)
   static std::uniform_real_distribution color_dis(0.0f, 1.0f);
 
   // pane mesh with random colors
-  static const auto mesh = create_mesh(axgl, nullptr);
-  // mesh->get_material()->set_color(glm::vec4(color_dis(gen), color_dis(gen), color_dis(gen), color_dis(gen)));
+  const auto mesh = create_mesh(axgl, nullptr);
+  mesh->get_material()->set_color(glm::vec4(color_dis(gen), color_dis(gen), color_dis(gen), color_dis(gen)));
 
   // pane entity
   const auto pane = axgl.entity_service()->create_entity();

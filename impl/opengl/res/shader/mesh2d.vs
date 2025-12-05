@@ -16,6 +16,5 @@ void main()
   gl_Position = mvp * vec4(position, 0.0, 1.0);
   gl_Position.x = -gl_Position.x;
 
-  vert_uv = uv;
-  vert_uv.y = 1 - vert_uv.y;
+  vert_uv = vec2(uv.x, 1 - uv.y);
 }

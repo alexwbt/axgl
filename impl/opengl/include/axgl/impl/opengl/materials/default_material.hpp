@@ -77,7 +77,7 @@ public:
     {
     case kVertices: return 0;
     case kNormals: return 1;
-    case kUv: return 2;
+    case kUV: return 2;
     case kModels: return 3;
     default: return 4;
     }
