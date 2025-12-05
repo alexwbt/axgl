@@ -71,7 +71,7 @@ public:
 
   void run()
   {
-    const Service::Context context{*this};
+    Service::Context context{*this};
 #ifdef AXGL_DEBUG
     CPPTRACE_TRY
     {
@@ -81,7 +81,8 @@ public:
       constexpr double kTimeStep = kOneSecond / 60.0;
 
       auto start_time = high_resolution_clock::now();
-      double delta_tick = 0.0;
+      auto& delta_tick = context.delta_tick;
+      delta_tick = 0.0;
 #ifdef AXGL_DEBUG
       double debug_delta_time = 0.0;
       std::int64_t update_count = 0;

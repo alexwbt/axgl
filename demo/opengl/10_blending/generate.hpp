@@ -61,15 +61,17 @@ inline void generate_entities(
   const axgl::Axgl& axgl,
   const axgl::ptr_t<axgl::Realm>& realm,
   const std::function<axgl::ptr_t<axgl::Entity>(const axgl::Axgl&)>& create_entity,
+  const int count,
+  const float area,
   const float y,
   const bool rotate3d)
 {
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution pos_dis(-10.0f, 10.0f);
+  std::uniform_real_distribution pos_dis(-area, area);
   std::uniform_real_distribution rot_dis(0.0f, 3.1415f);
   // grass entities
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < count; i++)
   {
     const auto entity = create_entity(axgl);
     auto& transform = entity->transform();
@@ -86,6 +88,6 @@ inline void generate_entities(
 
 inline void generate(const axgl::Axgl& axgl, const axgl::ptr_t<axgl::Realm>& realm)
 {
-  generate_entities(axgl, realm, create_grass, 0.0f, false);
-  generate_entities(axgl, realm, create_pane, 5.0f, false);
+  generate_entities(axgl, realm, create_grass, 2000, 20.0f, 0.0f, false);
+  generate_entities(axgl, realm, create_pane, 100, 5.0f, 5.0f, false);
 }

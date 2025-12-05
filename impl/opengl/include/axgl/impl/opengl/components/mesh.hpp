@@ -30,9 +30,10 @@ class Mesh : virtual public axgl::component::Mesh,
   std::vector<glm::vec3> normals_;
   std::vector<glm::vec2> uv_;
   std::vector<std::uint32_t> indices_;
-  std::vector<glm::mat4> model_matrices_;
   // mesh data stored in GPU memory
   std::unique_ptr<::opengl::VertexArrayObject> vao_;
+  // instancing
+  std::vector<glm::mat4> instanced_models_;
 
 public:
   void set_vertices(const std::span<const glm::vec3>& vertices) override
@@ -78,7 +79,7 @@ public:
       return;
     }
     if (!vao_)
-      model_matrices_.emplace_back(entity.get_model_matrix());
+      instanced_models_.emplace_back(entity.get_model_matrix());
   }
 
   void build(RenderComponent::Context& context) override
@@ -92,7 +93,7 @@ public:
     const auto draw_func = [this](const auto& c)
     {
       material_->use(c);
-      vao_->draw_instanced(model_matrices_.size());
+      vao_->draw_instanced(static_cast<GLsizei>(instanced_models_.size()));
     };
     if (material_->enabled_blend())
       context.blend_pass.emplace_back(std::move(draw_func));
@@ -137,7 +138,7 @@ private:
     if (!indices_.empty())
       vao_->create_element_buffer(indices_);
 
-    if (!model_matrices_.empty())
+    if (!instanced_models_.empty())
     {
       constexpr size_t vec4_size = sizeof(glm::vec4);
       std::array attributes{
@@ -147,7 +148,7 @@ private:
         ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(3 * vec4_size)},
       };
       vao_->create_vertex_buffer<glm::mat4>(
-        model_matrices_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kModels), 1);
+        instanced_models_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kModels), 1);
     }
   }
 };

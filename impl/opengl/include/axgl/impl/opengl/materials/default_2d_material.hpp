@@ -15,7 +15,7 @@ class Default2DMaterial : public Material
   axgl::ptr_t<impl::opengl::Texture> texture_;
 
 public:
-  void set_prop(const std::string& key, const std::string& value) override { }
+  void set_property(const std::string& key, const std::string& value) override { }
 
   void add_texture(axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture) override
   {

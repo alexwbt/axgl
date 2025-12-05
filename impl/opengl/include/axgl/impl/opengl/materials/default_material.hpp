@@ -12,7 +12,6 @@ namespace axgl::impl::opengl
 class DefaultMaterial : public Material
 {
   ::opengl::ShaderProgram& shader_ = ::opengl::StaticShaders::instance().mesh_3d();
-  float shininess_ = 1.0f;
 
   axgl::ptr_t<impl::opengl::Texture> diffuse_texture_;
   axgl::ptr_t<impl::opengl::Texture> specular_texture_;
@@ -20,15 +19,7 @@ class DefaultMaterial : public Material
   axgl::ptr_t<impl::opengl::Texture> height_texture_;
 
 public:
-  void set_prop(const std::string& key, const std::string& value) override
-  {
-    if (key == "shininess")
-      shininess_ = std::stof(value);
-#ifdef AXGL_DEBUG
-    else
-      throw std::runtime_error("Invalid material prop key: " + key);
-#endif
-  }
+  void set_property(const std::string& key, const std::string& value) override { }
 
   void add_texture(const axgl::Material::TextureType type, const axgl::ptr_t<axgl::Texture> texture) override
   {
@@ -61,7 +52,7 @@ public:
     shader_.set_mat4("projection_view", context.camera->projection_view_matrix());
     shader_.set_vec3("camera_pos", context.camera->position);
     shader_.set_vec4("mesh_color", color_);
-    shader_.set_float("mesh_shininess", shininess_);
+    shader_.set_float("mesh_gloss", gloss_);
 
     use_lights(context.lights);
 

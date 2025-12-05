@@ -16,6 +16,7 @@ public:
   struct Context
   {
     Axgl& axgl;
+    double delta_tick;
   };
 
   virtual ~Service() = default;
