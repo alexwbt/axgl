@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
 
+#include <opengl/texture.hpp>
+
 namespace opengl
 {
 
@@ -42,20 +44,16 @@ public:
 
   void use() const { glBindFramebuffer(GL_FRAMEBUFFER, id_); }
 
-  void attach_texture(const GLuint attachment, const Texture& texture) const
+  void attach_texture(const GLenum attachment, const ::opengl::Texture& texture) const
   {
     use();
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment, texture.get_id(), 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, attachment, texture.get_id(), 0);
   }
 
-  void set_draw_buffers(const std::vector<GLuint>& attachments) const
+  void set_draw_buffers(const std::vector<GLenum>& attachments) const
   {
-    std::vector<GLenum> buffers(attachments.size());
-    for (int i = 0; i < attachments.size(); i++)
-      buffers[i] = GL_COLOR_ATTACHMENT0 + attachments[i];
-
     use();
-    glDrawBuffers(static_cast<GLsizei>(buffers.size()), buffers.data());
+    glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       SPDLOG_ERROR("Framebuffer status is incomplete.");

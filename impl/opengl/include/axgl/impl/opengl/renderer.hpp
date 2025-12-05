@@ -12,6 +12,8 @@
 #include <axgl/impl/glfw/window.hpp>
 #include <axgl/impl/opengl/render_component.hpp>
 
+#include <opengl/framebuffer.hpp>
+
 namespace axgl::impl::opengl
 {
 
@@ -27,6 +29,16 @@ class Renderer : public axgl::Renderer
   axgl::ptr_t<glfw::Window> window_;
 
   std::vector<const axgl::Light*> lights_;
+
+  std::unique_ptr<::opengl::Texture> opaque_texture_;
+  std::unique_ptr<::opengl::Texture> depth_texture_;
+  std::unique_ptr<::opengl::Texture> accum_texture_;
+  std::unique_ptr<::opengl::Texture> reveal_texture_;
+  std::unique_ptr<::opengl::Framebuffer> opaque_framebuffer_;
+  std::unique_ptr<::opengl::Framebuffer> blend_framebuffer_;
+
+  const glm::vec4 zero_filler_{0.0f};
+  const glm::vec4 one_filler_{1.0f};
 
 public:
   void render(const axgl::Service::Context& context, const axgl::ptr_t<axgl::Realm> realm) override
@@ -50,20 +62,51 @@ public:
       camera->viewport.x = v.x;
       camera->viewport.y = v.y;
       camera->update_projection_view_matrix();
+
+      //
+      // setup opaque pass framebuffer
+      //
+      opaque_texture_ = std::make_unique<::opengl::Texture>();
+      opaque_texture_->load_texture(0, GL_RGBA16F, viewport.x, viewport.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
+      opaque_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      opaque_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      depth_texture_ = std::make_unique<::opengl::Texture>();
+      depth_texture_->load_texture(
+        0, GL_DEPTH_COMPONENT, viewport.x, viewport.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+      opaque_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+      opaque_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *opaque_texture_);
+      opaque_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
+      opaque_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0});
+
+      //
+      // setup blend (transparent) pass framebuffer
+      //
+      accum_texture_ = std::make_unique<::opengl::Texture>();
+      accum_texture_->load_texture(0, GL_RGBA16F, viewport.x, viewport.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
+      accum_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      accum_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      reveal_texture_ = std::make_unique<::opengl::Texture>();
+      reveal_texture_->load_texture(0, GL_R8, viewport.x, viewport.y, 0, GL_RED, GL_FLOAT, nullptr);
+      reveal_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      reveal_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      blend_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+      blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *accum_texture_);
+      blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
+      blend_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
+      blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
     }
 
-    glViewport(0, 0, viewport.x, viewport.y);
-    glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
-    glClear(clear_bit_);
-
     glEnable(GL_MULTISAMPLE);
-    glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
 
+    //
+    // Collection/Build Stage
+    //
     RenderComponent::Context render_context{camera};
     std::unordered_map<std::uint64_t, RenderComponent*> render_components;
-
     {
       AXGL_PROFILE_SCOPE("Renderer Collection Stage");
       for (const auto& entity : realm->entities().get())
@@ -87,22 +130,53 @@ public:
       for (auto* render_comp : render_components | std::views::values)
         render_comp->build(render_context);
     }
+
+    //
+    // Opaque Render Pass
+    //
+    opaque_framebuffer_->use();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(clear_bit_);
     {
       AXGL_PROFILE_SCOPE("Renderer Opaque Render Pass");
       for (const auto& render_func : render_context.opaque_pass)
         render_func(render_context);
     }
+    //
+    // Blend (transparent) Render Pass
+    //
+    glDepthMask(GL_FALSE);
+    glEnable(GL_BLEND);
+    glBlendFunci(0, GL_ONE, GL_ONE);
+    glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+    glBlendEquation(GL_FUNC_ADD);
+
+    blend_framebuffer_->use();
+    glClearBufferfv(GL_COLOR, 0, &zero_filler_[0]);
+    glClearBufferfv(GL_COLOR, 1, &one_filler_[0]);
     {
       AXGL_PROFILE_SCOPE("Renderer Opaque Blend Pass");
       for (const auto& render_func : render_context.blend_pass)
         render_func(render_context);
     }
 
+    //
+    // Composite Render Pass
+    //
+    glDepthFunc(GL_ALWAYS);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // glViewport(0, 0, viewport.x, viewport.y);
+    // glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
+    // glClear(clear_bit_);
+
     window_->swap_buffers();
 
-    glDisable(GL_MULTISAMPLE);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_STENCIL_TEST);
+    // glDisable(GL_MULTISAMPLE);
+    // glDisable(GL_DEPTH_TEST);
+    // glDisable(GL_STENCIL_TEST);
   }
 
   void set_window(axgl::ptr_t<axgl::Window> window) override
