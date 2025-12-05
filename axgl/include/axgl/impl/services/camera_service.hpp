@@ -48,12 +48,13 @@ public:
 
   void update(const Service::Context& context) override
   {
-    if (!camera_mode_ || !camera_entity_)
+    if (!camera_entity_)
       return;
-
     auto& transform = camera_entity_->transform();
     camera_comp_->camera.position = transform.position;
 
+    if (!camera_mode_)
+      return;
     camera_mode_->update(camera_comp_->camera);
     transform.position = camera_comp_->camera.position;
   }

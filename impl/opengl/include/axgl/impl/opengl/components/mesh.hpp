@@ -89,6 +89,19 @@ public:
 
     if (!vao_)
       create_vao();
+
+    if (instanced_models_buffer_id_ == 0)
+    {
+      constexpr size_t vec4_size = sizeof(glm::vec4);
+      std::array attributes{
+        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(0 * vec4_size)},
+        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(1 * vec4_size)},
+        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(2 * vec4_size)},
+        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(3 * vec4_size)},
+      };
+      instanced_models_buffer_id_ = vao_->create_vertex_buffer<glm::mat4>(
+        instanced_models_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kModels), 1);
+    }
     else
       vao_->update_buffer_data<glm::mat4>(instanced_models_buffer_id_, instanced_models_);
 
@@ -142,19 +155,6 @@ private:
 
     if (!indices_.empty())
       vao_->create_element_buffer(indices_);
-
-    if (!instanced_models_.empty())
-    {
-      constexpr size_t vec4_size = sizeof(glm::vec4);
-      std::array attributes{
-        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(0 * vec4_size)},
-        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(1 * vec4_size)},
-        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(2 * vec4_size)},
-        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(3 * vec4_size)},
-      };
-      instanced_models_buffer_id_ = vao_->create_vertex_buffer<glm::mat4>(
-        instanced_models_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kModels), 1);
-    }
   }
 };
 

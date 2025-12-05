@@ -2,10 +2,9 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
+#include <axgl/util/mesh.hpp>
 
 #include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
-
-#include "cube_data.hpp"
 
 class Application final : public axgl::Service
 {
@@ -71,8 +70,7 @@ public:
 
       // cube mesh
       const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
-      mesh->set_vertices(cube_vertices);
-      mesh->set_normals(cube_normals);
+      axgl::util::init_cube(*mesh);
       mesh->set_material(material);
       cube_entity_->components().add(mesh);
     }
