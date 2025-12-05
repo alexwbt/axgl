@@ -33,6 +33,7 @@ class Mesh : virtual public axgl::component::Mesh,
   // mesh data stored in GPU memory
   std::unique_ptr<::opengl::VertexArrayObject> vao_;
   // instancing
+  GLuint instanced_models_buffer_id_ = 0;
   std::vector<glm::mat4> instanced_models_;
 
 public:
@@ -78,8 +79,7 @@ public:
       SPDLOG_DEBUG("Material not assigned to mesh, skip rendering.");
       return;
     }
-    if (!vao_)
-      instanced_models_.emplace_back(entity.get_model_matrix());
+    instanced_models_.emplace_back(entity.get_model_matrix());
   }
 
   void build(RenderComponent::Context& context) override
@@ -89,11 +89,16 @@ public:
 
     if (!vao_)
       create_vao();
+    else
+      vao_->update_buffer_data<glm::mat4>(instanced_models_buffer_id_, instanced_models_);
 
-    const auto draw_func = [this](const auto& c)
+    const auto instance_count = static_cast<GLsizei>(instanced_models_.size());
+    instanced_models_.clear();
+
+    const auto draw_func = [this, instance_count](const auto& c)
     {
       material_->use(c);
-      vao_->draw_instanced(static_cast<GLsizei>(instanced_models_.size()));
+      vao_->draw_instanced(instance_count);
     };
     if (material_->enabled_blend())
       context.blend_pass.emplace_back(std::move(draw_func));
@@ -147,7 +152,7 @@ private:
         ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(2 * vec4_size)},
         ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(3 * vec4_size)},
       };
-      vao_->create_vertex_buffer<glm::mat4>(
+      instanced_models_buffer_id_ = vao_->create_vertex_buffer<glm::mat4>(
         instanced_models_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kModels), 1);
     }
   }

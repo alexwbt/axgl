@@ -58,7 +58,8 @@ public:
 
   void bind() const { glBindBuffer(target_, id_); }
 
-  [[nodiscard]] size_t size() const { return size_; }
+  [[nodiscard]] GLuint id() const { return id_; }
+  [[nodiscard]] std::size_t size() const { return size_; }
 };
 
 } // namespace opengl

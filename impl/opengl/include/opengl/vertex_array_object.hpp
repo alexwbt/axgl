@@ -21,15 +21,14 @@ struct VertexAttribute
 class VertexArrayObject final
 {
   GLuint id_;
-  GLenum usage_;
-  std::vector<std::unique_ptr<const BufferObject>> buffer_objects_;
+  std::vector<std::unique_ptr<BufferObject>> buffer_objects_;
 
   size_t vertex_size_ = 0;
   size_t element_size_ = 0;
   size_t attribute_size_ = 0;
 
 public:
-  explicit VertexArrayObject(const GLenum usage = GL_STATIC_DRAW) : usage_(usage) { glGenVertexArrays(1, &id_); }
+  explicit VertexArrayObject() { glGenVertexArrays(1, &id_); }
   VertexArrayObject(const VertexArrayObject&) = delete;
   VertexArrayObject& operator=(const VertexArrayObject&) = delete;
 
@@ -37,8 +36,6 @@ public:
   {
     id_ = other.id_;
     other.id_ = 0;
-    usage_ = other.usage_;
-    other.usage_ = 0;
     vertex_size_ = other.vertex_size_;
     other.vertex_size_ = 0;
     element_size_ = other.element_size_;
@@ -57,8 +54,6 @@ public:
 
       id_ = other.id_;
       other.id_ = 0;
-      usage_ = other.usage_;
-      other.usage_ = 0;
       vertex_size_ = other.vertex_size_;
       other.vertex_size_ = 0;
       element_size_ = other.element_size_;
@@ -78,7 +73,7 @@ public:
   }
 
   template <typename VertexType>
-  size_t create_vertex_buffer(
+  auto create_vertex_buffer(
     const std::span<const VertexType>& data,
     const std::span<const VertexAttribute>& attributes,
     const int attributes_offset,
@@ -86,7 +81,7 @@ public:
   {
     bind();
     auto buffer = std::make_unique<BufferObject>(GL_ARRAY_BUFFER);
-    buffer->set_data(data, usage_);
+    buffer->set_data(data, GL_STATIC_DRAW);
     for (int i = 0; i < attributes.size(); i++)
     {
       const auto index = attributes_offset + i;
@@ -123,22 +118,40 @@ public:
         throw std::runtime_error("Size of all vertex buffer should be equal.");
       vertex_size_ = buffer->size();
     }
-    attribute_size_ += attributes.size();
-    buffer_objects_.push_back(std::move(buffer));
 
-    return buffer_objects_.size() - 1;
+    const auto id = buffer->id();
+
+    attribute_size_ += attributes.size();
+    buffer_objects_.emplace_back(std::move(buffer));
+
+    return id;
   }
 
-  size_t create_element_buffer(const std::span<const uint32_t>& data)
+  auto create_element_buffer(const std::span<const uint32_t>& data)
   {
     bind();
     auto buffer = std::make_unique<BufferObject>(GL_ELEMENT_ARRAY_BUFFER);
-    buffer->set_data(data, usage_);
+    buffer->set_data(data, GL_STATIC_DRAW);
+
+    const auto id = buffer->id();
 
     element_size_ = buffer->size();
-    buffer_objects_.push_back(std::move(buffer));
+    buffer_objects_.emplace_back(std::move(buffer));
 
-    return buffer_objects_.size() - 1;
+    return id;
+  }
+
+  template <typename DataType>
+  void update_buffer_data(const GLuint buffer_id, const std::span<const DataType>& data)
+  {
+    for (const auto& buffer : buffer_objects_)
+    {
+      if (buffer->id() == buffer_id)
+      {
+        buffer->set_data(data, GL_DYNAMIC_DRAW);
+        break;
+      }
+    }
   }
 
   void draw() const
