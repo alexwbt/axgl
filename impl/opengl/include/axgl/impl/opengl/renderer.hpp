@@ -13,6 +13,8 @@
 #include <axgl/impl/opengl/render_component.hpp>
 
 #include <opengl/framebuffer.hpp>
+#include <opengl/static_shaders.hpp>
+#include <opengl/static_vaos.hpp>
 
 namespace axgl::impl::opengl
 {
@@ -57,6 +59,8 @@ public:
     }
 
     const auto viewport = window_->get_size();
+    glViewport(0, 0, viewport.x, viewport.y);
+
     if (const auto v = glm::vec2(viewport); camera->viewport != v)
     {
       camera->viewport.x = v.x;
@@ -143,7 +147,7 @@ public:
         render_func(render_context);
     }
     //
-    // Blend (transparent) Render Pass
+    // Transparent Render Pass
     //
     glDepthMask(GL_FALSE);
     glEnable(GL_BLEND);
@@ -167,16 +171,31 @@ public:
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // glViewport(0, 0, viewport.x, viewport.y);
-    // glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
-    // glClear(clear_bit_);
+    opaque_framebuffer_->use();
+
+    glActiveTexture(GL_TEXTURE0);
+    accum_texture_->use();
+    glActiveTexture(GL_TEXTURE1);
+    reveal_texture_->use();
+    ::opengl::StaticShaders::instance().weighted_blended().use_program();
+    ::opengl::StaticVAOs::instance().quad().draw();
+
+    //
+    // Render To Screen
+    //
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    // enable depth writes so glClear won't ignore clearing the depth buffer
+    glDepthMask(GL_TRUE);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
+    glClear(clear_bit_);
+
+    ::opengl::StaticShaders::instance().screen().use_program();
+    ::opengl::StaticVAOs::instance().quad().draw();
 
     window_->swap_buffers();
-
-    // glDisable(GL_MULTISAMPLE);
-    // glDisable(GL_DEPTH_TEST);
-    // glDisable(GL_STENCIL_TEST);
   }
 
   void set_window(axgl::ptr_t<axgl::Window> window) override

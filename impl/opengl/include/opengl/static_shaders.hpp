@@ -27,11 +27,15 @@ public:
   [[nodiscard]] ShaderProgram& mesh_2d() const { return *mesh_2d_; }
   [[nodiscard]] ShaderProgram& mesh_3d() const { return *mesh_3d_; }
   [[nodiscard]] ShaderProgram& text() const { return *text_; }
+  [[nodiscard]] ShaderProgram& screen() const { return *screen_; }
+  [[nodiscard]] ShaderProgram& weighted_blended() const { return *weighted_blended_; }
 
 private:
   std::unique_ptr<ShaderProgram> mesh_2d_;
   std::unique_ptr<ShaderProgram> mesh_3d_;
   std::unique_ptr<ShaderProgram> text_;
+  std::unique_ptr<ShaderProgram> screen_;
+  std::unique_ptr<ShaderProgram> weighted_blended_;
 
   StaticShaders()
   {
@@ -44,6 +48,12 @@ private:
     text_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
       {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs")}});
+    screen_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
+      {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/screen.vs")},
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/screen.fs")}});
+    weighted_blended_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
+      {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/screen.vs")},
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/weighted_blended.fs")}});
   }
 };
 
