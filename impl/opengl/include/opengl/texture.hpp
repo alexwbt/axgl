@@ -86,6 +86,12 @@ public:
 
   [[nodiscard]] GLsizei get_height() const { return height_; }
 
+  void use(const GLenum texture_unit) const
+  {
+    glActiveTexture(texture_unit);
+    use();
+  }
+
   void use() const { glBindTexture(target_, id_); }
 
   void set_parameteri(const GLenum param, const GLint value) const { glTexParameteri(target_, param, value); }
@@ -126,7 +132,8 @@ public:
     }
 
     load_texture(
-      0, texture.format, texture.width, texture.height, 0, texture.format, GL_UNSIGNED_BYTE, texture.stbi_ptr);
+      0, static_cast<GLint>(texture.format), texture.width, texture.height, 0, texture.format, GL_UNSIGNED_BYTE,
+      texture.stbi_ptr);
   }
 
   void load_cubemap_texture(const std::array<std::span<const uint8_t>, 6>& data)

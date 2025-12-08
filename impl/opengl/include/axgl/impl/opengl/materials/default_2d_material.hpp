@@ -37,8 +37,7 @@ public:
 
     if (texture_)
     {
-      glActiveTexture(GL_TEXTURE0);
-      texture_->use();
+      texture_->use(GL_TEXTURE0);
       shader_.set_int("mesh_texture", 0);
       shader_.set_bool("use_texture", true);
     }

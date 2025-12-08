@@ -100,8 +100,8 @@ public:
       blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
     }
 
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_STENCIL_TEST);
+    // glEnable(GL_MULTISAMPLE);
+    // glEnable(GL_STENCIL_TEST);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
@@ -173,10 +173,8 @@ public:
 
     opaque_framebuffer_->use();
 
-    glActiveTexture(GL_TEXTURE0);
-    accum_texture_->use();
-    glActiveTexture(GL_TEXTURE1);
-    reveal_texture_->use();
+    accum_texture_->use(GL_TEXTURE0);
+    reveal_texture_->use(GL_TEXTURE1);
     ::opengl::StaticShaders::instance().weighted_blended().use_program();
     ::opengl::StaticVAOs::instance().quad().draw();
 

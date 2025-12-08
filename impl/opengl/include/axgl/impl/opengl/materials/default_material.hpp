@@ -123,14 +123,14 @@ private:
     shader_.set_int("point_lights_size", point_lights_size);
   }
 
-  void use_texture(const int i, const std::string& name, const axgl::ptr_t<impl::opengl::Texture>& texture) const
+  void use_texture(
+    const int texture_unit, const std::string& name, const axgl::ptr_t<impl::opengl::Texture>& texture) const
   {
     if (!texture)
       return;
 
-    glActiveTexture(GL_TEXTURE0 + i);
-    texture->use();
-    shader_.set_int(name + "_texture", i);
+    texture->use(GL_TEXTURE0 + texture_unit);
+    shader_.set_int(name + "_texture", texture_unit);
     shader_.set_bool("use_" + name + "_texture", true);
   }
 };

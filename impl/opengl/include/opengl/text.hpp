@@ -252,7 +252,6 @@ public:
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glActiveTexture(GL_TEXTURE0);
     auto& shader = StaticShaders::instance().text();
     shader.use_program();
     shader.set_int("text_texture", 0);
@@ -269,7 +268,7 @@ public:
       if (!chars.contains(c))
         continue;
 
-      chars[c].texture.use();
+      chars[c].texture.use(GL_TEXTURE0);
       glm::vec3 scale(chars[c].size, 1);
       glm::vec3 offset(chars[c].offset - min_offset, 0);
       auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
