@@ -49,8 +49,8 @@ inline axgl::ptr_t<axgl::Entity> create_pane(const axgl::Axgl& axgl)
 
   // pane mesh with random colors
   const auto mesh = create_mesh(axgl, nullptr);
-  mesh->get_material()->set_color(glm::vec4(color_dis(gen), color_dis(gen), color_dis(gen), 1.0f));
-  mesh->get_material()->set_enable_blend(false);
+  mesh->get_material()->set_color(glm::vec4(color_dis(gen), color_dis(gen), color_dis(gen), color_dis(gen)));
+  mesh->get_material()->set_enable_blend(true);
 
   // pane entity
   const auto pane = axgl.entity_service()->create_entity();

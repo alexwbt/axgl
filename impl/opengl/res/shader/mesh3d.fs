@@ -56,12 +56,14 @@ uniform int spot_lights_size;
 uniform SpotLight spot_lights[32];
 uniform int point_lights_size;
 uniform PointLight point_lights[32];
+uniform bool transparent;
 
 in vec3 vert_position;
 in vec3 vert_normal;
 in vec2 vert_uv;
 
-out vec4 frag_color;
+layout (location = 0) out vec4 frag_color;
+layout (location = 1) out float reveal;
 
 vec3 get_mesh_diffuse()
 {
@@ -150,11 +152,19 @@ void main()
   vec3 result = vec3(0);
 
   // sun lights
-  for (int i = 0; i < sun_lights_size; ++i) result += calc_sun_light(sun_lights[i], view_dir);
+  for (int i = 0; i < sun_lights_size; ++i)
+    result += calc_sun_light(sun_lights[i], view_dir);
   // spot lights
-  for (int i = 0; i < spot_lights_size; ++i) result += calc_spot_light(spot_lights[i], view_dir);
+  for (int i = 0; i < spot_lights_size; ++i)
+    result += calc_spot_light(spot_lights[i], view_dir);
   // point lights
-  for (int i = 0; i < point_lights_size; ++i) result += calc_point_light(point_lights[i], view_dir);
+  for (int i = 0; i < point_lights_size; ++i)
+    result += calc_point_light(point_lights[i], view_dir);
 
-  frag_color = vec4(result, mesh_color.a);
+  // weight function for blending
+  float weight = transparent
+    ? clamp(pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0), 1e-2, 3e3)
+    : 1.0f;
+  frag_color = vec4(result, mesh_color.a) * weight;
+  reveal = mesh_color.a;
 }

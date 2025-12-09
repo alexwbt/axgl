@@ -48,6 +48,7 @@ public:
     Material::use(context);
 
     shader_.use_program();
+    shader_.set_bool("transparent", enable_blend_);
     shader_.set_bool("use_instancing", true);
     shader_.set_mat4("projection_view", context.camera->projection_view_matrix());
     shader_.set_vec3("camera_pos", context.camera->position);

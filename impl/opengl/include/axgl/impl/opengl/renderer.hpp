@@ -100,8 +100,8 @@ public:
       blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
     }
 
-    // glEnable(GL_MULTISAMPLE);
-    // glEnable(GL_STENCIL_TEST);
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_STENCIL_TEST);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
@@ -140,9 +140,8 @@ public:
     //
     opaque_framebuffer_->use();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClear(clear_bit_);
     {
-      AXGL_PROFILE_SCOPE("Renderer Opaque Render Pass");
+      AXGL_PROFILE_SCOPE("Renderer Opaque Pass");
       for (const auto& render_func : render_context.opaque_pass)
         render_func(render_context);
     }
@@ -159,7 +158,7 @@ public:
     glClearBufferfv(GL_COLOR, 0, &zero_filler_[0]);
     glClearBufferfv(GL_COLOR, 1, &one_filler_[0]);
     {
-      AXGL_PROFILE_SCOPE("Renderer Opaque Blend Pass");
+      AXGL_PROFILE_SCOPE("Renderer Transparent Pass");
       for (const auto& render_func : render_context.blend_pass)
         render_func(render_context);
     }
@@ -170,9 +169,7 @@ public:
     glDepthFunc(GL_ALWAYS);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     opaque_framebuffer_->use();
-
     accum_texture_->use(GL_TEXTURE0);
     reveal_texture_->use(GL_TEXTURE1);
     ::opengl::StaticShaders::instance().weighted_blended().use_program();
@@ -190,6 +187,7 @@ public:
     glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
     glClear(clear_bit_);
 
+    opaque_texture_->use(GL_TEXTURE0);
     ::opengl::StaticShaders::instance().screen().use_program();
     ::opengl::StaticVAOs::instance().quad().draw();
 
