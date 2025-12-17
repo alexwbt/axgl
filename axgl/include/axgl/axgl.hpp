@@ -81,8 +81,7 @@ public:
       constexpr double kTimeStep = kOneSecond / 60.0;
 
       auto start_time = high_resolution_clock::now();
-      auto& delta_tick = context.delta_tick;
-      delta_tick = 0.0;
+      double delta_tick = 0.0;
 #ifdef AXGL_DEBUG
       double debug_delta_time = 0.0;
       std::int64_t update_count = 0;
@@ -113,6 +112,7 @@ public:
           AXGL_PLOT("Delta time (ns)", delta_time);
           AXGL_PLOT("Delta tick", std::round(delta_tick * 100.0) / 100.0);
           AXGL_PROFILE_SCOPE("Update");
+          context.delta_tick = delta_tick;
           update(context);
 #ifdef AXGL_DEBUG
           ++update_count;

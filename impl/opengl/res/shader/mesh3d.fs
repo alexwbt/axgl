@@ -148,6 +148,9 @@ vec3 calc_point_light(PointLight light, vec3 view_dir)
 
 void main()
 {
+  if (!transparent && mesh_color.a < 0.01)
+    discard;
+
   vec3 view_dir = normalize(camera_pos - vert_position);
   vec3 result = vec3(0);
 

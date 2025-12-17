@@ -29,8 +29,8 @@ void main()
   float revealage = texelFetch(reveal, coords, 0).r;
 
   // save the blending and color texture fetch cost if there is not a transparent fragment
-//  if (approximate_equal(revealage, 1.0f))
-//    discard;
+  if (approximate_equal(revealage, 1.0f))
+    discard;
 
   // fragment color
   vec4 accumulation = texelFetch(accum, coords, 0);
