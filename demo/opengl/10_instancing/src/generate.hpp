@@ -23,9 +23,8 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
   const std::function<void(axgl::component::Mesh&)>& init_mesh,
   const axgl::ptr_t<axgl::Texture>& diffuse_texture = nullptr,
   const axgl::ptr_t<axgl::Texture>& specular_texture = nullptr,
-  const float alpha_discard = false,
-  const bool no_cull = false,
-  const bool blend = false)
+  const float alpha_discard = 0.0f,
+  const bool no_cull = false)
 {
   const auto entity_service = axgl.entity_service();
   const auto renderer_service = axgl.renderer_service();
@@ -38,7 +37,6 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
   if (no_cull)
     material->set_cull_mode(axgl::Material::CullMode::kNone);
   material->set_alpha_discard(alpha_discard);
-  material->set_enable_blend(blend);
   // mesh
   const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
   init_mesh(*mesh);
@@ -65,7 +63,7 @@ inline axgl::ptr_t<axgl::Entity> create_box(const axgl::Axgl& axgl)
 
   static const auto diffuse = create_texture(axgl, "container/diffuse.png");
   static const auto specular = create_texture(axgl, "container/specular.png");
-  static const auto mesh = create_mesh(axgl, "default", axgl::util::init_cube, diffuse, specular);
+  static const auto mesh = create_mesh(axgl, "phong", axgl::util::init_cube, diffuse, specular);
 
   // box entity
   const auto box = axgl.entity_service()->create_entity_t<Box>();

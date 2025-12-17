@@ -44,7 +44,7 @@ private:
       {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs")}});
     mesh_3d_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs")},
-      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs")}});
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/phong.fs")}});
     text_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
       {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs")}});

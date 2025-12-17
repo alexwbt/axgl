@@ -9,7 +9,7 @@
 namespace axgl::impl::opengl
 {
 
-class DefaultMaterial : public Material
+class MaterialPhong : public Material
 {
   ::opengl::ShaderProgram& shader_ = ::opengl::StaticShaders::instance().mesh_3d();
 
@@ -55,6 +55,7 @@ public:
     shader_.set_vec4("mesh_color", color_);
     shader_.set_float("mesh_gloss", gloss_);
     shader_.set_float("alpha_discard", enable_blend_ ? 0.0f : alpha_discard_);
+    shader_.set_float("max_shininess", 512.0f);
 
     use_lights(context.lights);
 

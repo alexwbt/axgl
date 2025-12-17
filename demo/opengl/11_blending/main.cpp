@@ -4,6 +4,31 @@
 #include <axgl/impl/opengl.hpp>
 
 #include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
+#include <axgl/util/mesh.hpp>
+
+auto create_cube(const axgl::Axgl& axgl, const glm::vec3& position, const glm::vec4& color, const bool blend)
+{
+  const auto entity_service = axgl.entity_service();
+  const auto renderer_service = axgl.renderer_service();
+  // material
+  const auto material = renderer_service->create_material("phong");
+  material->set_color(color);
+  if (blend)
+  {
+    material->set_enable_blend(true);
+    material->set_gloss(0.0f);
+  }
+  // mesh
+  const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+  axgl::util::init_cube(*mesh);
+  mesh->set_material(material);
+  // cube entity
+  const auto cube = axgl.entity_service()->create_entity();
+  cube->components().add(mesh);
+  cube->transform().position = position;
+  cube->update_model_matrix();
+  return cube;
+}
 
 class Application : public axgl::Service
 {
@@ -42,6 +67,7 @@ public:
       camera_entity->components().add(camera_comp);
     }
     realm->entities().add(camera_entity);
+    camera_entity->transform().position.z = -2;
     camera_service->set_camera(camera_entity);
 
     // light entity
@@ -58,7 +84,11 @@ public:
     camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
 
-    // transparent entities
+    // entities
+    realm->entities().add(create_cube(axgl, {0.3f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.5f}, true));
+    realm->entities().add(create_cube(axgl, {0.0f, 0.3f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.5f}, true));
+    realm->entities().add(create_cube(axgl, {0.0f, 0.0f, 0.3f}, {0.0f, 0.0f, 1.0f, 0.5f}, true));
+    realm->entities().add(create_cube(axgl, {0.0f, 0.0f, 1.5f}, {1.0f, 0.5f, 0.2f, 1.0f}, false));
   }
 };
 

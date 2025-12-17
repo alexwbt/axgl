@@ -27,7 +27,7 @@ public:
 
   ModelResources load_model(const axgl::ptr_t<axgl::Entity> entity, const std::string& resource_key) override
   {
-    ModelLoader loader(entity_service_, renderer_service_, resource_service_, entity, resource_key, "default");
+    ModelLoader loader(entity_service_, renderer_service_, resource_service_, entity, resource_key, "phong");
     return loader.resources_;
   }
 };

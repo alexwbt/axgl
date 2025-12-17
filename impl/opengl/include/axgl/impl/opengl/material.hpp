@@ -21,7 +21,7 @@ public:
   };
 
 protected:
-  float gloss_ = 1.0f;
+  float gloss_ = 0.0625f;
   glm::vec4 color_{1.0f, 1.0f, 1.0f, 1.0f};
   axgl::Material::CullMode cull_mode_ = axgl::Material::CullMode::kCCW;
   bool enable_blend_ = false;

@@ -58,6 +58,7 @@ uniform int point_lights_size;
 uniform PointLight point_lights[32];
 uniform bool transparent;
 uniform float alpha_discard;
+uniform float max_shininess;
 
 in vec3 vert_position;
 in vec3 vert_normal;
@@ -91,7 +92,9 @@ vec3 calc_sun_light(SunLight light, vec3 view_dir)
   vec3 diffuse = light.diffuse * max(dot(vert_normal, light_dir), 0.0) * mesh_diffuse;
   // Specular
   vec3 reflect_dir = reflect(-light_dir, vert_normal);
-  vec3 specular = light.specular * pow(max(dot(view_dir, reflect_dir), 0.0), mesh_gloss) * mesh_specular;
+  vec3 specular = light.specular
+    * pow(max(dot(view_dir, reflect_dir), 0.0), max(mesh_gloss * max_shininess, 1.0f))
+    * mesh_specular;
 
   return ambient + diffuse + specular;
 }
@@ -109,8 +112,10 @@ vec3 calc_spot_light(SpotLight light, vec3 view_dir)
   vec3 diffuse = light.diffuse * max(dot(vert_normal, light_dir), 0.0) * mesh_diffuse;
 
   // Specular
-  vec3 reflectDir = reflect(-light_dir, vert_normal);
-  vec3 specular = light.specular * pow(max(dot(view_dir, reflectDir), 0.0), mesh_gloss) * mesh_specular;
+  vec3 reflect_dir = reflect(-light_dir, vert_normal);
+  vec3 specular = light.specular
+    * pow(max(dot(view_dir, reflect_dir), 0.0), max(mesh_gloss * max_shininess, 1.0f))
+    * mesh_specular;
 
   // Attenuation
   float dis = length(light.position - vert_position);
@@ -137,8 +142,10 @@ vec3 calc_point_light(PointLight light, vec3 view_dir)
   vec3 diffuse = light.diffuse * max(dot(vert_normal, light_dir), 0.0) * mesh_diffuse;
 
   // Specular
-  vec3 reflectDir = reflect(-light_dir, vert_normal);
-  vec3 specular = light.specular * pow(max(dot(view_dir, reflectDir), 0.0), mesh_gloss) * mesh_specular;
+  vec3 reflect_dir = reflect(-light_dir, vert_normal);
+  vec3 specular = light.specular
+    * pow(max(dot(view_dir, reflect_dir), 0.0), max(mesh_gloss * max_shininess, 1.0f))
+    * mesh_specular;
 
   // Attenuation
   float dis = length(light.position - vert_position);
