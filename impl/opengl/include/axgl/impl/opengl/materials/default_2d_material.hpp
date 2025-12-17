@@ -34,6 +34,7 @@ public:
     shader_.set_bool("use_instancing", true);
     shader_.set_mat4("projection_view", context.camera->projection_view_matrix());
     shader_.set_vec4("mesh_color", color_);
+    shader_.set_float("alpha_discard", alpha_discard_);
 
     if (texture_)
     {

@@ -9,7 +9,7 @@ target_include_directories(demo_opengl_instancing
 
 target_sources(demo_opengl_instancing
   PRIVATE
-  "./main.cpp"
+  "./src/main.cpp"
 )
 
 target_link_libraries(demo_opengl_instancing

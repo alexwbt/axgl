@@ -3,6 +3,7 @@
 uniform vec4 mesh_color;
 uniform bool use_texture;
 uniform sampler2D mesh_texture;
+uniform float alpha_discard;
 
 in vec2 vert_uv;
 
@@ -14,6 +15,6 @@ void main()
     ? texture(mesh_texture, vert_uv) * mesh_color
     : mesh_color;
 
-  if (frag_color.a < 0.01)
+  if (frag_color.a < alpha_discard)
     discard;
 }

@@ -102,6 +102,10 @@ public:
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_STENCIL_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
@@ -149,7 +153,6 @@ public:
     // Transparent Render Pass
     //
     glDepthMask(GL_FALSE);
-    glEnable(GL_BLEND);
     glBlendFunci(0, GL_ONE, GL_ONE);
     glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
     glBlendEquation(GL_FUNC_ADD);
@@ -167,7 +170,6 @@ public:
     // Composite Render Pass
     //
     glDepthFunc(GL_ALWAYS);
-    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     opaque_framebuffer_->use();
     accum_texture_->use(GL_TEXTURE0);

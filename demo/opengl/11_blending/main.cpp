@@ -5,10 +5,6 @@
 
 #include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
 
-#include <demo_opengl_blending/res.hpp>
-
-#include "generate.hpp"
-
 class Application : public axgl::Service
 {
 public:
@@ -29,9 +25,6 @@ public:
 
     // input
     input_service->set_window(window);
-
-    // resources
-    resource_service->load_resources(demo_opengl_blending_res::data);
 
     // renderer
     const auto renderer = renderer_service->create_renderer();
@@ -66,7 +59,6 @@ public:
     camera_service->set_camera(camera_entity);
 
     // transparent entities
-    generate(axgl, realm);
   }
 };
 

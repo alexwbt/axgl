@@ -57,6 +57,7 @@ uniform SpotLight spot_lights[32];
 uniform int point_lights_size;
 uniform PointLight point_lights[32];
 uniform bool transparent;
+uniform float alpha_discard;
 
 in vec3 vert_position;
 in vec3 vert_normal;
@@ -148,7 +149,7 @@ vec3 calc_point_light(PointLight light, vec3 view_dir)
 
 void main()
 {
-  if (!transparent && mesh_color.a < 0.01)
+  if (mesh_color.a < alpha_discard)
     discard;
 
   vec3 view_dir = normalize(camera_pos - vert_position);

@@ -54,6 +54,7 @@ public:
     shader_.set_vec3("camera_pos", context.camera->position);
     shader_.set_vec4("mesh_color", color_);
     shader_.set_float("mesh_gloss", gloss_);
+    shader_.set_float("alpha_discard", enable_blend_ ? 0.0f : alpha_discard_);
 
     use_lights(context.lights);
 

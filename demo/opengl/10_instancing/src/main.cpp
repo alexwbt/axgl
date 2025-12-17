@@ -69,8 +69,8 @@ public:
 
     // entities
     entity_service->register_entity_t<Box>();
-    generate_entities(axgl, realm, create_grass, 2000, 20.0f, 0.0f, false);
-    boxes_ = generate_entities(axgl, realm, create_box, 2000, 40.0f, 5.0f, true);
+    generate_entities(axgl, realm, create_grass, 5000, 20.0f, 0.0f, false);
+    boxes_ = generate_entities(axgl, realm, create_box, 2000, 40.0f, 20.0f, true);
   }
 };
 

@@ -23,6 +23,7 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
   const std::function<void(axgl::component::Mesh&)>& init_mesh,
   const axgl::ptr_t<axgl::Texture>& diffuse_texture = nullptr,
   const axgl::ptr_t<axgl::Texture>& specular_texture = nullptr,
+  const float alpha_discard = false,
   const bool no_cull = false,
   const bool blend = false)
 {
@@ -36,6 +37,7 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
     material->add_texture(axgl::Material::TextureType::kSpecular, specular_texture);
   if (no_cull)
     material->set_cull_mode(axgl::Material::CullMode::kNone);
+  material->set_alpha_discard(alpha_discard);
   material->set_enable_blend(blend);
   // mesh
   const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
@@ -47,7 +49,7 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
 inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl)
 {
   static const auto texture = create_texture(axgl, "grass.png");
-  static const auto mesh = create_mesh(axgl, "2d", axgl::util::init_quad, texture, nullptr, true);
+  static const auto mesh = create_mesh(axgl, "2d", axgl::util::init_quad, texture, nullptr, 0.5f, true);
 
   // grass entity
   const auto grass = axgl.entity_service()->create_entity();
@@ -68,6 +70,7 @@ inline axgl::ptr_t<axgl::Entity> create_box(const axgl::Axgl& axgl)
   // box entity
   const auto box = axgl.entity_service()->create_entity_t<Box>();
   box->set_rotation_speed({dis(gen), dis(gen), dis(gen)});
+  box->set_orbit_speed(static_cast<float>(dis(gen)));
   box->components().add(mesh);
   return box;
 }
