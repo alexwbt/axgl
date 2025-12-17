@@ -75,6 +75,7 @@ public:
     {
       const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
+      light_comp->light.color.specular = glm::vec3(0.0f);
       light_entity->components().add(light_comp);
     }
     light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
