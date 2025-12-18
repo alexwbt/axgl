@@ -1,7 +1,14 @@
 #pragma once
 
-// #include <axgl/common.hpp>
-// #include <axgl/interface/container.hpp>
+#include <axgl/interface/container.hpp>
+
+#include <axgl/interface/gui/attribute.hpp>
+
+namespace axgl
+{
+class Axgl;
+class GuiService;
+} // namespace axgl
 
 namespace axgl::gui
 {
@@ -9,18 +16,20 @@ namespace axgl::gui
 class Element
 {
 public:
+  struct Context
+  {
+    axgl::Axgl& axgl;
+    axgl::GuiService& gui_service;
+    Element* parent;
+  };
+
   virtual ~Element() = default;
+  virtual void render(const Context& context) { }
 
-  virtual void tick() { }
-  virtual void update() { }
-  virtual void render() { }
-  virtual void on_create() { }
-  virtual void on_remove() { }
+  [[nodiscard]] virtual std::uint64_t get_id() const = 0;
+  [[nodiscard]] virtual Attribute& attribute() = 0;
 
-  // virtual Container<Element>* children() = 0;
-  //
-  // virtual void set_parent(std::weak_ptr<Element> parent) = 0;
-  // virtual ptr_t<Element> get_parent() = 0;
+  [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& children() = 0;
 };
 
 } // namespace axgl::gui

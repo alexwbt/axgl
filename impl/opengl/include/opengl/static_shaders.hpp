@@ -29,6 +29,7 @@ public:
   [[nodiscard]] ShaderProgram& text() const { return *text_; }
   [[nodiscard]] ShaderProgram& screen() const { return *screen_; }
   [[nodiscard]] ShaderProgram& weighted_blended() const { return *weighted_blended_; }
+  [[nodiscard]] ShaderProgram& gui() const { return *gui_; }
 
 private:
   std::unique_ptr<ShaderProgram> mesh_2d_;
@@ -36,6 +37,7 @@ private:
   std::unique_ptr<ShaderProgram> text_;
   std::unique_ptr<ShaderProgram> screen_;
   std::unique_ptr<ShaderProgram> weighted_blended_;
+  std::unique_ptr<ShaderProgram> gui_;
 
   StaticShaders()
   {
@@ -54,6 +56,9 @@ private:
     weighted_blended_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/screen.vs")},
       {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/weighted_blended.fs")}});
+    gui_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
+      {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/gui.vs")},
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/gui.fs")}});
   }
 };
 

@@ -6,6 +6,8 @@
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
+#include <opengl/static_shaders.hpp>
+
 namespace axgl::impl::opengl
 {
 

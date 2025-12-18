@@ -44,7 +44,7 @@ public:
 
   void add(axgl::ptr_t<axgl::Component> component) override { components_.push_back(std::move(component)); }
   void remove(const axgl::ptr_t<axgl::Component>& component) override { std::erase(components_, component); }
-  [[nodiscard]] std::span<const ptr_t<Component>> get() const override { return components_; }
+  [[nodiscard]] std::span<const ptr_t<axgl::Component>> get() const override { return components_; }
 };
 
 } // namespace axgl::impl
