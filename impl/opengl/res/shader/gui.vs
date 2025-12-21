@@ -2,14 +2,14 @@
 
 layout (location = 0) in vec2 position;
 
-uniform vec2 position;
-uniform vec2 size;
-uniform vec4 margin;
-uniform vec4 padding;
-uniform vec4 color;
-uniform vec4 border_color;
-uniform float border_width;
-uniform float border_radius;
+//uniform vec2 position;
+//uniform vec2 size;
+//uniform vec4 margin;
+//uniform vec4 padding;
+//uniform vec4 color;
+//uniform vec4 border_color;
+//uniform float border_width;
+//uniform float border_radius;
 
 void main()
 {

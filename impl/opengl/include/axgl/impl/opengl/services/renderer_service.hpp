@@ -46,16 +46,16 @@ public:
     renderer_->render(context, realm);
   }
 
-  axgl::ptr_t<axgl::Renderer> create_renderer() override { return std::make_shared<Renderer>(); }
+  axgl::ptr_t<axgl::Renderer> create_renderer() override { return axgl::create_ptr<Renderer>(); }
 
-  axgl::ptr_t<axgl::Texture> create_texture() override { return std::make_shared<Texture>(); }
+  axgl::ptr_t<axgl::Texture> create_texture() override { return axgl::create_ptr<Texture>(); }
 
   axgl::ptr_t<axgl::Material> create_material(const std::string& type) override
   {
     if (type == "phong")
-      return std::make_shared<impl::opengl::MaterialPhong>();
+      return axgl::create_ptr<impl::opengl::MaterialPhong>();
     if (type == "2d")
-      return std::make_shared<impl::opengl::Material2d>();
+      return axgl::create_ptr<impl::opengl::Material2d>();
 #ifdef AXGL_DEBUG
     throw std::runtime_error("Unsupported material type: " + type);
 #else

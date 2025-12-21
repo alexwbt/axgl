@@ -2,25 +2,29 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
-#include <axgl/util/mesh.hpp>
+
+#include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
 
 class Application final : public axgl::Service
 {
-  std::shared_ptr<axgl::Entity> cube_entity_;
-
 public:
   void on_start(const Context& context) override
   {
     const auto axgl = context.axgl;
     const auto window_service = axgl.window_service();
+    const auto input_service = axgl.input_service();
     const auto renderer_service = axgl.renderer_service();
     const auto realm_service = axgl.realm_service();
     const auto entity_service = axgl.entity_service();
     const auto camera_service = axgl.camera_service();
+    const auto resource_service = axgl.resource_service();
 
     // window
     const auto window = window_service->create_window();
-    window->set_title("Hello cube!");
+    window->set_title("Hello gui!");
+
+    // input
+    input_service->set_window(window);
 
     // renderer
     const auto renderer = renderer_service->create_renderer();
@@ -38,7 +42,6 @@ public:
       camera_entity->components().add(camera_comp);
     }
     realm->entities().add(camera_entity);
-    camera_entity->transform().position.z = -2;
     camera_service->set_camera(camera_entity);
 
     // light entity
@@ -51,25 +54,10 @@ public:
     light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
     realm->entities().add(light_entity);
 
-    // cube entity
-    cube_entity_ = entity_service->create_entity();
-    {
-      // material
-      const auto material = renderer_service->create_material("phong");
-      material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
-
-      // cube mesh
-      const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
-      axgl::util::init_cube(*mesh_comp);
-      mesh_comp->set_material(material);
-      cube_entity_->components().add(mesh_comp);
-    }
-    realm->entities().add(cube_entity_);
+    // camera input
+    camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
+    camera_service->set_camera(camera_entity);
   }
-
-  void tick(const Context& context) override { cube_entity_->transform().rotation += glm::vec3(0.01f, 0.02f, 0.05f); }
-
-  void update(const Context& context) override { cube_entity_->update_model_matrix(); }
 };
 
 int main()

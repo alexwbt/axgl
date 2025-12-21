@@ -88,7 +88,7 @@ int main()
   axgl::configure_default(axgl);
   axgl::configure_glfw(axgl);
   axgl::configure_opengl(axgl);
-  axgl.register_service("app", std::make_shared<Application>());
+  axgl.register_service("app", axgl::create_ptr<Application>());
   axgl.initialize();
 
   axgl.run();

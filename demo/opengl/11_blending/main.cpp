@@ -30,7 +30,7 @@ auto create_cube(const axgl::Axgl& axgl, const glm::vec3& position, const glm::v
   return cube;
 }
 
-class Application : public axgl::Service
+class Application final : public axgl::Service
 {
 public:
   void on_start(const Context& context) override
@@ -82,7 +82,7 @@ public:
     realm->entities().add(light_entity);
 
     // camera input
-    camera_service->set_camera_mode(std::make_shared<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
+    camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
 
     // entities
@@ -99,7 +99,7 @@ int main()
   axgl::configure_default(axgl);
   axgl::configure_glfw(axgl);
   axgl::configure_opengl(axgl);
-  axgl.register_service("app", std::make_shared<Application>());
+  axgl.register_service("app", axgl::create_ptr<Application>());
   axgl.initialize();
 
   axgl.run();

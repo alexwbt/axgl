@@ -16,7 +16,7 @@ class Texture : public axgl::Texture
   axgl::ptr_t<::opengl::Texture> texture_;
 
 public:
-  Texture() { texture_ = std::make_shared<::opengl::Texture>(); }
+  Texture() { texture_ = axgl::create_ptr<::opengl::Texture>(); }
 
   void use(const GLenum texture_unit) const { texture_->use(texture_unit); }
 

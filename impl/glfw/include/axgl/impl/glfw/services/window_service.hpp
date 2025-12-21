@@ -24,7 +24,7 @@ public:
 
   axgl::ptr_t<axgl::Window> create_window() override
   {
-    return std::make_shared<Window>(::glfw::Window::create(800, 600, ""));
+    return axgl::create_ptr<Window>(::glfw::Window::create(800, 600, ""));
   }
 
   static void set_window_hint(const int hint, const int value) { ::glfw::Window::glfw_window_hint(hint, value); }

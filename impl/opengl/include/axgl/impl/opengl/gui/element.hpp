@@ -1,6 +1,7 @@
 #pragma once
 
 #include <axgl/interface/gui/element.hpp>
+#include <axgl/interface/gui/page.hpp>
 
 #include <axgl/impl/gui/element_base.hpp>
 
@@ -13,7 +14,7 @@ namespace axgl::impl::opengl::gui
 class Element : virtual public axgl::gui::Element, public axgl::impl::gui::ElementBase
 {
 public:
-  void render(const axgl::gui::Element::Context& context) override
+  void render(const axgl::gui::Page::Context& context) override
   {
     auto& shader = ::opengl::StaticShaders::instance().gui();
     shader.use_program();
@@ -28,7 +29,7 @@ public:
 
     ::opengl::StaticVAOs::instance().quad().draw();
 
-    const axgl::gui::Element::Context current_context{context.axgl, context.gui_service, this};
+    const axgl::gui::Page::Context current_context{context.axgl, context.gui_service, context.page, this};
     for (const auto& child : children_.get())
       child->render(current_context);
   }

@@ -1,11 +1,6 @@
 
 add_executable(demo_opengl_blending)
 
-target_include_directories(demo_opengl_blending
-  PRIVATE
-  ./include
-)
-
 target_sources(demo_opengl_blending
   PRIVATE
   "./main.cpp"

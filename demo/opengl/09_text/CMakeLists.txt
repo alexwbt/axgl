@@ -2,11 +2,6 @@ include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
 
 add_executable(demo_opengl_text)
 
-target_include_directories(demo_opengl_text
-  PRIVATE
-  ./include
-)
-
 target_sources(demo_opengl_text
   PRIVATE
   "./main.cpp"

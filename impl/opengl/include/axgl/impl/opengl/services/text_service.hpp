@@ -74,7 +74,7 @@ public:
     if (!texture)
       throw std::runtime_error("OpenglTexture is required to use OpenglTextService");
 #endif
-    auto texture_ptr = std::make_shared<::opengl::Texture>();
+    auto texture_ptr = axgl::create_ptr<::opengl::Texture>();
     *texture_ptr = std::move(text.texture);
     texture->replace_texture(std::move(texture_ptr));
 

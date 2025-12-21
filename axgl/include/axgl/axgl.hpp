@@ -172,7 +172,7 @@ public:
   template <>                                                                                                          \
   inline ptr_t<service_type> Axgl::register_service_t()                                                                \
   {                                                                                                                    \
-    const auto service = std::make_shared<service_type>();                                                             \
+    const auto service = axgl::create_ptr<service_type>();                                                             \
     register_service(service_type::kTypeId.data(), service);                                                           \
     return service;                                                                                                    \
   }
