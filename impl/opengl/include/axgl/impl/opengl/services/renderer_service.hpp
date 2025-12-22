@@ -28,9 +28,9 @@ public:
   void initialize(const Service::Context& context) override
   {
     // set glfw context
-    impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    impl::glfw::WindowService::set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    axgl::impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    axgl::impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    axgl::impl::glfw::WindowService::set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   }
 
   void render(const Context& context) override
@@ -46,16 +46,16 @@ public:
     renderer_->render(context, realm);
   }
 
-  axgl::ptr_t<axgl::Renderer> create_renderer() override { return axgl::create_ptr<Renderer>(); }
+  axgl::ptr_t<axgl::Renderer> create_renderer() override { return axgl::create_ptr<axgl::impl::opengl::Renderer>(); }
 
-  axgl::ptr_t<axgl::Texture> create_texture() override { return axgl::create_ptr<Texture>(); }
+  axgl::ptr_t<axgl::Texture> create_texture() override { return axgl::create_ptr<axgl::impl::opengl::Texture>(); }
 
   axgl::ptr_t<axgl::Material> create_material(const std::string& type) override
   {
     if (type == "phong")
-      return axgl::create_ptr<impl::opengl::MaterialPhong>();
+      return axgl::create_ptr<axgl::impl::opengl::MaterialPhong>();
     if (type == "2d")
-      return axgl::create_ptr<impl::opengl::Material2d>();
+      return axgl::create_ptr<axgl::impl::opengl::Material2d>();
 #ifdef AXGL_DEBUG
     throw std::runtime_error("Unsupported material type: " + type);
 #else
@@ -64,7 +64,7 @@ public:
   }
 
   [[nodiscard]] axgl::ptr_t<axgl::Renderer> get_active_renderer() const override { return renderer_; }
-  void set_active_renderer(const axgl::ptr_t<axgl::Renderer> renderer) override { renderer_ = std::move(renderer); }
+  void set_active_renderer(axgl::ptr_t<axgl::Renderer> renderer) override { renderer_ = std::move(renderer); }
 };
 
 } // namespace axgl::impl::opengl

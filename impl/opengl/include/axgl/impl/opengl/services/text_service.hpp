@@ -17,7 +17,6 @@
 #include <axgl/impl/opengl/components/mesh.hpp>
 #include <axgl/util/mesh.hpp>
 
-#include <opengl/static_vaos.hpp>
 #include <opengl/text.hpp>
 
 namespace axgl::impl::opengl
@@ -69,10 +68,10 @@ public:
   {
     text_renderer_.render_text(text, value, font, options);
 
-    const auto texture = std::dynamic_pointer_cast<impl::opengl::Texture>(renderer_service_->create_texture());
+    const auto texture = std::dynamic_pointer_cast<axgl::impl::opengl::Texture>(renderer_service_->create_texture());
 #ifdef AXGL_DEBUG
     if (!texture)
-      throw std::runtime_error("OpenglTexture is required to use OpenglTextService");
+      throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::TextService");
 #endif
     auto texture_ptr = axgl::create_ptr<::opengl::Texture>();
     *texture_ptr = std::move(text.texture);

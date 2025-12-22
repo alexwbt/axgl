@@ -31,6 +31,7 @@ public:
   }
 
   void replace_texture(axgl::ptr_t<::opengl::Texture> texture) { texture_ = std::move(texture); }
+  [[nodiscard]] axgl::ptr_t<::opengl::Texture> get_texture() const { return texture_; }
 };
 
 } // namespace axgl::impl::opengl

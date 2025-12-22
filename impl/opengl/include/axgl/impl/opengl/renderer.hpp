@@ -21,12 +21,6 @@ namespace axgl::impl::opengl
 
 class Renderer : public axgl::Renderer
 {
-  int clear_bit_ = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
-  GLfloat clear_color_r_ = 0.0f;
-  GLfloat clear_color_g_ = 0.0f;
-  GLfloat clear_color_b_ = 0.0f;
-  GLfloat clear_color_a_ = 0.0f;
-
   bool initialized_glad_ = false;
   axgl::ptr_t<glfw::Window> window_;
 
@@ -101,7 +95,6 @@ public:
     }
 
     glEnable(GL_MULTISAMPLE);
-    glEnable(GL_STENCIL_TEST);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -186,8 +179,8 @@ public:
     glDepthMask(GL_TRUE);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClearColor(clear_color_r_, clear_color_g_, clear_color_b_, clear_color_a_);
-    glClear(clear_bit_);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     opaque_texture_->use(GL_TEXTURE0);
     ::opengl::StaticShaders::instance().screen().use_program();

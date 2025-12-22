@@ -190,7 +190,7 @@ public:
 
   [[nodiscard]] bool has_font(const std::string& name) const { return fonts_.contains(name); }
 
-  [[nodiscard]] int get_renderable_font(const std::vector<std::string>& font, uint32_t c) const
+  [[nodiscard]] int get_renderable_font(const std::vector<std::string>& font, std::uint32_t c) const
   {
     for (int i = 0; i < font.size(); ++i)
       if (has_font(font[i]) && fonts_.at(font[i])->has_char(c))
@@ -201,14 +201,14 @@ public:
   void render_text(
     Text& target, const std::string& value, const std::vector<std::string>& font, const TextOptions& options) const
   {
-    std::unordered_map<uint32_t, Character> chars;
+    std::unordered_map<std::uint32_t, Character> chars;
 
     int width = 0;
     int height = 0;
     glm::ivec2 min_offset(0);
     for (auto it = value.begin(), end = value.end(); it != end;)
     {
-      uint32_t c = utf8::next(it, end);
+      std::uint32_t c = utf8::next(it, end);
       if (!chars.contains(c))
       {
         int f = get_renderable_font(font, c);
@@ -243,7 +243,7 @@ public:
     target.texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     target.texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    Framebuffer framebuffer;
+    const Framebuffer framebuffer;
     framebuffer.attach_texture(GL_COLOR_ATTACHMENT0, target.texture);
     framebuffer.set_draw_buffers({GL_COLOR_ATTACHMENT0});
     framebuffer.use();
@@ -264,7 +264,7 @@ public:
 
     for (auto it = value.begin(), end = value.end(); it != end;)
     {
-      uint32_t c = utf8::next(it, end);
+      std::uint32_t c = utf8::next(it, end);
       if (!chars.contains(c))
         continue;
 
