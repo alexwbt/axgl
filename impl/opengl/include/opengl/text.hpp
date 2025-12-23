@@ -258,7 +258,7 @@ public:
     shader.set_bool("use_instancing", false);
     shader.set_vec4("text_color", options.color);
 
-    glm::vec3 advance(0);
+    glm::vec3 advance(0.0f);
     glm::mat4 projection = glm::ortho(static_cast<float>(width), 0.0f, static_cast<float>(height), 0.0f);
     auto& quad = StaticVAOs::instance().quad();
 
@@ -269,8 +269,8 @@ public:
         continue;
 
       chars[c].texture.use(GL_TEXTURE0);
-      glm::vec3 scale(chars[c].size, 1);
-      glm::vec3 offset(chars[c].offset - min_offset, 0);
+      glm::vec3 scale(chars[c].size, 1.0f);
+      glm::vec3 offset(chars[c].offset - min_offset, 0.0f);
       auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
       shader.set_mat4("projection_view_model", projection * model);
 

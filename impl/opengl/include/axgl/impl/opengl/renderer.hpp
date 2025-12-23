@@ -30,6 +30,7 @@ class Renderer : public axgl::Renderer
   std::unique_ptr<::opengl::Texture> depth_texture_;
   std::unique_ptr<::opengl::Texture> accum_texture_;
   std::unique_ptr<::opengl::Texture> reveal_texture_;
+  std::unique_ptr<::opengl::Texture> gui_texture_;
   std::unique_ptr<::opengl::Framebuffer> opaque_framebuffer_;
   std::unique_ptr<::opengl::Framebuffer> blend_framebuffer_;
 
@@ -170,17 +171,18 @@ public:
     ::opengl::StaticShaders::instance().weighted_blended().use_program();
     ::opengl::StaticVAOs::instance().quad().draw();
 
+    gui_texture_->use(GL_TEXTURE0);
+    ::opengl::StaticShaders::instance().screen().use_program();
+    ::opengl::StaticVAOs::instance().quad().draw();
+
     //
     // Render To Screen
     //
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
-    // enable depth writes so glClear won't ignore clearing the depth buffer
-    glDepthMask(GL_TRUE);
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     opaque_texture_->use(GL_TEXTURE0);
     ::opengl::StaticShaders::instance().screen().use_program();

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/gtx/transform.hpp>
+
 #include <axgl/interface/gui/element.hpp>
 #include <axgl/interface/gui/page.hpp>
 
@@ -16,20 +18,18 @@ class Element : virtual public axgl::gui::Element, public axgl::impl::gui::Eleme
 public:
   void render(const axgl::gui::Page::Context& context) override
   {
+    const auto model = glm::translate(glm::mat4(1.0f), glm::vec3(attribute_.position, 0.0f)) *
+                       glm::scale(glm::vec3(attribute_.size, 1.0f));
+
     auto& shader = ::opengl::StaticShaders::instance().gui();
     shader.use_program();
-    shader.set_vec2("position", attribute_.position);
-    shader.set_vec2("size", attribute_.size);
-    shader.set_vec4("margin", attribute_.margin);
-    shader.set_vec4("padding", attribute_.padding);
     shader.set_vec4("color", attribute_.color);
-    shader.set_vec4("border_color", attribute_.border_color);
-    shader.set_float("border_width", attribute_.border_width);
-    shader.set_float("border_radius", attribute_.border_radius);
+    shader.set_mat4("projection_view_model", context.projection * model);
 
     ::opengl::StaticVAOs::instance().quad().draw();
 
-    const axgl::gui::Page::Context current_context{context.axgl, context.gui_service, context.page, this};
+    axgl::gui::Page::Context current_context = context;
+    current_context.parent = this;
     for (const auto& child : children_.get())
       child->render(current_context);
   }

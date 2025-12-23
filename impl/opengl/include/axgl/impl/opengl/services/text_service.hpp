@@ -89,7 +89,6 @@ public:
     const auto texture = create_texture(value, font, options, text);
     const auto material = renderer_service_->create_material("2d");
     material->add_texture(axgl::Material::TextureType::kDiffuse, texture);
-    material->set_enable_blend(true);
     return material;
   }
 

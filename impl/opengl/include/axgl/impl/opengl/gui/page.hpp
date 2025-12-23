@@ -27,6 +27,8 @@ public:
     height_ = height;
   }
 
+  glm::ivec2 get_size() const override { return {width_, height_}; }
+
   void render(const axgl::Service::Context& context, axgl::ptr_t<axgl::Texture> texture) override
   {
     const auto texture_impl = axgl::ptr_cast<axgl::impl::opengl::Texture>(texture);
@@ -35,15 +37,22 @@ public:
       throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::gui::Page");
 #endif
 
-    framebuffer_.attach_texture(GL_COLOR_ATTACHMENT0, *texture_impl->get_texture());
+    const auto texture_ptr = texture_impl->get_texture();
+    texture_ptr->load_texture(0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    texture_ptr->set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    texture_ptr->set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    texture_ptr->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    texture_ptr->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    framebuffer_.attach_texture(GL_COLOR_ATTACHMENT0, *texture_ptr);
     framebuffer_.set_draw_buffers({GL_COLOR_ATTACHMENT0});
     framebuffer_.use();
     glViewport(0, 0, width_, height_);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const axgl::gui::Page::Context current_context{
-      context.axgl, context.delta_tick, *context.axgl.gui_service(), *this, nullptr};
+    const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
+    const axgl::gui::Page::Context current_context{context, *context.axgl.gui_service(), *this, projection, nullptr};
     for (const auto& child : elements_.get())
       child->render(current_context);
   }

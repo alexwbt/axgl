@@ -23,11 +23,13 @@ public:
   {
     axgl::GuiService& gui_service;
     axgl::gui::Page& page;
+    const glm::mat4& projection;
     axgl::gui::Element* parent;
   };
   virtual ~Page() = default;
   virtual void set_size(uint32_t width, uint32_t height) = 0;
   virtual void render(const axgl::Service::Context& context, axgl::ptr_t<axgl::Texture> texture) = 0;
+  [[nodiscard]] virtual glm::ivec2 get_size() const = 0;
   [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& elements() = 0;
 };
 

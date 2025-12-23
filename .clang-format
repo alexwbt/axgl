@@ -7,7 +7,7 @@ ContinuationIndentWidth: 2
 PPIndentWidth: 2
 ObjCBlockIndentWidth: 2
 UseTab: Never
-ColumnLimit: 120
+ColumnLimit: 80
 InsertNewlineAtEOF: true
 PointerAlignment: Left
 DerivePointerAlignment: false

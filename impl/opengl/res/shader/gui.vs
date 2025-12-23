@@ -2,16 +2,10 @@
 
 layout (location = 0) in vec2 position;
 
-//uniform vec2 position;
-//uniform vec2 size;
-//uniform vec4 margin;
-//uniform vec4 padding;
-//uniform vec4 color;
-//uniform vec4 border_color;
-//uniform float border_width;
-//uniform float border_radius;
+uniform mat4 projection_view_model;
 
 void main()
 {
-  gl_Position = vec4(-position.x, position.y, 0.0, 1.0);
+  gl_Position = projection_view_model * vec4(position, 0.0, 1.0);
+  gl_Position.x = -gl_Position.x;
 }
