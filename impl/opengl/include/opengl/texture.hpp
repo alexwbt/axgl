@@ -86,6 +86,8 @@ public:
 
   [[nodiscard]] GLsizei get_height() const { return height_; }
 
+  [[nodiscard]] bool loaded() const { return target_ > 0; }
+
   void use(const GLenum texture_unit) const
   {
     glActiveTexture(texture_unit);
@@ -108,7 +110,7 @@ public:
     const GLenum type,
     const void* pixels)
   {
-    if (target_ > 0)
+    if (loaded())
     {
       SPDLOG_ERROR("Texture is already loaded.");
       return;
@@ -138,7 +140,7 @@ public:
 
   void load_cubemap_texture(const std::array<std::span<const uint8_t>, 6>& data)
   {
-    if (target_ > 0)
+    if (loaded())
     {
       SPDLOG_ERROR("Texture is already loaded.");
       return;

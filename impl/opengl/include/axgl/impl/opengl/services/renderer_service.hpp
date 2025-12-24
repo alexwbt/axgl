@@ -42,8 +42,7 @@ public:
 #endif
       return;
     }
-    const auto realm = context.axgl.realm_service()->get_active_realm();
-    renderer_->render(context, realm);
+    renderer_->render(context);
   }
 
   axgl::ptr_t<axgl::Renderer> create_renderer() override { return axgl::create_ptr<axgl::impl::opengl::Renderer>(); }

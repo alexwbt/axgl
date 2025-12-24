@@ -18,6 +18,7 @@ public:
     const auto entity_service = axgl.entity_service();
     const auto camera_service = axgl.camera_service();
     const auto resource_service = axgl.resource_service();
+    const auto gui_service = axgl.gui_service();
 
     // window
     const auto window = window_service->create_window();
@@ -42,6 +43,7 @@ public:
       camera_entity->components().add(camera_comp);
     }
     realm->entities().add(camera_entity);
+    camera_entity->transform().position.z = -2;
     camera_service->set_camera(camera_entity);
 
     // light entity
@@ -57,6 +59,34 @@ public:
     // camera input
     camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera(camera_entity);
+
+    // cube entity
+    const auto cube_entity = entity_service->create_entity();
+    {
+      // material
+      const auto material = renderer_service->create_material("phong");
+      material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
+
+      // cube mesh
+      const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+      axgl::util::init_cube(*mesh);
+      mesh->set_material(material);
+      cube_entity->components().add(mesh);
+    }
+    realm->entities().add(cube_entity);
+
+    // GUI
+    const auto page = gui_service->create_page();
+    {
+      const auto div = gui_service->create_element();
+      {
+        auto& attr = div->attribute();
+        attr.position = glm::vec2(10.0f, 10.0f);
+        attr.size = glm::vec2(30.0f, 30.0f);
+      }
+      page->elements().add(div);
+    }
+    gui_service->set_main_ui(page);
   }
 };
 

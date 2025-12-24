@@ -11,6 +11,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw/window.hpp>
 #include <axgl/impl/opengl/render_component.hpp>
+#include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/framebuffer.hpp>
 #include <opengl/static_shaders.hpp>
@@ -25,12 +26,12 @@ class Renderer : public axgl::Renderer
   axgl::ptr_t<glfw::Window> window_;
 
   std::vector<const axgl::Light*> lights_;
+  axgl::ptr_t<axgl::impl::opengl::Texture> gui_texture_;
 
   std::unique_ptr<::opengl::Texture> opaque_texture_;
   std::unique_ptr<::opengl::Texture> depth_texture_;
   std::unique_ptr<::opengl::Texture> accum_texture_;
   std::unique_ptr<::opengl::Texture> reveal_texture_;
-  std::unique_ptr<::opengl::Texture> gui_texture_;
   std::unique_ptr<::opengl::Framebuffer> opaque_framebuffer_;
   std::unique_ptr<::opengl::Framebuffer> blend_framebuffer_;
 
@@ -38,11 +39,18 @@ class Renderer : public axgl::Renderer
   const glm::vec4 one_filler_{1.0f};
 
 public:
-  void render(const axgl::Service::Context& context, const axgl::ptr_t<axgl::Realm> realm) override
+  void render(const axgl::Service::Context& context) override
   {
     if (!window_ || !window_->ready())
     {
-      SPDLOG_DEBUG("Unable to render realm: window is not set or not ready.");
+      SPDLOG_DEBUG("Unable to render: window is not set or not ready.");
+      return;
+    }
+
+    const auto realm = context.axgl.realm_service()->get_active_realm();
+    if (!realm)
+    {
+      SPDLOG_DEBUG("Unable to render realm: active realm is not set.");
       return;
     }
 
@@ -171,9 +179,24 @@ public:
     ::opengl::StaticShaders::instance().weighted_blended().use_program();
     ::opengl::StaticVAOs::instance().quad().draw();
 
-    gui_texture_->use(GL_TEXTURE0);
-    ::opengl::StaticShaders::instance().screen().use_program();
-    ::opengl::StaticVAOs::instance().quad().draw();
+    //
+    // Render Main GUI
+    //
+    if (const auto gui = context.axgl.gui_service()->get_main_ui())
+    {
+      if (!gui_texture_)
+      {
+        gui_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(context.axgl.renderer_service()->create_texture());
+#ifdef AXGL_DEBUG
+        if (!gui_texture_)
+          throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::Renderer");
+#endif
+      }
+      gui->render(context, gui_texture_);
+      gui_texture_->use(GL_TEXTURE0);
+      ::opengl::StaticShaders::instance().screen().use_program();
+      ::opengl::StaticVAOs::instance().quad().draw();
+    }
 
     //
     // Render To Screen

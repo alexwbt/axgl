@@ -16,7 +16,7 @@ class Renderer
 public:
   virtual ~Renderer() = default;
   virtual void set_window(axgl::ptr_t<axgl::Window> window) = 0;
-  virtual void render(const axgl::Service::Context& context, axgl::ptr_t<axgl::Realm> realm) = 0;
+  virtual void render(const axgl::Service::Context& context) = 0;
 };
 
 } // namespace axgl
