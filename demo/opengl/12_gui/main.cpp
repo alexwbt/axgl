@@ -82,7 +82,8 @@ public:
       {
         auto& attr = div->attribute();
         attr.position = glm::vec2(10.0f, 10.0f);
-        attr.size = glm::vec2(30.0f, 30.0f);
+        attr.size = glm::vec2(300.0f, 300.0f);
+        attr.color = glm::vec4(0.39f, 0.58f, 0.93f, 1.0f);
       }
       page->elements().add(div);
     }

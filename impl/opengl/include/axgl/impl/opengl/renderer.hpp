@@ -26,7 +26,6 @@ class Renderer : public axgl::Renderer
   axgl::ptr_t<glfw::Window> window_;
 
   std::vector<const axgl::Light*> lights_;
-  axgl::ptr_t<axgl::impl::opengl::Texture> gui_texture_;
 
   std::unique_ptr<::opengl::Texture> opaque_texture_;
   std::unique_ptr<::opengl::Texture> depth_texture_;
@@ -47,6 +46,7 @@ public:
       return;
     }
 
+    const auto gui = context.axgl.gui_service()->get_main_ui();
     const auto realm = context.axgl.realm_service()->get_active_realm();
     if (!realm)
     {
@@ -69,6 +69,12 @@ public:
       camera->viewport.x = v.x;
       camera->viewport.y = v.y;
       camera->update_projection_view_matrix();
+
+      if (gui)
+      {
+        gui->set_size(viewport.x, viewport.y);
+        gui->init(context);
+      }
 
       //
       // setup opaque pass framebuffer
@@ -182,18 +188,16 @@ public:
     //
     // Render Main GUI
     //
-    if (const auto gui = context.axgl.gui_service()->get_main_ui())
+    if (gui)
     {
-      if (!gui_texture_)
-      {
-        gui_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(context.axgl.renderer_service()->create_texture());
+      gui->render(context);
+      const auto gui_texture = axgl::ptr_cast<axgl::impl::opengl::Texture>(gui->get_texture());
 #ifdef AXGL_DEBUG
-        if (!gui_texture_)
-          throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::Renderer");
+      if (!gui_texture)
+        throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::Renderer");
 #endif
-      }
-      gui->render(context, gui_texture_);
-      gui_texture_->use(GL_TEXTURE0);
+      opaque_framebuffer_->use();
+      gui_texture->use(GL_TEXTURE0);
       ::opengl::StaticShaders::instance().screen().use_program();
       ::opengl::StaticVAOs::instance().quad().draw();
     }

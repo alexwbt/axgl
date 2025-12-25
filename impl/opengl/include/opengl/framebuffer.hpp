@@ -55,8 +55,8 @@ public:
     use();
     glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-      SPDLOG_ERROR("Framebuffer status is incomplete.");
+    if (const auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER); status != GL_FRAMEBUFFER_COMPLETE)
+      SPDLOG_ERROR("Framebuffer status is incomplete. ({})", status);
   }
 };
 
