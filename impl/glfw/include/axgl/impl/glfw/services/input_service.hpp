@@ -147,6 +147,32 @@ class InputService : public axgl::InputService
     }
   }
 
+  static int to_glfw_mouse_button(const axgl::Input::Source source)
+  {
+    using enum axgl::Input::Source;
+    switch (source)
+    {
+    case kMouseButton1: return GLFW_MOUSE_BUTTON_1;
+    case kMouseButton2: return GLFW_MOUSE_BUTTON_2;
+    case kMouseButton3: return GLFW_MOUSE_BUTTON_3;
+    case kMouseButton4: return GLFW_MOUSE_BUTTON_4;
+    case kMouseButton5: return GLFW_MOUSE_BUTTON_5;
+    case kMouseButton6: return GLFW_MOUSE_BUTTON_6;
+    case kMouseButton7: return GLFW_MOUSE_BUTTON_7;
+    case kMouseButton8: return GLFW_MOUSE_BUTTON_8;
+    default: return -1;
+    }
+  }
+
+  static bool get_glfw_input(const axgl::Input::Source source, const axgl::ptr_t<::glfw::Window>& window)
+  {
+    if (const auto keycode = to_glfw_keycode(source); keycode != -1 && window->key_down(keycode))
+      return true;
+    if (const auto mouse_button = to_glfw_mouse_button(source); mouse_button != -1 && window->mouse_down(mouse_button))
+      return true;
+    return false;
+  }
+
 public:
   void set_window(const axgl::ptr_t<axgl::Window> window) override
   {
@@ -197,7 +223,7 @@ public:
 
     for (const auto& input : inputs_)
     {
-      if (window_->glfw_window()->key_pressed(to_glfw_keycode(input->source)))
+      if (get_glfw_input(input->source, window_->glfw_window()))
         input->tick++;
       else
         input->tick = 0;

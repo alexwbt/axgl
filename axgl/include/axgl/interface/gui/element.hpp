@@ -10,12 +10,26 @@ class Element
 {
 public:
   virtual ~Element() = default;
-  virtual void render(const axgl::gui::Page::Context& context) { }
 
   [[nodiscard]] virtual std::uint64_t get_id() const = 0;
   [[nodiscard]] virtual bool should_render() const = 0;
+  [[nodiscard]] virtual bool focusable() const = 0;
   [[nodiscard]] virtual Property& property() = 0;
   [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& children() = 0;
+
+  [[nodiscard]] virtual glm::vec2 get_position(const axgl::gui::Page::Context& context) const = 0;
+  [[nodiscard]] virtual glm::vec2 get_size(const axgl::gui::Page::Context& context) const = 0;
+  [[nodiscard]] virtual bool point_in_rect(const axgl::gui::Page::Context& context, glm::vec2 point) const = 0;
+
+  virtual void render(const axgl::gui::Page::Context& context) = 0;
+  virtual void update(const axgl::gui::Page::Context& context) = 0;
+
+  virtual void on_pointer_enter(const axgl::Pointer& pointer) { }
+  virtual void on_pointer_exit(const axgl::Pointer& pointer) { }
+  virtual void on_activate(const axgl::Input& input, const axgl::Pointer& pointer) { }
+  virtual void on_deactivate(const axgl::Input& input, const axgl::Pointer& pointer) { }
+  virtual void on_focus(const axgl::Input& input, const axgl::Pointer& pointer) { }
+  virtual void on_blur(const axgl::Input& input, const axgl::Pointer& pointer) { }
 };
 
 } // namespace axgl::gui

@@ -131,20 +131,28 @@ public:
     kKeyRightAlt,
     kKeyRightSuper,
     kKeyMenu,
+    kMouseButton1,
+    kMouseButton2,
+    kMouseButton3,
+    kMouseButton4,
+    kMouseButton5,
+    kMouseButton6,
+    kMouseButton7,
+    kMouseButton8,
   };
 
 private:
-  static std::uint32_t next_id()
+  static std::uint64_t next_id()
   {
-    static std::uint32_t next_id_ = 1;
+    static std::uint64_t next_id_ = 1;
     return next_id_++;
   }
 
 public:
-  const std::uint32_t id;
+  const std::uint64_t id;
   std::string name;
   axgl::Input::Source source;
-  std::uint32_t tick;
+  std::uint64_t tick;
 
   Input(std::string name, const axgl::Input::Source source) :
     id(next_id()), name(std::move(name)), source(source), tick(0)

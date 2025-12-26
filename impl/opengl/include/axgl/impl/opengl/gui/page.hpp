@@ -1,11 +1,11 @@
 #pragma once
 
-#include "axgl/axgl.hpp"
+#include <axgl/axgl.hpp>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/gui/page.hpp>
 
-#include <axgl/impl/gui/element_container.hpp>
+#include <axgl/impl/gui/page_base.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/framebuffer.hpp>
@@ -13,23 +13,16 @@
 namespace axgl::impl::opengl::gui
 {
 
-class Page : virtual public axgl::gui::Page
+class Page : virtual public axgl::gui::Page, public axgl::impl::gui::PageBase
 {
-  std::uint32_t width_ = 0;
-  std::uint32_t height_ = 0;
   std::unique_ptr<::opengl::Framebuffer> framebuffer_;
   axgl::ptr_t<axgl::impl::opengl::Texture> texture_;
-  axgl::impl::gui::ElementContainer elements_;
 
 public:
-  void set_size(std::uint32_t width, std::uint32_t height) override
-  {
-    width_ = width;
-    height_ = height;
-  }
-
   void init(const axgl::Service::Context& context) override
   {
+    axgl::impl::gui::PageBase::init(context);
+
     const auto texture = context.axgl.renderer_service()->create_texture();
     texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(texture);
 #ifdef AXGL_DEBUG
@@ -70,13 +63,7 @@ public:
     glDisable(GL_SCISSOR_TEST);
   }
 
-  [[nodiscard]] glm::ivec2 get_size() const override { return {width_, height_}; }
-
-  [[nodiscard]] bool should_render() const override { return elements_.should_render(); }
-
   [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture() override { return texture_; }
-
-  [[nodiscard]] axgl::Container<axgl::gui::Element>& elements() override { return elements_; }
 };
 
 } // namespace axgl::impl::opengl::gui

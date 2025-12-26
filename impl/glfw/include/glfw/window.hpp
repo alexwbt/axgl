@@ -204,7 +204,8 @@ public:
 
   [[nodiscard]] GLFWwindow* get_glfw_window() const { return glfw_window_; }
   [[nodiscard]] bool is_destroyed() const { return destroyed_; }
-  [[nodiscard]] bool key_pressed(int key) const { return glfwGetKey(glfw_window_, key) == GLFW_PRESS; }
+  [[nodiscard]] bool key_down(int key) const { return glfwGetKey(glfw_window_, key) == GLFW_PRESS; }
+  [[nodiscard]] bool mouse_down(int button) const { return glfwGetMouseButton(glfw_window_, button) == GLFW_PRESS; }
   [[nodiscard]] glm::ivec2 get_mouse_pos() const
   {
     double xpos, ypos;
