@@ -190,7 +190,9 @@ public:
     //
     if (gui)
     {
-      gui->render(context);
+      if (gui->should_render())
+        gui->render(context);
+
       const auto gui_texture = axgl::ptr_cast<axgl::impl::opengl::Texture>(gui->get_texture());
 #ifdef AXGL_DEBUG
       if (!gui_texture)

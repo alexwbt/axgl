@@ -15,14 +15,14 @@ namespace axgl::impl::opengl::gui
 
 class Page : virtual public axgl::gui::Page
 {
-  uint32_t width_ = 0;
-  uint32_t height_ = 0;
+  std::uint32_t width_ = 0;
+  std::uint32_t height_ = 0;
   std::unique_ptr<::opengl::Framebuffer> framebuffer_;
   axgl::ptr_t<axgl::impl::opengl::Texture> texture_;
   axgl::impl::gui::ElementContainer elements_;
 
 public:
-  void set_size(uint32_t width, uint32_t height) override
+  void set_size(std::uint32_t width, std::uint32_t height) override
   {
     width_ = width;
     height_ = height;
@@ -47,21 +47,27 @@ public:
 
     framebuffer_ = std::make_unique<::opengl::Framebuffer>();
     framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *opengl_texture);
-    framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0});
+    framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_STENCIL_ATTACHMENT});
   }
 
   void render(const axgl::Service::Context& context) override
   {
     framebuffer_->use();
-    glViewport(0, 0, static_cast<GLsizei>(width_), static_cast<GLsizei>(height_));
+    const auto width = static_cast<GLsizei>(width_);
+    const auto height = static_cast<GLsizei>(height_);
+    glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_CULL_FACE);
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(0, 0, width, height);
 
     const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
     const axgl::gui::Page::Context current_context{context, *context.axgl.gui_service(), *this, projection, nullptr};
     for (const auto& child : elements_.get())
       child->render(current_context);
+
+    glDisable(GL_SCISSOR_TEST);
   }
 
   [[nodiscard]] glm::ivec2 get_size() const override { return {width_, height_}; }

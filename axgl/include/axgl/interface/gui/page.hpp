@@ -24,10 +24,11 @@ public:
     axgl::GuiService& gui_service;
     axgl::gui::Page& page;
     const glm::mat4& projection;
-    axgl::gui::Element* parent;
+    const axgl::gui::Element* parent;
+    const axgl::gui::Page::Context* parent_context;
   };
   virtual ~Page() = default;
-  virtual void set_size(uint32_t width, uint32_t height) = 0;
+  virtual void set_size(std::uint32_t width, std::uint32_t height) = 0;
   virtual void init(const axgl::Service::Context& context) = 0;
   virtual void render(const axgl::Service::Context& context) = 0;
   [[nodiscard]] virtual bool should_render() const = 0;
