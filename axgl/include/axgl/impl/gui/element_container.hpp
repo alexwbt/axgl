@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <vector>
 
 #include <axgl/common.hpp>
@@ -18,6 +19,11 @@ public:
   void add(axgl::ptr_t<axgl::gui::Element> element) override { children_.push_back(std::move(element)); }
   void remove(const axgl::ptr_t<axgl::gui::Element>& element) override { std::erase(children_, element); }
   [[nodiscard]] std::span<const ptr_t<axgl::gui::Element>> get() const override { return children_; }
+
+  [[nodiscard]] bool should_render() const
+  {
+    return std::ranges::any_of(children_, [](const auto& e) { return e->should_render(); });
+  }
 };
 
 } // namespace axgl::impl::gui

@@ -6,7 +6,7 @@
 #include <axgl/interface/pointer.hpp>
 #include <axgl/interface/services/input_service.hpp>
 
-namespace axgl::impl::camera_modes
+namespace axgl::impl::camera
 {
 
 class Keyboard3DFreeFlyCameraMode : public axgl::CameraMode
@@ -104,4 +104,4 @@ public:
   }
 };
 
-} // namespace axgl::impl::camera_modes
+} // namespace axgl::impl::camera

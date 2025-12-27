@@ -21,15 +21,15 @@ public:
   [[nodiscard]] virtual glm::vec2 get_size(const axgl::gui::Page::Context& context) const = 0;
   [[nodiscard]] virtual bool point_in_rect(const axgl::gui::Page::Context& context, glm::vec2 point) const = 0;
 
-  virtual void render(const axgl::gui::Page::Context& context) = 0;
-  virtual void update(const axgl::gui::Page::Context& context) = 0;
+  virtual void render(const axgl::gui::Page::RenderContext& context) = 0;
+  virtual void update(const axgl::gui::Page::InputContext& context) = 0;
 
-  virtual void on_pointer_enter(const axgl::Pointer& pointer) { }
-  virtual void on_pointer_exit(const axgl::Pointer& pointer) { }
-  virtual void on_activate(const axgl::Input& input, const axgl::Pointer& pointer) { }
-  virtual void on_deactivate(const axgl::Input& input, const axgl::Pointer& pointer) { }
-  virtual void on_focus(const axgl::Input& input, const axgl::Pointer& pointer) { }
-  virtual void on_blur(const axgl::Input& input, const axgl::Pointer& pointer) { }
+  virtual void on_pointer_enter(const axgl::gui::Page::InputContext& context) { }
+  virtual void on_pointer_exit(const axgl::gui::Page::InputContext& context) { }
+  virtual void on_activate(const axgl::gui::Page::InputContext& context) { }
+  virtual void on_deactivate(const axgl::gui::Page::InputContext& context) { }
+  virtual void on_focus(const axgl::gui::Page::InputContext& context) { }
+  virtual void on_blur(const axgl::gui::Page::InputContext& context) { }
 };
 
 } // namespace axgl::gui

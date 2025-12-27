@@ -56,14 +56,15 @@ public:
     glScissor(0, 0, width, height);
 
     const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
-    const axgl::gui::Page::Context current_context{context, *context.axgl.gui_service(), *this, projection, nullptr};
+    const axgl::gui::Page::RenderContext current_context{
+      context, *context.axgl.gui_service(), *this, nullptr, nullptr, projection};
     for (const auto& child : elements_.get())
       child->render(current_context);
 
     glDisable(GL_SCISSOR_TEST);
   }
 
-  [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture() override { return texture_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture() const override { return texture_; }
 };
 
 } // namespace axgl::impl::opengl::gui

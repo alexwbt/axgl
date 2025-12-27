@@ -14,7 +14,7 @@ namespace axgl::impl::opengl::gui
 class Element : virtual public axgl::gui::Element, public axgl::impl::gui::ElementBase
 {
 public:
-  void render(const axgl::gui::Page::Context& context) override
+  void render(const axgl::gui::Page::RenderContext& context) override
   {
     should_render_ = false;
 

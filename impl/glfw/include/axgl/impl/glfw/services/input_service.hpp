@@ -17,6 +17,7 @@ class InputService : public axgl::InputService
   axgl::ptr_t<axgl::impl::glfw::Window> window_;
   std::list<axgl::ptr_t<axgl::Input>> inputs_;
   std::list<axgl::ptr_t<axgl::Pointer>> pointers_;
+  axgl::InputService::CursorMode cursor_mode_ = axgl::InputService::CursorMode::kNormal;
 
   static int to_glfw_keycode(const axgl::Input::Source source)
   {
@@ -194,6 +195,7 @@ public:
       return;
 #endif
     window_->use();
+    cursor_mode_ = mode;
     using enum axgl::InputService::CursorMode;
     switch (mode)
     {
@@ -201,6 +203,8 @@ public:
     case kNormal: window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_NORMAL); break;
     }
   }
+
+  [[nodiscard]] axgl::InputService::CursorMode get_cursor_mode() const override { return cursor_mode_; }
 
   void add_input(axgl::ptr_t<axgl::Input> input) override { inputs_.push_back(std::move(input)); }
 

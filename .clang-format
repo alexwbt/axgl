@@ -57,3 +57,7 @@ BreakTemplateDeclarations: Yes
 BreakAfterAttributes: Never
 PenaltyReturnTypeOnItsOwnLine: 9999
 BreakBeforeTernaryOperators: true
+BreakBeforeBinaryOperators: All
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 2

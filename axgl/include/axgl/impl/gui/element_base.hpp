@@ -1,7 +1,5 @@
 #pragma once
 
-#include <algorithm>
-
 #include <glm/gtx/transform.hpp>
 
 #include <axgl/common.hpp>
@@ -27,10 +25,7 @@ private:
 
 public:
   [[nodiscard]] std::uint64_t get_id() const override { return id_; }
-  [[nodiscard]] bool should_render() const override
-  {
-    return should_render_ || std::ranges::any_of(children_.get(), [](const auto& e) { return e->should_render(); });
-  }
+  [[nodiscard]] bool should_render() const override { return should_render_ || children_.should_render(); }
   [[nodiscard]] bool focusable() const override { return focusable_; }
   [[nodiscard]] axgl::gui::Property& property() override { return property_; }
   [[nodiscard]] axgl::Container<axgl::gui::Element>& children() override { return children_; }
@@ -48,27 +43,28 @@ public:
   {
     const auto position = get_position(context);
     const auto size = get_size(context);
-    return point.x >= position.x && point.y >= position.y && point.x < position.x + size.x &&
-           point.y < position.y + size.y;
+    return point.x >= position.x && point.y >= position.y && point.x < position.x + size.x
+           && point.y < position.y + size.y;
   }
 
-  void update(const axgl::gui::Page::Context& context) override
+  void update(const axgl::gui::Page::InputContext& context) override
   {
-    // if (point_in_rect(context, pointer.position))
-    // {
-    //   if (hover_tick_ == 0)
-    //     on_pointer_enter(pointer);
-    //   ++hover_tick_;
-    // }
-    // else
-    // {
-    //   if (hover_tick_ > 0)
-    //     on_pointer_exit(pointer);
-    //   hover_tick_ = 0;
-    // }
-    //
-    // for (const auto& child : children_.get())
-    //   child->update(pointer);
+    if (point_in_rect(context, context.pointer.position))
+    {
+      if (hover_tick_ == 0)
+        on_pointer_enter(context);
+
+      for (const auto& child : children_.get())
+        child->update(context);
+
+      ++hover_tick_;
+    }
+    else
+    {
+      if (hover_tick_ > 0)
+        on_pointer_exit(context);
+      hover_tick_ = 0;
+    }
   }
 
 protected:
@@ -77,9 +73,9 @@ protected:
     return glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f)) * glm::scale(glm::vec3(size, 1.0f));
   }
 
-  void render_children(const axgl::gui::Page::Context& context) const
+  void render_children(const axgl::gui::Page::RenderContext& context) const
   {
-    axgl::gui::Page::Context current_context = context;
+    axgl::gui::Page::RenderContext current_context = context;
     current_context.parent = this;
     current_context.parent_context = &context;
     for (const auto& child : children_.get())

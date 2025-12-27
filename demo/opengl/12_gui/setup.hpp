@@ -4,7 +4,7 @@
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl.hpp>
 
-#include <axgl/impl/camera_modes/keyboard_3d_free_fly_camera_mode.hpp>
+#include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
 
 inline void setup(axgl::Axgl& axgl)
 {
@@ -59,7 +59,7 @@ inline void setup(axgl::Axgl& axgl)
   realm->entities().add(light_entity);
 
   // camera input
-  camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera_modes::Keyboard3DFreeFlyCameraMode>());
+  camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
   camera_service->set_camera(camera_entity);
 
   // cube entity
