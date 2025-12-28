@@ -8,9 +8,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(AXGL_DEBUG "Enable AXGL_DEBUG" ON)
 message("AXGL_DEBUG: ${AXGL_DEBUG}")
 
-if(AXGL_DEBUG)
+if (AXGL_DEBUG)
   add_compile_definitions(AXGL_DEBUG)
-endif()
+endif ()
 
 # External Dependencies
 add_subdirectory(_external/glm)
@@ -42,4 +42,4 @@ add_subdirectory(impl/assimp)
 add_subdirectory(impl/bundlefile)
 
 # Demonstrations
-add_subdirectory(demo/opengl)
+add_subdirectory(demo)
