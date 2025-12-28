@@ -15,6 +15,7 @@ protected:
   std::uint32_t height_ = 0;
   axgl::impl::gui::ElementContainer elements_;
 
+  bool should_render_ = false;
   bool cursor_ = false;
   axgl::ptr_t<axgl::Pointer> pointer_;
   axgl::ptr_t<axgl::Input> activate_;
@@ -27,8 +28,12 @@ public:
     height_ = height;
   }
 
+  void set_should_render(bool should_render) override { should_render_ = should_render; }
+
   void init(const axgl::Service::Context& context) override
   {
+    should_render_ = true;
+
     const auto input_service = context.axgl.input_service();
 
     if (pointer_)
@@ -75,7 +80,9 @@ public:
     }
   }
 
-  [[nodiscard]] bool should_render() const override { return elements_.should_render(); }
+  void render(const axgl::Service::Context& context) override { should_render_ = false; }
+
+  [[nodiscard]] bool should_render() const override { return should_render_; }
 
   [[nodiscard]] glm::ivec2 get_size() const override { return {width_, height_}; }
 

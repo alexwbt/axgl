@@ -45,6 +45,8 @@ public:
 
   void render(const axgl::Service::Context& context) override
   {
+    axgl::impl::gui::PageBase::render(context);
+
     framebuffer_->use();
     const auto width = static_cast<GLsizei>(width_);
     const auto height = static_cast<GLsizei>(height_);
