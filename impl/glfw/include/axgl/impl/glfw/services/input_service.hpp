@@ -224,10 +224,11 @@ public:
   {
     if (!window_)
       return;
+    const auto window = window_->glfw_window();
 
     for (const auto& input : inputs_)
     {
-      if (get_glfw_input(input->source, window_->glfw_window()))
+      if (get_glfw_input(input->source, window))
         input->tick++;
       else
         input->tick = 0;
@@ -235,15 +236,25 @@ public:
 
     for (const auto& pointer : pointers_)
     {
+      pointer->tick++;
       using enum axgl::Pointer::Source;
       switch (pointer->source)
       {
       case kMouseMove:
-        auto pos = window_->glfw_window()->get_mouse_pos();
+      {
+        const auto pos = window->get_mouse_pos();
         pointer->delta = pos - pointer->position;
         pointer->position = pos;
-        pointer->tick++;
         break;
+      }
+      case kScroll:
+      {
+        const auto scroll = window->get_scroll();
+        window->reset_scroll();
+        pointer->delta = scroll;
+        pointer->position += scroll;
+        break;
+      }
       }
     }
   }

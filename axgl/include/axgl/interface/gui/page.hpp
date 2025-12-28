@@ -25,8 +25,9 @@ public:
   {
     axgl::GuiService& gui_service;
     axgl::gui::Page& page;
-    const axgl::gui::Element* parent;
+    axgl::gui::Element* parent;
     const axgl::gui::Page::Context* parent_context;
+    float scale = 1.0f;
   };
   struct RenderContext : Context
   {

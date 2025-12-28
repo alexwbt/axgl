@@ -19,8 +19,9 @@ public:
   void render(const axgl::gui::Page::RenderContext& context) override
   {
     const auto position = get_position(context);
-    const auto model = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f))
-      * glm::scale(glm::vec3(property_.size.x, property_.size.y, 1.0f));
+    const auto size = get_size(context);
+    const auto model
+      = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f)) * glm::scale(glm::vec3(size.x, size.y, 1.0f));
 
     auto& shader = ::opengl::StaticShaders::instance().gui();
     shader.use_program();
@@ -28,11 +29,10 @@ public:
     shader.set_mat4("projection_view_model", context.projection * model);
     ::opengl::StaticVAOs::instance().quad().draw();
 
-    const auto height = static_cast<GLsizei>(property_.size.y);
-    const auto screen_height = static_cast<GLint>(context.page.get_size().y);
     glScissor(
-      static_cast<GLint>(position.x), screen_height - static_cast<GLint>(position.y) - height,
-      static_cast<GLsizei>(property_.size.x), height);
+      static_cast<GLint>(position.x),
+      context.page.get_size().y - static_cast<GLint>(position.y) - static_cast<GLint>(size.y),
+      static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y));
     render_children(context);
   }
 };

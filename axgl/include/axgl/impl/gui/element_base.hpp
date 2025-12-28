@@ -32,21 +32,33 @@ public:
 
   [[nodiscard]] glm::vec2 get_position(const axgl::gui::Page::Context& context) const override
   {
-    return context.parent_context && context.parent
-      ? context.parent->get_position(*context.parent_context) + property_.position
-      : property_.position;
+    const auto* parent = context.parent;
+    const auto* parent_context = context.parent_context;
+    glm::vec2 position = property_.position;
+    while (parent_context && parent)
+    {
+      position += context.parent->property().position;
+      parent = parent_context->parent;
+      parent_context = parent_context->parent_context;
+    }
+    return position * context.scale;
+  }
+
+  [[nodiscard]] glm::vec2 get_size(const axgl::gui::Page::Context& context) const override
+  {
+    return property_.size * context.scale;
   }
 
   [[nodiscard]] glm::vec4 get_rect(const axgl::gui::Page::Context& context) const override
   {
     const auto position = get_position(context);
-    return {position, position + property_.size};
+    return {position, position + get_size(context)};
   }
 
   void update(const axgl::gui::Page::InputContext& context) override
   {
     const auto rect = get_rect(context);
-    const auto pointer = glm::vec2(context.pointer.position);
+    const auto& pointer = context.pointer.position;
 
     if (pointer.x > rect.x && pointer.y > rect.y && pointer.x < rect.z && pointer.y < rect.w)
     {
@@ -101,7 +113,7 @@ public:
   }
 
 protected:
-  void update_children(const axgl::gui::Page::InputContext& context) const
+  void update_children(const axgl::gui::Page::InputContext& context)
   {
     axgl::gui::Page::InputContext current_context = context;
     current_context.parent = this;
@@ -110,7 +122,7 @@ protected:
       child->update(current_context);
   }
 
-  void render_children(const axgl::gui::Page::RenderContext& context) const
+  void render_children(const axgl::gui::Page::RenderContext& context)
   {
     axgl::gui::Page::RenderContext current_context = context;
     current_context.parent = this;

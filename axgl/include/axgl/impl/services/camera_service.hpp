@@ -35,14 +35,7 @@ public:
     camera_comp_ = camera_entity_->components().get_t<component::Camera>();
   }
 
-  axgl::Camera* get_camera() override
-  {
-#ifdef AXGL_DEBUG
-    if (!camera_comp_)
-      AXGL_LOG_WARN("Camera is not set.");
-#endif
-    return camera_comp_ ? &camera_comp_->camera : nullptr;
-  }
+  axgl::Camera* get_camera() override { return camera_comp_ ? &camera_comp_->camera : nullptr; }
 
   void initialize(const Service::Context& context) override { input_service_ = context.axgl.input_service(); }
 

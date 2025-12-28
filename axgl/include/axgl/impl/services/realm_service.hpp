@@ -25,12 +25,7 @@ public:
   void update(const Service::Context& context) override
   {
     if (!realm_)
-    {
-#ifdef AXGL_DEBUG
-      AXGL_LOG_WARN("Active realm not set.");
-#endif
       return;
-    }
 
     realm_->update(context);
   }
@@ -41,6 +36,12 @@ public:
 
   void set_active_realm(const axgl::ptr_t<axgl::Realm> realm) override
   {
+    if (!realm)
+    {
+      realm_ = nullptr;
+      return;
+    }
+
     auto realm_impl = axgl::ptr_cast<axgl::impl::Realm>(realm);
 #ifdef AXGL_DEBUG
     if (!realm_impl)

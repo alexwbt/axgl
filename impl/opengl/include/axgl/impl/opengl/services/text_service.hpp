@@ -60,7 +60,7 @@ public:
     text_renderer_.unload_font(name);
   }
 
-  [[nodiscard]] axgl::ptr_t<axgl::Texture> create_texture(
+  [[nodiscard]] axgl::ptr_t<axgl::impl::opengl::Texture> create_texture(
     const std::string& value,
     const std::vector<std::string>& font,
     const ::opengl::TextOptions& options,

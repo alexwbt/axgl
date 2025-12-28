@@ -20,6 +20,7 @@ public:
   [[nodiscard]] virtual bool activated() const = 0;
 
   [[nodiscard]] virtual glm::vec2 get_position(const axgl::gui::Page::Context& context) const = 0;
+  [[nodiscard]] virtual glm::vec2 get_size(const axgl::gui::Page::Context& context) const = 0;
   [[nodiscard]] virtual glm::vec4 get_rect(const axgl::gui::Page::Context& context) const = 0;
 
   virtual void render(const axgl::gui::Page::RenderContext& context) = 0;

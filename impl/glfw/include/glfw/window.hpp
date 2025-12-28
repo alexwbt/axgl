@@ -22,6 +22,7 @@ struct EventListener
   virtual void on_mouse_down(int button) { }
   virtual void on_mouse_up(int button) { }
   virtual void on_mouse_move(double x, double y) { }
+  virtual void on_scroll(double x, double y) { }
   virtual void on_resize(int width, int height) { }
 };
 
@@ -30,6 +31,9 @@ class Window final
   inline static bool initialized_ = false;
   inline static bool terminated_ = false;
   inline static std::unordered_map<GLFWwindow*, axgl::ptr_t<Window>> windows_;
+
+  double scroll_x_ = 0.0;
+  double scroll_y_ = 0.0;
 
 public:
   static axgl::ptr_t<Window> create(const int width, const int height, const std::string& title)
@@ -120,6 +124,16 @@ private:
       listener->on_mouse_move(x, y);
   }
 
+  static void scroll_callback(GLFWwindow* glfw_window, double x, double y)
+  {
+    const auto window = get_window(glfw_window);
+    window->scroll_x_ += x;
+    window->scroll_y_ += y;
+
+    if (const auto listener = get_window_event_listener(glfw_window))
+      listener->on_scroll(x, y);
+  }
+
   static void mouse_button_callback(GLFWwindow* glfw_window, int button, int action, int mods)
   {
     const auto listener = get_window_event_listener(glfw_window);
@@ -155,11 +169,8 @@ private:
 
   static axgl::ptr_t<EventListener> get_window_event_listener(GLFWwindow* glfw_window)
   {
-    auto window = get_window(glfw_window);
-    if (!window)
-      return nullptr;
-
-    return window->event_listener_;
+    const auto window = get_window(glfw_window);
+    return window ? window->event_listener_ : nullptr;
   }
 
   GLFWwindow* glfw_window_;
@@ -184,6 +195,7 @@ private:
     }
 
     glfwSetKeyCallback(glfw_window_, key_callback);
+    glfwSetScrollCallback(glfw_window_, scroll_callback);
     glfwSetCursorPosCallback(glfw_window_, cursor_pos_callback);
     glfwSetMouseButtonCallback(glfw_window_, mouse_button_callback);
     glfwSetFramebufferSizeCallback(glfw_window_, frame_buffer_size_callback);
@@ -193,24 +205,27 @@ public:
   ~Window() { destroy(); }
 
   void set_title(const std::string& title) const { glfwSetWindowTitle(glfw_window_, title.c_str()); }
-
   void set_size(int width, int height) const { glfwSetWindowSize(glfw_window_, width, height); }
-
   void set_position(int x, int y) const { glfwSetWindowPos(glfw_window_, x, y); }
-
   void set_input_mode(int mode, int value) const { glfwSetInputMode(glfw_window_, mode, value); }
-
   void set_event_listener(axgl::ptr_t<EventListener> event_listener) { event_listener_ = std::move(event_listener); }
 
   [[nodiscard]] GLFWwindow* get_glfw_window() const { return glfw_window_; }
   [[nodiscard]] bool is_destroyed() const { return destroyed_; }
   [[nodiscard]] bool key_down(int key) const { return glfwGetKey(glfw_window_, key) == GLFW_PRESS; }
   [[nodiscard]] bool mouse_down(int button) const { return glfwGetMouseButton(glfw_window_, button) == GLFW_PRESS; }
-  [[nodiscard]] glm::ivec2 get_mouse_pos() const
+  [[nodiscard]] glm::vec2 get_mouse_pos() const
   {
-    double xpos, ypos;
-    glfwGetCursorPos(glfw_window_, &xpos, &ypos);
-    return {xpos, ypos};
+    double x, y;
+    glfwGetCursorPos(glfw_window_, &x, &y);
+    return {x, y};
+  }
+  [[nodiscard]] glm::vec2 get_scroll() const { return {scroll_x_, scroll_y_}; }
+
+  void reset_scroll()
+  {
+    scroll_x_ = 0;
+    scroll_y_ = 0;
   }
 
   void use() const { glfwMakeContextCurrent(glfw_window_); }

@@ -15,6 +15,7 @@ protected:
   std::uint32_t height_ = 0;
   axgl::impl::gui::ElementContainer elements_;
 
+  float scale_ = 1.0f;
   bool should_render_ = false;
   bool cursor_ = false;
   axgl::ptr_t<axgl::Pointer> pointer_;
@@ -43,7 +44,7 @@ public:
     if (switch_focus_)
       input_service->remove_input(switch_focus_->id);
 
-    pointer_ = axgl::create_ptr<Pointer>("GUI Cursor", Pointer::Source::kMouseMove);
+    pointer_ = axgl::create_ptr<Pointer>("Cursor", Pointer::Source::kMouseMove);
     activate_ = axgl::create_ptr<Input>("GUI Activate", Input::Source::kKeyEnter);
     switch_focus_ = axgl::create_ptr<Input>("GUI Switch Focus", Input::Source::kKeyTab);
 
@@ -62,8 +63,8 @@ public:
     {
       cursor_ = true;
       const axgl::gui::Page::InputContext current_context{
-        context, *gui_service, *this, nullptr, nullptr, *input_service, *pointer_, *activate_, *switch_focus_};
-      if (pointer_->delta.x != 0 || pointer_->delta.y != 0)
+        context, *gui_service, *this, nullptr, nullptr, scale_, *input_service, *pointer_, *activate_, *switch_focus_};
+      if (pointer_->delta.x != 0.0f || pointer_->delta.y != 0.0f)
       {
         for (const auto& element : elements_.get())
           element->update(current_context);
@@ -73,7 +74,7 @@ public:
     {
       cursor_ = false;
       const axgl::gui::Page::InputContext current_context{
-        context, *gui_service, *this, nullptr, nullptr, *input_service, *pointer_, *activate_, *switch_focus_};
+        context, *gui_service, *this, nullptr, nullptr, scale_, *input_service, *pointer_, *activate_, *switch_focus_};
       for (const auto& element : elements_.get())
         if (element->hovering())
           element->on_pointer_exit(current_context);
