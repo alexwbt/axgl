@@ -210,12 +210,12 @@ public:
 
   void add_pointer(axgl::ptr_t<axgl::Pointer> pointer) override { pointers_.push_back(std::move(pointer)); }
 
-  void remove_input(std::uint32_t id) override
+  void remove_input(std::uint64_t id) override
   {
     inputs_.remove_if([id](const auto& input) { return input->id == id; });
   }
 
-  void remove_pointer(std::uint32_t id) override
+  void remove_pointer(std::uint64_t id) override
   {
     pointers_.remove_if([id](const auto& pointer) { return pointer->id == id; });
   }

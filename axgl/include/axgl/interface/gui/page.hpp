@@ -46,9 +46,6 @@ public:
   virtual void update(const axgl::Service::Context& context) = 0;
   [[nodiscard]] virtual bool should_render() const = 0;
   [[nodiscard]] virtual glm::ivec2 get_size() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<axgl::Pointer> get_pointer() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_activate_input() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_switch_focus_input() const = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Texture> get_texture() const = 0;
   [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& elements() = 0;
 };

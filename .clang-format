@@ -61,3 +61,4 @@ BreakBeforeBinaryOperators: All
 AlignTrailingComments:
   Kind: Always
   OverEmptyLines: 2
+AlignOperands: DontAlign

@@ -25,7 +25,8 @@ public:
   };
 
   virtual axgl::ModelService::ModelResources load_model(
-    axgl::ptr_t<axgl::Entity> entity, const std::string& resource_key) = 0;
+    axgl::ptr_t<axgl::Entity> entity, const std::string& resource_key)
+    = 0;
 };
 
 } // namespace axgl

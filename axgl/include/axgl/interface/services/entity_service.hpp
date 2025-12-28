@@ -16,9 +16,11 @@ public:
   static constexpr std::string_view kTypeId = "service::entity";
 
   virtual void register_entity_factory(
-    const std::string& type_id, std::function<axgl::ptr_t<axgl::Entity>()> entity_factory) = 0;
+    const std::string& type_id, std::function<axgl::ptr_t<axgl::Entity>()> entity_factory)
+    = 0;
   virtual void register_component_factory(
-    const std::string& type_id, std::function<axgl::ptr_t<axgl::Component>()> component_factory) = 0;
+    const std::string& type_id, std::function<axgl::ptr_t<axgl::Component>()> component_factory)
+    = 0;
 
   virtual axgl::ptr_t<axgl::Entity> create_entity() = 0;
   virtual axgl::ptr_t<axgl::Entity> create_entity(const std::string& type_id) = 0;

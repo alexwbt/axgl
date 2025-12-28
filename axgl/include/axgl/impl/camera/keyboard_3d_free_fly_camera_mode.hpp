@@ -84,8 +84,8 @@ public:
       camera.yaw += static_cast<float>(pointer_->delta.x) * view_sensitivity_;
 
     if (pointer_->tick > 1 && pointer_->delta.y != 0)
-      camera.pitch =
-        std::min(std::max(camera.pitch + (static_cast<float>(pointer_->delta.y) * view_sensitivity_), 1.0f), 179.0f);
+      camera.pitch
+        = std::min(std::max(camera.pitch + (static_cast<float>(pointer_->delta.y) * view_sensitivity_), 1.0f), 179.0f);
 
     if (forward_->tick > 0)
       camera.position += camera.front() * movement_speed_;

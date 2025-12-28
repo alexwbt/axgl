@@ -24,10 +24,12 @@ public:
   void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) override { main_ui_ = std::move(main_ui); }
   [[nodiscard]] axgl::ptr_t<axgl::gui::Page> get_main_ui() const override { return main_ui_; }
 
-  void update(const Context& context) override
+  void update(const axgl::Service::Context& context) override
   {
     if (!main_ui_)
       return;
+
+    main_ui_->update(context);
   }
 };
 

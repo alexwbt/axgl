@@ -28,42 +28,44 @@ public:
 
   void init(const axgl::Service::Context& context) override
   {
+    const auto input_service = context.axgl.input_service();
+
+    if (pointer_)
+      input_service->remove_pointer(pointer_->id);
+    if (activate_)
+      input_service->remove_input(activate_->id);
+    if (switch_focus_)
+      input_service->remove_input(switch_focus_->id);
+
     pointer_ = axgl::create_ptr<Pointer>("GUI Cursor", Pointer::Source::kMouseMove);
     activate_ = axgl::create_ptr<Input>("GUI Activate", Input::Source::kKeyEnter);
     switch_focus_ = axgl::create_ptr<Input>("GUI Switch Focus", Input::Source::kKeyTab);
+
+    input_service->add_pointer(pointer_);
+    input_service->add_input(activate_);
+    input_service->add_input(switch_focus_);
   }
 
   void update(const axgl::Service::Context& context) override
   {
+    if (!pointer_ || !activate_ || !switch_focus_)
+      return;
     const auto gui_service = context.axgl.gui_service();
     const auto input_service = context.axgl.input_service();
-#ifdef AXGL_DEBUG
-    if (!pointer_ || !activate_ || !switch_focus_)
-    {
-      SPDLOG_WARN("GUI Page update called before init.");
-      return;
-    }
-#endif
     if (
-      input_service->get_cursor_mode() == axgl::InputService::CursorMode::kNormal && pointer_->tick > 0
+      input_service->get_cursor_mode() == axgl::InputService::CursorMode::kNormal
       && (pointer_->delta.x != 0 || pointer_->delta.y != 0))
     {
       const axgl::gui::Page::InputContext current_context{
         context, *gui_service, *this, nullptr, nullptr, *input_service, *pointer_, *activate_, *switch_focus_};
       for (const auto& element : elements_.get())
-        element->on_pointer_move(current_context);
+        element->update(current_context);
     }
   }
 
   [[nodiscard]] bool should_render() const override { return elements_.should_render(); }
 
   [[nodiscard]] glm::ivec2 get_size() const override { return {width_, height_}; }
-
-  [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_pointer() const override { return pointer_; }
-
-  [[nodiscard]] axgl::ptr_t<axgl::Input> get_activate_input() const override { return activate_; }
-
-  [[nodiscard]] axgl::ptr_t<axgl::Input> get_switch_focus_input() const override { return switch_focus_; }
 
   [[nodiscard]] axgl::Container<axgl::gui::Element>& elements() override { return elements_; }
 };

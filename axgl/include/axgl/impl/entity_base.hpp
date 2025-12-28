@@ -43,8 +43,8 @@ public:
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
   void update_model_matrix() override
   {
-    model_matrix_ = glm::translate(glm::mat4(1.0f), transform_.position) * glm::toMat4(glm::quat(transform_.rotation)) *
-                    glm::scale(transform_.scale);
+    model_matrix_ = glm::translate(glm::mat4(1.0f), transform_.position) * glm::toMat4(glm::quat(transform_.rotation))
+      * glm::scale(transform_.scale);
   }
   void mark_remove(const bool should_remove) override { should_remove_ = should_remove; }
 
