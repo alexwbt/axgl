@@ -42,5 +42,4 @@ add_subdirectory(impl/assimp)
 add_subdirectory(impl/bundlefile)
 
 # Demonstrations
-add_subdirectory(demo/net)
 add_subdirectory(demo/opengl)
