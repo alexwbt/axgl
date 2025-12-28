@@ -68,7 +68,7 @@ public:
   void update(const axgl::gui::Page::InputContext& context) override
   {
     const auto rect = get_rect(context);
-    const auto pointer = context.pointer.position;
+    const auto pointer = glm::vec2(context.pointer.position);
 
     if (pointer.x > rect.x && pointer.y > rect.y && pointer.x < rect.z && pointer.y < rect.w)
     {
@@ -109,6 +109,7 @@ public:
     activated_ = false;
     should_render_ = true;
   }
+
   void on_focus(const axgl::gui::Page::InputContext& context) override
   {
     focused_ = true;

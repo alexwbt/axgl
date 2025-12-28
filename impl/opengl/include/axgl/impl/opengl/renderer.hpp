@@ -191,7 +191,10 @@ public:
     if (gui)
     {
       if (gui->should_render())
+      {
+        AXGL_PROFILE_SCOPE("GUI Render");
         gui->render(context);
+      }
 
       const auto gui_texture = axgl::ptr_cast<axgl::impl::opengl::Texture>(gui->get_texture());
 #ifdef AXGL_DEBUG

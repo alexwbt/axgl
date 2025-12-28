@@ -1,9 +1,9 @@
 #pragma once
 
 #ifdef AXGL_DEBUG
-#include <cpptrace/cpptrace.hpp>
-#include <cpptrace/from_current.hpp>
-#include <stdexcept>
+  #include <cpptrace/cpptrace.hpp>
+  #include <cpptrace/from_current.hpp>
+  #include <stdexcept>
 #endif
 
 #include <cstdint>
@@ -12,7 +12,7 @@
 #include <string_view>
 
 #ifdef AXGL_DEBUG
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+  #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 #endif
 
 #include <glm/glm.hpp>
@@ -20,15 +20,49 @@
 #include <tracy/Tracy.hpp>
 
 #ifdef AXGL_DEBUG
-#define AXGL_PROFILE_SCOPE(name) ZoneNamedN(TracyConcat(___tracy_scoped_zone, TracyLine), name, true)
-#define AXGL_PLOT(name, value) TracyPlot(name, value)
-#define AXGL_ALLOC(pointer, size) TracyAlloc(ptr, _Size);
-#define AXGL_FREE(pointer) TracyFree(_Block);
+  #define AXGL_PROFILE_SCOPE(name) ZoneNamedN(TracyConcat(___tracy_scoped_zone, TracyLine), name, true)
+  #define AXGL_PLOT(name, value) TracyPlot(name, value)
+  #define AXGL_ALLOC(pointer, size) TracyAlloc(ptr, _Size);
+  #define AXGL_FREE(pointer) TracyFree(_Block);
 #else
-#define AXGL_PROFILE_SCOPE(name)
-#define AXGL_PLOT(name, value)
-#define AXGL_ALLOC(pointer, size)
-#define AXGL_FREE(pointer)
+  #define AXGL_PROFILE_SCOPE(name)
+  #define AXGL_PLOT(name, value)
+  #define AXGL_ALLOC(pointer, size)
+  #define AXGL_FREE(pointer)
+#endif
+
+#define AXGL_LOG_LEVEL_DEBUG 0
+#define AXGL_LOG_LEVEL_INFO 1
+#define AXGL_LOG_LEVEL_WARN 2
+#define AXGL_LOG_LEVEL_ERROR 3
+
+#ifndef AXGL_LOG_LEVEL
+  #ifdef AXGL_DEBUG
+    #define AXGL_LOG_LEVEL AXGL_LOG_LEVEL_DEBUG
+  #else
+    #define AXGL_LOG_LEVEL AXGL_LOG_LEVEL_WARN
+  #endif
+#endif
+
+#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_DEBUG
+  #define AXGL_LOG_DEBUG(...) SPDLOG_DEBUG(...)
+#else
+  #define AXGL_LOG_DEBUG(...)
+#endif
+#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_INFO
+  #define AXGL_LOG_INFO(...) SPDLOG_INFO(...)
+#else
+  #define AXGL_LOG_INFO(...)
+#endif
+#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_WARN
+  #define AXGL_LOG_WARN(...) SPDLOG_WARN(...)
+#else
+  #define AXGL_LOG_WARN(...)
+#endif
+#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_ERROR
+  #define AXGL_LOG_ERROR(...) SPDLOG_ERROR(...)
+#else
+  #define AXGL_LOG_ERROR(...)
 #endif
 
 #if defined(AXGL_DEBUG) && defined(TRACY_ENABLE)

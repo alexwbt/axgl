@@ -15,6 +15,7 @@ protected:
   std::uint32_t height_ = 0;
   axgl::impl::gui::ElementContainer elements_;
 
+  bool cursor_ = false;
   axgl::ptr_t<axgl::Pointer> pointer_;
   axgl::ptr_t<axgl::Input> activate_;
   axgl::ptr_t<axgl::Input> switch_focus_;
@@ -52,14 +53,25 @@ public:
       return;
     const auto gui_service = context.axgl.gui_service();
     const auto input_service = context.axgl.input_service();
-    if (
-      input_service->get_cursor_mode() == axgl::InputService::CursorMode::kNormal
-      && (pointer_->delta.x != 0 || pointer_->delta.y != 0))
+    if (input_service->get_cursor_mode() == axgl::InputService::CursorMode::kNormal)
     {
+      cursor_ = true;
+      const axgl::gui::Page::InputContext current_context{
+        context, *gui_service, *this, nullptr, nullptr, *input_service, *pointer_, *activate_, *switch_focus_};
+      if (pointer_->delta.x != 0 || pointer_->delta.y != 0)
+      {
+        for (const auto& element : elements_.get())
+          element->update(current_context);
+      }
+    }
+    else if (cursor_)
+    {
+      cursor_ = false;
       const axgl::gui::Page::InputContext current_context{
         context, *gui_service, *this, nullptr, nullptr, *input_service, *pointer_, *activate_, *switch_focus_};
       for (const auto& element : elements_.get())
-        element->update(current_context);
+        if (element->hovering())
+          element->on_pointer_exit(current_context);
     }
   }
 

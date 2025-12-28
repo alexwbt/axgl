@@ -29,6 +29,7 @@ public:
     if (!main_ui_)
       return;
 
+    AXGL_PROFILE_SCOPE("GUI Update");
     main_ui_->update(context);
   }
 };
