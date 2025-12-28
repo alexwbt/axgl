@@ -42,7 +42,7 @@ public:
   {
     if (!window_ || !window_->ready())
     {
-      SPDLOG_DEBUG("Unable to render: window is not set or not ready.");
+      AXGL_LOG_DEBUG("Unable to render: window is not set or not ready.");
       return;
     }
 
@@ -50,14 +50,14 @@ public:
     const auto realm = context.axgl.realm_service()->get_active_realm();
     if (!realm)
     {
-      SPDLOG_DEBUG("Unable to render realm: active realm is not set.");
+      AXGL_LOG_DEBUG("Unable to render realm: active realm is not set.");
       return;
     }
 
     auto* camera = context.axgl.camera_service()->get_camera();
     if (!camera)
     {
-      SPDLOG_DEBUG("Unable to render realm: camera is not set.");
+      AXGL_LOG_DEBUG("Unable to render realm: camera is not set.");
       return;
     }
 
@@ -239,7 +239,7 @@ public:
 
     // initialize glad
     if (!initialized_glad_ && !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-      SPDLOG_CRITICAL("Failed to initialize GLAD.");
+      AXGL_LOG_ERROR("Failed to initialize GLAD.");
     initialized_glad_ = true;
   }
 };

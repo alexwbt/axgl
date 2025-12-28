@@ -16,5 +16,5 @@ inline void print_message(const std::vector<uint8_t>& buffer)
 {
   constexpr int offset = net::LengthPrefixedTcpSocket::kLengthPrefixSize;
   const std::string_view value(reinterpret_cast<const char*>(buffer.data() + offset), buffer.size() - offset);
-  SPDLOG_INFO(value);
+  AXGL_LOG_INFO(value);
 }

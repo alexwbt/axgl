@@ -1,11 +1,17 @@
 #pragma once
 
+//
+// cpp trace
+//
 #ifdef AXGL_DEBUG
   #include <cpptrace/cpptrace.hpp>
   #include <cpptrace/from_current.hpp>
   #include <stdexcept>
 #endif
 
+//
+// common imports
+//
 #include <cstdint>
 #include <span>
 #include <string>
@@ -19,6 +25,9 @@
 #include <spdlog/spdlog.h>
 #include <tracy/Tracy.hpp>
 
+//
+// profiling
+//
 #ifdef AXGL_DEBUG
   #define AXGL_PROFILE_SCOPE(name) ZoneNamedN(TracyConcat(___tracy_scoped_zone, TracyLine), name, true)
   #define AXGL_PLOT(name, value) TracyPlot(name, value)
@@ -29,40 +38,6 @@
   #define AXGL_PLOT(name, value)
   #define AXGL_ALLOC(pointer, size)
   #define AXGL_FREE(pointer)
-#endif
-
-#define AXGL_LOG_LEVEL_DEBUG 0
-#define AXGL_LOG_LEVEL_INFO 1
-#define AXGL_LOG_LEVEL_WARN 2
-#define AXGL_LOG_LEVEL_ERROR 3
-
-#ifndef AXGL_LOG_LEVEL
-  #ifdef AXGL_DEBUG
-    #define AXGL_LOG_LEVEL AXGL_LOG_LEVEL_DEBUG
-  #else
-    #define AXGL_LOG_LEVEL AXGL_LOG_LEVEL_WARN
-  #endif
-#endif
-
-#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_DEBUG
-  #define AXGL_LOG_DEBUG(...) SPDLOG_DEBUG(...)
-#else
-  #define AXGL_LOG_DEBUG(...)
-#endif
-#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_INFO
-  #define AXGL_LOG_INFO(...) SPDLOG_INFO(...)
-#else
-  #define AXGL_LOG_INFO(...)
-#endif
-#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_WARN
-  #define AXGL_LOG_WARN(...) SPDLOG_WARN(...)
-#else
-  #define AXGL_LOG_WARN(...)
-#endif
-#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_ERROR
-  #define AXGL_LOG_ERROR(...) SPDLOG_ERROR(...)
-#else
-  #define AXGL_LOG_ERROR(...)
 #endif
 
 #if defined(AXGL_DEBUG) && defined(TRACY_ENABLE)
@@ -103,6 +78,47 @@ void* operator new[](const std::size_t _Size)
 // ReSharper restore CppNonInlineFunctionDefinitionInHeaderFile
 #endif
 
+//
+// logging
+//
+#define AXGL_LOG_LEVEL_DEBUG 0
+#define AXGL_LOG_LEVEL_INFO 1
+#define AXGL_LOG_LEVEL_WARN 2
+#define AXGL_LOG_LEVEL_ERROR 3
+#define AXGL_LOG_LEVEL_NONE 4
+
+#ifndef AXGL_LOG_LEVEL
+  #ifdef AXGL_DEBUG
+    #define AXGL_LOG_LEVEL AXGL_LOG_LEVEL_DEBUG
+  #else
+    #define AXGL_LOG_LEVEL AXGL_LOG_LEVEL_WARN
+  #endif
+#endif
+
+#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_DEBUG
+  #define AXGL_LOG_DEBUG(...) SPDLOG_DEBUG(__VA_ARGS__)
+#else
+  #define AXGL_LOG_DEBUG(...)
+#endif
+#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_INFO
+  #define AXGL_LOG_INFO(...) SPDLOG_INFO(__VA_ARGS__)
+#else
+  #define AXGL_LOG_INFO(...)
+#endif
+#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_WARN
+  #define AXGL_LOG_WARN(...) SPDLOG_WARN(__VA_ARGS__)
+#else
+  #define AXGL_LOG_WARN(...)
+#endif
+#if AXGL_LOG_LEVEL <= AXGL_LOG_LEVEL_ERROR
+  #define AXGL_LOG_ERROR(...) SPDLOG_ERROR(__VA_ARGS__)
+#else
+  #define AXGL_LOG_ERROR(...)
+#endif
+
+//
+// pointer type
+//
 namespace axgl
 {
 

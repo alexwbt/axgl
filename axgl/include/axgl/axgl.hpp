@@ -46,9 +46,10 @@ public:
     }
     CPPTRACE_CATCH(const std::exception& e)
     {
-      SPDLOG_ERROR(
-        "Exception thrown duration initialization: {}\n{}", e.what(),
-        cpptrace::from_current_exception().to_string(true));
+      // AXGL_LOG_ERROR(
+      //   "Exception thrown duration initialization: {}\n{}", e.what(),
+      //   cpptrace::from_current_exception().to_string(true));
+      AXGL_LOG_DEBUG("Hello world");
     }
 #endif
   }
@@ -64,7 +65,7 @@ public:
     }
     CPPTRACE_CATCH(const std::exception& e)
     {
-      SPDLOG_ERROR(
+      AXGL_LOG_ERROR(
         "Exception thrown duration termination: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
     }
 #endif
@@ -138,7 +139,7 @@ public:
     }
     CPPTRACE_CATCH(const std::exception& e)
     {
-      SPDLOG_CRITICAL("Exception thrown: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
+      AXGL_LOG_ERROR("Exception thrown: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
     }
 #endif
   }
@@ -146,7 +147,7 @@ public:
   template <typename ServiceType>
   ptr_t<ServiceType> register_service_t()
   {
-    SPDLOG_CRITICAL("Service type '{}' is not supported.", typeid(ServiceType).name());
+    AXGL_LOG_ERROR("Service type '{}' is not supported.", typeid(ServiceType).name());
     return nullptr;
   }
 

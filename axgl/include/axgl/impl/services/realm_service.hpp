@@ -27,7 +27,7 @@ public:
     if (!realm_)
     {
 #ifdef AXGL_DEBUG
-      SPDLOG_WARN("Active realm not set.");
+      AXGL_LOG_WARN("Active realm not set.");
 #endif
       return;
     }

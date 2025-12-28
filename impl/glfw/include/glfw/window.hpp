@@ -48,7 +48,7 @@ public:
 
     if (!glfwInit())
     {
-      SPDLOG_CRITICAL("Failed to initialize GLFW.");
+      AXGL_LOG_ERROR("Failed to initialize GLFW.");
       return;
     }
 
@@ -97,7 +97,7 @@ public:
 private:
   static void glfw_error_callback(int error, const char* description)
   {
-    SPDLOG_ERROR("GLFW Error {}: {}", error, description);
+    AXGL_LOG_ERROR("GLFW Error {}: {}", error, description);
   }
 
   static void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
@@ -148,7 +148,7 @@ private:
     }
     catch ([[maybe_unused]] const std::out_of_range& e)
     {
-      SPDLOG_DEBUG("Tried to get GLFW window that does not exists. ({})", e.what());
+      AXGL_LOG_DEBUG("Tried to get GLFW window that does not exists. ({})", e.what());
       return nullptr;
     }
   }
@@ -172,14 +172,14 @@ private:
   {
     if (!initialized_ || terminated_)
     {
-      SPDLOG_CRITICAL("Failed to create window, GLFW not initialized.");
+      AXGL_LOG_ERROR("Failed to create window, GLFW not initialized.");
       return;
     }
 
     glfw_window_ = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     if (!glfw_window_)
     {
-      SPDLOG_CRITICAL("Failed to create window: {}", title);
+      AXGL_LOG_ERROR("Failed to create window: {}", title);
       return;
     }
 

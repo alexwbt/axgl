@@ -52,7 +52,7 @@ public:
     {
       char log[512] = {};
       glGetProgramInfoLog(program_id_, sizeof(log), nullptr, log);
-      SPDLOG_CRITICAL("Failed to link shader program: {}", log);
+      AXGL_LOG_ERROR("Failed to link shader program: {}", log);
     }
 
     for (const auto shader_id : shader_ids)
@@ -156,7 +156,7 @@ private:
     {
       char log[512] = {};
       glGetShaderInfoLog(id, sizeof(log), nullptr, log);
-      SPDLOG_CRITICAL("Failed to compile shader: {}", log);
+      AXGL_LOG_ERROR("Failed to compile shader: {}", log);
     }
     return id;
   }

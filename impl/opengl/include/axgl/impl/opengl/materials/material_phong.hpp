@@ -40,7 +40,7 @@ public:
     case kNormal: normal_texture_ = std::move(texture_); break;
     case kHeight: height_texture_ = std::move(texture_); break;
 #ifdef AXGL_DEBUG
-    case kUnknown: SPDLOG_WARN("Adding texture with UNKNOWN type."); break;
+    case kUnknown: AXGL_LOG_WARN("Adding texture with UNKNOWN type."); break;
 #endif
     }
   }

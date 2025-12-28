@@ -38,7 +38,7 @@ public:
     if (!renderer_)
     {
 #ifdef AXGL_DEBUG
-      SPDLOG_WARN("Active renderer not set.");
+      AXGL_LOG_WARN("Active renderer not set.");
 #endif
       return;
     }

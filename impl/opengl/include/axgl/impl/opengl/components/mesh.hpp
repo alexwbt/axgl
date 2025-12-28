@@ -76,7 +76,7 @@ public:
   {
     if (!material_)
     {
-      SPDLOG_DEBUG("Material not assigned to mesh, skip rendering.");
+      AXGL_LOG_DEBUG("Material not assigned to mesh, skip rendering.");
       return;
     }
     instanced_models_.emplace_back(entity.get_model_matrix());

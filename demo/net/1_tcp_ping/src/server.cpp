@@ -15,10 +15,10 @@ public:
 
   void on_connect(const uint32_t session_id, std::shared_ptr<net::Session> session) override
   {
-    SPDLOG_DEBUG("client connected: {}", session_id);
+    AXGL_LOG_DEBUG("client connected: {}", session_id);
   }
 
-  void on_disconnect(const uint32_t session_id) override { SPDLOG_DEBUG("client disconnected: {}", session_id); }
+  void on_disconnect(const uint32_t session_id) override { AXGL_LOG_DEBUG("client disconnected: {}", session_id); }
 
   void on_receive(uint32_t session_id, const net::DataPtr buffer) override
   {
@@ -59,7 +59,7 @@ int main()
       }
       catch (const std::exception& e)
       {
-        SPDLOG_CRITICAL(e.what());
+        AXGL_LOG_ERROR(e.what());
       }
     });
 
@@ -71,6 +71,6 @@ int main()
   }
   catch (const std::exception& e)
   {
-    SPDLOG_CRITICAL(e.what());
+    AXGL_LOG_ERROR(e.what());
   }
 }

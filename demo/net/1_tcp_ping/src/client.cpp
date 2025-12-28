@@ -14,14 +14,14 @@ public:
 
   void connection_failed(const asio::error_code& error_code) override
   {
-    SPDLOG_ERROR("connection failed: {}", error_code.message());
+    AXGL_LOG_ERROR("connection failed: {}", error_code.message());
   }
 
-  void on_disconnect() override { SPDLOG_DEBUG("disconnected"); }
+  void on_disconnect() override { AXGL_LOG_DEBUG("disconnected"); }
 
   void on_connect() override
   {
-    SPDLOG_DEBUG("connected");
+    AXGL_LOG_DEBUG("connected");
     send(build_message("hello world"));
   }
 
@@ -51,7 +51,7 @@ int main()
       }
       catch (const std::exception& e)
       {
-        SPDLOG_CRITICAL(e.what());
+        AXGL_LOG_ERROR(e.what());
       }
     });
 
@@ -70,6 +70,6 @@ int main()
   }
   catch (const std::exception& e)
   {
-    SPDLOG_CRITICAL(e.what());
+    AXGL_LOG_ERROR(e.what());
   }
 }

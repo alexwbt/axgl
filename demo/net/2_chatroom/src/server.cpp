@@ -8,5 +8,5 @@ int main()
   spdlog::set_level(spdlog::level::debug);
 #endif
 
-  SPDLOG_INFO("server");
+  AXGL_LOG_INFO("server");
 }

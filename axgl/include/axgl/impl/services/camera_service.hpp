@@ -39,7 +39,7 @@ public:
   {
 #ifdef AXGL_DEBUG
     if (!camera_comp_)
-      SPDLOG_WARN("Camera is not set.");
+      AXGL_LOG_WARN("Camera is not set.");
 #endif
     return camera_comp_ ? &camera_comp_->camera : nullptr;
   }

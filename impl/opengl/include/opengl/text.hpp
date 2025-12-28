@@ -123,7 +123,7 @@ public:
     FT_Set_Pixel_Sizes(face_, 0, options.size);
     if (FT_Load_Char(face_, code, FT_LOAD_RENDER))
     {
-      SPDLOG_ERROR("Failed to load char {}", code);
+      AXGL_LOG_ERROR("Failed to load char {}", code);
       return;
     }
     character.load(face_, options.vertical);
@@ -214,7 +214,7 @@ public:
         int f = get_renderable_font(font, c);
         if (f < 0)
         {
-          SPDLOG_ERROR("Unrenderable char: {} (decimal code point)", c);
+          AXGL_LOG_ERROR("Unrenderable char: {} (decimal code point)", c);
           continue;
         }
         fonts_.at(font[f])->load_char(chars[c], c, options);

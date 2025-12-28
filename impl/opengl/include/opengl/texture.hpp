@@ -112,7 +112,7 @@ public:
   {
     if (loaded())
     {
-      SPDLOG_ERROR("Texture is already loaded.");
+      AXGL_LOG_ERROR("Texture is already loaded.");
       return;
     }
     target_ = GL_TEXTURE_2D;
@@ -129,7 +129,7 @@ public:
     const StbiImage texture(data);
     if (!texture.stbi_ptr)
     {
-      SPDLOG_ERROR("Failed to load texture image.");
+      AXGL_LOG_ERROR("Failed to load texture image.");
       return;
     }
 
@@ -142,7 +142,7 @@ public:
   {
     if (loaded())
     {
-      SPDLOG_ERROR("Texture is already loaded.");
+      AXGL_LOG_ERROR("Texture is already loaded.");
       return;
     }
     target_ = GL_TEXTURE_CUBE_MAP;
@@ -155,7 +155,7 @@ public:
     {
       if (!texture[i].stbi_ptr)
       {
-        SPDLOG_ERROR("Failed to load cubemap texture. ({})", i);
+        AXGL_LOG_ERROR("Failed to load cubemap texture. ({})", i);
         return;
       }
     }
