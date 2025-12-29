@@ -17,10 +17,12 @@ protected:
 
   float scale_ = 1.0f;
   bool should_render_ = false;
-  bool cursor_ = false;
-  axgl::ptr_t<axgl::Pointer> pointer_;
-  axgl::ptr_t<axgl::Input> activate_;
-  axgl::ptr_t<axgl::Input> switch_focus_;
+  bool using_cursor_ = false;
+  axgl::ptr_t<axgl::Pointer> cursor_pointer_;
+  axgl::ptr_t<axgl::Pointer> scroll_pointer_;
+  axgl::ptr_t<axgl::Input> scale_input_;
+  axgl::ptr_t<axgl::Input> activate_input_;
+  axgl::ptr_t<axgl::Input> switch_focus_input_;
 
 public:
   void set_size(std::uint32_t width, std::uint32_t height) override
@@ -28,66 +30,65 @@ public:
     width_ = width;
     height_ = height;
   }
-
+  void set_scale(float scale) override { scale_ = scale; }
   void set_should_render(bool should_render) override { should_render_ = should_render; }
 
-  void init(const axgl::Service::Context& context) override
-  {
-    should_render_ = true;
-
-    const auto input_service = context.axgl.input_service();
-
-    if (pointer_)
-      input_service->remove_pointer(pointer_->id);
-    if (activate_)
-      input_service->remove_input(activate_->id);
-    if (switch_focus_)
-      input_service->remove_input(switch_focus_->id);
-
-    pointer_ = axgl::create_ptr<Pointer>("Cursor", Pointer::Source::kMouseMove);
-    activate_ = axgl::create_ptr<Input>("GUI Activate", Input::Source::kKeyEnter);
-    switch_focus_ = axgl::create_ptr<Input>("GUI Switch Focus", Input::Source::kKeyTab);
-
-    input_service->add_pointer(pointer_);
-    input_service->add_input(activate_);
-    input_service->add_input(switch_focus_);
-  }
+  void init(const axgl::Service::Context& context) override { should_render_ = true; }
 
   void update(const axgl::Service::Context& context) override
   {
-    if (!pointer_ || !activate_ || !switch_focus_)
-      return;
-    const auto gui_service = context.axgl.gui_service();
-    const auto input_service = context.axgl.input_service();
-    if (input_service->get_cursor_mode() == axgl::InputService::CursorMode::kNormal)
+    const auto& gui_service = context.axgl.gui_service();
+    const bool normal_cursor_mode
+      = context.axgl.input_service()->get_cursor_mode() == axgl::InputService::CursorMode::kNormal;
+    if (cursor_pointer_ && normal_cursor_mode)
     {
-      cursor_ = true;
-      const axgl::gui::Page::InputContext current_context{
-        context, *gui_service, *this, nullptr, nullptr, scale_, *input_service, *pointer_, *activate_, *switch_focus_};
-      if (pointer_->delta.x != 0.0f || pointer_->delta.y != 0.0f)
+      using_cursor_ = true;
+      const axgl::gui::Page::Context current_context{context, *gui_service, *this, nullptr, nullptr, scale_};
+      if (cursor_pointer_->delta.x != 0.0f || cursor_pointer_->delta.y != 0.0f)
       {
         for (const auto& element : elements_.get())
           element->update(current_context);
       }
     }
-    else if (cursor_)
+    else if (using_cursor_)
     {
-      cursor_ = false;
-      const axgl::gui::Page::InputContext current_context{
-        context, *gui_service, *this, nullptr, nullptr, scale_, *input_service, *pointer_, *activate_, *switch_focus_};
+      using_cursor_ = false;
+      const axgl::gui::Page::Context current_context{context, *gui_service, *this, nullptr, nullptr, scale_};
       for (const auto& element : elements_.get())
         if (element->hovering())
           element->on_pointer_exit(current_context);
+    }
+
+    if (
+      normal_cursor_mode && scale_input_ && scroll_pointer_ && scale_input_->tick > 0
+      && scroll_pointer_->delta.y != 0.0f)
+    {
+      should_render_ = true;
+      scale_ += scroll_pointer_->delta.y * 0.1f;
+      if (scale_ <= 0.1f)
+        scale_ = 0.1f;
     }
   }
 
   void render(const axgl::Service::Context& context) override { should_render_ = false; }
 
   [[nodiscard]] bool should_render() const override { return should_render_; }
-
   [[nodiscard]] glm::ivec2 get_size() const override { return {width_, height_}; }
-
   [[nodiscard]] axgl::Container<axgl::gui::Element>& elements() override { return elements_; }
+
+  void set_cursor_pointer(axgl::ptr_t<axgl::Pointer> cursor) override { cursor_pointer_ = std::move(cursor); }
+  void set_scroll_pointer(axgl::ptr_t<axgl::Pointer> scroll) override { scroll_pointer_ = std::move(scroll); }
+  void set_scale_input(axgl::ptr_t<axgl::Input> scale) override { scale_input_ = std::move(scale); }
+  void set_activate_input(axgl::ptr_t<axgl::Input> activate) override { activate_input_ = std::move(activate); }
+  void set_switch_focus_input(axgl::ptr_t<axgl::Input> switch_focus) override
+  {
+    switch_focus_input_ = std::move(switch_focus);
+  }
+  [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_cursor_pointer() const override { return cursor_pointer_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_scroll_pointer() const override { return scroll_pointer_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Input> get_scale_input() const override { return scale_input_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Input> get_activate_input() const override { return activate_input_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Input> get_switch_focus_input() const override { return switch_focus_input_; }
 };
 
 } // namespace axgl::impl::gui

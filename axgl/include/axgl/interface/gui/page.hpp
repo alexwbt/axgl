@@ -33,15 +33,9 @@ public:
   {
     const glm::mat4& projection;
   };
-  struct InputContext : Context
-  {
-    axgl::InputService& input_service;
-    const axgl::Pointer& pointer;
-    const axgl::Input& activate;
-    const axgl::Input& switch_focus;
-  };
   virtual ~Page() = default;
   virtual void set_size(std::uint32_t width, std::uint32_t height) = 0;
+  virtual void set_scale(float scale) = 0;
   virtual void set_should_render(bool should_render) = 0;
   virtual void init(const axgl::Service::Context& context) = 0;
   virtual void update(const axgl::Service::Context& context) = 0;
@@ -50,6 +44,17 @@ public:
   [[nodiscard]] virtual glm::ivec2 get_size() const = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Texture> get_texture() const = 0;
   [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& elements() = 0;
+
+  virtual void set_cursor_pointer(axgl::ptr_t<axgl::Pointer> cursor) = 0;
+  virtual void set_scroll_pointer(axgl::ptr_t<axgl::Pointer> scroll) = 0;
+  virtual void set_scale_input(axgl::ptr_t<axgl::Input> scale) = 0;
+  virtual void set_activate_input(axgl::ptr_t<axgl::Input> activate) = 0;
+  virtual void set_switch_focus_input(axgl::ptr_t<axgl::Input> switch_focus) = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Pointer> get_cursor_pointer() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Pointer> get_scroll_pointer() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_scale_input() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_activate_input() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_switch_focus_input() const = 0;
 };
 
 } // namespace axgl::gui

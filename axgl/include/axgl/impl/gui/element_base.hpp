@@ -55,12 +55,17 @@ public:
     return {position, position + get_size(context)};
   }
 
-  void update(const axgl::gui::Page::InputContext& context) override
+  void update(const axgl::gui::Page::Context& context) override
   {
     const auto rect = get_rect(context);
-    const auto& pointer = context.pointer.position;
-
-    if (pointer.x > rect.x && pointer.y > rect.y && pointer.x < rect.z && pointer.y < rect.w)
+    if (                                                       //
+      const auto& pointer = context.page.get_cursor_pointer(); //
+      pointer                                                  //
+      && pointer->position.x > rect.x                          //
+      && pointer->position.y > rect.y                          //
+      && pointer->position.x < rect.z                          //
+      && pointer->position.y < rect.w                          //
+    )
     {
       if (!hovering_)
         on_pointer_enter(context);
@@ -70,52 +75,52 @@ public:
       on_pointer_exit(context);
   }
 
-  void on_pointer_enter(const axgl::gui::Page::InputContext& context) override
+  void on_pointer_enter(const axgl::gui::Page::Context& context) override
   {
     hovering_ = true;
     context.page.set_should_render(true);
   }
 
-  void on_pointer_exit(const axgl::gui::Page::InputContext& context) override
+  void on_pointer_exit(const axgl::gui::Page::Context& context) override
   {
     hovering_ = false;
     context.page.set_should_render(true);
 
-    axgl::gui::Page::InputContext current_context = context;
+    axgl::gui::Page::Context current_context = context;
     current_context.parent = this;
     current_context.parent_context = &context;
     for (const auto& child : children_.get())
       child->on_pointer_exit(current_context);
   }
 
-  void on_activate(const axgl::gui::Page::InputContext& context) override
+  void on_activate(const axgl::gui::Page::Context& context) override
   {
     activated_ = true;
     context.page.set_should_render(true);
   }
 
-  void on_deactivate(const axgl::gui::Page::InputContext& context) override
+  void on_deactivate(const axgl::gui::Page::Context& context) override
   {
     activated_ = false;
     context.page.set_should_render(true);
   }
 
-  void on_focus(const axgl::gui::Page::InputContext& context) override
+  void on_focus(const axgl::gui::Page::Context& context) override
   {
     focused_ = true;
     context.page.set_should_render(true);
   }
 
-  void on_blur(const axgl::gui::Page::InputContext& context) override
+  void on_blur(const axgl::gui::Page::Context& context) override
   {
     focused_ = false;
     context.page.set_should_render(true);
   }
 
 protected:
-  void update_children(const axgl::gui::Page::InputContext& context)
+  void update_children(const axgl::gui::Page::Context& context)
   {
-    axgl::gui::Page::InputContext current_context = context;
+    axgl::gui::Page::Context current_context = context;
     current_context.parent = this;
     current_context.parent_context = &context;
     for (const auto& child : children_.get())

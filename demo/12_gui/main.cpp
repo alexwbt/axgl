@@ -6,8 +6,25 @@ int main()
   setup(axgl);
 
   const auto& gui_service = axgl.gui_service();
+  const auto& input_service = axgl.input_service();
+
+  const auto cursor_pointer = axgl::create_ptr<axgl::Pointer>("Cursor", axgl::Pointer::Source::kMouseMove);
+  const auto scroll_pointer = axgl::create_ptr<axgl::Pointer>("GUI Scroll", axgl::Pointer::Source::kScroll);
+  const auto scale_input = axgl::create_ptr<axgl::Input>("GUI Scale", axgl::Input::Source::kKeyLeftControl);
+  const auto activate_input = axgl::create_ptr<axgl::Input>("GUI Activate", axgl::Input::Source::kKeyEnter);
+  const auto switch_focus_input = axgl::create_ptr<axgl::Input>("GUI Switch Focus", axgl::Input::Source::kKeyTab);
+  input_service->add_pointer(cursor_pointer);
+  input_service->add_pointer(scroll_pointer);
+  input_service->add_input(scale_input);
+  input_service->add_input(activate_input);
+  input_service->add_input(switch_focus_input);
 
   const auto page = gui_service->create_page();
+  page->set_cursor_pointer(cursor_pointer);
+  page->set_scroll_pointer(scroll_pointer);
+  page->set_scale_input(scale_input);
+  page->set_activate_input(activate_input);
+  page->set_switch_focus_input(switch_focus_input);
   gui_service->set_main_ui(page);
 
   {

@@ -34,6 +34,7 @@ class Window final
 
   double scroll_x_ = 0.0;
   double scroll_y_ = 0.0;
+  std::vector<GLFWcursor*> cursors_;
 
 public:
   static axgl::ptr_t<Window> create(const int width, const int height, const std::string& title)
@@ -243,6 +244,8 @@ private:
   {
     if (!destroyed_)
     {
+      for (auto* cursor : cursors_)
+        glfwDestroyCursor(cursor);
       glfwDestroyWindow(glfw_window_);
       destroyed_ = true;
     }
