@@ -13,13 +13,13 @@ class Application final : public axgl::Service
 public:
   void on_start(const Context& context) override
   {
-    const auto window_service = context.axgl.window_service();
-    const auto input_service = context.axgl.input_service();
-    const auto renderer_service = context.axgl.renderer_service();
-    const auto realm_service = context.axgl.realm_service();
-    const auto entity_service = context.axgl.entity_service();
-    const auto camera_service = context.axgl.camera_service();
-    const auto text_service = context.axgl.get_service_t<axgl::impl::opengl::TextService>();
+    const auto& window_service = context.axgl.window_service();
+    const auto& input_service = context.axgl.input_service();
+    const auto& renderer_service = context.axgl.renderer_service();
+    const auto& realm_service = context.axgl.realm_service();
+    const auto& entity_service = context.axgl.entity_service();
+    const auto& camera_service = context.axgl.camera_service();
+    const auto& text_service = context.axgl.get_service_t<axgl::impl::opengl::TextService>();
 
     // window
     const auto window = window_service->create_window();

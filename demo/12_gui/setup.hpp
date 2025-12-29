@@ -18,13 +18,13 @@ inline void setup(axgl::Axgl& axgl)
 
   axgl.initialize();
 
-  const auto window_service = axgl.window_service();
-  const auto input_service = axgl.input_service();
-  const auto renderer_service = axgl.renderer_service();
-  // const auto realm_service = axgl.realm_service();
-  // const auto entity_service = axgl.entity_service();
-  // const auto camera_service = axgl.camera_service();
-  // const auto resource_service = axgl.resource_service();
+  const auto& window_service = axgl.window_service();
+  const auto& input_service = axgl.input_service();
+  const auto& renderer_service = axgl.renderer_service();
+  // const auto& realm_service = axgl.realm_service();
+  // const auto& entity_service = axgl.entity_service();
+  // const auto& camera_service = axgl.camera_service();
+  // const auto& resource_service = axgl.resource_service();
 
   // window
   const auto window = window_service->create_window();
