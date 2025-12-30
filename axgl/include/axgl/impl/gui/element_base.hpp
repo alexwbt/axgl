@@ -14,30 +14,74 @@ class ElementBase : virtual public axgl::gui::Element
 protected:
   std::uint64_t id_ = 0;
   axgl::gui::Property property_;
+  axgl::gui::Property focused_property_{&property_};
+  axgl::gui::Property hovering_property_{&property_};
+  axgl::gui::Property activated_property_{&property_};
   ElementContainer children_;
 
   bool focusable_ = false;
-  bool hovering_ = false;
   bool focused_ = false;
+  bool hovering_ = false;
   bool activated_ = false;
 
 public:
   [[nodiscard]] std::uint64_t get_id() const override { return id_; }
-  [[nodiscard]] axgl::gui::Property& property() override { return property_; }
+  [[nodiscard]] axgl::gui::Property& property() override
+  {
+    if (activated_)
+      return activated_property_;
+    if (hovering_)
+      return hovering_property_;
+    if (focused_)
+      return focused_property_;
+    return property_;
+  }
+  [[nodiscard]] const axgl::gui::Property& property() const override
+  {
+    if (activated_)
+      return activated_property_;
+    if (hovering_)
+      return hovering_property_;
+    if (focused_)
+      return focused_property_;
+    return property_;
+  }
+  [[nodiscard]] axgl::gui::Property& property(const State& state) override
+  {
+    switch (state)
+    {
+    default:
+    case State::kNormal: return property_;
+    case State::kFocused: return focused_property_;
+    case State::kHovering: return hovering_property_;
+    case State::kActivated: return activated_property_;
+    }
+  }
+  [[nodiscard]] const axgl::gui::Property& property(const State& state) const override
+  {
+    switch (state)
+    {
+    default:
+    case State::kNormal: return property_;
+    case State::kFocused: return focused_property_;
+    case State::kHovering: return hovering_property_;
+    case State::kActivated: return activated_property_;
+    }
+  }
   [[nodiscard]] axgl::Container<axgl::gui::Element>& children() override { return children_; }
   [[nodiscard]] bool focusable() const override { return focusable_; }
-  [[nodiscard]] bool hovering() const override { return hovering_; }
   [[nodiscard]] bool focused() const override { return focused_; }
+  [[nodiscard]] bool hovering() const override { return hovering_; }
   [[nodiscard]] bool activated() const override { return activated_; }
 
   [[nodiscard]] glm::vec2 get_position(const axgl::gui::Page::Context& context) const override
   {
     const auto* parent = context.parent;
     const auto* parent_context = context.parent_context;
-    glm::vec2 position = property_.position;
+    glm::vec2 position = property().get_position();
     while (parent_context && parent)
     {
-      position += context.parent->property().position;
+      position += context.parent->property().get_position();
       parent = parent_context->parent;
       parent_context = parent_context->parent_context;
     }
@@ -46,7 +90,7 @@ public:
 
   [[nodiscard]] glm::vec2 get_size(const axgl::gui::Page::Context& context) const override
   {
-    return property_.size * context.scale;
+    return property().get_size() * context.scale;
   }
 
   [[nodiscard]] glm::vec4 get_rect(const axgl::gui::Page::Context& context) const override

@@ -23,9 +23,11 @@ public:
     const auto model
       = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f)) * glm::scale(glm::vec3(size.x, size.y, 1.0f));
 
+    const auto& property = this->property();
     auto& shader = ::opengl::StaticShaders::instance().gui();
     shader.use_program();
-    shader.set_vec4("color", property_.color);
+    shader.set_vec4("color", property.get_color());
+    shader.set_float("opacity", property.get_opacity());
     shader.set_mat4("projection_view_model", context.projection * model);
     ::opengl::StaticVAOs::instance().quad().draw();
 
