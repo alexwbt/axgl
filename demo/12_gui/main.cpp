@@ -27,27 +27,39 @@ int main()
   page->set_switch_focus_input(switch_focus_input);
   gui_service->set_main_ui(page);
 
+  const auto square_style = axgl::create_ptr<axgl::gui::Style>();
+  square_style->set_position({10.0f, 10.0f});
+  square_style->set_size({300.0f, 300.0f});
+
+  const auto hover_style = axgl::create_ptr<axgl::gui::Style>();
+  hover_style->set_opacity(0.5f);
+
   {
     const auto element1 = gui_service->create_element();
     page->elements().add(element1);
-    element1->property().set_position({10.0f, 10.0f});
-    element1->property().set_size({300.0f, 300.0f});
-    element1->property().set_color({0.39f, 0.58f, 0.93f, 1.0f});
-    element1->property(axgl::gui::Element::State::kHovering).set_opacity(0.5f);
+    element1->style()
+      ->with(square_style)                     //
+      ->set_color({0.39f, 0.58f, 0.93f, 1.0f}) //
+      ;
+    element1->hover_style()->with(hover_style);
     {
       const auto element2 = gui_service->create_element();
       element1->children().add(element2);
-      element2->property().set_position({10.0f, 10.0f});
-      element2->property().set_size({300.0f, 300.0f});
-      element2->property().set_color({1.0f, 0.5f, 0.3f, 1.0f});
-      element2->property(axgl::gui::Element::State::kHovering).set_opacity(0.5f);
+      element2->style()
+        ->with(square_style)                  //
+        ->set_color({1.0f, 0.5f, 0.3f, 1.0f}) //
+        ;
+      element2->hover_style()->with(hover_style);
       {
         const auto element3 = gui_service->create_element();
         element2->children().add(element3);
-        element3->property().set_position({-20.0f, 10.0f});
-        element3->property().set_size({300.0f, 10.0f});
-        element3->property().set_color({0.0f, 0.5f, 0.3f, 1.0f});
-        element3->property(axgl::gui::Element::State::kHovering).set_opacity(0.5f);
+        element3->style()
+          ->with(square_style)                  //
+          ->set_position({-20.0f, 10.0f})       //
+          ->set_size({300.0f, 10.0f})           //
+          ->set_color({0.0f, 0.5f, 0.3f, 1.0f}) //
+          ;
+        element3->hover_style()->with(hover_style);
       }
     }
   }

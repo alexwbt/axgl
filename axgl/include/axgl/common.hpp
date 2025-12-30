@@ -45,8 +45,7 @@
 void* operator new(const std::size_t _Size)
 {
   const auto ptr = malloc(_Size);
-  if (!ptr)
-    throw std::bad_alloc();
+  if (!ptr) throw std::bad_alloc();
   AXGL_ALLOC(ptr, _Size);
   return ptr;
 }
@@ -70,8 +69,7 @@ void operator delete[](void* _Block) noexcept
 void* operator new[](const std::size_t _Size)
 {
   const auto ptr = malloc(_Size);
-  if (!ptr)
-    throw std::bad_alloc();
+  if (!ptr) throw std::bad_alloc();
   AXGL_ALLOC(ptr, _Size);
   return ptr;
 }
@@ -124,6 +122,9 @@ namespace axgl
 
 template <typename T>
 using ptr_t = std::shared_ptr<T>;
+
+template <typename T>
+using ref_t = std::weak_ptr<T>;
 
 template <typename T, typename... Args>
 ptr_t<T> create_ptr(Args&&... args) noexcept

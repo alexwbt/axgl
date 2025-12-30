@@ -63,3 +63,4 @@ AlignTrailingComments:
   OverEmptyLines: 2
 AlignOperands: DontAlign
 IndentPPDirectives: BeforeHash
+AllowShortIfStatementsOnASingleLine: Always

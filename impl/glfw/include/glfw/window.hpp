@@ -32,10 +32,6 @@ class Window final
   inline static bool terminated_ = false;
   inline static std::unordered_map<GLFWwindow*, axgl::ptr_t<Window>> windows_;
 
-  double scroll_x_ = 0.0;
-  double scroll_y_ = 0.0;
-  std::vector<GLFWcursor*> cursors_;
-
 public:
   static axgl::ptr_t<Window> create(const int width, const int height, const std::string& title)
   {
@@ -175,9 +171,10 @@ private:
   }
 
   GLFWwindow* glfw_window_;
-
   axgl::ptr_t<EventListener> event_listener_;
-
+  std::unordered_map<int, GLFWcursor*> cursors_;
+  double scroll_x_ = 0.0;
+  double scroll_y_ = 0.0;
   bool destroyed_ = false;
 
   Window(int width, int height, const std::string& title)
@@ -239,13 +236,19 @@ public:
     return {width, height};
   }
 
+  void use_standard_cursor(int shape)
+  {
+    if (!cursors_.contains(shape))
+      cursors_[shape] = glfwCreateStandardCursor(shape);
+
+    glfwSetCursor(glfw_window_, cursors_[shape]);
+  }
+
 private:
   void destroy()
   {
     if (!destroyed_)
     {
-      for (auto* cursor : cursors_)
-        glfwDestroyCursor(cursor);
       glfwDestroyWindow(glfw_window_);
       destroyed_ = true;
     }

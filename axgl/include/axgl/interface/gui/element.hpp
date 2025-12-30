@@ -1,7 +1,7 @@
 #pragma once
 
 #include <axgl/interface/gui/page.hpp>
-#include <axgl/interface/gui/property.hpp>
+#include <axgl/interface/gui/style.hpp>
 
 namespace axgl::gui
 {
@@ -9,26 +9,26 @@ namespace axgl::gui
 class Element
 {
 public:
-  enum class State
-  {
-    kNormal,
-    kFocused,
-    kHovering,
-    kActivated,
-  };
-
   virtual ~Element() = default;
 
   [[nodiscard]] virtual std::uint64_t get_id() const = 0;
-  [[nodiscard]] virtual Property& property() = 0;
-  [[nodiscard]] virtual const Property& property() const = 0;
-  [[nodiscard]] virtual Property& property(const State& state) = 0;
-  [[nodiscard]] virtual const Property& property(const State& state) const = 0;
-  [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& children() = 0;
   [[nodiscard]] virtual bool focusable() const = 0;
   [[nodiscard]] virtual bool focused() const = 0;
   [[nodiscard]] virtual bool hovering() const = 0;
   [[nodiscard]] virtual bool activated() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<Style> style() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<Style> focus_style() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<Style> hover_style() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<Style> active_style() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<Style> current_style() const
+  {
+    if (activated()) return active_style();
+    if (hovering()) return hover_style();
+    if (focused()) return focus_style();
+    return style();
+  }
+
+  [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& children() = 0;
 
   [[nodiscard]] virtual glm::vec2 get_position(const axgl::gui::Page::Context& context) const = 0;
   [[nodiscard]] virtual glm::vec2 get_size(const axgl::gui::Page::Context& context) const = 0;

@@ -32,6 +32,7 @@ public:
   struct RenderContext : Context
   {
     const glm::mat4& projection;
+    const glm::vec4* parent_rect = nullptr;
   };
   virtual ~Page() = default;
   virtual void set_size(std::uint32_t width, std::uint32_t height) = 0;

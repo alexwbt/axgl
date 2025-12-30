@@ -23,7 +23,7 @@
 namespace axgl
 {
 
-#define AXGL_DECLARE_SERVICE_GETTER(service_type, service_getter_name)                                                 \
+#define __AXGL_DECLARE_SERVICE_GETTER(service_type, service_getter_name)                                               \
   ptr_t<service_type> service_getter_name##_service() const                                                            \
   {                                                                                                                    \
     return get_service<service_type>(service_type::kTypeId.data());                                                    \
@@ -151,15 +151,15 @@ public:
     return nullptr;
   }
 
-  AXGL_DECLARE_SERVICE_GETTER(axgl::WindowService, window)
-  AXGL_DECLARE_SERVICE_GETTER(axgl::RendererService, renderer)
-  AXGL_DECLARE_SERVICE_GETTER(axgl::ResourceService, resource)
-  AXGL_DECLARE_SERVICE_GETTER(axgl::RealmService, realm)
-  AXGL_DECLARE_SERVICE_GETTER(axgl::EntityService, entity)
-  AXGL_DECLARE_SERVICE_GETTER(axgl::InputService, input)
-  AXGL_DECLARE_SERVICE_GETTER(axgl::ModelService, model)
-  AXGL_DECLARE_SERVICE_GETTER(axgl::CameraService, camera)
-  AXGL_DECLARE_SERVICE_GETTER(axgl::GuiService, gui)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::WindowService, window)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::RendererService, renderer)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::ResourceService, resource)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::RealmService, realm)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::EntityService, entity)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::InputService, input)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::ModelService, model)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::CameraService, camera)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::GuiService, gui)
 };
 
 } // namespace axgl

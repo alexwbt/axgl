@@ -2,7 +2,7 @@
 
 #include <axgl/common.hpp>
 #include <axgl/interface/gui/element.hpp>
-#include <axgl/interface/gui/property.hpp>
+#include <axgl/interface/gui/style.hpp>
 
 #include <axgl/impl/gui/element_container.hpp>
 
@@ -13,75 +13,47 @@ class ElementBase : virtual public axgl::gui::Element
 {
 protected:
   std::uint64_t id_ = 0;
-  axgl::gui::Property property_;
-  axgl::gui::Property focused_property_{&property_};
-  axgl::gui::Property hovering_property_{&property_};
-  axgl::gui::Property activated_property_{&property_};
-  ElementContainer children_;
 
   bool focusable_ = false;
   bool focused_ = false;
   bool hovering_ = false;
   bool activated_ = false;
 
+  std::shared_ptr<axgl::gui::Style> style_ = axgl::create_ptr<axgl::gui::Style>();
+  std::shared_ptr<axgl::gui::Style> focus_style_ = axgl::create_ptr<axgl::gui::Style>();
+  std::shared_ptr<axgl::gui::Style> hover_style_ = axgl::create_ptr<axgl::gui::Style>();
+  std::shared_ptr<axgl::gui::Style> active_style_ = axgl::create_ptr<axgl::gui::Style>();
+
+  ElementContainer children_;
+
 public:
+  ElementBase()
+  {
+    focus_style_->with(style_);
+    hover_style_->with(style_);
+    active_style_->with(style_);
+  }
+
   [[nodiscard]] std::uint64_t get_id() const override { return id_; }
-  [[nodiscard]] axgl::gui::Property& property() override
-  {
-    if (activated_)
-      return activated_property_;
-    if (hovering_)
-      return hovering_property_;
-    if (focused_)
-      return focused_property_;
-    return property_;
-  }
-  [[nodiscard]] const axgl::gui::Property& property() const override
-  {
-    if (activated_)
-      return activated_property_;
-    if (hovering_)
-      return hovering_property_;
-    if (focused_)
-      return focused_property_;
-    return property_;
-  }
-  [[nodiscard]] axgl::gui::Property& property(const State& state) override
-  {
-    switch (state)
-    {
-    default:
-    case State::kNormal: return property_;
-    case State::kFocused: return focused_property_;
-    case State::kHovering: return hovering_property_;
-    case State::kActivated: return activated_property_;
-    }
-  }
-  [[nodiscard]] const axgl::gui::Property& property(const State& state) const override
-  {
-    switch (state)
-    {
-    default:
-    case State::kNormal: return property_;
-    case State::kFocused: return focused_property_;
-    case State::kHovering: return hovering_property_;
-    case State::kActivated: return activated_property_;
-    }
-  }
-  [[nodiscard]] axgl::Container<axgl::gui::Element>& children() override { return children_; }
   [[nodiscard]] bool focusable() const override { return focusable_; }
   [[nodiscard]] bool focused() const override { return focused_; }
   [[nodiscard]] bool hovering() const override { return hovering_; }
   [[nodiscard]] bool activated() const override { return activated_; }
+  [[nodiscard]] axgl::ptr_t<axgl::gui::Style> style() const override { return style_; }
+  [[nodiscard]] axgl::ptr_t<axgl::gui::Style> focus_style() const override { return focus_style_; }
+  [[nodiscard]] axgl::ptr_t<axgl::gui::Style> hover_style() const override { return hover_style_; }
+  [[nodiscard]] axgl::ptr_t<axgl::gui::Style> active_style() const override { return active_style_; }
+
+  [[nodiscard]] axgl::Container<axgl::gui::Element>& children() override { return children_; }
 
   [[nodiscard]] glm::vec2 get_position(const axgl::gui::Page::Context& context) const override
   {
     const auto* parent = context.parent;
     const auto* parent_context = context.parent_context;
-    glm::vec2 position = property().get_position();
+    glm::vec2 position = current_style()->get_position();
     while (parent_context && parent)
     {
-      position += context.parent->property().get_position();
+      position += parent->current_style()->get_position();
       parent = parent_context->parent;
       parent_context = parent_context->parent_context;
     }
@@ -90,7 +62,7 @@ public:
 
   [[nodiscard]] glm::vec2 get_size(const axgl::gui::Page::Context& context) const override
   {
-    return property().get_size() * context.scale;
+    return current_style()->get_size() * context.scale;
   }
 
   [[nodiscard]] glm::vec4 get_rect(const axgl::gui::Page::Context& context) const override
@@ -111,8 +83,7 @@ public:
       && pointer->position.y < rect.w                          //
     )
     {
-      if (!hovering_)
-        on_pointer_enter(context);
+      if (!hovering_) on_pointer_enter(context);
       update_children(context);
     }
     else if (hovering_)
@@ -171,11 +142,12 @@ protected:
       child->update(current_context);
   }
 
-  void render_children(const axgl::gui::Page::RenderContext& context)
+  void render_children(const axgl::gui::Page::RenderContext& context, const glm::vec4* scissor_rect)
   {
     axgl::gui::Page::RenderContext current_context = context;
     current_context.parent = this;
     current_context.parent_context = &context;
+    current_context.parent_rect = scissor_rect;
     for (const auto& child : children_.get())
       child->render(current_context);
   }
