@@ -31,8 +31,7 @@ public:
   const std::span<const std::uint8_t>& get_resource(const std::string& key) override
   {
 #ifdef AXGL_DEBUG
-    if (!has_resource(key))
-      throw std::runtime_error("Resource service does not contain resource: " + key);
+    if (!has_resource(key)) throw std::runtime_error("Resource service does not contain resource: " + key);
 #endif
     return resources_.at(key);
   }

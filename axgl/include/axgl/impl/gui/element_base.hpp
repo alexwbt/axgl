@@ -24,6 +24,11 @@ protected:
   std::shared_ptr<axgl::gui::Style> hover_style_ = axgl::create_ptr<axgl::gui::Style>();
   std::shared_ptr<axgl::gui::Style> active_style_ = axgl::create_ptr<axgl::gui::Style>();
 
+  glm::vec2 position_{0.0f};
+  glm::vec2 size_{0.0f};
+  glm::vec4 rect_{0.0f};
+  glm::vec4 scissor_rect_{0.0f};
+
   ElementContainer children_;
 
 public:
@@ -46,48 +51,42 @@ public:
 
   [[nodiscard]] axgl::Container<axgl::gui::Element>& children() override { return children_; }
 
-  [[nodiscard]] glm::vec2 get_position(const axgl::gui::Page::Context& context) const override
-  {
-    const auto* parent = context.parent;
-    const auto* parent_context = context.parent_context;
-    glm::vec2 position = current_style()->get_position();
-    while (parent_context && parent)
-    {
-      position += parent->current_style()->get_position();
-      parent = parent_context->parent;
-      parent_context = parent_context->parent_context;
-    }
-    return position * context.scale;
-  }
-
-  [[nodiscard]] glm::vec2 get_size(const axgl::gui::Page::Context& context) const override
-  {
-    return current_style()->get_size() * context.scale;
-  }
-
-  [[nodiscard]] glm::vec4 get_rect(const axgl::gui::Page::Context& context) const override
-  {
-    const auto position = get_position(context);
-    return {position, position + get_size(context)};
-  }
+  [[nodiscard]] glm::vec2 get_position() const override { return position_; }
+  [[nodiscard]] glm::vec2 get_size() const override { return size_; }
+  [[nodiscard]] glm::vec4 get_rect() const override { return rect_; }
+  [[nodiscard]] glm::vec4 get_scissor_rect() const override { return scissor_rect_; }
 
   void update(const axgl::gui::Page::Context& context) override
   {
-    const auto rect = get_rect(context);
-    if (                                                       //
-      const auto& pointer = context.page.get_cursor_pointer(); //
-      pointer                                                  //
-      && pointer->position.x > rect.x                          //
-      && pointer->position.y > rect.y                          //
-      && pointer->position.x < rect.z                          //
-      && pointer->position.y < rect.w                          //
-    )
+    size_ = current_style()->get_size() * context.scale;
+    position_ = current_style()->get_position() * context.scale;
+    if (context.parent) position_ += context.parent->get_position();
+    scissor_rect_ = rect_ = {position_, position_ + size_};
+    if (context.parent)
     {
-      if (!hovering_) on_pointer_enter(context);
-      update_children(context);
+      const auto parent_rect = context.parent->get_rect();
+      scissor_rect_.x = std::max(scissor_rect_.x, parent_rect.x);
+      scissor_rect_.y = std::max(scissor_rect_.y, parent_rect.y);
+      scissor_rect_.z = std::min(scissor_rect_.z, parent_rect.z);
+      scissor_rect_.w = std::min(scissor_rect_.w, parent_rect.w);
     }
-    else if (hovering_)
-      on_pointer_exit(context);
+
+    const auto& active_input = context.page.get_activate_input();
+    const auto& pointer = context.page.get_cursor_pointer();
+    const bool pointer_in_rect = pointer       //
+      && pointer->position.x > scissor_rect_.x //
+      && pointer->position.y > scissor_rect_.y //
+      && pointer->position.x < scissor_rect_.z //
+      && pointer->position.y < scissor_rect_.w //
+      ;
+
+    if (!hovering_ && pointer_in_rect) on_pointer_enter(context);
+    if (hovering_ && !pointer_in_rect) on_pointer_exit(context);
+    if (!activated_ && hovering_ && active_input->tick == 1) on_activate(context);
+    if (activated_ && active_input->tick == 0) on_deactivate(context);
+
+    if (hovering_) context.page.set_cursor_type(current_style()->get_cursor());
+    update_children(context);
   }
 
   void on_pointer_enter(const axgl::gui::Page::Context& context) override
@@ -100,12 +99,6 @@ public:
   {
     hovering_ = false;
     context.page.set_should_render(true);
-
-    axgl::gui::Page::Context current_context = context;
-    current_context.parent = this;
-    current_context.parent_context = &context;
-    for (const auto& child : children_.get())
-      child->on_pointer_exit(current_context);
   }
 
   void on_activate(const axgl::gui::Page::Context& context) override
@@ -137,17 +130,14 @@ protected:
   {
     axgl::gui::Page::Context current_context = context;
     current_context.parent = this;
-    current_context.parent_context = &context;
     for (const auto& child : children_.get())
       child->update(current_context);
   }
 
-  void render_children(const axgl::gui::Page::RenderContext& context, const glm::vec4* scissor_rect)
+  void render_children(const axgl::gui::Page::RenderContext& context)
   {
     axgl::gui::Page::RenderContext current_context = context;
     current_context.parent = this;
-    current_context.parent_context = &context;
-    current_context.parent_rect = scissor_rect;
     for (const auto& child : children_.get())
       child->render(current_context);
   }

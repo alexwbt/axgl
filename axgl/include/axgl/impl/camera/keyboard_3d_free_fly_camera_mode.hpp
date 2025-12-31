@@ -77,27 +77,19 @@ public:
         controlling_ ? InputService::CursorMode::kLocked : InputService::CursorMode::kNormal);
     }
 
-    if (!controlling_)
-      return;
+    if (!controlling_) return;
 
-    if (pointer_->tick > 1 && pointer_->delta.x != 0.0f)
-      camera.yaw += pointer_->delta.x * view_sensitivity_;
+    if (pointer_->tick > 1 && pointer_->delta.x != 0.0f) camera.yaw += pointer_->delta.x * view_sensitivity_;
 
     if (pointer_->tick > 1 && pointer_->delta.y != 0.0f)
       camera.pitch = std::min(std::max(camera.pitch + (pointer_->delta.y * view_sensitivity_), 1.0f), 179.0f);
 
-    if (forward_->tick > 0)
-      camera.position += camera.front() * movement_speed_;
-    if (backward_->tick > 0)
-      camera.position -= camera.front() * movement_speed_;
-    if (up_->tick > 0)
-      camera.position += glm::vec3(0, 1, 0) * movement_speed_;
-    if (down_->tick > 0)
-      camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
-    if (right_->tick > 0)
-      camera.position += camera.horizontal_right() * movement_speed_;
-    if (left_->tick > 0)
-      camera.position -= camera.horizontal_right() * movement_speed_;
+    if (forward_->tick > 0) camera.position += camera.front() * movement_speed_;
+    if (backward_->tick > 0) camera.position -= camera.front() * movement_speed_;
+    if (up_->tick > 0) camera.position += glm::vec3(0, 1, 0) * movement_speed_;
+    if (down_->tick > 0) camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
+    if (right_->tick > 0) camera.position += camera.horizontal_right() * movement_speed_;
+    if (left_->tick > 0) camera.position -= camera.horizontal_right() * movement_speed_;
 
     camera.update();
   }

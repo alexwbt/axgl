@@ -135,8 +135,7 @@ class ModelLoader
       const auto ai_texture_type = static_cast<aiTextureType>(i);
       const auto texture_type = map_texture_type(ai_texture_type);
 
-      if (texture_type == axgl::Material::TextureType::kUnknown)
-        continue;
+      if (texture_type == axgl::Material::TextureType::kUnknown) continue;
 
       load_textures(ai_material, ai_texture_type, material, texture_type);
     }
@@ -162,8 +161,7 @@ class ModelLoader
       {
         int index = std::atoi(texture_path.C_Str() + 1);
 #ifdef AXGL_DEBUG
-        if (index < 0 || index > embedded_textures_.size())
-          throw std::runtime_error("Invalid texture path.");
+        if (index < 0 || index > embedded_textures_.size()) throw std::runtime_error("Invalid texture path.");
 #endif
         material->add_texture(texture_type, embedded_textures_[index]);
       }

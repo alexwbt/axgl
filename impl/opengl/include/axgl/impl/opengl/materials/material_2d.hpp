@@ -21,8 +21,7 @@ public:
   {
     texture_ = std::dynamic_pointer_cast<Texture>(texture);
 #ifdef AXGL_DEBUG
-    if (!texture_)
-      throw std::runtime_error("The provided texture is not a valid opengl texture.");
+    if (!texture_) throw std::runtime_error("The provided texture is not a valid opengl texture.");
 #endif
   }
 
@@ -42,10 +41,7 @@ public:
       shader_.set_int("mesh_texture", 0);
       shader_.set_bool("use_texture", true);
     }
-    else
-    {
-      shader_.set_bool("use_texture", false);
-    }
+    else { shader_.set_bool("use_texture", false); }
   }
 
   [[nodiscard]] int get_attribute_offset(const Attribute attribute) const override

@@ -131,8 +131,7 @@ private:
   void use_texture(
     const int texture_unit, const std::string& name, const axgl::ptr_t<impl::opengl::Texture>& texture) const
   {
-    if (!texture)
-      return;
+    if (!texture) return;
 
     texture->use(GL_TEXTURE0 + texture_unit);
     shader_.set_int(name + "_texture", texture_unit);

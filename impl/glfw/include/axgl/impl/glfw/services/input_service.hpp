@@ -167,8 +167,7 @@ class InputService : public axgl::InputService
 
   static bool get_glfw_input(const axgl::Input::Source source, const axgl::ptr_t<::glfw::Window>& window)
   {
-    if (const auto keycode = to_glfw_keycode(source); keycode != -1 && window->key_down(keycode))
-      return true;
+    if (const auto keycode = to_glfw_keycode(source); keycode != -1 && window->key_down(keycode)) return true;
     if (const auto mouse_button = to_glfw_mouse_button(source); mouse_button != -1 && window->mouse_down(mouse_button))
       return true;
     return false;
@@ -222,8 +221,7 @@ public:
 
   void update(const axgl::Service::Context& context) override
   {
-    if (!window_)
-      return;
+    if (!window_) return;
     const auto window = window_->glfw_window();
 
     for (const auto& input : inputs_)

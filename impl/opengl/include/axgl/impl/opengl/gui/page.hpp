@@ -59,7 +59,7 @@ public:
 
     const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
     const axgl::gui::Page::RenderContext current_context{
-      context, *context.axgl.gui_service(), *this, nullptr, nullptr, scale_, projection};
+      context, *context.axgl.gui_service(), *this, width_, height_, nullptr, scale_, projection};
     for (const auto& child : elements_.get())
       child->render(current_context);
 

@@ -30,12 +30,9 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
   const auto renderer_service = axgl.renderer_service();
   // material
   const auto material = renderer_service->create_material(material_type);
-  if (diffuse_texture)
-    material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse_texture);
-  if (specular_texture)
-    material->add_texture(axgl::Material::TextureType::kSpecular, specular_texture);
-  if (no_cull)
-    material->set_cull_mode(axgl::Material::CullMode::kNone);
+  if (diffuse_texture) material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse_texture);
+  if (specular_texture) material->add_texture(axgl::Material::TextureType::kSpecular, specular_texture);
+  if (no_cull) material->set_cull_mode(axgl::Material::CullMode::kNone);
   material->set_alpha_discard(alpha_discard);
   // mesh
   const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
@@ -95,8 +92,7 @@ inline std::vector<axgl::ptr_t<axgl::Entity>> generate_entities(
     transform.position.y = y;
     transform.position.z = pos_dis(gen);
     transform.rotation.y = rot_dis(gen);
-    if (rotate3d)
-      transform.rotation.x = rot_dis(gen);
+    if (rotate3d) transform.rotation.x = rot_dis(gen);
     entity->update_model_matrix();
     realm->entities().add(entity);
     entities.emplace_back(std::move(entity));

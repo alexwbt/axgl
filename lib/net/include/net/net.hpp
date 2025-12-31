@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 #ifdef _WIN32
-#include <SDKDDKVer.h>
+  #include <SDKDDKVer.h>
 #endif
 
 #include <asio.hpp>
@@ -171,8 +171,7 @@ public:
 
   virtual void send(const uint32_t session_id, DataPtr buffer)
   {
-    if (sessions_.contains(session_id))
-      sessions_.at(session_id)->send(std::move(buffer));
+    if (sessions_.contains(session_id)) sessions_.at(session_id)->send(std::move(buffer));
   }
 
   virtual void send_to_all(DataPtr buffer)
@@ -183,8 +182,7 @@ public:
 
   virtual void close_session(const uint32_t session_id)
   {
-    if (sessions_.contains(session_id))
-      sessions_.at(session_id)->close();
+    if (sessions_.contains(session_id)) sessions_.at(session_id)->close();
   }
 
   virtual void on_disconnect(uint32_t session_id) { }
@@ -212,14 +210,12 @@ public:
 
   virtual void disconnect()
   {
-    if (session_)
-      session_->close();
+    if (session_) session_->close();
   }
 
   virtual void update()
   {
-    if (!session_)
-      return;
+    if (!session_) return;
 
     session_->handle_input([this](DataPtr buffer) { on_receive(std::move(buffer)); });
 
@@ -234,8 +230,7 @@ public:
 
   virtual void send(DataPtr buffer)
   {
-    if (session_)
-      session_->send(std::move(buffer));
+    if (session_) session_->send(std::move(buffer));
   }
 
   virtual void on_connect() { }

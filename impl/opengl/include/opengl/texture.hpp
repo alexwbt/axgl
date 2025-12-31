@@ -63,8 +63,7 @@ public:
   {
     if (this != &other)
     {
-      if (id_ > 0)
-        glDeleteTextures(1, &id_);
+      if (id_ > 0) glDeleteTextures(1, &id_);
 
       id_ = other.id_;
       other.id_ = 0;
@@ -76,8 +75,7 @@ public:
 
   ~Texture()
   {
-    if (id_ > 0)
-      glDeleteTextures(1, &id_);
+    if (id_ > 0) glDeleteTextures(1, &id_);
   }
 
   [[nodiscard]] GLuint get_id() const { return id_; }

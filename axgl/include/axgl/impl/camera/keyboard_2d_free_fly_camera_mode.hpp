@@ -45,14 +45,10 @@ public:
 
   void update(axgl::Camera& camera) override
   {
-    if (up_->tick > 0)
-      camera.position += glm::vec3(0, 1, 0) * movement_speed_;
-    if (down_->tick > 0)
-      camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
-    if (right_->tick > 0)
-      camera.position += glm::vec3(1, 0, 0) * movement_speed_;
-    if (left_->tick > 0)
-      camera.position -= glm::vec3(1, 0, 0) * movement_speed_;
+    if (up_->tick > 0) camera.position += glm::vec3(0, 1, 0) * movement_speed_;
+    if (down_->tick > 0) camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
+    if (right_->tick > 0) camera.position += glm::vec3(1, 0, 0) * movement_speed_;
+    if (left_->tick > 0) camera.position -= glm::vec3(1, 0, 0) * movement_speed_;
 
     camera.update();
   }

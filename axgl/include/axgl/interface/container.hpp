@@ -30,8 +30,7 @@ public:
   axgl::ptr_t<ItemType> get_t()
   {
     for (const auto& item : get())
-      if (const auto& item_t = axgl::ptr_cast<ItemType>(item))
-        return item_t;
+      if (const auto& item_t = axgl::ptr_cast<ItemType>(item)) return item_t;
     return nullptr;
   }
 };

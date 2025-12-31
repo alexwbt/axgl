@@ -16,16 +16,14 @@ class RealmService : virtual public axgl::RealmService
 public:
   void tick(const Service::Context& context) override
   {
-    if (!realm_)
-      return;
+    if (!realm_) return;
 
     realm_->tick(context);
   }
 
   void update(const Service::Context& context) override
   {
-    if (!realm_)
-      return;
+    if (!realm_) return;
 
     realm_->update(context);
   }

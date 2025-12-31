@@ -71,8 +71,7 @@ public:
   {
     if (this != &other)
     {
-      if (program_id_ > 0)
-        glDeleteProgram(program_id_);
+      if (program_id_ > 0) glDeleteProgram(program_id_);
 
       program_id_ = other.program_id_;
       other.program_id_ = 0;
@@ -82,8 +81,7 @@ public:
 
   ~ShaderProgram()
   {
-    if (program_id_ > 0)
-      glDeleteProgram(program_id_);
+    if (program_id_ > 0) glDeleteProgram(program_id_);
   }
 
   void set_int(const std::string& name, const int value) { glUniform1i(get_uniform_location(name), value); }
@@ -134,8 +132,7 @@ public:
 private:
   GLint get_uniform_location(const std::string& name)
   {
-    if (!uniform_locations_.contains(name))
-      uniform_locations_[name] = glGetUniformLocation(program_id_, name.c_str());
+    if (!uniform_locations_.contains(name)) uniform_locations_[name] = glGetUniformLocation(program_id_, name.c_str());
 
     return uniform_locations_[name];
   }

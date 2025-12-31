@@ -27,8 +27,7 @@ public:
   {
     if (this != &other)
     {
-      if (id_ > 0)
-        glDeleteFramebuffers(1, &id_);
+      if (id_ > 0) glDeleteFramebuffers(1, &id_);
 
       id_ = other.id_;
       other.id_ = 0;
@@ -38,8 +37,7 @@ public:
 
   ~Framebuffer()
   {
-    if (id_ > 0)
-      glDeleteFramebuffers(1, &id_);
+    if (id_ > 0) glDeleteFramebuffers(1, &id_);
   }
 
   void use() const { glBindFramebuffer(GL_FRAMEBUFFER, id_); }

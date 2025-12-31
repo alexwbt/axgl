@@ -45,8 +45,7 @@ public:
   void load_font(const std::string& name, const std::span<const uint8_t> data, const int index = 0)
   {
 #ifdef AXGL_DEBUG
-    if (text_renderer_.has_font(name))
-      throw std::runtime_error("Font already exists: " + name);
+    if (text_renderer_.has_font(name)) throw std::runtime_error("Font already exists: " + name);
 #endif
     text_renderer_.load_font(name, data, index);
   }
@@ -54,8 +53,7 @@ public:
   void unload_font(const std::string& name)
   {
 #ifdef AXGL_DEBUG
-    if (!text_renderer_.has_font(name))
-      throw std::runtime_error("Font does not exist: " + name);
+    if (!text_renderer_.has_font(name)) throw std::runtime_error("Font does not exist: " + name);
 #endif
     text_renderer_.unload_font(name);
   }

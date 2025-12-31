@@ -51,20 +51,17 @@ static void write_files(const std::vector<File>& files, const std::string& targe
   header_output_stream << "#include <string>" << std::endl;
   header_output_stream << "#include <cstdint>" << std::endl;
   header_output_stream << "#include <unordered_map>" << std::endl;
-  if (!ns.empty())
-    header_output_stream << "namespace " << ns << " {" << std::endl;
+  if (!ns.empty()) header_output_stream << "namespace " << ns << " {" << std::endl;
   header_output_stream << "extern const std::unordered_map<std::string, std::span<const uint8_t>> data;" << std::endl;
   header_output_stream << "inline const std::span<const uint8_t>& get(const std::string& key) { return data.at(key); }"
                        << std::endl;
-  if (!ns.empty())
-    header_output_stream << "}" << std::endl;
+  if (!ns.empty()) header_output_stream << "}" << std::endl;
 
   std::ofstream output_stream(target + ".cpp");
   output_stream << "#pragma warning(push, 0)" << std::endl;
   output_stream << "#include <array>" << std::endl;
   output_stream << "#include " << std::filesystem::path(target + ".hpp").filename() << std::endl;
-  if (!ns.empty())
-    output_stream << "namespace " << ns << " {" << std::endl;
+  if (!ns.empty()) output_stream << "namespace " << ns << " {" << std::endl;
 
   for (const auto& file : files)
   {
@@ -85,8 +82,7 @@ static void write_files(const std::vector<File>& files, const std::string& targe
   for (const auto& file : files)
     output_stream << std::format("{{\"{}\", d{}}},", file.key, file.key_hash) << std::endl;
   output_stream << "};" << std::endl;
-  if (!ns.empty())
-    output_stream << "}" << std::endl;
+  if (!ns.empty()) output_stream << "}" << std::endl;
   output_stream << "#pragma warning(pop)" << std::endl;
 }
 

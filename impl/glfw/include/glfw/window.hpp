@@ -42,8 +42,7 @@ public:
 
   static void initialize()
   {
-    if (initialized_ || terminated_)
-      return;
+    if (initialized_ || terminated_) return;
 
     glfwSetErrorCallback(glfw_error_callback);
 
@@ -58,8 +57,7 @@ public:
 
   static void terminate()
   {
-    if (!initialized_ || terminated_)
-      return;
+    if (!initialized_ || terminated_) return;
 
     for (const auto& window : windows_ | std::views::values)
       window->destroy();
@@ -73,8 +71,7 @@ public:
   static bool should_close_all()
   {
     for (const auto& glfw_window : windows_ | std::views::keys)
-      if (!glfwWindowShouldClose(glfw_window))
-        return false;
+      if (!glfwWindowShouldClose(glfw_window)) return false;
     return true;
   }
 
@@ -104,8 +101,7 @@ private:
   static void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
   {
     const auto listener = get_window_event_listener(glfw_window);
-    if (!listener)
-      return;
+    if (!listener) return;
 
     switch (action)
     {
@@ -117,8 +113,7 @@ private:
 
   static void cursor_pos_callback(GLFWwindow* glfw_window, double x, double y)
   {
-    if (const auto listener = get_window_event_listener(glfw_window))
-      listener->on_mouse_move(x, y);
+    if (const auto listener = get_window_event_listener(glfw_window)) listener->on_mouse_move(x, y);
   }
 
   static void scroll_callback(GLFWwindow* glfw_window, double x, double y)
@@ -127,15 +122,13 @@ private:
     window->scroll_x_ += x;
     window->scroll_y_ += y;
 
-    if (const auto listener = get_window_event_listener(glfw_window))
-      listener->on_scroll(x, y);
+    if (const auto listener = get_window_event_listener(glfw_window)) listener->on_scroll(x, y);
   }
 
   static void mouse_button_callback(GLFWwindow* glfw_window, int button, int action, int mods)
   {
     const auto listener = get_window_event_listener(glfw_window);
-    if (!listener)
-      return;
+    if (!listener) return;
 
     switch (action)
     {
@@ -147,8 +140,7 @@ private:
 
   static void frame_buffer_size_callback(GLFWwindow* glfw_window, int width, int height)
   {
-    if (const auto listener = get_window_event_listener(glfw_window))
-      listener->on_resize(width, height);
+    if (const auto listener = get_window_event_listener(glfw_window)) listener->on_resize(width, height);
   }
 
   static axgl::ptr_t<Window> get_window(GLFWwindow* glfw_window)
@@ -238,8 +230,7 @@ public:
 
   void use_standard_cursor(int shape)
   {
-    if (!cursors_.contains(shape))
-      cursors_[shape] = glfwCreateStandardCursor(shape);
+    if (!cursors_.contains(shape)) cursors_[shape] = glfwCreateStandardCursor(shape);
 
     glfwSetCursor(glfw_window_, cursors_[shape]);
   }

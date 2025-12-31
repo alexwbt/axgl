@@ -194,6 +194,14 @@ public:
       {
         AXGL_PROFILE_SCOPE("GUI Render");
         gui->render(context);
+
+        switch (gui->get_cursor_type())
+        {
+        default:
+        case gui::CursorType::kNormal: window_->glfw_window()->use_standard_cursor(GLFW_ARROW_CURSOR); break;
+        case gui::CursorType::kText: window_->glfw_window()->use_standard_cursor(GLFW_IBEAM_CURSOR); break;
+        case gui::CursorType::kPointer: window_->glfw_window()->use_standard_cursor(GLFW_POINTING_HAND_CURSOR); break;
+        }
       }
 
       const auto gui_texture = axgl::ptr_cast<axgl::impl::opengl::Texture>(gui->get_texture());

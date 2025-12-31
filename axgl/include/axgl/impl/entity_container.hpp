@@ -22,8 +22,7 @@ public:
   {
     for (const auto& entity : entities_)
     {
-      if (entity->ticks() == 0)
-        entity->on_create(context);
+      if (entity->ticks() == 0) entity->on_create(context);
 
       entity->update(context);
     }
@@ -34,8 +33,7 @@ public:
         entities_, [&context](const auto& entity)
       {
         const auto should_remove = entity->should_remove();
-        if (should_remove)
-          entity->on_remove(context);
+        if (should_remove) entity->on_remove(context);
         return should_remove;
       });
     }

@@ -17,29 +17,25 @@ public:
   void tick(const axgl::Entity::Context& context) const
   {
     for (const auto& comp : components_)
-      if (!comp->is_disabled())
-        comp->tick(context);
+      if (!comp->is_disabled()) comp->tick(context);
   }
 
   void update(const axgl::Entity::Context& context) const
   {
     for (const auto& comp : get())
-      if (!comp->is_disabled())
-        comp->update(context);
+      if (!comp->is_disabled()) comp->update(context);
   }
 
   void on_entity_create(const axgl::Entity::Context& context) const
   {
     for (const auto& comp : components_)
-      if (!comp->is_disabled())
-        comp->on_entity_create(context);
+      if (!comp->is_disabled()) comp->on_entity_create(context);
   }
 
   void on_entity_remove(const axgl::Entity::Context& context) const
   {
     for (const auto& comp : components_)
-      if (!comp->is_disabled())
-        comp->on_entity_remove(context);
+      if (!comp->is_disabled()) comp->on_entity_remove(context);
   }
 
   void add(axgl::ptr_t<axgl::Component> component) override { components_.push_back(std::move(component)); }

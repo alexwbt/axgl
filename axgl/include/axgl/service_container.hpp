@@ -49,8 +49,7 @@ public:
   template <typename ServiceType>
   [[nodiscard]] bool has_service_type(const std::string& type_id) const
   {
-    if (!has_service(type_id))
-      return false;
+    if (!has_service(type_id)) return false;
 
     const auto& service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(type_id));
     return service != nullptr;
@@ -107,22 +106,19 @@ public:
   virtual void tick(const Service::Context& context) const
   {
     for (const auto& service : services())
-      if (service->running(context))
-        service->tick(context);
+      if (service->running(context)) service->tick(context);
   }
 
   virtual void update(const Service::Context& context) const
   {
     for (const auto& service : services())
-      if (service->running(context))
-        service->update(context);
+      if (service->running(context)) service->update(context);
   }
 
   virtual void render(const Service::Context& context) const
   {
     for (const auto& service : services())
-      if (service->running(context))
-        service->render(context);
+      if (service->running(context)) service->render(context);
   }
 
   [[nodiscard]] virtual bool running(const Service::Context& context) const
@@ -133,11 +129,9 @@ public:
   virtual void exec(const Service::Context& context, const std::string& command) const
   {
     const auto args = axgl::util::split(command, ' ');
-    if (args.empty())
-      return;
+    if (args.empty()) return;
 
-    if (const auto service = get_service<Service>(args[0]))
-      service->exec(context, args);
+    if (const auto service = get_service<Service>(args[0])) service->exec(context, args);
   }
 };
 

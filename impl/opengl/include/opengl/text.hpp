@@ -81,8 +81,7 @@ class Font final
 public:
   Font(FT_Library library, const std::string& path, const int index)
   {
-    if (FT_New_Face(library, path.c_str(), index, &face_))
-      throw std::runtime_error("Failed to load fontface: " + path);
+    if (FT_New_Face(library, path.c_str(), index, &face_)) throw std::runtime_error("Failed to load fontface: " + path);
   }
 
   Font(FT_Library library, const std::span<const uint8_t> buffer, const int index)
@@ -103,8 +102,7 @@ public:
   {
     if (this != &other)
     {
-      if (face_)
-        FT_Done_Face(face_);
+      if (face_) FT_Done_Face(face_);
 
       face_ = other.face_;
       other.face_ = nullptr;
@@ -114,8 +112,7 @@ public:
 
   ~Font()
   {
-    if (face_)
-      FT_Done_Face(face_);
+    if (face_) FT_Done_Face(face_);
   }
 
   void load_char(Character& character, uint32_t code, const TextOptions& options) const
@@ -140,8 +137,7 @@ class TextRenderer final
 public:
   TextRenderer()
   {
-    if (FT_Init_FreeType(&library_))
-      throw std::runtime_error("Failed to initialize freetype library.");
+    if (FT_Init_FreeType(&library_)) throw std::runtime_error("Failed to initialize freetype library.");
   }
   TextRenderer(const TextRenderer&) = delete;
   TextRenderer& operator=(const TextRenderer&) = delete;
@@ -157,8 +153,7 @@ public:
     if (this != &other)
     {
       fonts_.clear();
-      if (library_)
-        FT_Done_FreeType(library_);
+      if (library_) FT_Done_FreeType(library_);
 
       fonts_ = std::move(other.fonts_);
       library_ = other.library_;
@@ -170,8 +165,7 @@ public:
   ~TextRenderer()
   {
     fonts_.clear();
-    if (library_)
-      FT_Done_FreeType(library_);
+    if (library_) FT_Done_FreeType(library_);
   }
 
   void load_font(const std::string& name, const std::string& path, int index = 0)
@@ -193,8 +187,7 @@ public:
   [[nodiscard]] int get_renderable_font(const std::vector<std::string>& font, std::uint32_t c) const
   {
     for (int i = 0; i < font.size(); ++i)
-      if (has_font(font[i]) && fonts_.at(font[i])->has_char(c))
-        return i;
+      if (has_font(font[i]) && fonts_.at(font[i])->has_char(c)) return i;
     return -1;
   }
 
@@ -265,8 +258,7 @@ public:
     for (auto it = value.begin(), end = value.end(); it != end;)
     {
       std::uint32_t c = utf8::next(it, end);
-      if (!chars.contains(c))
-        continue;
+      if (!chars.contains(c)) continue;
 
       chars[c].texture.use(GL_TEXTURE0);
       glm::vec3 scale(chars[c].size, 1.0f);

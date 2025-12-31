@@ -49,8 +49,7 @@ public:
     if (this != &other)
     {
       buffer_objects_.clear();
-      if (id_ > 0)
-        glDeleteVertexArrays(1, &id_);
+      if (id_ > 0) glDeleteVertexArrays(1, &id_);
 
       id_ = other.id_;
       other.id_ = 0;
@@ -68,8 +67,7 @@ public:
   ~VertexArrayObject()
   {
     buffer_objects_.clear();
-    if (id_ > 0)
-      glDeleteVertexArrays(1, &id_);
+    if (id_ > 0) glDeleteVertexArrays(1, &id_);
   }
 
   template <typename VertexType>
@@ -108,8 +106,7 @@ public:
         //   break;
       default:;
       }
-      if (divisor > 0)
-        glVertexAttribDivisor(index, divisor);
+      if (divisor > 0) glVertexAttribDivisor(index, divisor);
     }
 
     if (divisor == 0)

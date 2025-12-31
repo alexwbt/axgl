@@ -30,8 +30,7 @@ public:
   {
     if (this != &other)
     {
-      if (id_ > 0)
-        glDeleteBuffers(1, &id_);
+      if (id_ > 0) glDeleteBuffers(1, &id_);
 
       id_ = other.id_;
       size_ = other.size_;
@@ -44,8 +43,7 @@ public:
   }
   ~BufferObject()
   {
-    if (id_ > 0)
-      glDeleteBuffers(1, &id_);
+    if (id_ > 0) glDeleteBuffers(1, &id_);
   }
 
   template <typename DataType>

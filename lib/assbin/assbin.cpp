@@ -50,8 +50,7 @@
     fmt::format(                                                                                                       \
       fmt::fg(((flag) & aiProcess_##option) ? fmt::terminal_color::green : fmt::terminal_color::red),                  \
       ((flag) & aiProcess_##option) ? "enabled" : "disabled"));                                                        \
-  if (option)                                                                                                          \
-    (flag) |= aiProcess_##option;
+  if (option) (flag) |= aiProcess_##option;
 
 static int convert(const std::string& input, const std::string& output, unsigned int flag)
 {
@@ -99,8 +98,7 @@ int main(int argc, char** argv)
   }
 
   unsigned int flag = 0;
-  if (PresetTargetRealtime)
-    flag |= aiProcessPreset_TargetRealtime_MaxQuality;
+  if (PresetTargetRealtime) flag |= aiProcessPreset_TargetRealtime_MaxQuality;
 
   FOR_EACH_OPTIONS(USE_ASSIMP_OPTION, flag);
 

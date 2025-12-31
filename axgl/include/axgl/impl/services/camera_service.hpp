@@ -22,8 +22,7 @@ class CameraService : virtual public axgl::CameraService
 public:
   void set_camera_mode(axgl::ptr_t<axgl::CameraMode> camera_mode) override
   {
-    if (camera_mode_)
-      camera_mode_->unbind_inputs(input_service_);
+    if (camera_mode_) camera_mode_->unbind_inputs(input_service_);
 
     camera_mode_ = std::move(camera_mode);
     camera_mode_->bind_inputs(input_service_);
@@ -41,13 +40,11 @@ public:
 
   void update(const Service::Context& context) override
   {
-    if (!camera_entity_)
-      return;
+    if (!camera_entity_) return;
     auto& transform = camera_entity_->transform();
     camera_comp_->camera.position = transform.position;
 
-    if (!camera_mode_)
-      return;
+    if (!camera_mode_) return;
     camera_mode_->update(camera_comp_->camera);
     transform.position = camera_comp_->camera.position;
   }

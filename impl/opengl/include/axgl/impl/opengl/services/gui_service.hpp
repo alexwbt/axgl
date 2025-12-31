@@ -26,8 +26,7 @@ public:
 
   void update(const axgl::Service::Context& context) override
   {
-    if (!main_ui_)
-      return;
+    if (!main_ui_) return;
 
     AXGL_PROFILE_SCOPE("GUI Update");
     main_ui_->update(context);

@@ -13,8 +13,7 @@ namespace axgl::util
 inline std::string read_text_file(const std::string& path)
 {
   const std::ifstream file(path, std::ifstream::in);
-  if (!file.is_open())
-    throw std::runtime_error("Could not open file: " + path);
+  if (!file.is_open()) throw std::runtime_error("Could not open file: " + path);
 
   std::stringstream output;
   output << file.rdbuf();
@@ -24,8 +23,7 @@ inline std::string read_text_file(const std::string& path)
 inline std::vector<uint8_t> read_file(const std::string& path)
 {
   std::ifstream file(path, std::ifstream::in);
-  if (!file.is_open())
-    throw std::runtime_error("Could not open file: " + path);
+  if (!file.is_open()) throw std::runtime_error("Could not open file: " + path);
 
   file.seekg(0, std::ios::end);
   const size_t size = file.tellg();

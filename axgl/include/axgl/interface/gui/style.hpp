@@ -38,12 +38,12 @@ public:                                                                         
 namespace axgl::gui
 {
 
-// enum class CursorMode
-// {
-//   kNormal,
-//   kText,
-//   kPointer,
-// };
+enum class CursorType
+{
+  kNormal,
+  kText,
+  kPointer,
+};
 
 // enum class TextAlign
 // {
@@ -55,8 +55,6 @@ namespace axgl::gui
 class Style
 {
   std::vector<axgl::ref_t<Style>> shared_styles_;
-  // std::vector<axgl::ptr_t<Style>> style_overrides_;
-  // axgl::ptr_t<Style> shared_base_style_;
 
 public:
   Style* with(const axgl::ptr_t<Style>& shared_style)
@@ -69,6 +67,7 @@ public:
   __AXGL_GUI_STYLE_PROPERTY(glm::vec2, size, {0.0f})
   __AXGL_GUI_STYLE_PROPERTY(glm::vec4, color, {0.0f})
   __AXGL_GUI_STYLE_PROPERTY(float, opacity, = 1.0f)
+  __AXGL_GUI_STYLE_PROPERTY(CursorType, cursor, = CursorType::kNormal)
   // layout
   // __AXGL_GUI_STYLE_PROPERTY(glm::vec4, margin, {0.0f})
   // __AXGL_GUI_STYLE_PROPERTY(glm::vec4, padding, {0.0f})
@@ -79,10 +78,6 @@ public:
   // __AXGL_GUI_STYLE_PROPERTY(float, font_size, = 16.0f)
   // __AXGL_GUI_STYLE_PROPERTY(float, line_height, = 1.5f)
   // __AXGL_GUI_STYLE_PROPERTY(TextAlign, text_align, = TextAlign::kCenter)
-
-  // Style* focused = nullptr;
-  // Style* hovering = nullptr;
-  // Style* activated = nullptr;
 };
 
 } // namespace axgl::gui

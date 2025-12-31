@@ -18,8 +18,7 @@ public:
   explicit Bundle(const std::string& path)
   {
     std::ifstream input_stream(path, std::ios::binary | std::ios::ate);
-    if (!input_stream)
-      throw std::runtime_error("Failed to open bundlefile: " + path);
+    if (!input_stream) throw std::runtime_error("Failed to open bundlefile: " + path);
 
     const auto size = input_stream.tellg();
     input_stream.seekg(0, std::ios::beg);

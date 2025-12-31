@@ -66,8 +66,7 @@ public:
   {
     material_ = std::dynamic_pointer_cast<impl::opengl::Material>(material);
 #ifdef AXGL_DEBUG
-    if (!material_)
-      throw std::runtime_error("The provided material is not a valid opengl material.");
+    if (!material_) throw std::runtime_error("The provided material is not a valid opengl material.");
 #endif
   }
   [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override { return material_; }
@@ -84,11 +83,9 @@ public:
 
   void build(RenderComponent::Context& context) override
   {
-    if (!material_)
-      return;
+    if (!material_) return;
 
-    if (!vao_)
-      create_vao();
+    if (!vao_) create_vao();
 
     if (instanced_models_buffer_id_ == 0)
     {
@@ -153,8 +150,7 @@ private:
         uv_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kUV));
     }
 
-    if (!indices_.empty())
-      vao_->create_element_buffer(indices_);
+    if (!indices_.empty()) vao_->create_element_buffer(indices_);
   }
 };
 

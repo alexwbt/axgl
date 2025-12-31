@@ -17,20 +17,17 @@ public:
 
   void set_title(const std::string& title) override
   {
-    if (!window_->is_destroyed())
-      window_->set_title(title);
+    if (!window_->is_destroyed()) window_->set_title(title);
   }
 
   void set_position(const std::uint32_t x, const std::uint32_t y) override
   {
-    if (!window_->is_destroyed())
-      window_->set_position(x, y);
+    if (!window_->is_destroyed()) window_->set_position(x, y);
   }
 
   void set_size(const std::uint32_t width, const std::uint32_t height) override
   {
-    if (!window_->is_destroyed())
-      window_->set_size(width, height);
+    if (!window_->is_destroyed()) window_->set_size(width, height);
   }
 
   void maximize() override { }
@@ -45,14 +42,12 @@ public:
 
   void use() const override
   {
-    if (!window_->is_destroyed())
-      window_->use();
+    if (!window_->is_destroyed()) window_->use();
   }
 
   void swap_buffers() const override
   {
-    if (!window_->is_destroyed())
-      window_->swap_buffers();
+    if (!window_->is_destroyed()) window_->swap_buffers();
   }
 
   [[nodiscard]] glm::ivec2 get_size() const override { return window_->get_size(); }
