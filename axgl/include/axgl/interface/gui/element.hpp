@@ -44,6 +44,8 @@ public:
   virtual void on_deactivate(const axgl::gui::Page::Context& context) = 0;
   virtual void on_focus(const axgl::gui::Page::Context& context) = 0;
   virtual void on_blur(const axgl::gui::Page::Context& context) = 0;
+
+  virtual void set_content(const std::string& content) = 0;
 };
 
 } // namespace axgl::gui

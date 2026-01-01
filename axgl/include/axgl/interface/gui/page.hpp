@@ -26,8 +26,6 @@ public:
   {
     axgl::GuiService& gui_service;
     axgl::gui::Page& page;
-    const std::uint32_t page_width;
-    const std::uint32_t page_height;
     axgl::gui::Element* parent;
     float scale = 1.0f;
   };

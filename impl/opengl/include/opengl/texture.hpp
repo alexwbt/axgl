@@ -55,9 +55,13 @@ public:
   Texture(Texture&& other) noexcept
   {
     id_ = other.id_;
-    other.id_ = 0;
     target_ = other.target_;
+    width_ = other.width_;
+    height_ = other.height_;
+    other.id_ = 0;
     other.target_ = 0;
+    other.width_ = 0;
+    other.height_ = 0;
   }
   Texture& operator=(Texture&& other) noexcept
   {
@@ -66,9 +70,13 @@ public:
       if (id_ > 0) glDeleteTextures(1, &id_);
 
       id_ = other.id_;
-      other.id_ = 0;
       target_ = other.target_;
+      width_ = other.width_;
+      height_ = other.height_;
+      other.id_ = 0;
       other.target_ = 0;
+      other.width_ = 0;
+      other.height_ = 0;
     }
     return *this;
   }

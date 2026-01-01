@@ -51,7 +51,12 @@ public:
     {
       using_cursor_ = false;
       const axgl::gui::Page::Context current_context{
-        context, *context.axgl.gui_service(), *this, width_, height_, nullptr, scale_};
+        context,                     //
+        *context.axgl.gui_service(), //
+        *this,                       //
+        nullptr,                     //
+        scale_,                      //
+      };
       for (const auto& element : elements_.get())
         if (element->hovering()) element->on_pointer_exit(current_context);
     }
@@ -64,9 +69,13 @@ public:
       scale_ += scroll_pointer_->delta.y * 0.1f;
       if (scale_ <= 0.1f) scale_ = 0.1f;
     }
-
     const axgl::gui::Page::Context current_context{
-      context, *context.axgl.gui_service(), *this, width_, height_, nullptr, scale_};
+      context,                     //
+      *context.axgl.gui_service(), //
+      *this,                       //
+      nullptr,                     //
+      scale_,                      //
+    };
     for (const auto& element : elements_.get())
       element->update(current_context);
   }

@@ -43,14 +43,21 @@ enum class CursorType
   kNormal,
   kText,
   kPointer,
+  kCrosshair,
+  kResizeNS,
+  kResizeEW,
+  kResizeNESW,
+  kResizeNWSE,
+  kResize,
+  kNotAllowed,
 };
 
-// enum class TextAlign
-// {
-//   kLeft,
-//   kRight,
-//   kCenter,
-// };
+enum class TextAlign
+{
+  kLeft,
+  kRight,
+  kCenter,
+};
 
 class Style
 {
@@ -68,16 +75,15 @@ public:
   __AXGL_GUI_STYLE_PROPERTY(glm::vec4, color, {0.0f})
   __AXGL_GUI_STYLE_PROPERTY(float, opacity, = 1.0f)
   __AXGL_GUI_STYLE_PROPERTY(CursorType, cursor, = CursorType::kNormal)
+  // content
+  __AXGL_GUI_STYLE_PROPERTY(std::vector<std::string>, fonts, );
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, font_color, {1.0f})
+  __AXGL_GUI_STYLE_PROPERTY(float, font_size, = 16.0f)
+  __AXGL_GUI_STYLE_PROPERTY(float, line_height, = 1.5f)
+  __AXGL_GUI_STYLE_PROPERTY(TextAlign, text_align, = TextAlign::kCenter)
   // layout
   // __AXGL_GUI_STYLE_PROPERTY(glm::vec4, margin, {0.0f})
   // __AXGL_GUI_STYLE_PROPERTY(glm::vec4, padding, {0.0f})
-  // content
-  // __AXGL_GUI_STYLE_PROPERTY(std::string, content, );
-  // __AXGL_GUI_STYLE_PROPERTY(std::string, font, );
-  // __AXGL_GUI_STYLE_PROPERTY(glm::vec4, font_color, {1.0f})
-  // __AXGL_GUI_STYLE_PROPERTY(float, font_size, = 16.0f)
-  // __AXGL_GUI_STYLE_PROPERTY(float, line_height, = 1.5f)
-  // __AXGL_GUI_STYLE_PROPERTY(TextAlign, text_align, = TextAlign::kCenter)
 };
 
 } // namespace axgl::gui

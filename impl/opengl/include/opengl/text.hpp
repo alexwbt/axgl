@@ -29,7 +29,7 @@ class TextRenderer;
 
 struct TextOptions final
 {
-  uint32_t size = 0;
+  std::uint32_t size = 0;
   glm::vec4 color{1};
   bool vertical = false;
 };

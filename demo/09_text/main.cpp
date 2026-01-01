@@ -19,7 +19,7 @@ public:
     const auto& realm_service = context.axgl.realm_service();
     const auto& entity_service = context.axgl.entity_service();
     const auto& camera_service = context.axgl.camera_service();
-    const auto& text_service = context.axgl.get_service_t<axgl::impl::opengl::TextService>();
+    const auto& text_service = context.axgl.text_service();
 
     // window
     const auto window = window_service->create_window();
@@ -62,16 +62,34 @@ public:
     camera_service->set_camera(camera_entity);
 
     // load fonts
-    text_service->load_font("arial", demo_text_res::get("font/arial.ttf"));
-    text_service->load_font("noto-tc", demo_text_res::get("font/noto-tc.ttf"));
+    text_service->load_font("arial", demo_text_res::get("font/arial.ttf"), 0);
+    text_service->load_font("noto-tc", demo_text_res::get("font/noto-tc.ttf"), 0);
 
     // text entity
-    const auto text_entity = text_service->create_entity(
-      reinterpret_cast<const char*>(
-        u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
-        u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。"),
-      {"arial", "noto-tc"}, {.size = 48, .color = {1.0f, 0.5f, 0.2f, 1.0f}}, 0.01f);
-    realm->entities().add(text_entity);
+    {
+      // texture
+      const auto texture = text_service->create_texture({
+        .value = reinterpret_cast<const char*>(
+          u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
+          u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。"),
+        .fonts = {"arial", "noto-tc"},
+        .font_color = {1.0f, 0.5f, 0.2f, 1.0f},
+        .font_size = 48.0f,
+      });
+      // material
+      const auto material = renderer_service->create_material("2d");
+      material->add_texture(axgl::Material::TextureType::kDiffuse, texture);
+      // mesh
+      const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+      axgl::util::init_quad(*mesh);
+      mesh->set_material(material);
+      // entity
+      const auto text_entity = entity_service->create_entity();
+      text_entity->components().add(mesh);
+      text_entity->transform().scale = glm::vec3(texture->get_width(), texture->get_height(), 1.0f) * 0.01f;
+      text_entity->update_model_matrix();
+      realm->entities().add(text_entity);
+    }
   }
 };
 

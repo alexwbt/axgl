@@ -16,6 +16,7 @@
 #include <axgl/interface/services/realm_service.hpp>
 #include <axgl/interface/services/renderer_service.hpp>
 #include <axgl/interface/services/resource_service.hpp>
+#include <axgl/interface/services/text_service.hpp>
 #include <axgl/interface/services/window_service.hpp>
 
 #include "service_container.hpp"
@@ -159,6 +160,7 @@ public:
   __AXGL_DECLARE_SERVICE_GETTER(axgl::InputService, input)
   __AXGL_DECLARE_SERVICE_GETTER(axgl::ModelService, model)
   __AXGL_DECLARE_SERVICE_GETTER(axgl::CameraService, camera)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::TextService, text)
   __AXGL_DECLARE_SERVICE_GETTER(axgl::GuiService, gui)
 };
 

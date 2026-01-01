@@ -195,12 +195,20 @@ public:
         AXGL_PROFILE_SCOPE("GUI Render");
         gui->render(context);
 
+        const auto& glfw_window = window_->glfw_window();
         switch (gui->get_cursor_type())
         {
         default:
-        case gui::CursorType::kNormal: window_->glfw_window()->use_standard_cursor(GLFW_ARROW_CURSOR); break;
-        case gui::CursorType::kText: window_->glfw_window()->use_standard_cursor(GLFW_IBEAM_CURSOR); break;
-        case gui::CursorType::kPointer: window_->glfw_window()->use_standard_cursor(GLFW_POINTING_HAND_CURSOR); break;
+        case gui::CursorType::kNormal: glfw_window->use_standard_cursor(GLFW_ARROW_CURSOR); break;
+        case gui::CursorType::kText: glfw_window->use_standard_cursor(GLFW_IBEAM_CURSOR); break;
+        case gui::CursorType::kPointer: glfw_window->use_standard_cursor(GLFW_POINTING_HAND_CURSOR); break;
+        case gui::CursorType::kCrosshair: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
+        case gui::CursorType::kResizeNS: glfw_window->use_standard_cursor(GLFW_RESIZE_NS_CURSOR); break;
+        case gui::CursorType::kResizeEW: glfw_window->use_standard_cursor(GLFW_RESIZE_EW_CURSOR); break;
+        case gui::CursorType::kResizeNESW: glfw_window->use_standard_cursor(GLFW_RESIZE_NESW_CURSOR); break;
+        case gui::CursorType::kResizeNWSE: glfw_window->use_standard_cursor(GLFW_RESIZE_NWSE_CURSOR); break;
+        case gui::CursorType::kResize: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
+        case gui::CursorType::kNotAllowed: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
         }
       }
 

@@ -53,13 +53,25 @@ public:
     glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
+
     glEnable(GL_SCISSOR_TEST);
     glScissor(0, 0, width, height);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
     const axgl::gui::Page::RenderContext current_context{
-      context, *context.axgl.gui_service(), *this, width_, height_, nullptr, scale_, projection};
+      context,                     //
+      *context.axgl.gui_service(), //
+      *this,                       //
+      nullptr,                     //
+      scale_,                      //
+      projection                   //
+    };
     for (const auto& child : elements_.get())
       child->render(current_context);
 

@@ -24,12 +24,16 @@ protected:
   std::shared_ptr<axgl::gui::Style> hover_style_ = axgl::create_ptr<axgl::gui::Style>();
   std::shared_ptr<axgl::gui::Style> active_style_ = axgl::create_ptr<axgl::gui::Style>();
 
+  ElementContainer children_;
+
   glm::vec2 position_{0.0f};
   glm::vec2 size_{0.0f};
   glm::vec4 rect_{0.0f};
   glm::vec4 scissor_rect_{0.0f};
 
-  ElementContainer children_;
+  std::string content_;
+  bool should_render_content_ = false;
+  axgl::ptr_t<axgl::impl::opengl::Texture> content_texture_;
 
 public:
   ElementBase()
@@ -84,7 +88,6 @@ public:
     if (hovering_ && !pointer_in_rect) on_pointer_exit(context);
     if (!activated_ && hovering_ && active_input->tick == 1) on_activate(context);
     if (activated_ && active_input->tick == 0) on_deactivate(context);
-
     if (hovering_) context.page.set_cursor_type(current_style()->get_cursor());
     update_children(context);
   }
@@ -123,6 +126,12 @@ public:
   {
     focused_ = false;
     context.page.set_should_render(true);
+  }
+
+  void set_content(const std::string& content) override
+  {
+    content_ = content;
+    should_render_content_ = true;
   }
 
 protected:
