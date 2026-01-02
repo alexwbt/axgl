@@ -1,3 +1,5 @@
+#include <numbers>
+
 #include <axgl/axgl.hpp>
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL
   #include <axgl/impl/glfw.hpp>
@@ -41,7 +43,7 @@ public:
       const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
       camera_entity->components().add(camera_comp);
       realm->entities().add(camera_entity);
-      camera_entity->transform().position.z = -2;
+      camera_entity->transform().position.y = 2.0f;
 
       // camera input
       camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
@@ -56,6 +58,23 @@ public:
       light_entity->components().add(light_comp);
       light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
       realm->entities().add(light_entity);
+    }
+
+    // floor entity
+    {
+      // material
+      const auto material = renderer_service->create_material("phong");
+      // mesh
+      const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+      axgl::util::init_plain(*mesh);
+      mesh->set_material(material);
+      // entity
+      const auto entity = entity_service->create_entity();
+      entity->transform().rotation.x = std::numbers::pi_v<float> * 0.5f;
+      entity->transform().scale = glm::vec3(10.0f);
+      entity->update_model_matrix();
+      entity->components().add(mesh);
+      realm->entities().add(entity);
     }
   }
 };
