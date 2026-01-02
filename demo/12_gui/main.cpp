@@ -62,7 +62,7 @@ int main()
       ;
     element1->hover_style()->with(hover_style);
     element1->active_style()->with(active_style);
-    element1->set_content("Hello world, 你好世界");
+    element1->set_content("Hello world");
     // {
     //   const auto element2 = gui_service->create_element();
     //   element1->children().add(element2);

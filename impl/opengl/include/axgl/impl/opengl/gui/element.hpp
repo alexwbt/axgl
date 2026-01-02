@@ -15,6 +15,8 @@ namespace axgl::impl::opengl::gui
 
 class Element : virtual public axgl::gui::Element, public axgl::impl::gui::ElementBase
 {
+  float content_scale_ = 1.0f;
+
 public:
   void on_pointer_enter(const axgl::gui::Page::Context& context) override
   {
@@ -25,28 +27,32 @@ public:
   {
     ElementBase::update(context);
 
-    if (should_render_content_)
+    if (should_render_content_ || content_scale_ != context.scale)
     {
+      should_render_content_ = false;
+      content_scale_ = context.scale;
       const auto& style = current_style();
       const auto& text_service = context.axgl.text_service();
       content_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(text_service->create_texture({
         .value = content_,
         .fonts = style->get_fonts(),
         .font_color = style->get_font_color(),
-        .font_size = style->get_font_size(),
+        .font_size = style->get_font_size() * content_scale_,
         .vertical = false,
       }));
 #ifdef AXGL_DEBUG
       if (!content_texture_)
         AXGL_LOG_WARN("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::gui::Element");
 #endif
-      should_render_content_ = false;
     }
   }
 
   void render(const axgl::gui::Page::RenderContext& context) override
   {
     const auto& style = current_style();
+    const auto& color = style->get_color();
+    const auto& opacity = style->get_opacity();
+    const auto& font_color = style->get_font_color();
 
     const auto model                                                //
       = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
@@ -54,14 +60,14 @@ public:
     auto& shader = ::opengl::StaticShaders::instance().gui();
     shader.use_program();
     shader.set_bool("use_texture", false);
-    shader.set_vec4("color", style->get_color());
-    shader.set_float("opacity", style->get_opacity());
+    shader.set_vec4("color", color);
+    shader.set_float("opacity", opacity);
     shader.set_mat4("projection_view_model", context.projection * model);
     ::opengl::StaticVAOs::instance().quad().draw();
 
     if (content_texture_)
     {
-      const auto size = glm::vec3(content_texture_->get_width(), content_texture_->get_height(), 1.0f) * context.scale;
+      const auto size = glm::vec3(content_texture_->get_width(), content_texture_->get_height(), 1.0f);
       const auto content_model                                        //
         = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
         * glm::scale(size);                                           //
@@ -70,8 +76,8 @@ public:
       content_texture_->use(GL_TEXTURE0);
       content_shader.set_int("background_texture", 0);
       content_shader.set_bool("use_texture", true);
-      content_shader.set_vec4("color", style->get_font_color());
-      content_shader.set_float("opacity", style->get_opacity());
+      content_shader.set_vec4("color", font_color);
+      content_shader.set_float("opacity", opacity);
       content_shader.set_mat4("projection_view_model", context.projection * content_model);
       ::opengl::StaticVAOs::instance().quad().draw();
     }
