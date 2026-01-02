@@ -34,8 +34,8 @@ int main()
   realm_service->set_active_realm(realm);
 
   // triangle entity
-  const auto entity = entity_service->create_entity();
   {
+    const auto entity = entity_service->create_entity();
     // material
     const auto material = renderer_service->create_material("2d");
     material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
@@ -52,10 +52,10 @@ int main()
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;
     entity->components().add(camera_comp);
+    entity->transform().scale = glm::vec3(200.0f);
+    entity->update_model_matrix();
+    realm->entities().add(entity);
   }
-  entity->transform().scale = glm::vec3(200.0f);
-  entity->update_model_matrix();
-  realm->entities().add(entity);
 
   // set camera
   camera_service->set_camera(entity);

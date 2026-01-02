@@ -19,12 +19,28 @@ class Keyboard2DFreeFlyCameraMode : public axgl::CameraMode
   float movement_speed_;
 
 public:
-  explicit Keyboard2DFreeFlyCameraMode(const float movement_speed = 2.0f) : movement_speed_(movement_speed)
+  explicit Keyboard2DFreeFlyCameraMode(
+    axgl::ptr_t<axgl::Input> up,
+    axgl::ptr_t<axgl::Input> down,
+    axgl::ptr_t<axgl::Input> left,
+    axgl::ptr_t<axgl::Input> right,
+    float movement_speed) :
+    up_(std::move(up)),
+    down_(std::move(down)),
+    left_(std::move(left)),
+    right_(std::move(right)),
+    movement_speed_(movement_speed)
   {
-    up_ = axgl::create_ptr<axgl::Input>("Move Up", axgl::Input::Source::kKeyW);
-    down_ = axgl::create_ptr<axgl::Input>("Move Down", axgl::Input::Source::kKeyS);
-    left_ = axgl::create_ptr<axgl::Input>("Move Left", axgl::Input::Source::kKeyA);
-    right_ = axgl::create_ptr<axgl::Input>("Move Right", axgl::Input::Source::kKeyD);
+  }
+
+  explicit Keyboard2DFreeFlyCameraMode(float movement_speed = 2.0f) :
+    Keyboard2DFreeFlyCameraMode(
+      axgl::create_ptr<axgl::Input>("Move Up", axgl::Input::Source::kKeyW),
+      axgl::create_ptr<axgl::Input>("Move Down", axgl::Input::Source::kKeyS),
+      axgl::create_ptr<axgl::Input>("Move Left", axgl::Input::Source::kKeyA),
+      axgl::create_ptr<axgl::Input>("Move Right", axgl::Input::Source::kKeyD),
+      movement_speed)
+  {
   }
 
   void bind_inputs(const axgl::ptr_t<axgl::InputService> input_service) override
@@ -47,8 +63,8 @@ public:
   {
     if (up_->tick > 0) camera.position += glm::vec3(0, 1, 0) * movement_speed_;
     if (down_->tick > 0) camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
-    if (right_->tick > 0) camera.position += glm::vec3(1, 0, 0) * movement_speed_;
     if (left_->tick > 0) camera.position -= glm::vec3(1, 0, 0) * movement_speed_;
+    if (right_->tick > 0) camera.position += glm::vec3(1, 0, 0) * movement_speed_;
 
     camera.update();
   }

@@ -3,9 +3,8 @@
   #include <axgl/impl/glfw.hpp>
   #include <axgl/impl/opengl.hpp>
 #endif
-#include <axgl/util/mesh.hpp>
-
 #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
+#include <axgl/util/mesh.hpp>
 
 class Application final : public axgl::Service
 {
@@ -39,32 +38,31 @@ public:
     realm_service->set_active_realm(realm);
 
     // camera entity
-    const auto camera_entity = entity_service->create_entity();
     {
+      const auto camera_entity = entity_service->create_entity();
       const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
       camera_entity->components().add(camera_comp);
+      realm->entities().add(camera_entity);
+      camera_entity->transform().position.z = -2;
+
+      // camera input
+      camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
+      camera_service->set_camera(camera_entity);
     }
-    realm->entities().add(camera_entity);
-    camera_entity->transform().position.z = -2;
-    camera_service->set_camera(camera_entity);
 
     // light entity
-    const auto light_entity = entity_service->create_entity();
     {
+      const auto light_entity = entity_service->create_entity();
       const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
       light_entity->components().add(light_comp);
+      light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
+      realm->entities().add(light_entity);
     }
-    light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
-    realm->entities().add(light_entity);
-
-    // camera input
-    camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
-    camera_service->set_camera(camera_entity);
 
     // cube entity
-    cube_entity_ = entity_service->create_entity();
     {
+      cube_entity_ = entity_service->create_entity();
       // material
       const auto material = renderer_service->create_material("phong");
       material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
@@ -74,8 +72,8 @@ public:
       axgl::util::init_cube(*mesh);
       mesh->set_material(material);
       cube_entity_->components().add(mesh);
+      realm->entities().add(cube_entity_);
     }
-    realm->entities().add(cube_entity_);
   }
 
   void tick(const Context& context) override { cube_entity_->transform().rotation += glm::vec3(0.01f, 0.02f, 0.05f); }

@@ -38,8 +38,8 @@ int main()
   realm_service->set_active_realm(realm);
 
   // square entity
-  const auto square_entity = entity_service->create_entity();
   {
+    const auto square_entity = entity_service->create_entity();
     // texture
     const auto texture = renderer_service->create_texture();
     texture->load_texture(demo_texture_res::get("container.png"));
@@ -50,20 +50,8 @@ int main()
 
     // square mesh
     const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
-    mesh_comp->set_vertices(
-      std::vector<glm::vec2>{
-        {0.5f, 0.5f},
-        {0.5f, -0.5f},
-        {-0.5f, -0.5f},
-        {-0.5f, 0.5f},
-      });
-    mesh_comp->set_uv(
-      std::vector<glm::vec2>{
-        {1.0f, 1.0f},
-        {1.0f, 0.0f},
-        {0.0f, 0.0f},
-        {0.0f, 1.0f},
-      });
+    mesh_comp->set_vertices(std::vector<glm::vec2>{{0.5f, 0.5f}, {0.5f, -0.5f}, {-0.5f, -0.5f}, {-0.5f, 0.5f}});
+    mesh_comp->set_uv(std::vector<glm::vec2>{{1.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 1.0f}});
     mesh_comp->set_indices(std::vector<uint32_t>{0, 1, 2, 0, 2, 3});
     mesh_comp->set_material(material);
     square_entity->components().add(mesh_comp);
@@ -74,13 +62,13 @@ int main()
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;
     square_entity->components().add(camera_comp);
-  }
-  square_entity->transform().scale = glm::vec3(200.0f);
-  square_entity->update_model_matrix();
-  realm->entities().add(square_entity);
+    square_entity->transform().scale = glm::vec3(200.0f);
+    square_entity->update_model_matrix();
+    realm->entities().add(square_entity);
 
-  // set camera
-  camera_service->set_camera(square_entity);
+    // set camera
+    camera_service->set_camera(square_entity);
+  }
 
   axgl.run();
   axgl.terminate();

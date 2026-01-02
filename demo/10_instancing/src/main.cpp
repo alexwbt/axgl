@@ -3,7 +3,6 @@
   #include <axgl/impl/glfw.hpp>
   #include <axgl/impl/opengl.hpp>
 #endif
-
 #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
 
 #include <demo_instancing/res.hpp>
@@ -46,27 +45,26 @@ public:
     realm_service->set_active_realm(realm);
 
     // camera entity
-    const auto camera_entity = entity_service->create_entity();
     {
+      const auto camera_entity = entity_service->create_entity();
       const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
       camera_entity->components().add(camera_comp);
+      realm->entities().add(camera_entity);
+
+      // camera input
+      camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
+      camera_service->set_camera(camera_entity);
     }
-    realm->entities().add(camera_entity);
-    camera_service->set_camera(camera_entity);
 
     // light entity
-    const auto light_entity = entity_service->create_entity();
     {
+      const auto light_entity = entity_service->create_entity();
       const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light.color.ambient = glm::vec3(0.3f);
       light_entity->components().add(light_comp);
+      light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
+      realm->entities().add(light_entity);
     }
-    light_entity->transform().rotation = glm::vec3(0.2f, -1.0f, 1.2f);
-    realm->entities().add(light_entity);
-
-    // camera input
-    camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
-    camera_service->set_camera(camera_entity);
 
     // entities
     entity_service->register_entity_t<Box>();

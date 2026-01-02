@@ -12,7 +12,6 @@ namespace axgl::impl::camera
 class Keyboard3DFreeFlyCameraMode : public axgl::CameraMode
 {
   axgl::ptr_t<axgl::InputService> input_service_;
-  axgl::ptr_t<axgl::Input> escape_;
   axgl::ptr_t<axgl::Pointer> pointer_;
   axgl::ptr_t<axgl::Input> forward_;
   axgl::ptr_t<axgl::Input> backward_;
@@ -20,23 +19,50 @@ class Keyboard3DFreeFlyCameraMode : public axgl::CameraMode
   axgl::ptr_t<axgl::Input> down_;
   axgl::ptr_t<axgl::Input> left_;
   axgl::ptr_t<axgl::Input> right_;
+  axgl::ptr_t<axgl::Input> escape_;
 
   float movement_speed_;
   float view_sensitivity_;
   bool controlling_ = true;
 
 public:
-  explicit Keyboard3DFreeFlyCameraMode(const float movement_speed = 0.2f, const float view_sensitivity = 0.2f) :
-    movement_speed_(movement_speed), view_sensitivity_(view_sensitivity)
+  explicit Keyboard3DFreeFlyCameraMode(
+    axgl::ptr_t<Pointer> pointer,
+    axgl::ptr_t<Input> forward,
+    axgl::ptr_t<Input> backward,
+    axgl::ptr_t<Input> up,
+    axgl::ptr_t<Input> down,
+    axgl::ptr_t<Input> left,
+    axgl::ptr_t<Input> right,
+    axgl::ptr_t<Input> escape,
+    float movement_speed,
+    float view_sensitivity) :
+    pointer_(std::move(pointer)),
+    forward_(std::move(forward)),
+    backward_(std::move(backward)),
+    up_(std::move(up)),
+    down_(std::move(down)),
+    left_(std::move(left)),
+    right_(std::move(right)),
+    escape_(std::move(escape)),
+    movement_speed_(movement_speed),
+    view_sensitivity_(view_sensitivity)
   {
-    escape_ = axgl::create_ptr<Input>("Toggle Camera Control", Input::Source::kKeyEscape);
-    pointer_ = axgl::create_ptr<Pointer>("View Movement", Pointer::Source::kMouseMove);
-    forward_ = axgl::create_ptr<Input>("Move Forward", Input::Source::kKeyW);
-    backward_ = axgl::create_ptr<Input>("Move Backward", Input::Source::kKeyS);
-    up_ = axgl::create_ptr<Input>("Move Up", Input::Source::kKeySpace);
-    down_ = axgl::create_ptr<Input>("Move Down", Input::Source::kKeyLeftShift);
-    left_ = axgl::create_ptr<Input>("Move Left", Input::Source::kKeyA);
-    right_ = axgl::create_ptr<Input>("Move Right", Input::Source::kKeyD);
+  }
+
+  explicit Keyboard3DFreeFlyCameraMode(float movement_speed = 0.2f, float view_sensitivity = 0.2f) :
+    Keyboard3DFreeFlyCameraMode(
+      axgl::create_ptr<Pointer>("View Movement", Pointer::Source::kMouseMove),
+      axgl::create_ptr<Input>("Move Forward", Input::Source::kKeyW),
+      axgl::create_ptr<Input>("Move Backward", Input::Source::kKeyS),
+      axgl::create_ptr<Input>("Move Up", Input::Source::kKeySpace),
+      axgl::create_ptr<Input>("Move Down", Input::Source::kKeyLeftShift),
+      axgl::create_ptr<Input>("Move Left", Input::Source::kKeyA),
+      axgl::create_ptr<Input>("Move Right", Input::Source::kKeyD),
+      axgl::create_ptr<Input>("Toggle Camera Control", Input::Source::kKeyEscape),
+      movement_speed,
+      view_sensitivity)
+  {
   }
 
   void bind_inputs(ptr_t<InputService> input_service) override
