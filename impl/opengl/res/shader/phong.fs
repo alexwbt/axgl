@@ -59,6 +59,8 @@ uniform PointLight point_lights[32];
 uniform bool transparent;
 uniform float alpha_discard;
 uniform float max_shininess;
+uniform vec2 uv_scale;
+uniform vec2 uv_offset;
 
 in vec3 vert_position;
 in vec3 vert_normal;
@@ -70,13 +72,15 @@ layout (location = 1) out float reveal;
 vec3 get_mesh_diffuse()
 {
   return use_diffuse_texture
-    ? texture(diffuse_texture, vert_uv).rgb
+    ? texture(diffuse_texture, (vert_uv + uv_offset) * uv_scale).rgb
     : mesh_color.rgb;
 }
 
 vec3 get_mesh_specular()
 {
-  return use_specular_texture ? texture(specular_texture, vert_uv).rgb : vec3(1);
+  return use_specular_texture
+    ? texture(specular_texture, (vert_uv + uv_offset) * uv_scale).rgb
+    : vec3(1);
 }
 
 vec3 calc_sun_light(SunLight light, vec3 view_dir)

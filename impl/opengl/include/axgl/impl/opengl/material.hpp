@@ -26,6 +26,8 @@ protected:
   axgl::Material::CullMode cull_mode_ = axgl::Material::CullMode::kCCW;
   bool enable_blend_ = false;
   float alpha_discard_ = 0.0f;
+  glm::vec2 uv_scale_{1.0f};
+  glm::vec2 uv_offset_{1.0f};
 
 public:
   void set_gloss(const float gloss) override { gloss_ = gloss; }
@@ -33,6 +35,8 @@ public:
   void set_cull_mode(const axgl::Material::CullMode cull_mode) override { cull_mode_ = cull_mode; }
   void set_enable_blend(const bool enable_blend) override { enable_blend_ = enable_blend; }
   void set_alpha_discard(const float alpha_discard) override { alpha_discard_ = alpha_discard; }
+  void set_tiling(glm::vec2 tiling) override { uv_scale_ = tiling; }
+  void set_offset(glm::vec2 offset) override { uv_offset_ = offset; }
 
   [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
 

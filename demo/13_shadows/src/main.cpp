@@ -1,12 +1,14 @@
-#include <numbers>
-
 #include <axgl/axgl.hpp>
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL
   #include <axgl/impl/glfw.hpp>
   #include <axgl/impl/opengl.hpp>
 #endif
+
 #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
 #include <axgl/util/mesh.hpp>
+
+#include "box.hpp"
+#include <demo_shadows/res.hpp>
 
 class Application : public axgl::Service
 {
@@ -62,19 +64,37 @@ public:
 
     // floor entity
     {
+      // textures
+      auto normal = renderer_service->create_texture();
+      auto diffuse = renderer_service->create_texture();
+      auto specular = renderer_service->create_texture();
+      normal->load_texture(demo_shadows_res::get("wood/normal.png"));
+      diffuse->load_texture(demo_shadows_res::get("wood/diffuse.png"));
+      specular->load_texture(demo_shadows_res::get("wood/specular.png"));
       // material
       const auto material = renderer_service->create_material("phong");
+      material->add_texture(axgl::Material::TextureType::kNormal, std::move(normal));
+      material->add_texture(axgl::Material::TextureType::kDiffuse, std::move(diffuse));
+      material->add_texture(axgl::Material::TextureType::kSpecular, std::move(specular));
+      material->set_tiling({10.0f, 10.0f});
       // mesh
       const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
       axgl::util::init_plain(*mesh);
       mesh->set_material(material);
       // entity
       const auto entity = entity_service->create_entity();
-      entity->transform().rotation.x = std::numbers::pi_v<float> * 0.5f;
-      entity->transform().scale = glm::vec3(10.0f);
+      entity->transform().scale = {30.0f, 1.0f, 30.0f};
       entity->update_model_matrix();
       entity->components().add(mesh);
       realm->entities().add(entity);
+    }
+
+    // box
+    {
+      const auto box = axgl::create_ptr<Box>();
+      box->set_rotation_speed({0.01f, 0.02f, 0.05f});
+      box->transform().position.y = 3.0f;
+      realm->entities().add(box);
     }
   }
 };

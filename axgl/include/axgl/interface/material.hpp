@@ -35,6 +35,8 @@ public:
   virtual void set_cull_mode(axgl::Material::CullMode cull_mode) = 0;
   virtual void set_enable_blend(bool enable_blend) = 0;
   virtual void set_alpha_discard(float alpha_discard) = 0;
+  virtual void set_tiling(glm::vec2 tiling) = 0;
+  virtual void set_offset(glm::vec2 offset) = 0;
   virtual void set_property(const std::string& key, const std::string& value) = 0;
   virtual void add_texture(axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture) = 0;
 };
