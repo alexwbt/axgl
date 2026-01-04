@@ -55,10 +55,10 @@ int main()
     entity->transform().scale = glm::vec3(200.0f);
     entity->update_model_matrix();
     realm->entities().add(entity);
-  }
 
-  // set camera
-  camera_service->set_camera(entity);
+    // set camera
+    camera_service->set_camera(entity);
+  }
 
   // start
   axgl.run();

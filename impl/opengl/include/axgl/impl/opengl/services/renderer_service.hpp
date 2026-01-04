@@ -29,7 +29,7 @@ public:
   {
     // set glfw context
     axgl::impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    axgl::impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    axgl::impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 1);
     axgl::impl::glfw::WindowService::set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   }
 

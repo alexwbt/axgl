@@ -1,7 +1,7 @@
-#version 420 core
+#version 410 core
 
-layout (binding = 0) uniform sampler2D accum;
-layout (binding = 1) uniform sampler2D reveal;
+uniform sampler2D accum;
+uniform sampler2D reveal;
 
 out vec4 frag_color;
 

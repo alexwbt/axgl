@@ -10,7 +10,7 @@
 class Application final : public axgl::Service
 {
 public:
-  void initialize(const Context& context) override
+  void on_start(const Context& context) override
   {
     const auto& axgl = context.axgl;
     const auto& window_service = axgl.window_service();

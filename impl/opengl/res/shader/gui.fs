@@ -1,4 +1,4 @@
-#version 420 core
+#version 410 core
 
 uniform vec4 color;
 uniform float opacity;
