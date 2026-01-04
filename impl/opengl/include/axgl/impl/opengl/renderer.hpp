@@ -181,7 +181,10 @@ public:
       render_framebuffer_->use();
       accum_texture_->use(GL_TEXTURE0);
       reveal_texture_->use(GL_TEXTURE1);
-      ::opengl::StaticShaders::instance().weighted_blended().use_program();
+      auto& blend_shader = ::opengl::StaticShaders::instance().weighted_blended();
+      blend_shader.use_program();
+      blend_shader.set_int("accum", 0);
+      blend_shader.set_int("reveal", 1);
       ::opengl::StaticVAOs::instance().quad().draw();
     }
 
