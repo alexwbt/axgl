@@ -4,9 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <axgl/common.hpp>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <spdlog/spdlog.h>
 
 namespace opengl
 {

@@ -8,8 +8,6 @@
 
 class Application final : public axgl::Service
 {
-  std::shared_ptr<axgl::Entity> cube_entity_;
-
 public:
   void on_start(const Context& context) override
   {
@@ -62,7 +60,6 @@ public:
 
     // cube entity
     {
-      cube_entity_ = entity_service->create_entity();
       // material
       const auto material = renderer_service->create_material("phong");
       material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
@@ -71,14 +68,12 @@ public:
       const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
       axgl::util::init_cube(*mesh);
       mesh->set_material(material);
-      cube_entity_->components().add(mesh);
-      realm->entities().add(cube_entity_);
+
+      const auto cube_entity = entity_service->create_entity();
+      cube_entity->components().add(mesh);
+      realm->entities().add(cube_entity);
     }
   }
-
-  void tick(const Context& context) override { cube_entity_->transform().rotation += glm::vec3(0.01f, 0.02f, 0.05f); }
-
-  void update(const Context& context) override { cube_entity_->update_model_matrix(); }
 };
 
 int main()

@@ -25,9 +25,10 @@ class Renderer : public axgl::Renderer
   bool initialized_glad_ = false;
   axgl::ptr_t<glfw::Window> window_;
 
-  glm::vec2 size_{0.0f};
+  glm::vec2 viewport_{0.0f};
 
-  std::vector<const axgl::Light*> lights_;
+  bool mmsa_ = true;
+  GLsizei sample_count_ = 4;
 
   std::unique_ptr<::opengl::Texture> render_texture_;
   std::unique_ptr<::opengl::Texture> depth_texture_;
@@ -36,8 +37,8 @@ class Renderer : public axgl::Renderer
   std::unique_ptr<::opengl::Framebuffer> render_framebuffer_;
   std::unique_ptr<::opengl::Framebuffer> blend_framebuffer_;
 
-  const glm::vec4 zero_filler_{0.0f};
-  const glm::vec4 one_filler_{1.0f};
+  static constexpr glm::vec4 zero_filler_{0.0f};
+  static constexpr glm::vec4 one_filler_{1.0f};
 
 public:
   void render(const axgl::Service::Context& context) override
@@ -55,9 +56,9 @@ public:
     const glm::ivec2 viewport_i = window_->get_size();
     glViewport(0, 0, viewport_i.x, viewport_i.y);
 
-    if (const auto viewport_f = glm::vec2(viewport_i); viewport_f != size_)
+    if (const auto viewport_f = glm::vec2(viewport_i); viewport_f != viewport_)
     {
-      size_ = viewport_f;
+      viewport_ = viewport_f;
 
       if (camera)
       {
@@ -76,6 +77,7 @@ public:
       //
       render_texture_ = std::make_unique<::opengl::Texture>();
       render_texture_->load_texture(0, GL_RGBA16F, viewport_i.x, viewport_i.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
+      // render_texture_->load_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, true);
       render_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       render_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       depth_texture_ = std::make_unique<::opengl::Texture>();
@@ -84,7 +86,7 @@ public:
       render_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
       render_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *render_texture_);
       render_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
-      render_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0});
+      // render_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0});
 
       //
       // setup blend (transparent) pass framebuffer
@@ -211,7 +213,7 @@ public:
         case gui::CursorType::kResizeNESW: glfw_window->use_standard_cursor(GLFW_RESIZE_NESW_CURSOR); break;
         case gui::CursorType::kResizeNWSE: glfw_window->use_standard_cursor(GLFW_RESIZE_NWSE_CURSOR); break;
         case gui::CursorType::kResize: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
-        case gui::CursorType::kNotAllowed: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
+        case gui::CursorType::kNotAllowed: glfw_window->use_standard_cursor(GLFW_NOT_ALLOWED_CURSOR); break;
         }
       }
 

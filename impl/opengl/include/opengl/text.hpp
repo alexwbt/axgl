@@ -11,10 +11,9 @@
 #include <ft2build.h>
 #include <utf8.h>
 #include FT_FREETYPE_H
-#include <glm/glm.hpp>
+#include <axgl/common.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
-#include <spdlog/spdlog.h>
 
 #include <opengl/framebuffer.hpp>
 #include <opengl/static_shaders.hpp>

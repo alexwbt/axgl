@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <span>
 
-#define STB_IMAGE_IMPLEMENTATION
+#include <axgl/common.hpp>
 #include <glad/glad.h>
-#include <spdlog/spdlog.h>
+#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 namespace opengl
@@ -88,6 +88,8 @@ public:
 
   [[nodiscard]] GLuint get_id() const { return id_; }
 
+  [[nodiscard]] GLuint get_target() const { return target_; }
+
   [[nodiscard]] GLsizei get_width() const { return width_; }
 
   [[nodiscard]] GLsizei get_height() const { return height_; }
@@ -108,7 +110,7 @@ public:
 
   void load_texture(
     const GLint level,
-    const GLint internalformat,
+    const GLint internal_format,
     const GLsizei width,
     const GLsizei height,
     const GLint border,
@@ -118,16 +120,35 @@ public:
   {
     if (loaded())
     {
-      AXGL_LOG_ERROR("Texture is already loaded.");
+      AXGL_LOG_ERROR("Texture is already initialized.");
       return;
     }
     target_ = GL_TEXTURE_2D;
-
     width_ = width;
     height_ = height;
 
     use();
-    glTexImage2D(target_, level, internalformat, width, height, border, format, type, pixels);
+    glTexImage2D(target_, level, internal_format, width, height, border, format, type, pixels);
+  }
+
+  void init_multisample_texture(
+    const GLsizei sample_size,
+    const GLenum internal_format,
+    const GLsizei width,
+    const GLsizei height,
+    const GLboolean fixed_sample_locations)
+  {
+    if (loaded())
+    {
+      AXGL_LOG_ERROR("Texture is already initialized.");
+      return;
+    }
+    target_ = GL_TEXTURE_2D_MULTISAMPLE;
+    width_ = width;
+    height_ = height;
+
+    use();
+    glTexImage2DMultisample(target_, sample_size, internal_format, width, height, fixed_sample_locations);
   }
 
   void load_image_texture(const std::span<const uint8_t> data)
@@ -148,7 +169,7 @@ public:
   {
     if (loaded())
     {
-      AXGL_LOG_ERROR("Texture is already loaded.");
+      AXGL_LOG_ERROR("Texture is already initialized.");
       return;
     }
     target_ = GL_TEXTURE_CUBE_MAP;
@@ -175,8 +196,15 @@ public:
 
     for (int i = 0; i < 6; i++)
       glTexImage2D(
-        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, texture[i].format, texture[i].width, texture[i].height, 0,
-        texture[i].format, GL_UNSIGNED_BYTE, texture[i].stbi_ptr);
+        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,       //
+        0, static_cast<GLint>(texture[i].format), //
+        texture[i].width,                         //
+        texture[i].height,                        //
+        0,                                        //
+        texture[i].format,                        //
+        GL_UNSIGNED_BYTE,                         //
+        texture[i].stbi_ptr                       //
+      );
   }
 };
 

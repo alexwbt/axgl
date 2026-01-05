@@ -1,8 +1,8 @@
 #pragma once
 
+#include <axgl/common.hpp>
 #include <glad/glad.h>
-#include <spdlog/spdlog.h>
-
+#include <opengl/renderbuffer.hpp>
 #include <opengl/texture.hpp>
 
 namespace opengl
@@ -45,7 +45,13 @@ public:
   void attach_texture(const GLenum attachment, const ::opengl::Texture& texture) const
   {
     use();
-    glFramebufferTexture(GL_FRAMEBUFFER, attachment, texture.get_id(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture.get_target(), texture.get_id(), 0);
+  }
+
+  void attach_renderbuffer(const GLenum attachment, const ::opengl::Renderbuffer& renderbuffer) const
+  {
+    use();
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, renderbuffer.get_target(), renderbuffer.get_id());
   }
 
   void set_draw_buffers(const std::vector<GLenum>& attachments) const
