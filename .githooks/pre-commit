@@ -1,9 +1,6 @@
 #! /bin/sh
 
-ROOT_DIR="$(cd "$(dirname "$0")" && cd .. && pwd)"
-
 FILE_PATTERN="^\(axgl\|demo\|impl\|lib\).*\\.\(cpp\|hpp\)$"
-
 FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -e "$FILE_PATTERN" | tr '\n' ' ')
 
 clang-format -i $FILES
