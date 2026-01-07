@@ -60,14 +60,13 @@ public:
 
   [[nodiscard]] GLsizei get_height() const { return height_; }
 
-  [[nodiscard]] bool loaded() const { return target_ > 0; }
+  [[nodiscard]] bool initialized() const { return target_ > 0; }
 
   void use() const { glBindRenderbuffer(target_, id_); }
 
-  void init_multisample_renderbuffer(
-    const GLsizei samples, const GLenum internal_format, const GLsizei width, const GLsizei height)
+  void init_renderbuffer(const GLenum internal_format, const GLsizei width, const GLsizei height)
   {
-    if (loaded())
+    if (initialized())
     {
       AXGL_LOG_ERROR("Renderbuffer is already initialized.");
       return;
@@ -77,7 +76,23 @@ public:
     height_ = height;
 
     use();
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internal_format, width, height);
+    glRenderbufferStorage(target_, internal_format, width, height);
+  }
+
+  void init_multisample_renderbuffer(
+    const GLsizei samples, const GLenum internal_format, const GLsizei width, const GLsizei height)
+  {
+    if (initialized())
+    {
+      AXGL_LOG_ERROR("Renderbuffer is already initialized.");
+      return;
+    }
+    target_ = GL_RENDERBUFFER;
+    width_ = width;
+    height_ = height;
+
+    use();
+    glRenderbufferStorageMultisample(target_, samples, internal_format, width, height);
   }
 };
 

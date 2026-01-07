@@ -94,7 +94,7 @@ public:
 
   [[nodiscard]] GLsizei get_height() const { return height_; }
 
-  [[nodiscard]] bool loaded() const { return target_ > 0; }
+  [[nodiscard]] bool initialized() const { return target_ > 0; }
 
   void use(const GLenum texture_unit) const
   {
@@ -118,7 +118,7 @@ public:
     const GLenum type,
     const void* pixels)
   {
-    if (loaded())
+    if (initialized())
     {
       AXGL_LOG_ERROR("Texture is already initialized.");
       return;
@@ -129,26 +129,6 @@ public:
 
     use();
     glTexImage2D(target_, level, internal_format, width, height, border, format, type, pixels);
-  }
-
-  void init_multisample_texture(
-    const GLsizei sample_size,
-    const GLenum internal_format,
-    const GLsizei width,
-    const GLsizei height,
-    const GLboolean fixed_sample_locations)
-  {
-    if (loaded())
-    {
-      AXGL_LOG_ERROR("Texture is already initialized.");
-      return;
-    }
-    target_ = GL_TEXTURE_2D_MULTISAMPLE;
-    width_ = width;
-    height_ = height;
-
-    use();
-    glTexImage2DMultisample(target_, sample_size, internal_format, width, height, fixed_sample_locations);
   }
 
   void load_image_texture(const std::span<const uint8_t> data)
@@ -167,7 +147,7 @@ public:
 
   void load_cubemap_texture(const std::array<std::span<const uint8_t>, 6>& data)
   {
-    if (loaded())
+    if (initialized())
     {
       AXGL_LOG_ERROR("Texture is already initialized.");
       return;
@@ -205,6 +185,26 @@ public:
         GL_UNSIGNED_BYTE,                         //
         texture[i].stbi_ptr                       //
       );
+  }
+
+  void init_multisample_texture(
+    const GLsizei sample_size,
+    const GLenum internal_format,
+    const GLsizei width,
+    const GLsizei height,
+    const GLboolean fixed_sample_locations)
+  {
+    if (initialized())
+    {
+      AXGL_LOG_ERROR("Texture is already initialized.");
+      return;
+    }
+    target_ = GL_TEXTURE_2D_MULTISAMPLE;
+    width_ = width;
+    height_ = height;
+
+    use();
+    glTexImage2DMultisample(target_, sample_size, internal_format, width, height, fixed_sample_locations);
   }
 };
 

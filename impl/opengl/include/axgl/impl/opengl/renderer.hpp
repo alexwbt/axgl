@@ -27,7 +27,7 @@ class Renderer : public axgl::Renderer
 
   glm::vec2 viewport_{0.0f};
 
-  bool mmsa_ = true;
+  bool msaa_ = true;
   GLsizei sample_count_ = 4;
 
   std::unique_ptr<::opengl::Texture> render_texture_;
@@ -77,7 +77,7 @@ public:
       //
       render_texture_ = std::make_unique<::opengl::Texture>();
       render_texture_->load_texture(0, GL_RGBA16F, viewport_i.x, viewport_i.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
-      // render_texture_->load_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, true);
+      // render_texture_->init_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, true);
       render_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       render_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       depth_texture_ = std::make_unique<::opengl::Texture>();
