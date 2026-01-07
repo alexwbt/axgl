@@ -27,7 +27,7 @@ public:
 
   void set_size(const std::uint32_t width, const std::uint32_t height) override
   {
-    if (!window_->is_destroyed()) window_->set_size(width, height);
+    if (!window_->is_destroyed()) window_->set_size(static_cast<int>(width), static_cast<int>(height));
   }
 
   void maximize() override { }

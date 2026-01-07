@@ -30,13 +30,20 @@ class Window final
 {
   inline static bool initialized_ = false;
   inline static bool terminated_ = false;
+  inline static std::unordered_map<int, int> window_hints_;
   inline static std::unordered_map<GLFWwindow*, axgl::ptr_t<Window>> windows_;
 
 public:
   static axgl::ptr_t<Window> create(const int width, const int height, const std::string& title)
   {
-    axgl::ptr_t<Window> window(new Window(width, height, title));
-    windows_.insert({window->glfw_window_, window});
+    // set hints before the first window creation
+    if (windows_.empty())
+      for (const auto& [hint, value] : window_hints_)
+        glfwWindowHint(hint, value);
+
+    // the pointer and Window had to be allocated separately because the Window constructor is private
+    const axgl::ptr_t<Window> window(new Window(width, height, title));
+    windows_.emplace(window->glfw_window_, window);
     return window;
   }
 
@@ -66,7 +73,7 @@ public:
     terminated_ = true;
   }
 
-  static void glfw_window_hint(int hint, int value) { glfwWindowHint(hint, value); }
+  static void glfw_window_hint(int hint, int value) { window_hints_.emplace(hint, value); }
 
   static bool should_close_all()
   {
@@ -169,7 +176,7 @@ private:
   double scroll_y_ = 0.0;
   bool destroyed_ = false;
 
-  Window(int width, int height, const std::string& title)
+  Window(int width, int height, const std::string& title) noexcept
   {
     if (!initialized_ || terminated_)
     {
