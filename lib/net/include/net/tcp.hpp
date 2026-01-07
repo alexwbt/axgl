@@ -45,7 +45,7 @@ private:
       const auto session_id = use_next_session_id();
       const auto session = Session::create(session_id, std::move(socket));
 
-      sessions_.insert({session_id, session});
+      sessions_.emplace(session_id, session);
       on_connect(session_id, session);
     }
   }

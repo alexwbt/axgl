@@ -33,7 +33,7 @@ public:
       throw std::runtime_error(
         std::format("Trying to register service but service with id '{}' already exists.", type_id));
 #endif
-    service_map_.insert({type_id, service});
+    service_map_.emplace(type_id, service);
   }
 
   virtual void remove_service(const std::string& type_id)
