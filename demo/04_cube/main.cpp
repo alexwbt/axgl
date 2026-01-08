@@ -26,6 +26,8 @@ public:
     // renderer
     const auto renderer = renderer_service->create_renderer();
     renderer->set_window(window);
+    renderer->set_sample_count(8);
+    renderer->set_antialiasing(true);
     renderer_service->set_active_renderer(renderer);
 
     // realm

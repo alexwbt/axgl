@@ -15,6 +15,8 @@ class Renderer
 {
 public:
   virtual ~Renderer() = default;
+  virtual void set_antialiasing(bool enable) = 0;
+  virtual void set_sample_count(int sample_count) = 0;
   virtual void set_window(axgl::ptr_t<axgl::Window> window) = 0;
   virtual void render(const axgl::Service::Context& context) = 0;
 };

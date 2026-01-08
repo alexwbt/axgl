@@ -28,7 +28,7 @@ class Renderer : public axgl::Renderer
 
   glm::vec2 viewport_{0.0f};
 
-  bool msaa_ = true;
+  bool msaa_ = false;
   GLsizei sample_count_ = 4;
 
   std::unique_ptr<::opengl::Texture> multisampled_texture_;
@@ -84,18 +84,20 @@ public:
       //
       // setup opaque pass framebuffer
       //
-      multisampled_texture_ = std::make_unique<::opengl::Texture>();
-      // render_texture_->load_texture(0, GL_RGBA16F, viewport_i.x, viewport_i.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
-      multisampled_texture_->init_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, GL_TRUE);
-      multisampled_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      multisampled_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      multisampled_renderbuffer_ = std::make_unique<::opengl::Renderbuffer>();
-      multisampled_renderbuffer_->init_multisample_renderbuffer(
-        sample_count_, GL_DEPTH24_STENCIL8, viewport_i.x, viewport_i.y);
-      multisampled_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
-      multisampled_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *multisampled_texture_);
-      multisampled_framebuffer_->attach_renderbuffer(GL_DEPTH_STENCIL_ATTACHMENT, *multisampled_renderbuffer_);
-      multisampled_framebuffer_->check_status_complete("renderer_multisampled_framebuffer");
+      if (msaa_)
+      {
+        multisampled_texture_ = std::make_unique<::opengl::Texture>();
+        multisampled_texture_->init_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, GL_TRUE);
+        multisampled_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        multisampled_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        multisampled_renderbuffer_ = std::make_unique<::opengl::Renderbuffer>();
+        multisampled_renderbuffer_->init_multisample_renderbuffer(
+          sample_count_, GL_DEPTH24_STENCIL8, viewport_i.x, viewport_i.y);
+        multisampled_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+        multisampled_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *multisampled_texture_);
+        multisampled_framebuffer_->attach_renderbuffer(GL_DEPTH_STENCIL_ATTACHMENT, *multisampled_renderbuffer_);
+        multisampled_framebuffer_->check_status_complete("renderer_multisampled_framebuffer");
+      }
 
       screen_texture_ = std::make_unique<::opengl::Texture>();
       screen_texture_->load_texture(0, GL_RGB, viewport_i.x, viewport_i.y, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
@@ -163,7 +165,10 @@ public:
       glDepthFunc(GL_LESS);
       glDepthMask(GL_TRUE);
 
-      multisampled_framebuffer_->use();
+      if (msaa_)
+        multisampled_framebuffer_->use();
+      else
+        screen_framebuffer_->use();
       glClearDepth(1.0);
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -246,13 +251,16 @@ public:
     //
     // Resolve multisampled buffers
     //
-    multisampled_framebuffer_->use_read();
-    screen_framebuffer_->use_write();
-    glBlitFramebuffer(
-      0, 0, viewport_i.x, viewport_i.y, //
-      0, 0, viewport_i.x, viewport_i.y, //
-      GL_COLOR_BUFFER_BIT, GL_NEAREST   //
-    );
+    if (msaa_)
+    {
+      multisampled_framebuffer_->use_read();
+      screen_framebuffer_->use_write();
+      glBlitFramebuffer(
+        0, 0, viewport_i.x, viewport_i.y, //
+        0, 0, viewport_i.x, viewport_i.y, //
+        GL_COLOR_BUFFER_BIT, GL_NEAREST   //
+      );
+    }
 
     //
     // Render To Screen
@@ -271,6 +279,10 @@ public:
 
     window_->swap_buffers();
   }
+
+  void set_antialiasing(bool enable) override { msaa_ = enable; }
+
+  void set_sample_count(int sample_count) override { sample_count_ = sample_count; }
 
   void set_window(axgl::ptr_t<axgl::Window> window) override
   {
