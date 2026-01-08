@@ -31,15 +31,19 @@ class Window final
   inline static bool initialized_ = false;
   inline static bool terminated_ = false;
   inline static std::unordered_map<int, int> window_hints_;
+  inline static std::unordered_map<int, std::string> string_window_hints_;
   inline static std::unordered_map<GLFWwindow*, axgl::ptr_t<Window>> windows_;
 
 public:
   static axgl::ptr_t<Window> create(const int width, const int height, const std::string& title)
   {
-    // set hints before the first window creation
-    if (windows_.empty())
-      for (const auto& [hint, value] : window_hints_)
-        glfwWindowHint(hint, value);
+    glfwDefaultWindowHints();
+
+    for (const auto& [hint, value] : window_hints_)
+      glfwWindowHint(hint, value);
+
+    for (const auto& [hint, value] : string_window_hints_)
+      glfwWindowHintString(hint, value.c_str());
 
     // the pointer and Window had to be allocated separately because the Window constructor is private
     const axgl::ptr_t<Window> window(new Window(width, height, title));
@@ -73,7 +77,15 @@ public:
     terminated_ = true;
   }
 
-  static void glfw_window_hint(int hint, int value) { window_hints_.emplace(hint, value); }
+  static void set_hint(int hint, int value) { window_hints_.emplace(hint, value); }
+
+  static void set_hint(int hint, const std::string& value) { string_window_hints_.emplace(hint, value); }
+
+  static void clear_hints()
+  {
+    window_hints_.clear();
+    string_window_hints_.clear();
+  }
 
   static bool should_close_all()
   {

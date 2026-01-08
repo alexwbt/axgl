@@ -27,7 +27,8 @@ public:
     return axgl::create_ptr<Window>(::glfw::Window::create(800, 600, ""));
   }
 
-  static void set_window_hint(const int hint, const int value) { ::glfw::Window::glfw_window_hint(hint, value); }
+  static void set_window_hint(const int hint, const int value) { ::glfw::Window::set_hint(hint, value); }
+  static void set_window_hint(const int hint, const std::string& value) { ::glfw::Window::set_hint(hint, value); }
 };
 
 } // namespace axgl::impl::glfw
