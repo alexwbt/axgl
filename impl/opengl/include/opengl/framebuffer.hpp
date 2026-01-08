@@ -42,6 +42,10 @@ public:
 
   void use() const { glBindFramebuffer(GL_FRAMEBUFFER, id_); }
 
+  void use_read() const { glBindFramebuffer(GL_READ_FRAMEBUFFER, id_); }
+
+  void use_write() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_); }
+
   void attach_texture(const GLenum attachment, const ::opengl::Texture& texture) const
   {
     use();
@@ -58,9 +62,18 @@ public:
   {
     use();
     glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
+  }
 
-    if (const auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER); status != GL_FRAMEBUFFER_COMPLETE)
-      AXGL_LOG_ERROR("Framebuffer status is incomplete. ({})", status);
+  void check_status_complete(const std::string& name = "") const
+  {
+    if (const auto status = get_status(); status != GL_FRAMEBUFFER_COMPLETE)
+      AXGL_LOG_ERROR("Framebuffer({}) status is incomplete. (status: {})", name, status);
+  }
+
+  [[nodiscard]] GLenum get_status() const
+  {
+    use();
+    return glCheckFramebufferStatus(GL_FRAMEBUFFER);
   }
 };
 

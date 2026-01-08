@@ -14,6 +14,7 @@
 #include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/framebuffer.hpp>
+#include <opengl/renderbuffer.hpp>
 #include <opengl/static_shaders.hpp>
 #include <opengl/static_vaos.hpp>
 
@@ -27,14 +28,19 @@ class Renderer : public axgl::Renderer
 
   glm::vec2 viewport_{0.0f};
 
-  // bool msaa_ = true;
-  // GLsizei sample_count_ = 4;
+  bool msaa_ = true;
+  GLsizei sample_count_ = 4;
 
-  std::unique_ptr<::opengl::Texture> render_texture_;
-  std::unique_ptr<::opengl::Texture> depth_texture_;
+  std::unique_ptr<::opengl::Texture> multisampled_texture_;
+  std::unique_ptr<::opengl::Renderbuffer> multisampled_renderbuffer_;
+  std::unique_ptr<::opengl::Framebuffer> multisampled_framebuffer_;
+
+  std::unique_ptr<::opengl::Texture> screen_texture_;
+  std::unique_ptr<::opengl::Framebuffer> screen_framebuffer_;
+
+  // std::unique_ptr<::opengl::Texture> depth_texture_;
   // std::unique_ptr<::opengl::Texture> accum_texture_;
   // std::unique_ptr<::opengl::Texture> reveal_texture_;
-  std::unique_ptr<::opengl::Framebuffer> render_framebuffer_;
   // std::unique_ptr<::opengl::Framebuffer> blend_framebuffer_;
 
   // static constexpr glm::vec4 zero_filler_{0.0f};
@@ -49,13 +55,16 @@ public:
       return;
     }
 
-    const auto gui = context.axgl.gui_service()->get_main_ui();
-    const auto realm = context.axgl.realm_service()->get_active_realm();
+    // auto& blend_shader = ::opengl::StaticShaders::instance().weighted_blended();
+    auto& screen_shader = ::opengl::StaticShaders::instance().screen();
+    const auto& quad_vao = ::opengl::StaticVAOs::instance().quad();
+
+    const auto& gui = context.axgl.gui_service()->get_main_ui();
+    const auto& realm = context.axgl.realm_service()->get_active_realm();
     auto* camera = context.axgl.camera_service()->get_camera();
 
     const glm::ivec2 viewport_i = window_->get_size();
     glViewport(0, 0, viewport_i.x, viewport_i.y);
-
     if (const auto viewport_f = glm::vec2(viewport_i); viewport_f != viewport_)
     {
       viewport_ = viewport_f;
@@ -75,18 +84,26 @@ public:
       //
       // setup opaque pass framebuffer
       //
-      render_texture_ = std::make_unique<::opengl::Texture>();
-      render_texture_->load_texture(0, GL_RGBA16F, viewport_i.x, viewport_i.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
-      // render_texture_->init_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, true);
-      render_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      render_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      depth_texture_ = std::make_unique<::opengl::Texture>();
-      depth_texture_->load_texture(
-        0, GL_DEPTH_COMPONENT, viewport_i.x, viewport_i.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-      render_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
-      render_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *render_texture_);
-      render_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
-      // render_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0});
+      multisampled_texture_ = std::make_unique<::opengl::Texture>();
+      // render_texture_->load_texture(0, GL_RGBA16F, viewport_i.x, viewport_i.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
+      multisampled_texture_->init_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, GL_TRUE);
+      multisampled_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      multisampled_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      multisampled_renderbuffer_ = std::make_unique<::opengl::Renderbuffer>();
+      multisampled_renderbuffer_->init_multisample_renderbuffer(
+        sample_count_, GL_DEPTH24_STENCIL8, viewport_i.x, viewport_i.y);
+      multisampled_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+      multisampled_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *multisampled_texture_);
+      multisampled_framebuffer_->attach_renderbuffer(GL_DEPTH_STENCIL_ATTACHMENT, *multisampled_renderbuffer_);
+      multisampled_framebuffer_->check_status_complete("renderer_multisampled_framebuffer");
+
+      screen_texture_ = std::make_unique<::opengl::Texture>();
+      screen_texture_->load_texture(0, GL_RGB, viewport_i.x, viewport_i.y, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+      screen_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      screen_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      screen_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+      screen_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *screen_texture_);
+      screen_framebuffer_->check_status_complete("renderer_screen_framebuffer");
 
       //
       // setup blend (transparent) pass framebuffer
@@ -140,14 +157,13 @@ public:
       //
       // Opaque Render Pass
       //
-      glEnable(GL_MULTISAMPLE);
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_DEPTH_TEST);
       glDepthFunc(GL_LESS);
       glDepthMask(GL_TRUE);
-      render_framebuffer_->use();
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+      multisampled_framebuffer_->use();
       glClearDepth(1.0);
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -182,63 +198,76 @@ public:
       // render_framebuffer_->use();
       // accum_texture_->use(GL_TEXTURE0);
       // reveal_texture_->use(GL_TEXTURE1);
-      // auto& blend_shader = ::opengl::StaticShaders::instance().weighted_blended();
       // blend_shader.use_program();
       // blend_shader.set_int("accum", 0);
       // blend_shader.set_int("reveal", 1);
-      // ::opengl::StaticVAOs::instance().quad().draw();
+      // quad_vao.draw();
     }
 
     //
     // Render Main GUI
     //
-    //     if (gui)
-    //     {
-    //       if (gui->should_render())
-    //       {
-    //         AXGL_PROFILE_SCOPE("GUI Render");
-    //         gui->render(context);
+    if (gui)
+    {
+      if (gui->should_render())
+      {
+        AXGL_PROFILE_SCOPE("GUI Render");
+        gui->render(context);
+
+        const auto& glfw_window = window_->glfw_window();
+        switch (gui->get_cursor_type())
+        {
+        default:
+        case gui::CursorType::kNormal: glfw_window->use_standard_cursor(GLFW_ARROW_CURSOR); break;
+        case gui::CursorType::kText: glfw_window->use_standard_cursor(GLFW_IBEAM_CURSOR); break;
+        case gui::CursorType::kPointer: glfw_window->use_standard_cursor(GLFW_POINTING_HAND_CURSOR); break;
+        case gui::CursorType::kCrosshair: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
+        case gui::CursorType::kResizeNS: glfw_window->use_standard_cursor(GLFW_RESIZE_NS_CURSOR); break;
+        case gui::CursorType::kResizeEW: glfw_window->use_standard_cursor(GLFW_RESIZE_EW_CURSOR); break;
+        case gui::CursorType::kResizeNESW: glfw_window->use_standard_cursor(GLFW_RESIZE_NESW_CURSOR); break;
+        case gui::CursorType::kResizeNWSE: glfw_window->use_standard_cursor(GLFW_RESIZE_NWSE_CURSOR); break;
+        case gui::CursorType::kResize: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
+        case gui::CursorType::kNotAllowed: glfw_window->use_standard_cursor(GLFW_NOT_ALLOWED_CURSOR); break;
+        }
+      }
+
+      const auto gui_texture = axgl::ptr_cast<axgl::impl::opengl::Texture>(gui->get_texture());
+#ifdef AXGL_DEBUG
+      if (!gui_texture)
+        throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::Renderer");
+#endif
+      multisampled_framebuffer_->use();
+      gui_texture->use(GL_TEXTURE0);
+      screen_shader.use_program();
+      screen_shader.set_int("screen", 0);
+      quad_vao.draw();
+    }
+
     //
-    //         const auto& glfw_window = window_->glfw_window();
-    //         switch (gui->get_cursor_type())
-    //         {
-    //         default:
-    //         case gui::CursorType::kNormal: glfw_window->use_standard_cursor(GLFW_ARROW_CURSOR); break;
-    //         case gui::CursorType::kText: glfw_window->use_standard_cursor(GLFW_IBEAM_CURSOR); break;
-    //         case gui::CursorType::kPointer: glfw_window->use_standard_cursor(GLFW_POINTING_HAND_CURSOR); break;
-    //         case gui::CursorType::kCrosshair: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
-    //         case gui::CursorType::kResizeNS: glfw_window->use_standard_cursor(GLFW_RESIZE_NS_CURSOR); break;
-    //         case gui::CursorType::kResizeEW: glfw_window->use_standard_cursor(GLFW_RESIZE_EW_CURSOR); break;
-    //         case gui::CursorType::kResizeNESW: glfw_window->use_standard_cursor(GLFW_RESIZE_NESW_CURSOR); break;
-    //         case gui::CursorType::kResizeNWSE: glfw_window->use_standard_cursor(GLFW_RESIZE_NWSE_CURSOR); break;
-    //         case gui::CursorType::kResize: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
-    //         case gui::CursorType::kNotAllowed: glfw_window->use_standard_cursor(GLFW_NOT_ALLOWED_CURSOR); break;
-    //         }
-    //       }
+    // Resolve multisampled buffers
     //
-    //       const auto gui_texture = axgl::ptr_cast<axgl::impl::opengl::Texture>(gui->get_texture());
-    // #ifdef AXGL_DEBUG
-    //       if (!gui_texture)
-    //         throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::Renderer");
-    // #endif
-    //       render_framebuffer_->use();
-    //       gui_texture->use(GL_TEXTURE0);
-    //       ::opengl::StaticShaders::instance().screen().use_program();
-    //       ::opengl::StaticVAOs::instance().quad().draw();
-    //     }
+    multisampled_framebuffer_->use_read();
+    screen_framebuffer_->use_write();
+    glBlitFramebuffer(
+      0, 0, viewport_i.x, viewport_i.y, //
+      0, 0, viewport_i.x, viewport_i.y, //
+      GL_COLOR_BUFFER_BIT, GL_NEAREST   //
+    );
+
     //
-    //     //
-    //     // Render To Screen
-    //     //
-    //     glDisable(GL_DEPTH_TEST);
-    //     glDisable(GL_BLEND);
-    //     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    //     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    //     glClear(GL_COLOR_BUFFER_BIT);
+    // Render To Screen
     //
-    //     render_texture_->use(GL_TEXTURE0);
-    //     ::opengl::StaticShaders::instance().screen().use_program();
-    //     ::opengl::StaticVAOs::instance().quad().draw();
+    glDisable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_STENCIL_TEST);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    screen_texture_->use(GL_TEXTURE0);
+    screen_shader.use_program();
+    screen_shader.set_int("screen", 0);
+    quad_vao.draw();
 
     window_->swap_buffers();
   }
