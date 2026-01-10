@@ -34,6 +34,7 @@ public:
     shader_.set_mat4("projection_view", context.camera->projection_view_matrix());
     shader_.set_vec4("mesh_color", color_);
     shader_.set_float("alpha_discard", alpha_discard_);
+    shader_.set_float("texture_gamma", 2.2f);
 
     if (texture_)
     {

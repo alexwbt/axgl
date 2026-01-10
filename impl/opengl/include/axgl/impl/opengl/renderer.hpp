@@ -269,6 +269,7 @@ public:
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
 
+    glEnable(GL_FRAMEBUFFER_SRGB);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -276,6 +277,7 @@ public:
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     quad_vao.draw();
+    glDisable(GL_FRAMEBUFFER_SRGB);
 
     window_->swap_buffers();
   }

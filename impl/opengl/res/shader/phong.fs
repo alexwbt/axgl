@@ -43,6 +43,7 @@ uniform vec3 camera_pos;
 uniform vec4 mesh_color;
 uniform float mesh_gloss;
 uniform sampler2D diffuse_texture;
+uniform float diffuse_texture_gamma;
 uniform bool use_diffuse_texture;
 uniform sampler2D specular_texture;
 uniform bool use_specular_texture;
@@ -72,7 +73,7 @@ layout (location = 1) out float reveal;
 vec3 get_mesh_diffuse()
 {
   return use_diffuse_texture
-    ? texture(diffuse_texture, (vert_uv + uv_offset) * uv_scale).rgb
+    ? pow(texture(diffuse_texture, (vert_uv + uv_offset) * uv_scale).rgb, vec3(diffuse_texture_gamma))
     : mesh_color.rgb;
 }
 

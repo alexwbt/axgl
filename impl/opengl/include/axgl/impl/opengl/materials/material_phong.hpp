@@ -60,6 +60,7 @@ public:
     shader_.set_float("max_shininess", 512.0f);
     shader_.set_vec2("uv_scale", uv_scale_);
     shader_.set_vec2("uv_offset", uv_offset_);
+    shader_.set_float("diffuse_texture_gamma", 2.2f);
 
     use_lights(context.lights);
 
