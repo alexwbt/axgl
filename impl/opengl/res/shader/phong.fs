@@ -41,7 +41,7 @@ struct PointLight
 
 uniform vec3 camera_pos;
 uniform vec4 mesh_color;
-uniform float mesh_gloss;
+uniform float shininess;
 uniform sampler2D diffuse_texture;
 uniform float diffuse_texture_gamma;
 uniform bool use_diffuse_texture;
@@ -59,7 +59,6 @@ uniform int point_lights_size;
 uniform PointLight point_lights[32];
 uniform bool transparent;
 uniform float alpha_discard;
-uniform float max_shininess;
 uniform vec2 uv_scale;
 uniform vec2 uv_offset;
 
@@ -98,7 +97,7 @@ vec3 calc_sun_light(SunLight light, vec3 view_dir)
   // Specular
   vec3 reflect_dir = reflect(-light_dir, vert_normal);
   vec3 specular = light.specular
-    * pow(max(dot(view_dir, reflect_dir), 0.0), max(mesh_gloss * max_shininess, 1.0f))
+    * pow(max(dot(view_dir, reflect_dir), 0.0), shininess)
     * mesh_specular;
 
   return ambient + diffuse + specular;
@@ -119,7 +118,7 @@ vec3 calc_spot_light(SpotLight light, vec3 view_dir)
   // Specular
   vec3 reflect_dir = reflect(-light_dir, vert_normal);
   vec3 specular = light.specular
-    * pow(max(dot(view_dir, reflect_dir), 0.0), max(mesh_gloss * max_shininess, 1.0f))
+    * pow(max(dot(view_dir, reflect_dir), 0.0), shininess)
     * mesh_specular;
 
   // Attenuation
@@ -149,7 +148,7 @@ vec3 calc_point_light(PointLight light, vec3 view_dir)
   // Specular
   vec3 reflect_dir = reflect(-light_dir, vert_normal);
   vec3 specular = light.specular
-    * pow(max(dot(view_dir, reflect_dir), 0.0), max(mesh_gloss * max_shininess, 1.0f))
+    * pow(max(dot(view_dir, reflect_dir), 0.0), shininess)
     * mesh_specular;
 
   // Attenuation

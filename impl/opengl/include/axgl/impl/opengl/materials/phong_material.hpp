@@ -11,7 +11,7 @@
 namespace axgl::impl::opengl
 {
 
-class MaterialPhong : public Material
+class PhongMaterial : public Material
 {
   ::opengl::ShaderProgram& shader_ = ::opengl::StaticShaders::instance().mesh_3d();
 
@@ -19,9 +19,13 @@ class MaterialPhong : public Material
   axgl::ptr_t<impl::opengl::Texture> specular_texture_;
   axgl::ptr_t<impl::opengl::Texture> normal_texture_;
   axgl::ptr_t<impl::opengl::Texture> height_texture_;
+  float shininess_ = 32.0f;
 
 public:
-  void set_property(const std::string& key, const std::string& value) override { }
+  void set_property(const std::string& key, const std::string& value) override
+  {
+    if (key == "shininess") shininess_ = std::stof(value);
+  }
 
   void add_texture(const axgl::Material::TextureType type, const axgl::ptr_t<axgl::Texture> texture) override
   {
@@ -55,9 +59,8 @@ public:
     shader_.set_mat4("projection_view", context.camera->projection_view_matrix());
     shader_.set_vec3("camera_pos", context.camera->position);
     shader_.set_vec4("mesh_color", color_);
-    shader_.set_float("mesh_gloss", gloss_);
+    shader_.set_float("shininess", shininess_);
     shader_.set_float("alpha_discard", enable_blend_ ? 0.0f : alpha_discard_);
-    shader_.set_float("max_shininess", 512.0f);
     shader_.set_vec2("uv_scale", uv_scale_);
     shader_.set_vec2("uv_offset", uv_offset_);
     shader_.set_float("diffuse_texture_gamma", 2.2f);

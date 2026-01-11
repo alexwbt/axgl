@@ -28,10 +28,7 @@ public:
   };
 
   virtual ~Material() = default;
-  virtual void set_gloss(float gloss) = 0;
-  // default color should be white
   virtual void set_color(const glm::vec4& color) = 0;
-  // default cull mode should be kCCW
   virtual void set_cull_mode(axgl::Material::CullMode cull_mode) = 0;
   virtual void set_enable_blend(bool enable_blend) = 0;
   virtual void set_alpha_discard(float alpha_discard) = 0;

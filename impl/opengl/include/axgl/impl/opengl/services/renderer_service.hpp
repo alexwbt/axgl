@@ -13,7 +13,7 @@
 
 #include <axgl/impl/glfw.hpp>
 #include <axgl/impl/opengl/materials/material_2d.hpp>
-#include <axgl/impl/opengl/materials/material_phong.hpp>
+#include <axgl/impl/opengl/materials/phong_material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
@@ -51,7 +51,7 @@ public:
 
   axgl::ptr_t<axgl::Material> create_material(const std::string& type) override
   {
-    if (type == "phong") return axgl::create_ptr<axgl::impl::opengl::MaterialPhong>();
+    if (type == "phong") return axgl::create_ptr<axgl::impl::opengl::PhongMaterial>();
     if (type == "2d") return axgl::create_ptr<axgl::impl::opengl::Material2d>();
 #ifdef AXGL_DEBUG
     throw std::runtime_error("Unsupported material type: " + type);

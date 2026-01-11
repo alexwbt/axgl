@@ -16,7 +16,7 @@ auto create_cube(const axgl::Axgl& axgl, const glm::vec3& position, const glm::v
   if (blend)
   {
     material->set_enable_blend(true);
-    material->set_gloss(0.0f);
+    material->set_property("shininess", "0");
   }
   // mesh
   const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
