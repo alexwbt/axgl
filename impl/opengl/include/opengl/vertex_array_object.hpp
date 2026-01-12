@@ -21,6 +21,7 @@ struct VertexAttribute
 class VertexArrayObject final
 {
   GLuint id_;
+  GLenum draw_mode_ = GL_TRIANGLES;
   std::vector<std::unique_ptr<BufferObject>> buffer_objects_;
 
   size_t vertex_size_ = 0;
@@ -151,22 +152,24 @@ public:
     }
   }
 
+  void set_draw_mode(const GLenum draw_mode) { draw_mode_ = draw_mode; }
+
   void draw() const
   {
     bind();
     if (element_size_ > 0)
-      glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr);
+      glDrawElements(draw_mode_, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr);
     else if (vertex_size_ > 0)
-      glDrawArrays(GL_TRIANGLES, 0, static_cast<GLint>(vertex_size_));
+      glDrawArrays(draw_mode_, 0, static_cast<GLint>(vertex_size_));
   }
 
   void draw_instanced(const GLsizei count) const
   {
     bind();
     if (element_size_ > 0)
-      glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr, count);
+      glDrawElementsInstanced(draw_mode_, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr, count);
     else if (vertex_size_ > 0)
-      glDrawArraysInstanced(GL_TRIANGLES, 0, static_cast<GLint>(vertex_size_), count);
+      glDrawArraysInstanced(draw_mode_, 0, static_cast<GLint>(vertex_size_), count);
   }
 
 private:
