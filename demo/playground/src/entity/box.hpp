@@ -1,15 +1,16 @@
 #pragma once
 
 #include <axgl/common.hpp>
+#include <axgl/interface/components/mesh.hpp>
 #include <axgl/interface/texture.hpp>
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/entity_base.hpp>
 #include <axgl/util/mesh.hpp>
 
-#include <demo_shadows/res.hpp>
+#include <demo_playground/res.hpp>
 
-class Box final : public axgl::impl::EntityBase
+class BoxEntity final : public axgl::impl::EntityBase
 {
 public:
   static constexpr std::string_view kTypeId = "entity::box";
@@ -24,8 +25,8 @@ private:
     // textures
     const auto diffuse = axgl.renderer_service()->create_texture();
     const auto specular = axgl.renderer_service()->create_texture();
-    diffuse->load_texture(demo_shadows_res::get("box/diffuse.png"));
-    specular->load_texture(demo_shadows_res::get("box/specular.png"));
+    diffuse->load_texture(demo_playground_res::get("material/box/diffuse.png"));
+    specular->load_texture(demo_playground_res::get("material/box/specular.png"));
     // material
     const auto material = renderer_service->create_material("phong");
     material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse);

@@ -20,11 +20,15 @@ class PhongMaterial : public Material
   axgl::ptr_t<impl::opengl::Texture> normal_texture_;
   axgl::ptr_t<impl::opengl::Texture> height_texture_;
   float shininess_ = 32.0f;
+  bool blinn_ = true;
 
 public:
   void set_property(const std::string& key, const std::string& value) override
   {
-    if (key == "shininess") shininess_ = std::stof(value);
+    if (key == "shininess")
+      shininess_ = std::stof(value);
+    else if (key == "blinn")
+      blinn_ = value == "true";
   }
 
   void add_texture(const axgl::Material::TextureType type, const axgl::ptr_t<axgl::Texture> texture) override
@@ -64,6 +68,7 @@ public:
     shader_.set_vec2("uv_scale", uv_scale_);
     shader_.set_vec2("uv_offset", uv_offset_);
     shader_.set_float("diffuse_texture_gamma", 2.2f);
+    shader_.set_bool("blinn", blinn_);
 
     use_lights(context.lights);
 

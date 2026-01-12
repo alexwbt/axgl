@@ -61,6 +61,7 @@ uniform bool transparent;
 uniform float alpha_discard;
 uniform vec2 uv_scale;
 uniform vec2 uv_offset;
+uniform bool blinn;
 
 in vec3 vert_position;
 in vec3 vert_normal;
