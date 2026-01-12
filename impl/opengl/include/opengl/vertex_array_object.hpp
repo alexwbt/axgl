@@ -22,6 +22,7 @@ class VertexArrayObject final
 {
   GLuint id_;
   GLenum draw_mode_ = GL_TRIANGLES;
+  GLfloat line_width_ = 1.0f;
   std::vector<std::unique_ptr<BufferObject>> buffer_objects_;
 
   size_t vertex_size_ = 0;
@@ -154,9 +155,12 @@ public:
 
   void set_draw_mode(const GLenum draw_mode) { draw_mode_ = draw_mode; }
 
+  void set_line_width(const GLfloat line_width) { line_width_ = line_width; }
+
   void draw() const
   {
     bind();
+    glLineWidth(line_width_);
     if (element_size_ > 0)
       glDrawElements(draw_mode_, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr);
     else if (vertex_size_ > 0)
@@ -166,6 +170,7 @@ public:
   void draw_instanced(const GLsizei count) const
   {
     bind();
+    glLineWidth(line_width_);
     if (element_size_ > 0)
       glDrawElementsInstanced(draw_mode_, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr, count);
     else if (vertex_size_ > 0)

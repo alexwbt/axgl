@@ -62,6 +62,19 @@ public:
     indices_.resize(indices.size());
     std::ranges::copy(indices, indices_.begin());
   }
+
+  void set_mode(Mode mode) override
+  {
+    switch (mode)
+    {
+    case Mode::kTriangle: vao_->set_draw_mode(GL_TRIANGLES); break;
+    case Mode::kWireframe: vao_->set_draw_mode(GL_LINE_STRIP); break;
+    case Mode::kLine: vao_->set_draw_mode(GL_LINES); break;
+    }
+  }
+
+  void set_line_width(float line_width) override { vao_->set_line_width(line_width); }
+
   void set_material(const axgl::ptr_t<axgl::Material> material) override
   {
     material_ = std::dynamic_pointer_cast<impl::opengl::Material>(material);
