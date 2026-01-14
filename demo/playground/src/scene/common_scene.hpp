@@ -22,7 +22,7 @@ inline axgl::ptr_t<axgl::Realm> common_scene(const axgl::Axgl& axgl)
   realm->entities().add(camera_entity);
   // camera input
   camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
-  camera_service->set_camera(camera_entity);
+  camera_service->set_camera_entity(camera_entity);
 
   return realm;
 }

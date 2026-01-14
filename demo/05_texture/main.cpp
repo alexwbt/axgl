@@ -69,7 +69,7 @@ int main()
     realm->entities().add(square_entity);
 
     // set camera
-    camera_service->set_camera(square_entity);
+    camera_service->set_camera_entity(square_entity);
   }
 
   axgl.run();

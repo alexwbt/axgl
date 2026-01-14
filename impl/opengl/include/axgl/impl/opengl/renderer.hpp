@@ -61,20 +61,15 @@ public:
 
     const auto& gui = context.axgl.gui_service()->get_main_ui();
     const auto& realm = context.axgl.realm_service()->get_active_realm();
-    auto* camera = context.axgl.camera_service()->get_camera();
 
     const glm::ivec2 viewport_i = window_->get_size();
+    const auto viewport_f = glm::vec2(viewport_i);
     glViewport(0, 0, viewport_i.x, viewport_i.y);
-    if (const auto viewport_f = glm::vec2(viewport_i); viewport_f != viewport_)
+
+    if (viewport_ != viewport_f)
     {
       viewport_ = viewport_f;
 
-      if (camera)
-      {
-        camera->viewport.x = viewport_f.x;
-        camera->viewport.y = viewport_f.y;
-        camera->update_projection_view_matrix();
-      }
       if (gui)
       {
         gui->set_size(viewport_i.x, viewport_i.y);
@@ -123,6 +118,14 @@ public:
       // blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
       // blend_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
       // blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
+    }
+
+    auto* camera = context.axgl.camera_service()->get_camera();
+    if (camera && camera->viewport != viewport_f)
+    {
+      camera->viewport.x = viewport_f.x;
+      camera->viewport.y = viewport_f.y;
+      camera->update_projection_view_matrix();
     }
 
     if (camera && realm)

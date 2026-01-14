@@ -84,7 +84,7 @@ int main()
     realm->entities().add(entity);
 
     // set camera
-    camera_service->set_camera(entity);
+    camera_service->set_camera_entity(entity);
   }
 
   // start
