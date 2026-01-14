@@ -128,19 +128,19 @@ public:
     if (camera && realm)
     {
       //
-      // Collection/Build Stage
+      // Gather/Submit Stage
       //
       RenderComponent::Context render_context{camera};
       std::unordered_map<std::uint64_t, RenderComponent*> render_components;
       {
-        AXGL_PROFILE_SCOPE("Renderer Collection Stage");
+        AXGL_PROFILE_SCOPE("Renderer Gather Instances");
         for (const auto& entity : realm->entities().get())
         {
           for (const auto& component : entity->components().get())
           {
             if (auto* render_comp = dynamic_cast<RenderComponent*>(component.get()))
             {
-              render_comp->collect(*entity);
+              render_comp->gather_instances(*entity);
 
               const auto id = render_comp->get_id();
               render_components[id] = render_comp;
@@ -151,9 +151,9 @@ public:
         }
       }
       {
-        AXGL_PROFILE_SCOPE("Renderer Build Stage");
+        AXGL_PROFILE_SCOPE("Renderer Submit Calls");
         for (auto* render_comp : render_components | std::views::values)
-          render_comp->build(render_context);
+          render_comp->submit_draw_call(render_context);
       }
 
       //

@@ -84,7 +84,7 @@ public:
   }
   [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override { return material_; }
 
-  void collect(const axgl::Entity& entity) override
+  void gather_instances(const axgl::Entity& entity) override
   {
     if (!material_)
     {
@@ -94,7 +94,7 @@ public:
     instanced_models_.emplace_back(entity.get_model_matrix());
   }
 
-  void build(RenderComponent::Context& context) override
+  void submit_draw_call(RenderComponent::Context& context) override
   {
     if (!material_) return;
 

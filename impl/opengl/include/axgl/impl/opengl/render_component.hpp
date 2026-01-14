@@ -22,8 +22,8 @@ public:
   };
 
   virtual ~RenderComponent() = default;
-  virtual void collect(const axgl::Entity& entity) = 0;
-  virtual void build(Context& context) = 0;
+  virtual void gather_instances(const axgl::Entity& entity) = 0;
+  virtual void submit_draw_call(Context& context) = 0;
   virtual std::uint64_t get_id() = 0;
 };
 
