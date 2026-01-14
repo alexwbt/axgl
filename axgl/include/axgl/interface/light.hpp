@@ -8,7 +8,7 @@ namespace axgl
 class Light final
 {
 public:
-  enum Type
+  enum class Type
   {
     kSun,
     kPoint,
@@ -29,25 +29,34 @@ public:
     float quadratic = 0.0f;
   };
 
-  Type type;
-  Color color;
-  Strength strength;
+  axgl::Light::Type type;
+  axgl::Light::Color color;
+  axgl::Light::Strength strength;
   float cut_off = 0.0f;
   float outer_cut_off = 0.0f;
   glm::vec3 position = glm::vec3(0.0f);
   glm::vec3 direction = glm::vec3(0.0f);
 
-  Light() : type(kSun) { }
+  Light() : type(axgl::Light::Type::kSun) { }
 
-  Light(glm::vec3 direction, Color color) : type(kSun), color(color), direction(direction) { }
-
-  Light(glm::vec3 position, Color color, Strength strength) :
-    type(kPoint), color(color), strength(strength), position(position)
+  Light(glm::vec3 direction, axgl::Light::Color color) :
+    type(axgl::Light::Type::kSun), color(color), direction(direction)
   {
   }
 
-  Light(glm::vec3 position, glm::vec3 direction, Color color, Strength strength, float cut_off, float outer_cut_off) :
-    type(kSpot),
+  Light(glm::vec3 position, axgl::Light::Color color, axgl::Light::Strength strength) :
+    type(axgl::Light::Type::kPoint), color(color), strength(strength), position(position)
+  {
+  }
+
+  Light(
+    glm::vec3 position,
+    glm::vec3 direction,
+    axgl::Light::Color color,
+    axgl::Light::Strength strength,
+    float cut_off,
+    float outer_cut_off) :
+    type(axgl::Light::Type::kSpot),
     color(color),
     strength(strength),
     cut_off(glm::cos(glm::radians(cut_off))),

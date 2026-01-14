@@ -47,11 +47,11 @@ public:
     EntityBase::update(context);
 
     const auto& camera_service = context.axgl.camera_service();
-
-    const auto& camera = *camera_service->get_camera();
-    const auto& camera_entity = camera_service->get_camera_entity();
-
-    transform().position = camera_entity->transform().position + camera.front();
-    update_model_matrix();
+    if (const auto& camera_entity = camera_service->get_camera_entity())
+    {
+      const auto& camera = *camera_service->get_camera();
+      transform().position = camera_entity->transform().position + camera.front();
+      update_model_matrix();
+    }
   }
 };

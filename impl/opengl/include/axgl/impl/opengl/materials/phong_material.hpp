@@ -93,14 +93,14 @@ private:
     {
       switch (light->type)
       {
-      case (axgl::Light::kSun):
+      case (axgl::Light::Type::kSun):
         shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].direction", light->direction);
         shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].ambient", light->color.ambient);
         shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].diffuse", light->color.diffuse);
         shader_.set_vec3("sun_lights[" + std::to_string(sun_lights_size) + "].specular", light->color.specular);
         sun_lights_size++;
         break;
-      case (axgl::Light::kPoint):
+      case (axgl::Light::Type::kPoint):
         shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].position", light->position);
         shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].ambient", light->color.ambient);
         shader_.set_vec3("point_lights[" + std::to_string(point_lights_size) + "].diffuse", light->color.diffuse);
@@ -111,7 +111,7 @@ private:
           "point_lights[" + std::to_string(point_lights_size) + "].quadratic", light->strength.quadratic);
         point_lights_size++;
         break;
-      case (axgl::Light::kSpot):
+      case (axgl::Light::Type::kSpot):
         shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].direction", light->direction);
         shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].position", light->position);
         shader_.set_vec3("spot_lights[" + std::to_string(spot_lights_size) + "].ambient", light->color.ambient);

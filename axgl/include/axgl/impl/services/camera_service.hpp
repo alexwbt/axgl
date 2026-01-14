@@ -28,11 +28,7 @@ public:
     camera_mode_->bind_inputs(input_service_);
   }
 
-  void set_camera(axgl::ptr_t<axgl::Entity> camera_entity) override
-  {
-    camera_entity_ = std::move(camera_entity);
-    camera_comp_ = camera_entity_->components().get_t<component::Camera>();
-  }
+  void set_camera(axgl::ptr_t<axgl::Entity> camera_entity) override { camera_entity_ = std::move(camera_entity); }
 
   axgl::Camera* get_camera() override { return camera_comp_ ? &camera_comp_->camera : nullptr; }
 
@@ -42,7 +38,11 @@ public:
 
   void update(const Service::Context& context) override
   {
-    if (!camera_entity_ || !camera_comp_) return;
+    if (!camera_entity_) return;
+
+    camera_comp_ = camera_entity_->components().get_t<component::Camera>();
+    if (!camera_comp_) return;
+
     auto& transform = camera_entity_->transform();
     camera_comp_->camera.position = transform.position;
 
