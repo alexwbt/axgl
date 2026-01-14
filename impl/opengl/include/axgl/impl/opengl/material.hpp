@@ -42,6 +42,16 @@ public:
   void set_tiling(glm::vec2 tiling) override { uv_scale_ = tiling; }
   void set_offset(glm::vec2 offset) override { uv_offset_ = offset; }
 
+  void set_property(const std::string& key, const std::string& value) override
+  {
+    AXGL_LOG_DEBUG("Properties are not supported in color material.");
+  }
+
+  void add_texture(const axgl::Material::TextureType type, const axgl::ptr_t<axgl::Texture> texture) override
+  {
+    AXGL_LOG_DEBUG("Textures are not supported in color material.");
+  }
+
   [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
   [[nodiscard]] GLenum draw_mode() const
   {
@@ -76,7 +86,17 @@ public:
     }
   }
 
-  [[nodiscard]] virtual int get_attribute_offset(Attribute attribute) const = 0;
+  [[nodiscard]] virtual int get_attribute_offset(const Attribute attribute) const
+  {
+    switch (attribute)
+    {
+    case kVertices: return 0;
+    case kNormals: return 1;
+    case kUV: return 2;
+    case kModels: return 3;
+    default: return 4;
+    }
+  }
 };
 
 } // namespace axgl::impl::opengl

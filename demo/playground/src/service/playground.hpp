@@ -4,6 +4,7 @@
 #include <axgl/interface/service.hpp>
 
 #include "../entity/box.hpp"
+#include "../entity/debug_cursor.hpp"
 #include "../entity/floor.hpp"
 #include "../scene/blinn_scene.hpp"
 
@@ -19,6 +20,7 @@ public:
     // register entities
     entity_service->register_entity_t<BoxEntity>();
     entity_service->register_entity_t<FloorEntity>();
+    entity_service->register_entity_t<DebugCursorEntity>();
   }
 
   void on_start(const Context& context) override

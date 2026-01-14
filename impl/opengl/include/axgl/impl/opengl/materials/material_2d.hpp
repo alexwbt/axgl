@@ -15,8 +15,6 @@ class Material2d : public Material
   axgl::ptr_t<impl::opengl::Texture> texture_;
 
 public:
-  void set_property(const std::string& key, const std::string& value) override { }
-
   void add_texture(axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture) override
   {
     texture_ = std::dynamic_pointer_cast<Texture>(texture);

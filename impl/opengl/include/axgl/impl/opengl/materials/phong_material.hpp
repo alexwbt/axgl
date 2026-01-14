@@ -29,6 +29,10 @@ public:
       shininess_ = std::stof(value);
     else if (key == "blinn")
       blinn_ = value == "true";
+#ifdef AXGL_DEBUG
+    else
+      AXGL_LOG_WARN("Property {} is not supported in phong material.", key);
+#endif
   }
 
   void add_texture(const axgl::Material::TextureType type, const axgl::ptr_t<axgl::Texture> texture) override
@@ -76,18 +80,6 @@ public:
     use_texture(1, "specular", specular_texture_);
     use_texture(2, "normal", normal_texture_);
     use_texture(3, "height", height_texture_);
-  }
-
-  [[nodiscard]] int get_attribute_offset(const Attribute attribute) const override
-  {
-    switch (attribute)
-    {
-    case kVertices: return 0;
-    case kNormals: return 1;
-    case kUV: return 2;
-    case kModels: return 3;
-    default: return 4;
-    }
   }
 
 private:
