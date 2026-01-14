@@ -1,5 +1,7 @@
 #pragma once
 
+#include "axgl/interface/material.hpp"
+
 #include <axgl/interface/material.hpp>
 
 #include <axgl/impl/opengl/render_component.hpp>
@@ -22,6 +24,8 @@ public:
 
 protected:
   glm::vec4 color_{1.0f, 1.0f, 1.0f, 1.0f};
+  float line_width_ = 1.0f;
+  axgl::Material::DrawMode draw_mode_ = axgl::Material::DrawMode::kTriangles;
   axgl::Material::CullMode cull_mode_ = axgl::Material::CullMode::kCCW;
   bool enable_blend_ = false;
   float alpha_discard_ = 0.0f;
@@ -30,6 +34,8 @@ protected:
 
 public:
   void set_color(const glm::vec4& color) override { color_ = color; }
+  void set_line_width(float line_width) override { line_width_ = line_width; }
+  void set_draw_mode(axgl::Material::DrawMode draw_mode) override { draw_mode_ = draw_mode; }
   void set_cull_mode(const axgl::Material::CullMode cull_mode) override { cull_mode_ = cull_mode; }
   void set_enable_blend(const bool enable_blend) override { enable_blend_ = enable_blend; }
   void set_alpha_discard(const float alpha_discard) override { alpha_discard_ = alpha_discard; }
@@ -37,9 +43,24 @@ public:
   void set_offset(glm::vec2 offset) override { uv_offset_ = offset; }
 
   [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
+  [[nodiscard]] GLenum draw_mode() const
+  {
+    switch (draw_mode_)
+    {
+    case DrawMode::kPoints: return GL_POINTS;
+    case DrawMode::kLines: return GL_LINES;
+    case DrawMode::kLineStrip: return GL_LINE_STRIP;
+    case DrawMode::kLineLoop: return GL_LINE_LOOP;
+    default:
+    case DrawMode::kTriangles: return GL_TRIANGLES;
+    case DrawMode::kTriangleStrip: return GL_TRIANGLE_STRIP;
+    case DrawMode::kTriangleFan: return GL_TRIANGLE_FAN;
+    }
+  }
 
   virtual void use(const RenderComponent::Context& context)
   {
+    glLineWidth(line_width_);
     glCullFace(GL_FRONT);
     switch (cull_mode_)
     {

@@ -62,19 +62,6 @@ public:
     indices_.resize(indices.size());
     std::ranges::copy(indices, indices_.begin());
   }
-
-  void set_mode(Mode mode) override
-  {
-    switch (mode)
-    {
-    case Mode::kTriangle: vao_->set_draw_mode(GL_TRIANGLES); break;
-    case Mode::kWireframe: vao_->set_draw_mode(GL_LINE_STRIP); break;
-    case Mode::kLine: vao_->set_draw_mode(GL_LINES); break;
-    }
-  }
-
-  void set_line_width(float line_width) override { vao_->set_line_width(line_width); }
-
   void set_material(const axgl::ptr_t<axgl::Material> material) override
   {
     material_ = std::dynamic_pointer_cast<impl::opengl::Material>(material);
@@ -86,19 +73,20 @@ public:
 
   void gather_instances(const axgl::Entity& entity) override
   {
-    if (!material_)
-    {
-      AXGL_LOG_DEBUG("Material not assigned to mesh, skip rendering.");
-      return;
-    }
+    if (!material_) return;
     instanced_models_.emplace_back(entity.get_model_matrix());
   }
 
   void submit_draw_call(RenderComponent::Context& context) override
   {
-    if (!material_) return;
+    if (!material_)
+    {
+      AXGL_LOG_DEBUG("Material not assigned to mesh({}), skip rendering.", get_id());
+      return;
+    }
 
     if (!vao_) create_vao();
+    vao_->set_mode(material_->draw_mode());
 
     if (instanced_models_buffer_id_ == 0)
     {
