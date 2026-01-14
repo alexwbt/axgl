@@ -36,6 +36,8 @@ public:
 
   axgl::Camera* get_camera() override { return camera_comp_ ? &camera_comp_->camera : nullptr; }
 
+  axgl::ptr_t<axgl::Entity> get_camera_entity() override { return camera_entity_; }
+
   void initialize(const Service::Context& context) override { input_service_ = context.axgl.input_service(); }
 
   void update(const Service::Context& context) override
@@ -47,6 +49,7 @@ public:
     if (!camera_mode_) return;
     camera_mode_->update(camera_comp_->camera);
     transform.position = camera_comp_->camera.position;
+    camera_entity_->update_model_matrix();
   }
 };
 

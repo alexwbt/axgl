@@ -18,6 +18,7 @@ public:
   virtual void set_camera(axgl::ptr_t<axgl::Entity> camera_entity) = 0;
 
   virtual axgl::Camera* get_camera() = 0;
+  virtual axgl::ptr_t<axgl::Entity> get_camera_entity() = 0;
 };
 
 } // namespace axgl

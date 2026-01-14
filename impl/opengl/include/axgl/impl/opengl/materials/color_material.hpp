@@ -17,6 +17,9 @@ public:
   {
     Material::use(context);
     shader_.use_program();
+
+    shader_.set_bool("use_instancing", true);
+    shader_.set_mat4("projection_view", context.camera->projection_view_matrix());
     shader_.set_vec4("color", color_);
   }
 };
