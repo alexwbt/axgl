@@ -17,14 +17,14 @@ private:
     const auto& entity_service = axgl.entity_service();
     const auto& renderer_service = axgl.renderer_service();
 
-    const auto material = renderer_service->create_material("color");
+    auto material = renderer_service->create_material("color");
     material->set_draw_mode(axgl::Material::DrawMode::kLines);
     material->set_color(glm::vec4(axis, 1.0f));
-    material->set_line_width(3.0f);
+    material->set_enable_depth_test(false);
 
     const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
     mesh->set_vertices(std::vector{{0.0f, 0.0f, 0.0f}, axis});
-    mesh->set_material(material);
+    mesh->set_material(std::move(material));
 
     return mesh;
   }
@@ -38,7 +38,7 @@ public:
         create_axis_mesh(context.axgl, {0.0f, 1.0f, 0.0f}),
         create_axis_mesh(context.axgl, {0.0f, 0.0f, 1.0f}),
       });
-    transform().scale = glm::vec3(0.3f);
+    transform().scale = glm::vec3(0.1f);
     update_model_matrix();
   }
 
@@ -47,10 +47,10 @@ public:
     EntityBase::update(context);
 
     const auto& camera_service = context.axgl.camera_service();
-    if (const auto& camera_entity = camera_service->get_camera_entity())
+    const auto* camera = camera_service->get_camera();
+    if (const auto& camera_entity = camera_service->get_camera_entity(); camera_entity && camera)
     {
-      const auto& camera = *camera_service->get_camera();
-      transform().position = camera_entity->transform().position + camera.front();
+      transform().position = camera_entity->transform().position + camera->front();
       update_model_matrix();
     }
   }

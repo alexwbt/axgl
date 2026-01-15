@@ -23,7 +23,7 @@ public:
 
   virtual void remove(const axgl::ptr_t<Item>& item) = 0;
 
-  // TODO: find a better way
+  // TODO: maybe find a better way
   [[nodiscard]] virtual std::span<const axgl::ptr_t<Item>> get() const = 0;
 
   template <typename ItemType>

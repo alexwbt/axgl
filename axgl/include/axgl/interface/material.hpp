@@ -43,6 +43,7 @@ public:
   virtual void set_line_width(float line_width) = 0;
   virtual void set_draw_mode(axgl::Material::DrawMode draw_mode) = 0;
   virtual void set_cull_mode(axgl::Material::CullMode cull_mode) = 0;
+  virtual void set_enable_depth_test(bool enable_depth_test) = 0;
   virtual void set_enable_blend(bool enable_blend) = 0;
   virtual void set_alpha_discard(float alpha_discard) = 0;
   virtual void set_tiling(glm::vec2 tiling) = 0;

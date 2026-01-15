@@ -10,8 +10,8 @@ class Camera final
 {
 public:
   float fov = 80.0f;
-  float yaw = 0.0f;
   float pitch = 90.0f;
+  float yaw = 0.0f;
   float roll = 0.0f;
   float near_clip = 0.1f;
   float far_clip = 1000.0f;
@@ -35,14 +35,14 @@ public:
 
   void update()
   {
-    const auto yaw_radians = glm::radians(yaw);
     const auto pitch_radians = glm::radians(pitch);
+    const auto yaw_radians = glm::radians(yaw);
     const auto roll_radians = glm::radians(roll);
 
-    const auto sin_yaw = glm::sin(yaw_radians);
-    const auto cos_yaw = glm::cos(yaw_radians);
     const auto sin_pitch = glm::sin(pitch_radians);
     const auto cos_pitch = glm::cos(pitch_radians);
+    const auto sin_yaw = glm::sin(yaw_radians);
+    const auto cos_yaw = glm::cos(yaw_radians);
 
     front_ = glm::normalize(glm::vec3(sin_yaw * sin_pitch, cos_pitch, cos_yaw * sin_pitch));
 

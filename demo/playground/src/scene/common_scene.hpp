@@ -17,12 +17,20 @@ inline axgl::ptr_t<axgl::Realm> common_scene(const axgl::Axgl& axgl)
   const auto realm = realm_service->create_realm();
 
   // camera entity
-  const auto camera_entity = entity_service->create_entity_t<CameraEntity>();
-  camera_entity->transform().position.y = 2.0f;
-  realm->entities().add(camera_entity);
-  // camera input
-  camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
-  camera_service->set_camera_entity(camera_entity);
+  {
+    auto camera_entity = entity_service->create_entity_t<CameraEntity>();
+    camera_entity->transform().position.y = 2.0f;
+    realm->entities().add(camera_entity);
+    // camera input
+    camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
+    camera_service->set_camera_entity(std::move(camera_entity));
+  }
+
+  // debug cursor
+  {
+    auto debug_cursor_entity = entity_service->create_entity_t<DebugCursorEntity>();
+    realm->entities().add(std::move(debug_cursor_entity));
+  }
 
   return realm;
 }

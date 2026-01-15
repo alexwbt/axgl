@@ -27,6 +27,7 @@ protected:
   float line_width_ = 1.0f;
   axgl::Material::DrawMode draw_mode_ = axgl::Material::DrawMode::kTriangles;
   axgl::Material::CullMode cull_mode_ = axgl::Material::CullMode::kCCW;
+  bool enable_depth_test_ = true;
   bool enable_blend_ = false;
   float alpha_discard_ = 0.0f;
   glm::vec2 uv_scale_{1.0f};
@@ -37,6 +38,7 @@ public:
   void set_line_width(float line_width) override { line_width_ = line_width; }
   void set_draw_mode(axgl::Material::DrawMode draw_mode) override { draw_mode_ = draw_mode; }
   void set_cull_mode(const axgl::Material::CullMode cull_mode) override { cull_mode_ = cull_mode; }
+  void set_enable_depth_test(const bool enable_depth_test) override { enable_depth_test_ = enable_depth_test; }
   void set_enable_blend(const bool enable_blend) override { enable_blend_ = enable_blend; }
   void set_alpha_discard(const float alpha_discard) override { alpha_discard_ = alpha_discard; }
   void set_tiling(glm::vec2 tiling) override { uv_scale_ = tiling; }
@@ -70,6 +72,11 @@ public:
 
   virtual void use(const RenderComponent::Context& context)
   {
+    if (enable_depth_test_)
+      glEnable(GL_DEPTH_TEST);
+    else
+      glDisable(GL_DEPTH_TEST);
+
     glLineWidth(line_width_);
     glCullFace(GL_FRONT);
     switch (cull_mode_)

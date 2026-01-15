@@ -28,7 +28,7 @@ private:
     diffuse->load_texture(demo_playground_res::get("material/wood/diffuse.png"));
     specular->load_texture(demo_playground_res::get("material/wood/specular.png"));
     // material
-    const auto material = renderer_service->create_material("phong");
+    auto material = renderer_service->create_material("phong");
     material->add_texture(axgl::Material::TextureType::kNormal, std::move(normal));
     material->add_texture(axgl::Material::TextureType::kDiffuse, std::move(diffuse));
     material->add_texture(axgl::Material::TextureType::kSpecular, std::move(specular));
@@ -36,7 +36,7 @@ private:
     // mesh
     const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
     axgl::util::init_plain(*mesh);
-    mesh->set_material(material);
+    mesh->set_material(std::move(material));
     return mesh;
   }
 

@@ -19,7 +19,6 @@ public:
   {
     const auto& transform = context.entity.transform();
     light.position = transform.position;
-    light.direction = transform.rotation;
   }
 };
 
