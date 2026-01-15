@@ -9,8 +9,8 @@ uniform mat4 projection_view;
 uniform mat4 projection_view_model;
 uniform bool use_instancing;
 
-out vec3 vert_position;
-out vec3 vert_normal;
+out vec3 frag_position;
+out vec3 frag_normal;
 out vec2 vert_uv;
 
 void main()
@@ -19,7 +19,7 @@ void main()
   gl_Position = projection_view * model * vec4(position, 1.0);
   gl_Position.x = -gl_Position.x;
 
-  vert_position = vec3(model * vec4(position, 1.0));
-  vert_normal = normalize(mat3(transpose(inverse(model))) * normal);
+  frag_position = vec3(model * vec4(position, 1.0));
+  frag_normal = normalize(mat3(transpose(inverse(model))) * normal);
   vert_uv = uv;
 }

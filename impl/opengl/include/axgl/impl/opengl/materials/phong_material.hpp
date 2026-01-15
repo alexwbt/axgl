@@ -120,8 +120,8 @@ private:
         shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].constant", light->strength.constant);
         shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].linear", light->strength.linear);
         shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].quadratic", light->strength.quadratic);
-        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].cutOff", light->cut_off);
-        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].outerCutOff", light->outer_cut_off);
+        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].cut_off", light->cut_off);
+        shader_.set_float("spot_lights[" + std::to_string(spot_lights_size) + "].outer_cut_off", light->outer_cut_off);
         spot_lights_size++;
         break;
       }

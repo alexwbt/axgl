@@ -32,7 +32,7 @@ private:
     material->add_texture(axgl::Material::TextureType::kNormal, std::move(normal));
     material->add_texture(axgl::Material::TextureType::kDiffuse, std::move(diffuse));
     material->add_texture(axgl::Material::TextureType::kSpecular, std::move(specular));
-    material->set_tiling({10.0f, 10.0f});
+    material->set_tiling({100.0f, 100.0f});
     // mesh
     const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
     axgl::util::init_plain(*mesh);
@@ -45,7 +45,7 @@ public:
   {
     static const auto mesh = create_mesh(context.axgl);
     components_.add(mesh);
-    transform().scale = {30.0f, 1.0f, 30.0f};
+    transform().scale = {300.0f, 1.0f, 300.0f};
     update_model_matrix();
   }
 };

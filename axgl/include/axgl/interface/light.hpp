@@ -12,7 +12,7 @@ public:
   {
     kSun,
     kPoint,
-    kSpot
+    kSpot,
   };
 
   struct Color
