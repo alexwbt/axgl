@@ -73,9 +73,16 @@ public:
   virtual void use(const RenderComponent::Context& context)
   {
     if (enable_depth_test_)
+    {
       glDepthFunc(GL_LESS);
+      glDepthRange(0.0f, 1.0f);
+    }
     else
+    {
       glDepthFunc(GL_ALWAYS);
+      glDepthMask(GL_TRUE);
+      glDepthRange(0.0f, 0.0f);
+    }
 
     glLineWidth(line_width_);
     glCullFace(GL_FRONT);

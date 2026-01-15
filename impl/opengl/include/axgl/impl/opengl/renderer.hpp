@@ -167,6 +167,7 @@ public:
       glEnable(GL_DEPTH_TEST);
       glDepthFunc(GL_LESS);
       glDepthMask(GL_TRUE);
+      glDepthRange(0.0f, 1.0f);
 
       if (msaa_)
         multisampled_framebuffer_->use();
