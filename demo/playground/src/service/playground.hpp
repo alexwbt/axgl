@@ -4,7 +4,9 @@
 #include <axgl/interface/service.hpp>
 
 #include "input_manager.hpp"
-#include "scene/blinn_scene.hpp"
+
+#include "scene/light_scene.hpp"
+
 #include "scene/entity/box.hpp"
 #include "scene/entity/camera.hpp"
 #include "scene/entity/debug_cursor.hpp"
@@ -33,7 +35,7 @@ public:
     const auto& input_manager = axgl.get_service<InputManager>("input_manager");
 
     // create scenes
-    scenes_.emplace_back(axgl::create_ptr<BlinnScene>(axgl, *input_manager));
+    scenes_.emplace_back(axgl::create_ptr<LightScene>(axgl, *input_manager));
 
     // set first scene as active realm
     realm_service->set_active_realm(scenes_[0]);

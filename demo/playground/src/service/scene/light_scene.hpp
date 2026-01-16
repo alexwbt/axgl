@@ -7,10 +7,10 @@
 #include "common_scene.hpp"
 #include "entity/floor.hpp"
 
-class BlinnScene : public CommonScene
+class LightScene : public CommonScene
 {
 public:
-  BlinnScene(const axgl::Axgl& axgl, const InputManager& input_manager) : CommonScene(axgl, input_manager)
+  LightScene(const axgl::Axgl& axgl, const InputManager& input_manager) : CommonScene(axgl, input_manager)
   {
     const auto& entity_service = axgl.entity_service();
 

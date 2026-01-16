@@ -1,11 +1,11 @@
 #pragma once
 
-#include "axgl/axgl.hpp"
-
 #include <axgl/common.hpp>
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/service.hpp>
 #include <axgl/interface/services/input_service.hpp>
+
+#include <axgl/axgl.hpp>
 
 class InputManager : public axgl::Service
 {
