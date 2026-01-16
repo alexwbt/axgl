@@ -48,6 +48,41 @@ class Renderer : public axgl::Renderer
   // static constexpr glm::vec4 one_filler_{1.0f};
 
 public:
+  void set_antialiasing(bool enable) override { msaa_ = enable; }
+
+  void set_sample_count(int sample_count) override { sample_count_ = sample_count; }
+
+  void set_window(axgl::ptr_t<axgl::Window> window) override
+  {
+    window_ = std::dynamic_pointer_cast<glfw::Window>(std::move(window));
+    if (!window_)
+#ifdef AXGL_DEBUG
+      throw std::runtime_error(
+        "The provided window is not a valid GlfwWindow instance. "
+        "GlfwWindow is required for OpenglRenderer.");
+#else
+      return;
+#endif
+
+    window_->use();
+
+    // initialize glad
+    if (!initialized_glad_ && !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+      AXGL_LOG_ERROR("Failed to initialize GLAD.");
+    initialized_glad_ = true;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    window_->swap_buffers();
+  }
+
+  bool get_antialiasing() const override { return msaa_; }
+
+  int get_sample_count() const override { return sample_count_; }
+
+  axgl::ptr_t<axgl::Window> get_window() const override { return window_; }
+
   void render(const axgl::Service::Context& context) override
   {
     if (!window_ || !window_->ready())
@@ -290,34 +325,6 @@ public:
 
     window_->swap_buffers();
   }
-
-  void set_antialiasing(bool enable) override { msaa_ = enable; }
-
-  void set_sample_count(int sample_count) override { sample_count_ = sample_count; }
-
-  void set_window(axgl::ptr_t<axgl::Window> window) override
-  {
-    window_ = std::dynamic_pointer_cast<glfw::Window>(std::move(window));
-    if (!window_)
-#ifdef AXGL_DEBUG
-      throw std::runtime_error(
-        "The provided window is not a valid GlfwWindow instance. "
-        "GlfwWindow is required for OpenglRenderer.");
-#else
-      return;
-#endif
-
-    window_->use();
-
-    // initialize glad
-    if (!initialized_glad_ && !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-      AXGL_LOG_ERROR("Failed to initialize GLAD.");
-    initialized_glad_ = true;
-  }
-
-  bool get_antialiasing() const override { return msaa_; }
-  int get_sample_count() const override { return sample_count_; }
-  axgl::ptr_t<axgl::Window> get_window() const override { return window_; }
 };
 
 } // namespace axgl::impl::opengl
