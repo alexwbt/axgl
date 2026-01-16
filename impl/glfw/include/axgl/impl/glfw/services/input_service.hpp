@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <ranges>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/input.hpp>
@@ -217,6 +218,21 @@ public:
   void remove_pointer(std::uint64_t id) override
   {
     std::erase_if(pointers_, [id](const auto& pointer) { return pointer->id == id; });
+  }
+
+  [[nodiscard]] std::vector<axgl::ptr_t<axgl::Input>> get_input_by_source(axgl::Input::Source source) override
+  {
+    const auto contains = [&source](const auto& e)
+    { return std::find(e->sources.begin(), e->sources.end(), source) != e->sources.end(); };
+    auto view = inputs_ | std::views::filter(contains);
+    return {view.begin(), view.end()};
+  }
+
+  [[nodiscard]] std::vector<axgl::ptr_t<axgl::Pointer>> get_pointer_by_source(axgl::Pointer::Source source) override
+  {
+    const auto is_source = [&source](const auto& e) { return e->source == source; };
+    auto view = pointers_ | std::views::filter(is_source);
+    return {view.begin(), view.end()};
   }
 
   void update(const axgl::Service::Context& context) override
