@@ -169,10 +169,8 @@ public:
       glDepthMask(GL_TRUE);
       glDepthRange(0.0f, 1.0f);
 
-      if (msaa_)
-        multisampled_framebuffer_->use();
-      else
-        screen_framebuffer_->use();
+      if (msaa_) multisampled_framebuffer_->use();
+      else screen_framebuffer_->use();
       glClearDepth(1.0);
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

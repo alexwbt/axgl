@@ -268,10 +268,8 @@ public:
 
       quad.draw();
 
-      if (options.vertical)
-        advance.y += static_cast<float>(chars[c].advance.y);
-      else
-        advance.x += static_cast<float>(chars[c].advance.x);
+      if (options.vertical) advance.y += static_cast<float>(chars[c].advance.y);
+      else advance.x += static_cast<float>(chars[c].advance.x);
     }
 
     glDisable(GL_BLEND);

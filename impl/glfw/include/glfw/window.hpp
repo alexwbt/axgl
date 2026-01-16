@@ -106,8 +106,7 @@ public:
         it->second->destroy();
         it = windows_.erase(it);
       }
-      else
-        ++it;
+      else ++it;
     }
   }
 

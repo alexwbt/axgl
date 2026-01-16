@@ -157,10 +157,8 @@ public:
   void draw() const
   {
     bind();
-    if (element_size_ > 0)
-      glDrawElements(mode_, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr);
-    else if (vertex_size_ > 0)
-      glDrawArrays(mode_, 0, static_cast<GLint>(vertex_size_));
+    if (element_size_ > 0) glDrawElements(mode_, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr);
+    else if (vertex_size_ > 0) glDrawArrays(mode_, 0, static_cast<GLint>(vertex_size_));
   }
 
   void draw_instanced(const GLsizei count) const
@@ -168,8 +166,7 @@ public:
     bind();
     if (element_size_ > 0)
       glDrawElementsInstanced(mode_, static_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr, count);
-    else if (vertex_size_ > 0)
-      glDrawArraysInstanced(mode_, 0, static_cast<GLint>(vertex_size_), count);
+    else if (vertex_size_ > 0) glDrawArraysInstanced(mode_, 0, static_cast<GLint>(vertex_size_), count);
   }
 
 private:
