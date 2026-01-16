@@ -5,7 +5,6 @@
 
 #include "../input_manager.hpp"
 #include "common_scene.hpp"
-#include "entity/floor.hpp"
 
 class LightScene : public CommonScene
 {
@@ -34,12 +33,6 @@ public:
       light_entity->transform().position = {20.0f, 1.0f, 0.0f};
       light_entity->update_model_matrix();
       entities_.add(std::move(light_entity));
-    }
-
-    // floor entity
-    {
-      auto floor_entity = entity_service->create_entity_t<FloorEntity>();
-      entities_.add(std::move(floor_entity));
     }
   }
 };
