@@ -31,9 +31,9 @@ class Renderer : public axgl::Renderer
   bool msaa_ = false;
   GLsizei sample_count_ = 4;
 
-  std::unique_ptr<::opengl::Texture> multisampled_texture_;
-  std::unique_ptr<::opengl::Renderbuffer> multisampled_renderbuffer_;
-  std::unique_ptr<::opengl::Framebuffer> multisampled_framebuffer_;
+  std::unique_ptr<::opengl::Texture> multisample_texture_;
+  std::unique_ptr<::opengl::Renderbuffer> multisample_renderbuffer_;
+  std::unique_ptr<::opengl::Framebuffer> multisample_framebuffer_;
 
   std::unique_ptr<::opengl::Texture> screen_texture_;
   std::unique_ptr<::opengl::Texture> depth_texture_;
@@ -82,17 +82,17 @@ public:
       //
       if (msaa_)
       {
-        multisampled_texture_ = std::make_unique<::opengl::Texture>();
-        multisampled_texture_->init_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, GL_TRUE);
-        multisampled_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        multisampled_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        multisampled_renderbuffer_ = std::make_unique<::opengl::Renderbuffer>();
-        multisampled_renderbuffer_->init_multisample_renderbuffer(
+        multisample_texture_ = std::make_unique<::opengl::Texture>();
+        multisample_texture_->init_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, GL_TRUE);
+        multisample_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        multisample_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        multisample_renderbuffer_ = std::make_unique<::opengl::Renderbuffer>();
+        multisample_renderbuffer_->init_multisample_renderbuffer(
           sample_count_, GL_DEPTH24_STENCIL8, viewport_i.x, viewport_i.y);
-        multisampled_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
-        multisampled_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *multisampled_texture_);
-        multisampled_framebuffer_->attach_renderbuffer(GL_DEPTH_STENCIL_ATTACHMENT, *multisampled_renderbuffer_);
-        multisampled_framebuffer_->check_status_complete("renderer_multisampled_framebuffer");
+        multisample_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+        multisample_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *multisample_texture_);
+        multisample_framebuffer_->attach_renderbuffer(GL_DEPTH_STENCIL_ATTACHMENT, *multisample_renderbuffer_);
+        multisample_framebuffer_->check_status_complete("renderer_multisample_framebuffer");
       }
 
       screen_texture_ = std::make_unique<::opengl::Texture>();
@@ -176,7 +176,7 @@ public:
       glDepthMask(GL_TRUE);
       glDepthRange(0.0f, 1.0f);
 
-      if (msaa_) multisampled_framebuffer_->use();
+      if (msaa_) multisample_framebuffer_->use();
       else screen_framebuffer_->use();
       glClearDepth(1.0);
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -250,7 +250,7 @@ public:
       if (!gui_texture)
         throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::Renderer");
 #endif
-      multisampled_framebuffer_->use();
+      multisample_framebuffer_->use();
       gui_texture->use(GL_TEXTURE0);
       screen_shader.use_program();
       screen_shader.set_int("screen", 0);
@@ -258,11 +258,11 @@ public:
     }
 
     //
-    // Resolve multisampled buffers
+    // Resolve multisample buffers
     //
     if (msaa_)
     {
-      multisampled_framebuffer_->use_read();
+      multisample_framebuffer_->use_read();
       screen_framebuffer_->use_write();
       glBlitFramebuffer(
         0, 0, viewport_i.x, viewport_i.y, //

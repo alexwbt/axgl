@@ -16,7 +16,13 @@ public:
   static constexpr std::string_view kTypeId = "entity::floor";
 
 private:
-  static axgl::ptr_t<axgl::component::Mesh> create_mesh(const axgl::Axgl& axgl)
+  float size_ = 500.0f;
+
+public:
+  void set_size(float size) { size_ = size; }
+
+private:
+  static axgl::ptr_t<axgl::component::Mesh> create_mesh(const axgl::Axgl& axgl, float size)
   {
     const auto& entity_service = axgl.entity_service();
     const auto& renderer_service = axgl.renderer_service();
@@ -32,7 +38,7 @@ private:
     material->add_texture(axgl::Material::TextureType::kNormal, std::move(normal));
     material->add_texture(axgl::Material::TextureType::kDiffuse, std::move(diffuse));
     material->add_texture(axgl::Material::TextureType::kSpecular, std::move(specular));
-    material->set_tiling({100.0f, 100.0f});
+    material->set_tiling(glm::vec2(size) / 3.0f);
     // mesh
     const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
     axgl::util::init_plain(*mesh);
@@ -43,9 +49,9 @@ private:
 public:
   void on_create(const axgl::Realm::Context& context) override
   {
-    static const auto mesh = create_mesh(context.axgl);
+    static const auto mesh = create_mesh(context.axgl, size_);
     components_.add(mesh);
-    transform().scale = {300.0f, 1.0f, 300.0f};
+    transform().scale = {size_, 1.0f, size_};
     update_model_matrix();
   }
 };

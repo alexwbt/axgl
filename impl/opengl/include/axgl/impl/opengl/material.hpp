@@ -80,7 +80,6 @@ public:
     else
     {
       glDepthFunc(GL_ALWAYS);
-      glDepthMask(GL_TRUE);
       glDepthRange(0.0f, 0.0f);
     }
 
