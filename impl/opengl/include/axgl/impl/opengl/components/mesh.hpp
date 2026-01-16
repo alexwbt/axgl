@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <array>
-#include <vector>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
@@ -100,8 +99,7 @@ public:
       instanced_models_buffer_id_ = vao_->create_vertex_buffer<glm::mat4>(
         instanced_models_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kModels), 1);
     }
-    else
-      vao_->update_buffer_data<glm::mat4>(instanced_models_buffer_id_, instanced_models_);
+    else vao_->update_buffer_data<glm::mat4>(instanced_models_buffer_id_, instanced_models_);
 
     const auto instance_count = static_cast<GLsizei>(instanced_models_.size());
     instanced_models_.clear();
@@ -111,10 +109,8 @@ public:
       material_->use(c);
       vao_->draw_instanced(instance_count);
     };
-    if (material_->enabled_blend())
-      context.blend_pass.emplace_back(std::move(draw_func));
-    else
-      context.opaque_pass.emplace_back(std::move(draw_func));
+    if (material_->enabled_blend()) context.blend_pass.emplace_back(std::move(draw_func));
+    else context.opaque_pass.emplace_back(std::move(draw_func));
   }
 
   std::uint64_t get_id() override { return ComponentBase::get_id(); }

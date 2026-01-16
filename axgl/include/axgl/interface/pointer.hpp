@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include <axgl/common.hpp>
 
 namespace axgl
@@ -26,13 +24,13 @@ private:
 public:
   const std::uint64_t id;
   std::string name;
-  axgl::Pointer::Source source;
   glm::vec2 position;
   glm::vec2 delta;
   std::uint64_t tick;
+  axgl::Pointer::Source source;
 
   Pointer(std::string name, const axgl::Pointer::Source source) :
-    id(next_id()), name(std::move(name)), source(source), position(0.0f), delta(0.0f), tick(0)
+    id(next_id()), name(std::move(name)), position(0.0f), delta(0.0f), tick(0), source(source)
   {
   }
 };

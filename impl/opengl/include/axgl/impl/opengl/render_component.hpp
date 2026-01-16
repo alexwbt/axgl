@@ -1,8 +1,8 @@
 #pragma once
 
 #include <functional>
-#include <vector>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/camera.hpp>
 #include <axgl/interface/entity.hpp>
 #include <axgl/interface/light.hpp>

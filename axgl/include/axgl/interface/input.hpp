@@ -1,7 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
+#include <axgl/common.hpp>
 
 namespace axgl
 {
@@ -151,11 +150,11 @@ private:
 public:
   const std::uint64_t id;
   std::string name;
-  axgl::Input::Source source;
   std::uint64_t tick;
+  std::vector<axgl::Input::Source> sources;
 
-  Input(std::string name, const axgl::Input::Source source) :
-    id(next_id()), name(std::move(name)), source(source), tick(0)
+  Input(std::string name, const std::vector<axgl::Input::Source>& sources) :
+    id(next_id()), name(std::move(name)), sources(sources), tick(0)
   {
   }
 };

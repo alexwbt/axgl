@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <random>
-#include <vector>
 
 #include <axgl/axgl.hpp>
 #include <axgl/util/mesh.hpp>

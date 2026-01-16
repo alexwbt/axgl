@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include <axgl/common.hpp>
 #include <axgl/interface/container.hpp>
 

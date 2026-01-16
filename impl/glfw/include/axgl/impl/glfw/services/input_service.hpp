@@ -1,6 +1,6 @@
 #pragma once
 
-#include <list>
+#include <algorithm>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/input.hpp>
@@ -15,8 +15,8 @@ namespace axgl::impl::glfw
 class InputService : public axgl::InputService
 {
   axgl::ptr_t<axgl::impl::glfw::Window> window_;
-  std::list<axgl::ptr_t<axgl::Input>> inputs_;
-  std::list<axgl::ptr_t<axgl::Pointer>> pointers_;
+  std::vector<axgl::ptr_t<axgl::Input>> inputs_;
+  std::vector<axgl::ptr_t<axgl::Pointer>> pointers_;
   axgl::InputService::CursorMode cursor_mode_ = axgl::InputService::CursorMode::kNormal;
 
   static int to_glfw_keycode(const axgl::Input::Source source)
@@ -211,12 +211,12 @@ public:
 
   void remove_input(std::uint64_t id) override
   {
-    inputs_.remove_if([id](const auto& input) { return input->id == id; });
+    std::erase_if(inputs_, [id](const auto& input) { return input->id == id; });
   }
 
   void remove_pointer(std::uint64_t id) override
   {
-    pointers_.remove_if([id](const auto& pointer) { return pointer->id == id; });
+    std::erase_if(pointers_, [id](const auto& pointer) { return pointer->id == id; });
   }
 
   void update(const axgl::Service::Context& context) override
@@ -226,10 +226,11 @@ public:
 
     for (const auto& input : inputs_)
     {
-      if (get_glfw_input(input->source, window))
-        input->tick++;
-      else
-        input->tick = 0;
+      const auto active = std::ranges::any_of(
+        input->sources,                                                            //
+        [&window](const auto& source) { return get_glfw_input(source, window); }); //
+      if (active) input->tick++;
+      else input->tick = 0;
     }
 
     for (const auto& pointer : pointers_)

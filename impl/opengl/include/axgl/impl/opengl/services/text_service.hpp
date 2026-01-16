@@ -2,19 +2,15 @@
 
 #include <cstdint>
 #include <memory>
-#include <span>
-#include <string>
-#include <vector>
 
-#include <axgl/axgl.hpp>
+#include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
 #include <axgl/interface/service.hpp>
-#include <axgl/interface/services/entity_service.hpp>
 #include <axgl/interface/services/renderer_service.hpp>
 #include <axgl/interface/services/text_service.hpp>
 
+#include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/components/mesh.hpp>
-#include <axgl/util/mesh.hpp>
 
 #include <opengl/text.hpp>
 

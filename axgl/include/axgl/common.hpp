@@ -16,6 +16,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #ifdef AXGL_DEBUG
   #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG

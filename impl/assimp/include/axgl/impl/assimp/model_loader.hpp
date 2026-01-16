@@ -2,10 +2,7 @@
 
 #include <cstdlib>
 #include <filesystem>
-#include <span>
-#include <string>
 #include <utility>
-#include <vector>
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>

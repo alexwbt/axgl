@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <axgl/common.hpp>
 
 namespace axgl
 {

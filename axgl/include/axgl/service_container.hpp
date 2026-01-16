@@ -5,7 +5,6 @@
 #include <memory>
 #include <ranges>
 #include <unordered_map>
-#include <vector>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>

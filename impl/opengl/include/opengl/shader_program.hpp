@@ -2,7 +2,6 @@
 
 #include <string_view>
 #include <unordered_map>
-#include <vector>
 
 #include <axgl/common.hpp>
 #include <glad/glad.h>

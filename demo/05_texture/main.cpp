@@ -1,5 +1,3 @@
-#include <vector>
-
 #include <axgl/axgl.hpp>
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL
   #include <axgl/impl/glfw.hpp>
