@@ -26,7 +26,7 @@ public:
   virtual void on_remove(const axgl::Realm::Context& context) { }
 
   virtual void set_name(const std::string& id) = 0;
-  virtual void set_disabled(bool) = 0;
+  virtual void set_disabled(bool disabled) = 0;
   virtual void update_model_matrix() = 0;
   virtual void mark_remove(bool should_remove) = 0;
 

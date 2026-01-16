@@ -39,21 +39,21 @@ public:
 
   Light() : type(axgl::Light::Type::kSun) { }
 
-  Light(glm::vec3 direction, axgl::Light::Color color) :
+  Light(const glm::vec3& direction, const axgl::Light::Color& color) :
     type(axgl::Light::Type::kSun), color(color), direction(direction)
   {
   }
 
-  Light(glm::vec3 position, axgl::Light::Color color, axgl::Light::Strength strength) :
+  Light(const glm::vec3& position, const axgl::Light::Color& color, const axgl::Light::Strength& strength) :
     type(axgl::Light::Type::kPoint), color(color), strength(strength), position(position)
   {
   }
 
   Light(
-    glm::vec3 position,
-    glm::vec3 direction,
-    axgl::Light::Color color,
-    axgl::Light::Strength strength,
+    const glm::vec3& position,
+    const glm::vec3& direction,
+    const axgl::Light::Color& color,
+    const axgl::Light::Strength& strength,
     float cut_off,
     float outer_cut_off) :
     type(axgl::Light::Type::kSpot),
@@ -64,6 +64,17 @@ public:
     position(position),
     direction(direction)
   {
+  }
+
+  static Light spotlight(
+    const glm::vec3& position = glm::vec3(0.0f),
+    const glm::vec3& direction = glm::vec3(0.0f),
+    const float cut_off = 12.5f,
+    const float outer_cut_off = 15.0f,
+    const axgl::Light::Strength& strength = axgl::Light::Strength{1.0f, 0.09f, 0.032f},
+    const axgl::Light::Color& color = axgl::Light::Color{glm::vec3(0.1f), glm::vec3(1.0f), glm::vec3(1.0f)})
+  {
+    return Light{position, direction, color, strength, cut_off, outer_cut_off};
   }
 };
 

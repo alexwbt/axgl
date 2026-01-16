@@ -32,7 +32,7 @@ int main()
   renderer_service->set_active_renderer(renderer);
 
   // realm
-  const auto realm = realm_service->create_realm();
+  const auto realm = realm_service->create_default_realm();
   realm_service->set_active_realm(realm);
 
   // triangle entity

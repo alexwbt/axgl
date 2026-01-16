@@ -4,6 +4,7 @@
   #include <axgl/impl/opengl.hpp>
 #endif
 
+#include "service/input_manager.hpp"
 #include "service/playground.hpp"
 
 int main()
@@ -15,6 +16,7 @@ int main()
   axgl::configure_opengl(axgl);
 #endif
   axgl.register_service("playground", axgl::create_ptr<Playground>());
+  axgl.register_service("input_manager", axgl::create_ptr<InputManager>());
   axgl.initialize();
 
   const auto& window_service = axgl.window_service();

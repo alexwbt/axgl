@@ -16,7 +16,7 @@ public:
   virtual void on_entity_remove(const axgl::Entity::Context& context) { }
 
   virtual void set_name(const std::string& id) = 0;
-  virtual void set_disabled(bool) = 0;
+  virtual void set_disabled(bool disabled) = 0;
 
   [[nodiscard]] virtual std::uint64_t get_id() const = 0;
   [[nodiscard]] virtual std::string get_name() const = 0;

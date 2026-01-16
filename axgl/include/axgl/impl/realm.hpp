@@ -10,6 +10,7 @@ namespace axgl::impl
 
 class Realm : public axgl::Realm
 {
+protected:
   axgl::impl::EntityContainer entities_;
 
 public:

@@ -28,7 +28,7 @@ public:
     realm_->update(context);
   }
 
-  axgl::ptr_t<axgl::Realm> create_realm() override { return axgl::create_ptr<impl::Realm>(); }
+  axgl::ptr_t<axgl::Realm> create_default_realm() override { return axgl::create_ptr<impl::Realm>(); }
 
   [[nodiscard]] axgl::ptr_t<axgl::Realm> get_active_realm() const override { return realm_; }
 

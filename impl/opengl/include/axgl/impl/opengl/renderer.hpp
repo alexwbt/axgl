@@ -131,7 +131,7 @@ public:
     if (camera && realm)
     {
       //
-      // Gather/Submit Stage
+      // gather and submit render components
       //
       RenderComponent::Context render_context{camera};
       std::unordered_map<std::uint64_t, RenderComponent*> render_components;
@@ -139,8 +139,10 @@ public:
         AXGL_PROFILE_SCOPE("Renderer Gather Instances");
         for (const auto& entity : realm->entities().get())
         {
+          if (entity->is_disabled()) continue;
           for (const auto& component : entity->components().get())
           {
+            if (component->is_disabled()) continue;
             if (auto* render_comp = dynamic_cast<RenderComponent*>(component.get()))
             {
               render_comp->gather_instances(*entity);
@@ -307,6 +309,10 @@ public:
       AXGL_LOG_ERROR("Failed to initialize GLAD.");
     initialized_glad_ = true;
   }
+
+  bool get_antialiasing() const override { return msaa_; }
+  int get_sample_count() const override { return sample_count_; }
+  axgl::ptr_t<axgl::Window> get_window() const override { return window_; }
 };
 
 } // namespace axgl::impl::opengl
