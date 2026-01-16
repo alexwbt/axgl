@@ -38,7 +38,7 @@ public:
         create_axis_mesh(context.axgl, {0.0f, 1.0f, 0.0f}),
         create_axis_mesh(context.axgl, {0.0f, 0.0f, 1.0f}),
       });
-    transform().scale = glm::vec3(0.1f);
+    transform().scale = glm::vec3(0.05f);
     update_model_matrix();
   }
 

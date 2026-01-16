@@ -10,6 +10,9 @@
 
 class CommonScene : public axgl::impl::Realm
 {
+  axgl::ptr_t<axgl::Input> debug_input_;
+  axgl::ptr_t<DebugCursorEntity> debug_cursor_;
+
 public:
   CommonScene(const axgl::Axgl& axgl, const InputManager& input_manager)
   {
@@ -26,10 +29,18 @@ public:
       camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
       camera_service->set_camera_entity(std::move(camera_entity));
     }
+
     // debug cursor
-    {
-      auto debug_cursor_entity = entity_service->create_entity_t<DebugCursorEntity>();
-      entities_.add(std::move(debug_cursor_entity));
-    }
+    debug_input_ = input_manager.debug();
+    debug_cursor_ = entity_service->create_entity_t<DebugCursorEntity>();
+    debug_cursor_->set_disabled(true);
+    entities_.add(debug_cursor_);
+  }
+
+  void update(const axgl::Service::Context& context) override
+  {
+    axgl::impl::Realm::update(context);
+
+    if (debug_input_->tick == 1) debug_cursor_->set_disabled(!debug_cursor_->is_disabled());
   }
 };
