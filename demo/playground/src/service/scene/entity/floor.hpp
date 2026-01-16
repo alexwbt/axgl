@@ -28,7 +28,7 @@ private:
     diffuse->load_texture(demo_playground_res::get("material/wood/diffuse.png"));
     specular->load_texture(demo_playground_res::get("material/wood/specular.png"));
     // material
-    auto material = renderer_service->create_material("phong");
+    auto material = renderer_service->create_material("blinn-phong");
     material->add_texture(axgl::Material::TextureType::kNormal, std::move(normal));
     material->add_texture(axgl::Material::TextureType::kDiffuse, std::move(diffuse));
     material->add_texture(axgl::Material::TextureType::kSpecular, std::move(specular));

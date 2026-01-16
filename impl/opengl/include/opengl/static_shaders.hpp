@@ -25,7 +25,7 @@ public:
   StaticShaders& operator=(const StaticShaders&&) = delete;
 
   [[nodiscard]] ShaderProgram& mesh_2d() const { return *mesh_2d_; }
-  [[nodiscard]] ShaderProgram& mesh_3d() const { return *mesh_3d_; }
+  [[nodiscard]] ShaderProgram& blinn_phong() const { return *blinn_phong_; }
   [[nodiscard]] ShaderProgram& text() const { return *text_; }
   [[nodiscard]] ShaderProgram& screen() const { return *screen_; }
   [[nodiscard]] ShaderProgram& weighted_blended() const { return *weighted_blended_; }
@@ -34,7 +34,7 @@ public:
 
 private:
   std::unique_ptr<ShaderProgram> mesh_2d_;
-  std::unique_ptr<ShaderProgram> mesh_3d_;
+  std::unique_ptr<ShaderProgram> blinn_phong_;
   std::unique_ptr<ShaderProgram> text_;
   std::unique_ptr<ShaderProgram> screen_;
   std::unique_ptr<ShaderProgram> weighted_blended_;
@@ -46,9 +46,9 @@ private:
     mesh_2d_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
       {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs")}});
-    mesh_3d_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
+    blinn_phong_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs")},
-      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/phong.fs")}});
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/blinn_phong.fs")}});
     text_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
       {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs")}});

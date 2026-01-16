@@ -36,6 +36,7 @@ class Renderer : public axgl::Renderer
   std::unique_ptr<::opengl::Framebuffer> multisampled_framebuffer_;
 
   std::unique_ptr<::opengl::Texture> screen_texture_;
+  std::unique_ptr<::opengl::Texture> depth_texture_;
   std::unique_ptr<::opengl::Framebuffer> screen_framebuffer_;
 
   // std::unique_ptr<::opengl::Texture> depth_texture_;
@@ -98,8 +99,12 @@ public:
       screen_texture_->load_texture(0, GL_RGB, viewport_i.x, viewport_i.y, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
       screen_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       screen_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      depth_texture_ = std::make_unique<::opengl::Texture>();
+      depth_texture_->load_texture(
+        0, GL_DEPTH_COMPONENT, viewport_i.x, viewport_i.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
       screen_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
       screen_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *screen_texture_);
+      screen_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
       screen_framebuffer_->check_status_complete("renderer_screen_framebuffer");
 
       //

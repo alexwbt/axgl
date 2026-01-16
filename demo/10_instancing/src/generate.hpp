@@ -59,7 +59,7 @@ inline axgl::ptr_t<axgl::Entity> create_box(const axgl::Axgl& axgl)
 
   static const auto diffuse = create_texture(axgl, "container/diffuse.png");
   static const auto specular = create_texture(axgl, "container/specular.png");
-  static const auto mesh = create_mesh(axgl, "phong", axgl::util::init_cube, diffuse, specular);
+  static const auto mesh = create_mesh(axgl, "blinn-phong", axgl::util::init_cube, diffuse, specular);
 
   // box entity
   const auto box = axgl.entity_service()->create_entity_t<Box>();

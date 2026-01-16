@@ -50,8 +50,7 @@ public:
     {
       const auto light_entity = entity_service->create_entity();
       const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
-      light_comp->light.color.ambient = glm::vec3(0.3f);
-      light_comp->light.direction = glm::vec3(0.2f, -1.0f, 1.2f);
+      light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
       light_entity->components().add(light_comp);
       realm->entities().add(light_entity);
     }
@@ -67,7 +66,7 @@ public:
       specular_texture->load_texture(demo_textured_cube_res::get("container/specular.png"));
 
       // material
-      const auto material = renderer_service->create_material("phong");
+      const auto material = renderer_service->create_material("blinn-phong");
       material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse_texture);
       material->add_texture(axgl::Material::TextureType::kSpecular, specular_texture);
 

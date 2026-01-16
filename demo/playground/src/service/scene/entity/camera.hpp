@@ -32,19 +32,7 @@ public:
 
     // flashlight
     flashlight_ = entity_service->create_component_t<axgl::impl::component::Light>();
-    flashlight_->light = axgl::Light(
-      glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-      axgl::Light::Color{
-        .ambient = glm::vec3(0.02f),
-        .diffuse = glm::vec3(1.0f),
-        .specular = glm::vec3(1.0f),
-      },
-      axgl::Light::Strength{
-        .constant = 1.0f,
-        .linear = 0.09f,
-        .quadratic = 0.032f,
-      },
-      12.5f, 30.0f);
+    flashlight_->light = axgl::Light::spotlight();
     flashlight_->set_disabled(true);
     components().add(flashlight_);
   }

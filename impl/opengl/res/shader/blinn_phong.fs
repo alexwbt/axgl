@@ -61,7 +61,6 @@ uniform bool transparent;
 uniform float alpha_discard;
 uniform vec2 uv_scale;
 uniform vec2 uv_offset;
-uniform bool blinn;
 
 in vec3 frag_position;
 in vec3 frag_normal;
@@ -86,18 +85,20 @@ vec3 get_mesh_specular()
 
 vec3 calc_sun_light(SunLight light, vec3 view_dir)
 {
-  vec3 light_dir = normalize(-light.direction);
-
   vec3 mesh_diffuse = get_mesh_diffuse();
   vec3 mesh_specular = get_mesh_specular();
 
-  vec3 ambient = light.ambient * mesh_diffuse;
-
   // Diffuse
-  vec3 diffuse = light.diffuse * max(dot(frag_normal, light_dir), 0.0) * mesh_diffuse;
+  vec3 light_dir = normalize(-light.direction);
+  float diffuse_value = max(dot(frag_normal, light_dir), 0.0);
+  vec3 diffuse = light.diffuse * diffuse_value * mesh_diffuse;
+
+  // Ambient
+  vec3 ambient = diffuse_value == 0.0 ? vec3(0.0) : light.ambient * mesh_diffuse;
+
   // Specular
   vec3 reflect_dir = reflect(-light_dir, frag_normal);
-  vec3 specular = light.specular
+  vec3 specular = diffuse_value == 0.0 ? vec3(0.0) : light.specular
     * pow(max(dot(view_dir, reflect_dir), 0.0), shininess)
     * mesh_specular;
 
@@ -106,21 +107,22 @@ vec3 calc_sun_light(SunLight light, vec3 view_dir)
 
 vec3 calc_spot_light(SpotLight light, vec3 view_dir)
 {
-  vec3 light_dir = normalize(light.position - frag_position);
-
   vec3 mesh_diffuse = get_mesh_diffuse();
   vec3 mesh_specular = get_mesh_specular();
 
-  vec3 ambient = light.ambient * mesh_diffuse;
-
   // Diffuse
-  vec3 diffuse = light.diffuse * max(dot(frag_normal, light_dir), 0.0) * mesh_diffuse;
+  vec3 light_dir = normalize(light.position - frag_position);
+  float diffuse_value = max(dot(frag_normal, light_dir), 0.0);
+  vec3 diffuse = light.diffuse * diffuse_value * mesh_diffuse;
 
   // Specular
   vec3 reflect_dir = reflect(-light_dir, frag_normal);
-  vec3 specular = light.specular
+  vec3 specular = diffuse_value == 0.0 ? vec3(0.0) : light.specular
     * pow(max(dot(view_dir, reflect_dir), 0.0), shininess)
     * mesh_specular;
+
+  // Ambient
+  vec3 ambient = diffuse_value == 0.0 ? vec3(0.0) : light.ambient * mesh_diffuse;
 
   // Attenuation
   float dis = length(light.position - frag_position);
@@ -136,21 +138,22 @@ vec3 calc_spot_light(SpotLight light, vec3 view_dir)
 
 vec3 calc_point_light(PointLight light, vec3 view_dir)
 {
-  vec3 light_dir = normalize(light.position - frag_position);
-
   vec3 mesh_diffuse = get_mesh_diffuse();
   vec3 mesh_specular = get_mesh_specular();
 
-  vec3 ambient = light.ambient * mesh_diffuse;
-
   // Diffuse
-  vec3 diffuse = light.diffuse * max(dot(frag_normal, light_dir), 0.0) * mesh_diffuse;
+  vec3 light_dir = normalize(light.position - frag_position);
+  float diffuse_value = max(dot(frag_normal, light_dir), 0.0);
+  vec3 diffuse = light.diffuse * diffuse_value * mesh_diffuse;
 
   // Specular
   vec3 reflect_dir = reflect(-light_dir, frag_normal);
-  vec3 specular = light.specular
+  vec3 specular = diffuse_value == 0.0 ? vec3(0.0) : light.specular
     * pow(max(dot(view_dir, reflect_dir), 0.0), shininess)
     * mesh_specular;
+
+  // Ambient
+  vec3 ambient = diffuse_value == 0.0 ? vec3(0.0) : light.ambient * mesh_diffuse;
 
   // Attenuation
   float dis = length(light.position - frag_position);
@@ -165,7 +168,7 @@ void main()
     discard;
 
   vec3 view_dir = normalize(camera_pos - frag_position);
-  vec3 result = vec3(0);
+  vec3 result = vec3(0.0);
 
   // sun lights
   for (int i = 0; i < sun_lights_size; ++i)

@@ -40,46 +40,4 @@ inline void setup(axgl::Axgl& axgl)
   renderer->set_sample_count(8);
   renderer->set_antialiasing(true);
   renderer_service->set_active_renderer(renderer);
-
-  // realm
-  // const auto realm = realm_service->create_realm();
-  // realm_service->set_active_realm(realm);
-  //
-  // // camera entity
-  // const auto camera_entity = entity_service->create_entity();
-  // {
-  //   const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
-  //   camera_entity->components().add(camera_comp);
-  // }
-  // realm->entities().add(camera_entity);
-  // camera_entity->transform().position.z = -2;
-  //
-  // // camera input
-  // camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
-  // camera_service->set_camera(camera_entity);
-  //
-  // // light entity
-  // const auto light_entity = entity_service->create_entity();
-  // {
-  //   const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
-  //   light_comp->light.color.ambient = glm::vec3(0.3f);
-  //   light_comp->light.direction = glm::vec3(0.2f, -1.0f, 1.2f);
-  //   light_entity->components().add(light_comp);
-  // }
-  // realm->entities().add(light_entity);
-  //
-  // // cube entity
-  // const auto cube_entity = entity_service->create_entity();
-  // {
-  //   // material
-  //   const auto material = renderer_service->create_material("phong");
-  //   material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
-  //
-  //   // cube mesh
-  //   const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
-  //   axgl::util::init_cube(*mesh);
-  //   mesh->set_material(material);
-  //   cube_entity->components().add(mesh);
-  // }
-  // realm->entities().add(cube_entity);
 }

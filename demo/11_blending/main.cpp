@@ -11,7 +11,7 @@ auto create_cube(const axgl::Axgl& axgl, const glm::vec3& position, const glm::v
   const auto entity_service = axgl.entity_service();
   const auto renderer_service = axgl.renderer_service();
   // material
-  const auto material = renderer_service->create_material("phong");
+  const auto material = renderer_service->create_material("blinn-phong");
   material->set_color(color);
   if (blend)
   {
@@ -78,9 +78,7 @@ public:
     {
       const auto light_entity = entity_service->create_entity();
       const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
-      light_comp->light.color.ambient = glm::vec3(0.3f);
-      light_comp->light.color.specular = glm::vec3(0.0f);
-      light_comp->light.direction = glm::vec3(0.2f, -1.0f, 1.2f);
+      light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
       light_entity->components().add(light_comp);
       realm->entities().add(light_entity);
     }

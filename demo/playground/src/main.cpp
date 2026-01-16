@@ -25,7 +25,7 @@ int main()
   // window
   const auto window = window_service->create_window();
   window->set_title("Demo Playground");
-  window->set_size(1200, 1000);
+  window->set_size(1200, 800);
   // input
   input_service->set_window(window);
   // renderer
