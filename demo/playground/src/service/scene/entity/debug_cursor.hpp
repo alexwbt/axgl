@@ -32,6 +32,8 @@ private:
 public:
   void on_create(const axgl::Realm::Context& context) override
   {
+    EntityBase::on_create(context);
+
     components().add_all(
       std::array{
         create_axis_mesh(context.axgl, {1.0f, 0.0f, 0.0f}),

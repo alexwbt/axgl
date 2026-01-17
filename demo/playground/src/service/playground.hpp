@@ -3,8 +3,6 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
 
-#include "input_manager.hpp"
-
 #include "scene/light_scene.hpp"
 
 #include "scene/entity/box.hpp"
@@ -30,14 +28,14 @@ public:
 
   void on_start(const Context& context) override
   {
-    const auto& axgl = context.axgl;
-    const auto& realm_service = axgl.realm_service();
-    const auto& input_manager = axgl.get_service<InputManager>("input_manager");
-
     // create scenes
-    scenes_.emplace_back(axgl::create_ptr<LightScene>(axgl, *input_manager));
+    scenes_.emplace_back(axgl::create_ptr<LightScene>());
+
+    // initialize scenes
+    for (const auto& scene : scenes_)
+      scene->initialize(context);
 
     // set first scene as active realm
-    realm_service->set_active_realm(scenes_[0]);
+    context.axgl.realm_service()->set_active_realm(scenes_[0]);
   }
 };

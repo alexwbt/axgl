@@ -16,6 +16,7 @@ public:
   static constexpr std::string_view kTypeId = "entity::box";
 
 private:
+  bool rotate_ = false;
   glm::vec3 rotation_speed_{0.0f};
 
   static axgl::ptr_t<axgl::component::Mesh> create_mesh(const axgl::Axgl& axgl)
@@ -41,18 +42,29 @@ private:
 public:
   void on_create(const axgl::Realm::Context& context) override
   {
+    EntityBase::on_create(context);
+
     static const auto mesh = create_mesh(context.axgl);
     components_.add(mesh);
   }
 
   void update(const axgl::Realm::Context& context) override
   {
-    auto& transform = this->transform();
-    const auto delta_tick = static_cast<float>(context.delta_tick);
+    EntityBase::update(context);
 
-    transform.rotation += rotation_speed_ * delta_tick;
-    update_model_matrix();
+    if (rotate_)
+    {
+      auto& transform = this->transform();
+      const auto delta_tick = static_cast<float>(context.delta_tick);
+
+      transform.rotation += rotation_speed_ * delta_tick;
+      update_model_matrix();
+    }
   }
 
-  void set_rotation_speed(glm::vec3 rotation_speed) { rotation_speed_ = rotation_speed; }
+  void set_rotation_speed(glm::vec3 rotation_speed)
+  {
+    rotation_speed_ = rotation_speed;
+    rotate_ = true;
+  }
 };

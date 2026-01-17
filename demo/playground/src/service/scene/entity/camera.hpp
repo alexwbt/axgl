@@ -16,13 +16,10 @@ private:
   axgl::ptr_t<axgl::Input> flashlight_input_;
 
 public:
-  void set_flashlight_input(axgl::ptr_t<axgl::Input> flashlight_input)
-  {
-    flashlight_input_ = std::move(flashlight_input);
-  }
-
   void on_create(const axgl::Realm::Context& context) override
   {
+    EntityBase::on_create(context);
+
     const auto& axgl = context.axgl;
     const auto& entity_service = axgl.entity_service();
 
@@ -46,5 +43,10 @@ public:
     current += (target - current) * 0.3f;
 
     if (flashlight_input_ && flashlight_input_->tick == 1) flashlight_->set_disabled(!flashlight_->is_disabled());
+  }
+
+  void set_flashlight_input(axgl::ptr_t<axgl::Input> flashlight_input)
+  {
+    flashlight_input_ = std::move(flashlight_input);
   }
 };

@@ -49,6 +49,8 @@ private:
 public:
   void on_create(const axgl::Realm::Context& context) override
   {
+    EntityBase::on_create(context);
+
     static const auto mesh = create_mesh(context.axgl, size_);
     components_.add(mesh);
     transform().scale = {size_, 1.0f, size_};
