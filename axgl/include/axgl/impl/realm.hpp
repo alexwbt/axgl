@@ -16,6 +16,7 @@ protected:
 public:
   void tick(const Service::Context& context) override { entities_.tick({context, *this}); }
   void update(const Service::Context& context) override { entities_.update({context, *this}); }
+  void initialize(const axgl::Service::Context& context) override { }
 
   [[nodiscard]] EntityContainer& entities() override { return entities_; }
 };

@@ -11,20 +11,18 @@ namespace axgl::impl
 
 class RealmService : virtual public axgl::RealmService
 {
-  axgl::ptr_t<axgl::impl::Realm> realm_;
+  axgl::ptr_t<axgl::Realm> realm_;
 
 public:
   void tick(const Service::Context& context) override
   {
     if (!realm_) return;
-
     realm_->tick(context);
   }
 
   void update(const Service::Context& context) override
   {
     if (!realm_) return;
-
     realm_->update(context);
   }
 
@@ -32,23 +30,7 @@ public:
 
   [[nodiscard]] axgl::ptr_t<axgl::Realm> get_active_realm() const override { return realm_; }
 
-  void set_active_realm(const axgl::ptr_t<axgl::Realm> realm) override
-  {
-    if (!realm)
-    {
-      realm_ = nullptr;
-      return;
-    }
-
-    auto realm_impl = axgl::ptr_cast<axgl::impl::Realm>(realm);
-#ifdef AXGL_DEBUG
-    if (!realm_impl)
-      throw std::runtime_error(
-        "Failed to set active realm. "
-        "Default Realm is required for default RealmService");
-#endif
-    realm_ = std::move(realm_impl);
-  }
+  void set_active_realm(axgl::ptr_t<axgl::Realm> realm) override { realm_ = std::move(realm); }
 };
 
 } // namespace axgl::impl

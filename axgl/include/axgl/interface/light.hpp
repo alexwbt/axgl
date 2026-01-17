@@ -74,20 +74,20 @@ public:
   }
 
   static axgl::Light point_light(
+    const glm::vec3& position = glm::vec3(0.0f),
     const axgl::Light::Strength& strength = axgl::Light::Strength{1.0f, 0.09f, 0.032f},
-    const axgl::Light::Color& color = axgl::Light::Color{glm::vec3(0.02f), glm::vec3(1.0f), glm::vec3(1.0f)},
-    const glm::vec3& position = glm::vec3(0.0f))
+    const axgl::Light::Color& color = axgl::Light::Color{glm::vec3(0.02f), glm::vec3(1.0f), glm::vec3(1.0f)})
   {
     return {position, color, strength};
   }
 
   static axgl::Light spotlight(
+    const glm::vec3& position = glm::vec3(0.0f),
     const glm::vec3& direction = glm::vec3(0.0f),
     const float cut_off = 12.5f,
     const float outer_cut_off = 30.0f,
     const axgl::Light::Strength& strength = axgl::Light::Strength{1.0f, 0.09f, 0.032f},
-    const axgl::Light::Color& color = axgl::Light::Color{glm::vec3(0.02f), glm::vec3(1.0f), glm::vec3(1.0f)},
-    const glm::vec3& position = glm::vec3(0.0f))
+    const axgl::Light::Color& color = axgl::Light::Color{glm::vec3(0.02f), glm::vec3(1.0f), glm::vec3(1.0f)})
   {
     return {position, direction, color, strength, cut_off, outer_cut_off};
   }

@@ -18,8 +18,9 @@ public:
   };
 
   virtual ~Realm() = default;
-  virtual void tick(const axgl::Service::Context& context) = 0;
+  virtual void initialize(const axgl::Service::Context& context) = 0;
   virtual void update(const axgl::Service::Context& context) = 0;
+  virtual void tick(const axgl::Service::Context& context) = 0;
   [[nodiscard]] virtual axgl::Container<axgl::Entity>& entities() = 0;
 };
 
