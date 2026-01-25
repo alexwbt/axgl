@@ -93,14 +93,14 @@ vec3 calc_sun_light(SunLight light, vec3 view_dir)
   float diffuse_value = max(dot(frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * mesh_diffuse;
 
-  // Ambient
-  vec3 ambient = diffuse_value == 0.0 ? vec3(0.0) : light.ambient * mesh_diffuse;
-
   // Specular
   vec3 reflect_dir = reflect(-light_dir, frag_normal);
   vec3 specular = diffuse_value == 0.0 ? vec3(0.0) : light.specular
     * pow(max(dot(view_dir, reflect_dir), 0.0), shininess)
     * mesh_specular;
+
+  // Ambient
+  vec3 ambient = light.ambient * mesh_diffuse;
 
   return ambient + diffuse + specular;
 }
@@ -122,7 +122,7 @@ vec3 calc_spot_light(SpotLight light, vec3 view_dir)
     * mesh_specular;
 
   // Ambient
-  vec3 ambient = diffuse_value == 0.0 ? vec3(0.0) : light.ambient * mesh_diffuse;
+  vec3 ambient = light.ambient * mesh_diffuse;
 
   // Attenuation
   float dis = length(light.position - frag_position);
@@ -153,7 +153,7 @@ vec3 calc_point_light(PointLight light, vec3 view_dir)
     * mesh_specular;
 
   // Ambient
-  vec3 ambient = diffuse_value == 0.0 ? vec3(0.0) : light.ambient * mesh_diffuse;
+  vec3 ambient = light.ambient * mesh_diffuse;
 
   // Attenuation
   float dis = length(light.position - frag_position);
