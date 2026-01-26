@@ -70,7 +70,7 @@ public:
     }
   }
 
-  virtual void use(const RenderComponent::Context& context)
+  virtual void use(const RenderComponent::RenderContext& context)
   {
     if (enable_depth_test_)
     {

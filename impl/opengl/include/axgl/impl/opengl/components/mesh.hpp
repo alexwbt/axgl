@@ -76,7 +76,7 @@ public:
     instanced_models_.emplace_back(entity.get_model_matrix());
   }
 
-  void submit_draw_call(RenderComponent::Context& context) override
+  void submit_render_function(RenderComponent::Context& context) override
   {
     if (!material_)
     {
@@ -104,13 +104,13 @@ public:
     const auto instance_count = static_cast<GLsizei>(instanced_models_.size());
     instanced_models_.clear();
 
-    const auto draw_func = [this, instance_count](const auto& c)
+    const auto render_function = [this, instance_count](const RenderComponent::RenderContext& c)
     {
       material_->use(c);
       vao_->draw_instanced(instance_count);
     };
-    if (material_->enabled_blend()) context.blend_pass.emplace_back(std::move(draw_func));
-    else context.opaque_pass.emplace_back(std::move(draw_func));
+    if (material_->enabled_blend()) context.blend_pass.emplace_back(std::move(render_function));
+    else context.opaque_pass.emplace_back(std::move(render_function));
   }
 
   std::uint64_t get_id() override { return ComponentBase::get_id(); }

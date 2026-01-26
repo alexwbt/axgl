@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <spdlog/spdlog.h>
 
+#include <axgl/common.hpp>
 #include <axgl/interface/renderer.hpp>
 
 #include <axgl/axgl.hpp>
@@ -39,13 +40,22 @@ class Renderer : public axgl::Renderer
   std::unique_ptr<::opengl::Texture> depth_texture_;
   std::unique_ptr<::opengl::Framebuffer> screen_framebuffer_;
 
+  //
+  // Blending
+  //
   // std::unique_ptr<::opengl::Texture> depth_texture_;
   // std::unique_ptr<::opengl::Texture> accum_texture_;
   // std::unique_ptr<::opengl::Texture> reveal_texture_;
   // std::unique_ptr<::opengl::Framebuffer> blend_framebuffer_;
-
   // static constexpr glm::vec4 zero_filler_{0.0f};
   // static constexpr glm::vec4 one_filler_{1.0f};
+
+  //
+  // Shadow Map
+  //
+  static constexpr std::uint32_t kShadowMapSize = 1024 * 4;
+  std::unique_ptr<::opengl::Texture> shadow_texture_;
+  std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer_;
 
 public:
   void set_antialiasing(bool enable) override { msaa_ = enable; }
@@ -98,10 +108,8 @@ public:
     const auto& gui = context.axgl.gui_service()->get_main_ui();
     const auto& realm = context.axgl.realm_service()->get_active_realm();
 
-    const glm::ivec2 viewport_i = window_->get_size();
+    const auto viewport_i = window_->get_size();
     const auto viewport_f = glm::vec2(viewport_i);
-    glViewport(0, 0, viewport_i.x, viewport_i.y);
-
     if (viewport_ != viewport_f)
     {
       viewport_ = viewport_f;
@@ -158,6 +166,21 @@ public:
       // blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
       // blend_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
       // blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
+
+      //
+      // setup shadow map
+      //
+      shadow_texture_ = std::make_unique<::opengl::Texture>();
+      shadow_texture_->load_texture(
+        0, GL_DEPTH_COMPONENT, kShadowMapSize, kShadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+      shadow_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      shadow_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      shadow_texture_->set_parameteri(GL_TEXTURE_WRAP_S, GL_REPEAT);
+      shadow_texture_->set_parameteri(GL_TEXTURE_WRAP_T, GL_REPEAT);
+      shadow_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+      shadow_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *shadow_texture_);
+      // glDrawBuffer(GL_NONE);
+      // glReadBuffer(GL_NONE);
     }
 
     auto* camera = context.axgl.camera_service()->get_camera();
@@ -170,10 +193,19 @@ public:
 
     if (camera && realm)
     {
+      // render context
+      RenderComponent::RenderContext render_context{
+        .viewport = viewport_f,
+        .position_of_view = camera->position,
+        .view_matrix = camera->view_matrix(),
+        .projection_matrix = camera->projection_matrix(),
+        .projection_view_matrix = camera->projection_view_matrix(),
+      };
+
       //
       // gather and submit render components
       //
-      RenderComponent::Context render_context{camera};
+      RenderComponent::Context render_comp_context;
       std::unordered_map<std::uint64_t, RenderComponent*> render_components;
       {
         AXGL_PROFILE_SCOPE("Renderer Gather Instances");
@@ -191,19 +223,45 @@ public:
               render_components[id] = render_comp;
             }
             else if (const auto* light_comp = dynamic_cast<axgl::impl::component::Light*>(component.get()))
-              render_context.lights.push_back(&light_comp->light);
+              render_comp_context.lights.push_back(&light_comp->light);
           }
         }
       }
       {
         AXGL_PROFILE_SCOPE("Renderer Submit Calls");
         for (auto* render_comp : render_components | std::views::values)
-          render_comp->submit_draw_call(render_context);
+          render_comp->submit_render_function(render_comp_context);
+      }
+
+      //
+      // Shadow Map Render Pass
+      //
+      glViewport(0, 0, kShadowMapSize, kShadowMapSize);
+      glEnable(GL_DEPTH_TEST);
+      glDepthFunc(GL_LESS);
+
+      shadow_framebuffer_->use();
+      glClearDepth(1.0);
+      glClear(GL_DEPTH_BUFFER_BIT);
+
+      const auto light_view = glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+      const auto light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+      RenderComponent::RenderContext shadow_render_context{
+        .viewport = glm::vec2(kShadowMapSize),
+        .view_matrix = light_view,
+        .projection_matrix = light_projection,
+        .projection_view_matrix = light_projection * light_view,
+      };
+      {
+        AXGL_PROFILE_SCOPE("Render Shadow Map");
+        for (const auto& render_func : render_comp_context.opaque_pass)
+          render_func(shadow_render_context);
       }
 
       //
       // Opaque Render Pass
       //
+      glViewport(0, 0, viewport_i.x, viewport_i.y);
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_DEPTH_TEST);
@@ -218,7 +276,7 @@ public:
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       {
         AXGL_PROFILE_SCOPE("Renderer Opaque Pass");
-        for (const auto& render_func : render_context.opaque_pass)
+        for (const auto& render_func : render_comp_context.opaque_pass)
           render_func(render_context);
       }
 

@@ -23,6 +23,8 @@ private:
   glm::vec3 up_{0.0f};
   glm::vec3 front_{0.0f};
   glm::vec3 horizontal_right_{0.0f};
+  glm::mat4 view_matrix_{0.0f};
+  glm::mat4 projection_matrix_{0.0f};
   glm::mat4 projection_view_matrix_{0.0f};
 
 public:
@@ -31,6 +33,8 @@ public:
   [[nodiscard]] glm::vec3 up() const { return up_; }
   [[nodiscard]] glm::vec3 front() const { return front_; }
   [[nodiscard]] glm::vec3 horizontal_right() const { return horizontal_right_; }
+  [[nodiscard]] glm::mat4 view_matrix() const { return projection_view_matrix_; }
+  [[nodiscard]] glm::mat4 projection_matrix() const { return projection_view_matrix_; }
   [[nodiscard]] glm::mat4 projection_view_matrix() const { return projection_view_matrix_; }
 
   void update()
@@ -56,22 +60,23 @@ public:
   void update_projection_view_matrix()
   {
     // view matrix
-    const auto view = glm::lookAt(position, position + front_, up_);
+    view_matrix_ = glm::lookAt(position, position + front_, up_);
+
     // projection matrix
-    glm::mat4 projection;
     if (orthographic)
     {
       const auto v = viewport * 0.5f;
-      projection = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
+      projection_matrix_ = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
     }
     else if (viewport.y > 0)
     {
       const float f = glm::radians(fov);
       const float r = viewport.x / viewport.y;
-      projection = glm::perspective(f, r, near_clip, far_clip);
+      projection_matrix_ = glm::perspective(f, r, near_clip, far_clip);
     }
+
     // projection * view
-    projection_view_matrix_ = projection * view;
+    projection_view_matrix_ = projection_matrix_ * view_matrix_;
   }
 
   void set_projection_view_matrix(const glm::mat4& pv) { projection_view_matrix_ = pv; }

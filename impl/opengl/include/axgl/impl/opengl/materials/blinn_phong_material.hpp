@@ -52,14 +52,14 @@ public:
     }
   }
 
-  void use(const RenderComponent::Context& context) override
+  void use(const RenderComponent::RenderContext& context) override
   {
     Material::use(context);
 
     shader_.use_program();
     shader_.set_bool("transparent", enable_blend_);
-    shader_.set_mat4("projection_view", context.camera->projection_view_matrix());
-    shader_.set_vec3("camera_pos", context.camera->position);
+    shader_.set_mat4("projection_view", context.projection_view_matrix);
+    shader_.set_vec3("camera_pos", context.position_of_view);
     shader_.set_vec4("mesh_color", color_);
     shader_.set_float("shininess", shininess_);
     shader_.set_float("alpha_discard", enable_blend_ ? 0.0f : alpha_discard_);

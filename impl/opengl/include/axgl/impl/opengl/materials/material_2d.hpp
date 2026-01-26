@@ -23,13 +23,13 @@ public:
 #endif
   }
 
-  void use(const RenderComponent::Context& context) override
+  void use(const RenderComponent::RenderContext& context) override
   {
     Material::use(context);
 
     shader_.use_program();
     shader_.set_bool("use_instancing", true);
-    shader_.set_mat4("projection_view", context.camera->projection_view_matrix());
+    shader_.set_mat4("projection_view", context.projection_view_matrix);
     shader_.set_vec4("mesh_color", color_);
     shader_.set_float("alpha_discard", alpha_discard_);
     shader_.set_float("texture_gamma", 2.2f);
