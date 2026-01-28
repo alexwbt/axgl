@@ -15,17 +15,17 @@ public:
   struct RenderContext;
   struct Context
   {
-    std::vector<const axgl::Light*> lights;
     std::vector<std::function<void(const RenderContext&)>> opaque_pass;
     std::vector<std::function<void(const RenderContext&)>> blend_pass;
   };
-  struct RenderContext : Context
+  struct RenderContext
   {
     glm::vec2 viewport{0.0f};
-    glm::vec3 position_of_view{0.0f};
+    glm::vec3 viewpoint{0.0f};
     glm::mat4 view_matrix{0.0f};
     glm::mat4 projection_matrix{0.0f};
     glm::mat4 projection_view_matrix{0.0f};
+    std::vector<const axgl::Light*> lights;
   };
 
   virtual ~RenderComponent() = default;

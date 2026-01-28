@@ -196,7 +196,7 @@ public:
       // render context
       RenderComponent::RenderContext render_context{
         .viewport = viewport_f,
-        .position_of_view = camera->position,
+        .viewpoint = camera->position,
         .view_matrix = camera->view_matrix(),
         .projection_matrix = camera->projection_matrix(),
         .projection_view_matrix = camera->projection_view_matrix(),
@@ -223,7 +223,7 @@ public:
               render_components[id] = render_comp;
             }
             else if (const auto* light_comp = dynamic_cast<axgl::impl::component::Light*>(component.get()))
-              render_comp_context.lights.push_back(&light_comp->light);
+              render_context.lights.emplace_back(&light_comp->light);
           }
         }
       }

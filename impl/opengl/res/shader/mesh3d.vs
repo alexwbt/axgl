@@ -6,10 +6,12 @@ layout (location = 2) in vec2 uv;
 layout (location = 3) in mat4 model;
 
 uniform mat4 projection_view;
+uniform mat4 light_pv;
 
 out vec3 frag_position;
 out vec3 frag_normal;
 out vec2 vert_uv;
+out vec4 light_space_frag_pos;
 
 void main()
 {
@@ -19,4 +21,6 @@ void main()
   frag_position = vec3(model * vec4(position, 1.0));
   frag_normal = normalize(mat3(transpose(inverse(model))) * normal);
   vert_uv = uv;
+
+  light_space_frag_pos = light * vec4(frag_position, 1.0);
 }
