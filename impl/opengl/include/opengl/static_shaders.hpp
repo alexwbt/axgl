@@ -31,6 +31,7 @@ public:
   [[nodiscard]] ShaderProgram& weighted_blended() const { return *weighted_blended_; }
   [[nodiscard]] ShaderProgram& gui() const { return *gui_; }
   [[nodiscard]] ShaderProgram& color() const { return *color_; }
+  [[nodiscard]] ShaderProgram& depth_only() const { return *depth_only_; }
 
 private:
   std::unique_ptr<ShaderProgram> mesh_2d_;
@@ -40,6 +41,7 @@ private:
   std::unique_ptr<ShaderProgram> weighted_blended_;
   std::unique_ptr<ShaderProgram> gui_;
   std::unique_ptr<ShaderProgram> color_;
+  std::unique_ptr<ShaderProgram> depth_only_;
 
   StaticShaders()
   {
@@ -64,6 +66,9 @@ private:
     color_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs")},
       {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/color.fs")}});
+    depth_only_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
+      {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/depth_only.vs")},
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/depth_only.fs")}});
   }
 };
 

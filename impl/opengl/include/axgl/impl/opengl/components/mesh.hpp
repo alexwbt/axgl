@@ -12,6 +12,7 @@
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
 
+#include <opengl/static_shaders.hpp>
 #include <opengl/vertex_array_object.hpp>
 
 namespace axgl::impl::opengl::component
@@ -110,7 +111,17 @@ public:
       vao_->draw_instanced(instance_count);
     };
     if (material_->enabled_blend()) context.blend_pass.emplace_back(std::move(render_function));
-    else context.opaque_pass.emplace_back(std::move(render_function));
+    else
+    {
+      context.opaque_pass.emplace_back(std::move(render_function));
+      context.shadow_pass.emplace_back([this, instance_count](const axgl::impl::opengl::renderer::LightContext& c)
+      {
+        auto& depth_only_shader = ::opengl::StaticShaders::instance().depth_only();
+        depth_only_shader.use_program();
+        depth_only_shader.set_mat4("projection_view", c.light_pv);
+        vao_->draw_instanced(instance_count);
+      });
+    }
   }
 
   std::uint64_t get_id() override { return ComponentBase::get_id(); }

@@ -54,6 +54,7 @@ class Renderer : public axgl::Renderer
   // Shadow Map
   //
   static constexpr std::uint32_t kShadowMapSize = 1024 * 4;
+  // static constexpr std::uint32_t kShadowMapCount = 32;
   std::unique_ptr<::opengl::Texture> shadow_texture_;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer_;
 
@@ -223,7 +224,12 @@ public:
               render_components[id] = render_comp;
             }
             else if (const auto* light_comp = dynamic_cast<axgl::impl::component::Light*>(component.get()))
-              render_context.lights.emplace_back(&light_comp->light);
+            {
+              impl::opengl::renderer::LightContext light_context;
+              light_context.light = &light_comp->light;
+              if (light_context.light->casts_shadows) light_context.light_pv = light_context.light->get_pv_matrix();
+              render_context.lights.emplace_back(light_context);
+            }
           }
         }
       }
@@ -245,20 +251,8 @@ public:
       glClear(GL_DEPTH_BUFFER_BIT);
       {
         AXGL_PROFILE_SCOPE("Render Shadow Map");
-        const auto light_view = glm::lookAt(
-          glm::vec3(-2.0f, 4.0f, -1.0f), //
-          glm::vec3(0.0f),               //
-          glm::vec3(0.0f, 1.0f, 0.0f)    //
-        );
-        const auto light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
-        impl::opengl::renderer::RenderContext shadow_render_context{
-          .viewport = glm::vec2(kShadowMapSize),
-          .view_matrix = light_view,
-          .projection_matrix = light_projection,
-          .projection_view_matrix = light_projection * light_view,
-        };
-        for (const auto& render_func : pipeline_context.opaque_pass)
-          render_func(shadow_render_context);
+        for (const auto& render_func : pipeline_context.shadow_pass)
+          render_func(render_context.lights[0]);
       }
 
       //

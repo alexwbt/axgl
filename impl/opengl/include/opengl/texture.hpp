@@ -206,6 +206,20 @@ public:
     use();
     glTexImage2DMultisample(target_, sample_size, internal_format, width, height, fixed_sample_locations);
   }
+
+  // void init_texture_array()
+  // {
+  //   if (initialized())
+  //   {
+  //     AXGL_LOG_ERROR("Texture is already initialized.");
+  //     return;
+  //   }
+  //   target_ = GL_TEXTURE_2D_ARRAY;
+  //   width_ = width;
+  //   height_ = height;
+  //
+  //   glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevelCount, GL_RGBA8, width, height, layerCount);
+  // }
 };
 
 } // namespace opengl

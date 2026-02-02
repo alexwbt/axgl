@@ -13,7 +13,7 @@ class Light : public ComponentBase
 public:
   static constexpr std::string_view kTypeId = "component::light";
 
-  axgl::Light light;
+  axgl::Light light{axgl::Light::Type::kSun};
 
   void update(const axgl::Entity::Context& context) override
   {

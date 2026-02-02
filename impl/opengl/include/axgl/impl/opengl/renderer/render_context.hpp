@@ -1,10 +1,18 @@
 #pragma once
 
+#include <functional>
+
 #include <axgl/common.hpp>
 #include <axgl/interface/light.hpp>
 
 namespace axgl::impl::opengl::renderer
 {
+
+struct LightContext
+{
+  const axgl::Light* light = nullptr;
+  glm::mat4 light_pv{0.0f};
+};
 
 struct RenderContext
 {
@@ -13,7 +21,14 @@ struct RenderContext
   glm::mat4 view_matrix{0.0f};
   glm::mat4 projection_matrix{0.0f};
   glm::mat4 projection_view_matrix{0.0f};
-  std::vector<const axgl::Light*> lights;
+  std::vector<LightContext> lights;
+};
+
+struct PipelineContext
+{
+  std::vector<std::function<void(const LightContext&)>> shadow_pass;
+  std::vector<std::function<void(const RenderContext&)>> opaque_pass;
+  std::vector<std::function<void(const RenderContext&)>> blend_pass;
 };
 
 } // namespace axgl::impl::opengl::renderer

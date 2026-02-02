@@ -1,9 +1,8 @@
 #pragma once
 
-#include <axgl/common.hpp>
 #include <axgl/interface/entity.hpp>
 
-#include <axgl/impl/opengl/renderer/pipeline_context.hpp>
+#include <axgl/impl/opengl/renderer/render_context.hpp>
 
 namespace axgl::impl::opengl::renderer
 {
