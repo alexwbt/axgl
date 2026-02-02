@@ -1,10 +1,8 @@
 #pragma once
 
-#include "axgl/interface/material.hpp"
-
 #include <axgl/interface/material.hpp>
 
-#include <axgl/impl/opengl/render_component.hpp>
+#include <axgl/impl/opengl/renderer/render_component.hpp>
 
 #include <opengl/static_shaders.hpp>
 
@@ -70,7 +68,7 @@ public:
     }
   }
 
-  virtual void use(const RenderComponent::RenderContext& context)
+  virtual void use(const impl::opengl::renderer::RenderContext& context)
   {
     if (enable_depth_test_)
     {

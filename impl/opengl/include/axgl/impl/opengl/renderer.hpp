@@ -11,7 +11,7 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw/window.hpp>
-#include <axgl/impl/opengl/render_component.hpp>
+#include <axgl/impl/opengl/renderer/render_component.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/framebuffer.hpp>
@@ -87,11 +87,11 @@ public:
     window_->swap_buffers();
   }
 
-  bool get_antialiasing() const override { return msaa_; }
+  [[nodiscard]] bool get_antialiasing() const override { return msaa_; }
 
-  int get_sample_count() const override { return sample_count_; }
+  [[nodiscard]] int get_sample_count() const override { return sample_count_; }
 
-  axgl::ptr_t<axgl::Window> get_window() const override { return window_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Window> get_window() const override { return window_; }
 
   void render(const axgl::Service::Context& context) override
   {
@@ -194,7 +194,7 @@ public:
     if (camera && realm)
     {
       // render context
-      RenderComponent::RenderContext render_context{
+      impl::opengl::renderer::RenderContext render_context{
         .viewport = viewport_f,
         .viewpoint = camera->position,
         .view_matrix = camera->view_matrix(),
@@ -205,8 +205,8 @@ public:
       //
       // gather and submit render components
       //
-      RenderComponent::Context render_comp_context;
-      std::unordered_map<std::uint64_t, RenderComponent*> render_components;
+      impl::opengl::renderer::PipelineContext pipeline_context;
+      std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*> render_components;
       {
         AXGL_PROFILE_SCOPE("Renderer Gather Instances");
         for (const auto& entity : realm->entities().get())
@@ -215,7 +215,7 @@ public:
           for (const auto& component : entity->components().get())
           {
             if (component->is_disabled()) continue;
-            if (auto* render_comp = dynamic_cast<RenderComponent*>(component.get()))
+            if (auto* render_comp = dynamic_cast<impl::opengl::renderer::RenderComponent*>(component.get()))
             {
               render_comp->gather_instances(*entity);
 
@@ -230,7 +230,7 @@ public:
       {
         AXGL_PROFILE_SCOPE("Renderer Submit Calls");
         for (auto* render_comp : render_components | std::views::values)
-          render_comp->submit_render_function(render_comp_context);
+          render_comp->submit_render_function(pipeline_context);
       }
 
       //
@@ -243,18 +243,21 @@ public:
       shadow_framebuffer_->use();
       glClearDepth(1.0);
       glClear(GL_DEPTH_BUFFER_BIT);
-
-      const auto light_view = glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-      const auto light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
-      RenderComponent::RenderContext shadow_render_context{
-        .viewport = glm::vec2(kShadowMapSize),
-        .view_matrix = light_view,
-        .projection_matrix = light_projection,
-        .projection_view_matrix = light_projection * light_view,
-      };
       {
         AXGL_PROFILE_SCOPE("Render Shadow Map");
-        for (const auto& render_func : render_comp_context.opaque_pass)
+        const auto light_view = glm::lookAt(
+          glm::vec3(-2.0f, 4.0f, -1.0f), //
+          glm::vec3(0.0f),               //
+          glm::vec3(0.0f, 1.0f, 0.0f)    //
+        );
+        const auto light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+        impl::opengl::renderer::RenderContext shadow_render_context{
+          .viewport = glm::vec2(kShadowMapSize),
+          .view_matrix = light_view,
+          .projection_matrix = light_projection,
+          .projection_view_matrix = light_projection * light_view,
+        };
+        for (const auto& render_func : pipeline_context.opaque_pass)
           render_func(shadow_render_context);
       }
 
@@ -276,7 +279,7 @@ public:
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       {
         AXGL_PROFILE_SCOPE("Renderer Opaque Pass");
-        for (const auto& render_func : render_comp_context.opaque_pass)
+        for (const auto& render_func : pipeline_context.opaque_pass)
           render_func(render_context);
       }
 

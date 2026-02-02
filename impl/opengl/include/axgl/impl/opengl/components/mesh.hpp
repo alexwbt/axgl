@@ -9,8 +9,8 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/component_base.hpp>
 #include <axgl/impl/opengl/material.hpp>
-#include <axgl/impl/opengl/render_component.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
+#include <axgl/impl/opengl/renderer/render_component.hpp>
 
 #include <opengl/vertex_array_object.hpp>
 
@@ -18,7 +18,7 @@ namespace axgl::impl::opengl::component
 {
 
 class Mesh : virtual public axgl::component::Mesh,
-             virtual public axgl::impl::opengl::RenderComponent,
+             virtual public axgl::impl::opengl::renderer::RenderComponent,
              public axgl::impl::ComponentBase
 {
   axgl::ptr_t<axgl::impl::opengl::Material> material_;
@@ -76,7 +76,7 @@ public:
     instanced_models_.emplace_back(entity.get_model_matrix());
   }
 
-  void submit_render_function(RenderComponent::Context& context) override
+  void submit_render_function(axgl::impl::opengl::renderer::PipelineContext& context) override
   {
     if (!material_)
     {
@@ -104,7 +104,7 @@ public:
     const auto instance_count = static_cast<GLsizei>(instanced_models_.size());
     instanced_models_.clear();
 
-    const auto render_function = [this, instance_count](const RenderComponent::RenderContext& c)
+    const auto render_function = [this, instance_count](const axgl::impl::opengl::renderer::RenderContext& c)
     {
       material_->use(c);
       vao_->draw_instanced(instance_count);

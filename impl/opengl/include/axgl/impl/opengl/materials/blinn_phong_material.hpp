@@ -4,6 +4,7 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/material.hpp>
+#include <axgl/impl/opengl/renderer/render_context.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/static_shaders.hpp>
@@ -52,14 +53,14 @@ public:
     }
   }
 
-  void use(const RenderComponent::RenderContext& context) override
+  void use(const impl::opengl::renderer::RenderContext& context) override
   {
     Material::use(context);
 
     shader_.use_program();
     shader_.set_bool("transparent", enable_blend_);
     shader_.set_mat4("projection_view", context.projection_view_matrix);
-    shader_.set_mat4("light_pv", );
+    // shader_.set_mat4("light_pv", );
     shader_.set_vec3("camera_pos", context.viewpoint);
     shader_.set_vec4("mesh_color", color_);
     shader_.set_float("shininess", shininess_);
