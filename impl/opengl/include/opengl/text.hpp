@@ -56,10 +56,10 @@ class Character final
     texture.load_texture(
       0, GL_RED, static_cast<GLsizei>(bitmap.width), static_cast<GLsizei>(bitmap.rows), 0, GL_RED, GL_UNSIGNED_BYTE,
       bitmap.buffer);
-    texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    texture.set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    texture.set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    texture.set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     size.x = texture.get_width();
     size.y = texture.get_height();
@@ -230,10 +230,10 @@ public:
 
     target.size = glm::ivec2(width, height);
     target.texture.load_texture(0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    target.texture.set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    target.texture.set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    target.texture.set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    target.texture.set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    target.texture.set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    target.texture.set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    target.texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    target.texture.set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     const Framebuffer framebuffer;
     framebuffer.attach_texture(GL_COLOR_ATTACHMENT0, target.texture);

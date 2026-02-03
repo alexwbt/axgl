@@ -53,7 +53,7 @@ class Renderer : public axgl::Renderer
   //
   // Shadow Map
   //
-  static constexpr std::uint32_t kShadowMapSize = 1024;
+  static constexpr std::uint32_t kShadowMapSize = 1024 * 4;
   // static constexpr std::uint32_t kShadowMapCount = 32;
   std::unique_ptr<::opengl::Texture> shadow_texture_;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer_;
@@ -128,8 +128,8 @@ public:
       {
         multisample_texture_ = std::make_unique<::opengl::Texture>();
         multisample_texture_->init_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, GL_TRUE);
-        multisample_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        multisample_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        multisample_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        multisample_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         multisample_renderbuffer_ = std::make_unique<::opengl::Renderbuffer>();
         multisample_renderbuffer_->init_multisample_renderbuffer(
           sample_count_, GL_DEPTH24_STENCIL8, viewport_i.x, viewport_i.y);
@@ -141,8 +141,8 @@ public:
 
       screen_texture_ = std::make_unique<::opengl::Texture>();
       screen_texture_->load_texture(0, GL_RGB, viewport_i.x, viewport_i.y, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-      screen_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      screen_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      screen_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      screen_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       depth_texture_ = std::make_unique<::opengl::Texture>();
       depth_texture_->load_texture(
         0, GL_DEPTH_COMPONENT, viewport_i.x, viewport_i.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
@@ -174,10 +174,11 @@ public:
       shadow_texture_ = std::make_unique<::opengl::Texture>();
       shadow_texture_->load_texture(
         0, GL_DEPTH_COMPONENT, kShadowMapSize, kShadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-      shadow_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      shadow_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      shadow_texture_->set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-      shadow_texture_->set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+      shadow_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      shadow_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      shadow_texture_->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+      shadow_texture_->set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+      shadow_texture_->set_parameter(GL_TEXTURE_BORDER_COLOR, std::array{1.0f, 1.0f, 1.0f, 1.0f});
       shadow_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
       shadow_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *shadow_texture_);
       // glDrawBuffer(GL_NONE);

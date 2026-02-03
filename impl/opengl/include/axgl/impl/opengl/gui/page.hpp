@@ -33,10 +33,10 @@ public:
     const auto opengl_texture = texture_->get_texture();
     opengl_texture->load_texture(
       0, GL_RGBA, static_cast<GLsizei>(width_), static_cast<GLsizei>(height_), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    opengl_texture->set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    opengl_texture->set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    opengl_texture->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    opengl_texture->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    opengl_texture->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    opengl_texture->set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    opengl_texture->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    opengl_texture->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     framebuffer_ = std::make_unique<::opengl::Framebuffer>();
     framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *opengl_texture);

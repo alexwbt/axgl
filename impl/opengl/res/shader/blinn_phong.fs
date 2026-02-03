@@ -85,18 +85,30 @@ vec3 get_mesh_specular()
     : vec3(1);
 }
 
-float calc_shadow(vec3 light_dir)
+float calc_shadow()
 {
   vec3 projection_coords = light_space_frag_pos.xyz / light_space_frag_pos.w;
   projection_coords = projection_coords * 0.5 + 0.5;
 
   if (projection_coords.z > 1.0) return 0.0;
 
-  float closest_depth = texture(shadow_map, projection_coords.xy).r;
-  float current_depth = projection_coords.z;
+//  float closest_depth = texture(shadow_map, projection_coords.xy).r;
+//  float current_depth = projection_coords.z;
+//  float bias = max(0.05 * (1.0 - dot(frag_normal, light_dir)), 0.005);
+//  float shadow = current_depth - bias > closest_depth  ? 1.0 : 0.0;
+//  float shadow = current_depth > closest_depth  ? 1.0 : 0.0;
 
-  float bias = max(0.05 * (1.0 - dot(frag_normal, light_dir)), 0.005);
-  float shadow = current_depth - bias> closest_depth  ? 1.0 : 0.0;
+  float shadow = 0.0;
+  vec2 texel_size = 1.0 / textureSize(shadow_map, 0);
+  for(int x = -1; x <= 1; ++x)
+  {
+    for(int y = -1; y <= 1; ++y)
+    {
+      float pcf_depth = texture(shadow_map, projection_coords.xy + vec2(x, y) * texel_size).r;
+      shadow += projection_coords.z > pcf_depth ? 1.0 : 0.0;
+    }
+  }
+  shadow /= 9.0;
 
   return shadow;
 }
@@ -121,7 +133,7 @@ vec3 calc_sun_light(SunLight light, vec3 view_dir)
   vec3 ambient = light.ambient * mesh_diffuse;
 
   // Shadow
-  float shadow = calc_shadow(light_dir);
+  float shadow = calc_shadow();
 
   return ambient + (1.0 - shadow) * (diffuse + specular);
 }

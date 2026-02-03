@@ -133,11 +133,15 @@ private:
   void use_texture(
     const int texture_unit, const std::string& name, const axgl::ptr_t<impl::opengl::Texture>& texture) const
   {
-    if (!texture) return;
+    if (!texture)
+    {
+      shader_.set_bool(std::format("use_{}_texture", name), false);
+      return;
+    }
 
     texture->use(GL_TEXTURE0 + texture_unit);
-    shader_.set_int(name + "_texture", texture_unit);
-    shader_.set_bool("use_" + name + "_texture", true);
+    shader_.set_int(std::format("{}_texture", name), texture_unit);
+    shader_.set_bool(std::format("use_{}_texture", name), true);
   }
 };
 

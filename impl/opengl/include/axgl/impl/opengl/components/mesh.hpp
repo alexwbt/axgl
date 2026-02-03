@@ -116,9 +116,9 @@ public:
       context.opaque_pass.emplace_back(std::move(render_function));
       context.shadow_pass.emplace_back([this, instance_count](const axgl::impl::opengl::renderer::LightContext& c)
       {
-        glEnable(GL_CULL_FACE);
-        glFrontFace(GL_CCW);
-        glCullFace(GL_BACK);
+        // glEnable(GL_CULL_FACE);
+        // glFrontFace(GL_CW);
+        // glCullFace(GL_FRONT);
 
         auto& depth_only_shader = ::opengl::StaticShaders::instance().depth_only();
         depth_only_shader.use_program();

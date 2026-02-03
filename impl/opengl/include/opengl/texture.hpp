@@ -104,7 +104,12 @@ public:
 
   void use() const { glBindTexture(target_, id_); }
 
-  void set_parameteri(const GLenum param, const GLint value) const { glTexParameteri(target_, param, value); }
+  void set_parameter(const GLenum param, const GLint value) const { glTexParameteri(target_, param, value); }
+
+  void set_parameter(const GLenum param, const std::span<const GLfloat>& value) const
+  {
+    glTexParameterfv(target_, param, &value[0]);
+  }
 
   void generate_mipmap() const { glGenerateMipmap(target_); }
 
@@ -168,11 +173,11 @@ public:
     }
 
     use();
-    set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    set_parameteri(GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    set_parameter(GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     for (int i = 0; i < 6; i++)
       glTexImage2D(
