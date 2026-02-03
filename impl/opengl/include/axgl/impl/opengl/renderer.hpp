@@ -53,7 +53,7 @@ class Renderer : public axgl::Renderer
   //
   // Shadow Map
   //
-  static constexpr std::uint32_t kShadowMapSize = 1024 * 4;
+  static constexpr std::uint32_t kShadowMapSize = 1024;
   // static constexpr std::uint32_t kShadowMapCount = 32;
   std::unique_ptr<::opengl::Texture> shadow_texture_;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer_;
@@ -253,6 +253,8 @@ public:
         AXGL_PROFILE_SCOPE("Render Shadow Map");
         for (const auto& render_func : pipeline_context.shadow_pass)
           render_func(render_context.lights[0]);
+
+        render_context.lights[0].shadow_map = shadow_texture_.get();
       }
 
       //

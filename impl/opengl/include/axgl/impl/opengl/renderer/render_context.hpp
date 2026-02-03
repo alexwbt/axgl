@@ -5,13 +5,16 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/light.hpp>
 
+#include <axgl/impl/opengl/texture.hpp>
+
 namespace axgl::impl::opengl::renderer
 {
 
 struct LightContext
 {
-  const axgl::Light* light = nullptr;
   glm::mat4 light_pv{0.0f};
+  const axgl::Light* light = nullptr;
+  const ::opengl::Texture* shadow_map;
 };
 
 struct RenderContext

@@ -62,7 +62,6 @@ public:
     shader_.use_program();
     shader_.set_bool("transparent", enable_blend_);
     shader_.set_mat4("projection_view", context.projection_view_matrix);
-    // shader_.set_mat4("light_pv", );
     shader_.set_vec3("camera_pos", context.viewpoint);
     shader_.set_vec4("mesh_color", color_);
     shader_.set_float("shininess", shininess_);
@@ -70,6 +69,10 @@ public:
     shader_.set_vec2("uv_scale", uv_scale_);
     shader_.set_vec2("uv_offset", uv_offset_);
     shader_.set_float("diffuse_texture_gamma", 2.2f);
+
+    shader_.set_mat4("light_pv", context.lights[0].light_pv);
+    shader_.set_int("shadow_map", 5);
+    context.lights[0].shadow_map->use(GL_TEXTURE5);
 
     use_lights(context.lights);
 
@@ -86,9 +89,9 @@ private:
     int spot_lights_size = 0;
     int point_lights_size = 0;
 
-    for (const auto& [light, light_pv] : lights)
+    for (const auto& light_context : lights)
     {
-      switch (light->type)
+      switch (const auto* light = light_context.light; light->type)
       {
       case (axgl::Light::Type::kSun):
         shader_.set_vec3(std::format("sun_lights[{}].direction", sun_lights_size), light->direction);

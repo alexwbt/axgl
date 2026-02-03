@@ -42,8 +42,8 @@ public:
 
   [[nodiscard]] glm::mat4 get_pv_matrix() const
   {
-    const auto view = glm::lookAt(direction, position, glm::vec3(0.0f, 1.0f, 0.0f));
-    const auto projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+    const auto view = glm::lookAt(-direction, position, glm::vec3(0.0f, 1.0f, 0.0f));
+    const auto projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f);
     return projection * view;
   }
 

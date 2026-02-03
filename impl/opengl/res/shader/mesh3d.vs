@@ -22,5 +22,5 @@ void main()
   frag_normal = normalize(mat3(transpose(inverse(model))) * normal);
   vert_uv = uv;
 
-  light_space_frag_pos = light * vec4(frag_position, 1.0);
+  light_space_frag_pos = light_pv * vec4(frag_position, 1.0);
 }

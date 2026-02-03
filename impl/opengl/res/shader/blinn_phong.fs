@@ -61,6 +61,7 @@ uniform bool transparent;
 uniform float alpha_discard;
 uniform vec2 uv_scale;
 uniform vec2 uv_offset;
+uniform sampler2D shadow_map;
 
 in vec3 frag_position;
 in vec3 frag_normal;
@@ -84,22 +85,16 @@ vec3 get_mesh_specular()
     : vec3(1);
 }
 
-float calc_shadow()
+float calc_shadow(vec3 light_dir)
 {
-  // perform perspective divide
   vec3 projection_coords = light_space_frag_pos.xyz / light_space_frag_pos.w;
-
-  // transform to [0,1] range
   projection_coords = projection_coords * 0.5 + 0.5;
 
-  // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-  float closest_depth = texture(shadowMap, projection_coords.xy).r;
-
-  // get depth of current fragment from light's perspective
+  float closest_depth = texture(shadow_map, projection_coords.xy).r;
   float current_depth = projection_coords.z;
 
-  // check whether current frag pos is in shadow
-  float shadow = current_depth > closest_depth  ? 1.0 : 0.0;
+  float bias = max(0.05 * (1.0 - dot(frag_normal, light_dir)), 0.005);
+  float shadow = current_depth - bias> closest_depth  ? 1.0 : 0.0;
 
   return shadow;
 }
@@ -124,7 +119,7 @@ vec3 calc_sun_light(SunLight light, vec3 view_dir)
   vec3 ambient = light.ambient * mesh_diffuse;
 
   // Shadow
-  float shadow = calc_shadow();
+  float shadow = calc_shadow(light_dir);
 
   return ambient + (1.0 - shadow) * (diffuse + specular);
 }
