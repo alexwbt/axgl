@@ -116,6 +116,10 @@ public:
       context.opaque_pass.emplace_back(std::move(render_function));
       context.shadow_pass.emplace_back([this, instance_count](const axgl::impl::opengl::renderer::LightContext& c)
       {
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+        glCullFace(GL_BACK);
+
         auto& depth_only_shader = ::opengl::StaticShaders::instance().depth_only();
         depth_only_shader.use_program();
         depth_only_shader.set_mat4("projection_view", c.light_pv);

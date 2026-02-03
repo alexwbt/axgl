@@ -90,6 +90,8 @@ float calc_shadow(vec3 light_dir)
   vec3 projection_coords = light_space_frag_pos.xyz / light_space_frag_pos.w;
   projection_coords = projection_coords * 0.5 + 0.5;
 
+  if (projection_coords.z > 1.0) return 0.0;
+
   float closest_depth = texture(shadow_map, projection_coords.xy).r;
   float current_depth = projection_coords.z;
 

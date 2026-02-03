@@ -176,8 +176,8 @@ public:
         0, GL_DEPTH_COMPONENT, kShadowMapSize, kShadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
       shadow_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       shadow_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      shadow_texture_->set_parameteri(GL_TEXTURE_WRAP_S, GL_REPEAT);
-      shadow_texture_->set_parameteri(GL_TEXTURE_WRAP_T, GL_REPEAT);
+      shadow_texture_->set_parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+      shadow_texture_->set_parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
       shadow_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
       shadow_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *shadow_texture_);
       // glDrawBuffer(GL_NONE);

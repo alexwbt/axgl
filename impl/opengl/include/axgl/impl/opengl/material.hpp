@@ -82,16 +82,16 @@ public:
     }
 
     glLineWidth(line_width_);
-    glCullFace(GL_FRONT);
+    glFrontFace(GL_CW);
     switch (cull_mode_)
     {
     case axgl::Material::CullMode::kCW:
       glEnable(GL_CULL_FACE);
-      glFrontFace(GL_CW);
+      glCullFace(GL_FRONT);
       break;
     case axgl::Material::CullMode::kCCW:
       glEnable(GL_CULL_FACE);
-      glFrontFace(GL_CCW);
+      glCullFace(GL_BACK);
       break;
     case axgl::Material::CullMode::kNone: glDisable(GL_CULL_FACE); break;
     }
