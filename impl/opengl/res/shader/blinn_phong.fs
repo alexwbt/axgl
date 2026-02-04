@@ -42,6 +42,7 @@ struct PointLight
 uniform vec3 camera_pos;
 uniform vec4 mesh_color;
 uniform float shininess;
+uniform float specular;
 uniform sampler2D diffuse_texture;
 uniform float diffuse_texture_gamma;
 uniform bool use_diffuse_texture;
@@ -81,8 +82,8 @@ vec3 get_mesh_diffuse()
 vec3 get_mesh_specular()
 {
   return use_specular_texture
-    ? texture(specular_texture, (vert_uv + uv_offset) * uv_scale).rgb
-    : vec3(1);
+    ? texture(specular_texture, (vert_uv + uv_offset) * uv_scale).rgb * specular
+    : vec3(specular);
 }
 
 float calc_shadow()

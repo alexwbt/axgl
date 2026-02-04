@@ -23,13 +23,15 @@ class BlinnPhongMaterial : public Material
   axgl::ptr_t<impl::opengl::Texture> normal_texture_;
   axgl::ptr_t<impl::opengl::Texture> height_texture_;
   float shininess_ = 32.0f;
+  float specular_ = 1.0f;
 
 public:
   void set_property(const std::string& key, const std::string& value) override
   {
     if (key == "shininess") shininess_ = std::stof(value);
+    if (key == "specular") specular_ = std::stof(value);
 #ifdef AXGL_DEBUG
-    else AXGL_LOG_WARN("Property {} is not supported in phong material.", key);
+    else AXGL_LOG_WARN("Property {} is not supported in blinn-phong material.", key);
 #endif
   }
 
@@ -65,6 +67,7 @@ public:
     shader_.set_vec3("camera_pos", context.viewpoint);
     shader_.set_vec4("mesh_color", color_);
     shader_.set_float("shininess", shininess_);
+    shader_.set_float("specular", specular_);
     shader_.set_float("alpha_discard", enable_blend_ ? 0.0f : alpha_discard_);
     shader_.set_vec2("uv_scale", uv_scale_);
     shader_.set_vec2("uv_offset", uv_offset_);
