@@ -29,7 +29,7 @@ private:
     diffuse->load_texture(demo_playground_res::get("material/box/diffuse.png"));
     specular->load_texture(demo_playground_res::get("material/box/specular.png"));
     // material
-    const auto material = renderer_service->create_material("blinn-phong");
+    const auto material = renderer_service->create_material("3d");
     material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse);
     material->add_texture(axgl::Material::TextureType::kSpecular, specular);
     // mesh

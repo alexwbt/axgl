@@ -57,7 +57,7 @@ public:
     {
       cube_entity_ = entity_service->create_entity();
       // material
-      const auto material = renderer_service->create_material("blinn-phong");
+      const auto material = renderer_service->create_material("3d");
       material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
       // cube mesh

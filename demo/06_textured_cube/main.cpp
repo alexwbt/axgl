@@ -66,7 +66,7 @@ public:
       specular_texture->load_texture(demo_textured_cube_res::get("container/specular.png"));
 
       // material
-      const auto material = renderer_service->create_material("blinn-phong");
+      const auto material = renderer_service->create_material("3d");
       material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse_texture);
       material->add_texture(axgl::Material::TextureType::kSpecular, specular_texture);
 

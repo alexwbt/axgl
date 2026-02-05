@@ -12,9 +12,9 @@
 #include <axgl/interface/texture.hpp>
 
 #include <axgl/impl/glfw.hpp>
-#include <axgl/impl/opengl/materials/blinn_phong_material.hpp>
 #include <axgl/impl/opengl/materials/color_material.hpp>
-#include <axgl/impl/opengl/materials/material_2d.hpp>
+#include <axgl/impl/opengl/materials/mesh2d_material.hpp>
+#include <axgl/impl/opengl/materials/mesh3d_material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
@@ -52,9 +52,9 @@ public:
 
   axgl::ptr_t<axgl::Material> create_material(const std::string& type) override
   {
-    if (type == "2d") return axgl::create_ptr<axgl::impl::opengl::Material2d>();
+    if (type == "2d") return axgl::create_ptr<axgl::impl::opengl::Mesh2dMaterial>();
+    if (type == "3d") return axgl::create_ptr<axgl::impl::opengl::Mesh3dMaterial>();
     if (type == "color") return axgl::create_ptr<axgl::impl::opengl::ColorMaterial>();
-    if (type == "blinn-phong") return axgl::create_ptr<axgl::impl::opengl::BlinnPhongMaterial>();
 #ifdef AXGL_DEBUG
     throw std::runtime_error("Unsupported material type: " + type);
 #else

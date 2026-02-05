@@ -11,7 +11,7 @@ auto create_cube(const axgl::Axgl& axgl, const glm::vec3& position, const glm::v
   const auto entity_service = axgl.entity_service();
   const auto renderer_service = axgl.renderer_service();
   // material
-  const auto material = renderer_service->create_material("blinn-phong");
+  const auto material = renderer_service->create_material("3d");
   material->set_color(color);
   if (blend)
   {

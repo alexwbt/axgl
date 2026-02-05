@@ -14,7 +14,7 @@
 namespace axgl::impl::opengl
 {
 
-class BlinnPhongMaterial : public Material
+class Mesh3dMaterial : public Material
 {
   ::opengl::ShaderProgram& shader_ = ::opengl::StaticShaders::instance().blinn_phong();
 
@@ -31,7 +31,7 @@ public:
     if (key == "shininess") shininess_ = std::stof(value);
     if (key == "specular") specular_ = std::stof(value);
 #ifdef AXGL_DEBUG
-    else AXGL_LOG_WARN("Property {} is not supported in blinn-phong material.", key);
+    else AXGL_LOG_WARN("Property {} is not supported in mesh3d material.", key);
 #endif
   }
 

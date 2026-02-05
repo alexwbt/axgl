@@ -10,7 +10,7 @@
 namespace axgl::impl::opengl
 {
 
-class Material2d : public Material
+class Mesh2dMaterial : public Material
 {
   ::opengl::ShaderProgram& shader_ = ::opengl::StaticShaders::instance().mesh_2d();
   axgl::ptr_t<impl::opengl::Texture> texture_;

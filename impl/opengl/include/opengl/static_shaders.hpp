@@ -50,7 +50,7 @@ private:
       {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs")}});
     blinn_phong_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs")},
-      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/blinn_phong.fs")}});
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs")}});
     text_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
       {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs")}});
