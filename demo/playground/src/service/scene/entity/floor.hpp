@@ -27,21 +27,21 @@ private:
     const auto& entity_service = axgl.entity_service();
     const auto& renderer_service = axgl.renderer_service();
     // textures
-    // auto normal = renderer_service->create_texture();
-    // auto diffuse = renderer_service->create_texture();
-    // auto specular = renderer_service->create_texture();
-    // normal->load_texture(demo_playground_res::get("material/wood/normal.png"));
-    // diffuse->load_texture(demo_playground_res::get("material/wood/diffuse.png"));
-    // specular->load_texture(demo_playground_res::get("material/wood/specular.png"));
+    auto normal = renderer_service->create_texture();
+    auto diffuse = renderer_service->create_texture();
+    auto specular = renderer_service->create_texture();
+    normal->load_texture(demo_playground_res::get("material/wood/normal.png"));
+    diffuse->load_texture(demo_playground_res::get("material/wood/diffuse.png"));
+    specular->load_texture(demo_playground_res::get("material/wood/specular.png"));
     // material
     auto material = renderer_service->create_material("blinn-phong");
-    // material->add_texture(axgl::Material::TextureType::kNormal, std::move(normal));
-    // material->add_texture(axgl::Material::TextureType::kDiffuse, std::move(diffuse));
-    // material->add_texture(axgl::Material::TextureType::kSpecular, std::move(specular));
-    // material->set_tiling(glm::vec2(size) / 3.0f);
-    material->set_color({0.392f, 0.584f, 0.929f, 1.0f});
-    material->set_property("shininess", "2.0");
-    material->set_property("specular", "0.0");
+    material->add_texture(axgl::Material::TextureType::kNormal, std::move(normal));
+    material->add_texture(axgl::Material::TextureType::kDiffuse, std::move(diffuse));
+    material->add_texture(axgl::Material::TextureType::kSpecular, std::move(specular));
+    material->set_tiling(glm::vec2(size) / 3.0f);
+    // material->set_color({0.392f, 0.584f, 0.929f, 1.0f});
+    // material->set_property("shininess", "2.0");
+    // material->set_property("specular", "0.0");
     // mesh
     const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
     axgl::util::init_plain(*mesh);

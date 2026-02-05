@@ -66,8 +66,8 @@ public:
     shader_.set_mat4("projection_view", context.projection_view_matrix);
     shader_.set_vec3("camera_pos", context.viewpoint);
     shader_.set_vec4("mesh_color", color_);
-    shader_.set_float("shininess", shininess_);
-    shader_.set_float("specular", specular_);
+    shader_.set_float("mesh_shininess", shininess_);
+    shader_.set_float("mesh_specular", specular_);
     shader_.set_float("alpha_discard", enable_blend_ ? 0.0f : alpha_discard_);
     shader_.set_vec2("uv_scale", uv_scale_);
     shader_.set_vec2("uv_offset", uv_offset_);

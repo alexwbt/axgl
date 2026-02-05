@@ -25,14 +25,18 @@ int main()
   // window
   const auto window = window_service->create_window();
   window->set_title("Demo Playground");
+#ifndef AXGL_DEMO_CONSERVATIVE
   window->set_size(1200, 800);
+#endif
   // input
   input_service->set_window(window);
   // renderer
   const auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
+#ifndef AXGL_DEMO_CONSERVATIVE
   renderer->set_sample_count(8);
   renderer->set_antialiasing(true);
+#endif
   renderer_service->set_active_renderer(renderer);
 
   axgl.run();
