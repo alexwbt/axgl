@@ -36,6 +36,7 @@ int main()
 #ifndef AXGL_DEMO_CONSERVATIVE
   renderer->set_sample_count(8);
   renderer->set_antialiasing(true);
+  renderer->set_shadow_map_size(1024 * 4);
 #endif
   renderer_service->set_active_renderer(renderer);
 

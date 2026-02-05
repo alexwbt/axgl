@@ -143,8 +143,8 @@ private:
     }
 
     texture->use(GL_TEXTURE0 + texture_unit);
-    shader_.set_int(std::format("{}_texture", name), texture_unit);
     shader_.set_bool(std::format("use_{}_texture", name), true);
+    shader_.set_int(std::format("{}_texture", name), texture_unit);
   }
 };
 

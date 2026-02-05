@@ -28,7 +28,7 @@ public:
     // spinning box
     {
       auto box = entity_service_->create_entity_t<BoxEntity>();
-      box->transform().position = {3.0f, 1.0f, 0.0f};
+      box->transform().position = {5.0f, 1.0f, 0.0f};
       box->update_model_matrix();
       box->set_rotation_speed({0.02f, 0.01f, 0.05f});
       entities_.add(std::move(box));

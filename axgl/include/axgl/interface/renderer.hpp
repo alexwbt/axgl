@@ -16,7 +16,8 @@ class Renderer
 public:
   virtual ~Renderer() = default;
   virtual void set_antialiasing(bool enable) = 0;
-  virtual void set_sample_count(int sample_count) = 0;
+  virtual void set_sample_count(std::uint32_t sample_count) = 0;
+  virtual void set_shadow_map_size(std::uint32_t shadow_map_size) = 0;
   virtual void set_window(axgl::ptr_t<axgl::Window> window) = 0;
   [[nodiscard]] virtual bool get_antialiasing() const = 0;
   [[nodiscard]] virtual int get_sample_count() const = 0;

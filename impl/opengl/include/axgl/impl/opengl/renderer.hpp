@@ -53,15 +53,16 @@ class Renderer : public axgl::Renderer
   //
   // Shadow Map
   //
-  static constexpr std::uint32_t kShadowMapSize = 1024 * 4;
-  // static constexpr std::uint32_t kShadowMapCount = 32;
+  std::uint32_t shadow_map_size_ = 1024;
   std::unique_ptr<::opengl::Texture> shadow_texture_;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer_;
 
 public:
   void set_antialiasing(bool enable) override { msaa_ = enable; }
 
-  void set_sample_count(int sample_count) override { sample_count_ = sample_count; }
+  void set_sample_count(std::uint32_t sample_count) override { sample_count_ = static_cast<GLsizei>(sample_count); }
+
+  void set_shadow_map_size(std::uint32_t size) override { shadow_map_size_ = size; }
 
   void set_window(axgl::ptr_t<axgl::Window> window) override
   {
@@ -167,13 +168,16 @@ public:
       // blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
       // blend_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
       // blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
+    }
 
+    if (!shadow_texture_ || shadow_map_size_ != shadow_texture_->get_width())
+    {
       //
       // setup shadow map
       //
       shadow_texture_ = std::make_unique<::opengl::Texture>();
       shadow_texture_->load_texture(
-        0, GL_DEPTH_COMPONENT, kShadowMapSize, kShadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        0, GL_DEPTH_COMPONENT, shadow_map_size_, shadow_map_size_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
       shadow_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       shadow_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       shadow_texture_->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -243,7 +247,7 @@ public:
       //
       // Shadow Map Render Pass
       //
-      glViewport(0, 0, kShadowMapSize, kShadowMapSize);
+      glViewport(0, 0, shadow_map_size_, shadow_map_size_);
       glEnable(GL_DEPTH_TEST);
       glDepthFunc(GL_LESS);
 

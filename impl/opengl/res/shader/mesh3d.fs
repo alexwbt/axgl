@@ -51,21 +51,29 @@ uniform vec3 camera_pos;
 uniform vec4 mesh_color;
 uniform float mesh_shininess;
 uniform float mesh_specular;
+
 uniform sampler2D diffuse_texture;
 uniform float diffuse_texture_gamma;
 uniform bool use_diffuse_texture;
+
 uniform sampler2D specular_texture;
 uniform bool use_specular_texture;
+
 uniform sampler2D normal_texture;
 uniform bool use_normal_texture;
+
 uniform sampler2D height_texture;
 uniform bool use_height_texture;
+
 uniform int sun_lights_size;
 uniform SunLight sun_lights[32];
+
 uniform int spot_lights_size;
 uniform SpotLight spot_lights[32];
+
 uniform int point_lights_size;
 uniform PointLight point_lights[32];
+
 uniform bool transparent;
 uniform float alpha_discard;
 uniform vec2 uv_scale;
