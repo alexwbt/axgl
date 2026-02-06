@@ -3,10 +3,11 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
 
-#include "scene/light_scene.hpp"
+#include "scene/testing_scene.hpp"
 
 #include "scene/entity/box.hpp"
 #include "scene/entity/camera.hpp"
+#include "scene/entity/concrete_block.hpp"
 #include "scene/entity/debug_cursor.hpp"
 #include "scene/entity/floor.hpp"
 
@@ -21,15 +22,16 @@ public:
     const auto& entity_service = axgl.entity_service();
     // register entities
     entity_service->register_entity_t<BoxEntity>();
-    entity_service->register_entity_t<FloorEntity>();
     entity_service->register_entity_t<CameraEntity>();
+    entity_service->register_entity_t<ConcreteBlockEntity>();
     entity_service->register_entity_t<DebugCursorEntity>();
+    entity_service->register_entity_t<FloorEntity>();
   }
 
   void on_start(const Context& context) override
   {
     // create scenes
-    scenes_.emplace_back(axgl::create_ptr<LightScene>());
+    scenes_.emplace_back(axgl::create_ptr<TestingScene>());
 
     // initialize scenes
     for (const auto& scene : scenes_)
