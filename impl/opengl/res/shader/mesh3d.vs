@@ -8,19 +8,21 @@ layout (location = 3) in mat4 model;
 uniform mat4 projection_view;
 uniform mat4 light_pv;
 
-out vec3 vert_position;
-out vec3 vert_normal;
-out vec2 vert_uv;
-out vec4 light_space_frag_pos;
+out VsOutput {
+  vec3 position;
+  vec3 normal;
+  vec2 uv;
+  vec4 light_space_position;
+} vs_out;
 
 void main()
 {
   gl_Position = projection_view * model * vec4(position, 1.0);
   gl_Position.x = -gl_Position.x;
 
-  vert_position = vec3(model * vec4(position, 1.0));
-  vert_normal = normalize(mat3(transpose(inverse(model))) * normal);
-  vert_uv = uv;
+  vs_out.position = vec3(model * vec4(position, 1.0));
+  vs_out.normal = normalize(mat3(transpose(inverse(model))) * normal);
+  vs_out.uv = uv;
 
-  light_space_frag_pos = light_pv * vec4(vert_position, 1.0);
+  vs_out.light_space_position = light_pv * vec4(vs_out.position, 1.0);
 }
