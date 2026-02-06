@@ -39,6 +39,24 @@ public:
   [[nodiscard]] virtual bool should_remove() const = 0;
 
   [[nodiscard]] virtual axgl::Container<axgl::Component>& components() = 0;
+
+  void set_scale(glm::vec3 scale)
+  {
+    transform().scale = scale;
+    update_model_matrix();
+  }
+
+  void set_rotation(glm::vec3 rotation)
+  {
+    transform().rotation = rotation;
+    update_model_matrix();
+  }
+
+  void set_position(glm::vec3 position)
+  {
+    transform().position = position;
+    update_model_matrix();
+  }
 };
 
 } // namespace axgl
