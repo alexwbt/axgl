@@ -8,6 +8,7 @@
 #include "scene/entity/box.hpp"
 #include "scene/entity/camera.hpp"
 #include "scene/entity/concrete_block.hpp"
+#include "scene/entity/cube.hpp"
 #include "scene/entity/debug_cursor.hpp"
 #include "scene/entity/floor.hpp"
 
@@ -24,6 +25,7 @@ public:
     entity_service->register_entity_t<BoxEntity>();
     entity_service->register_entity_t<CameraEntity>();
     entity_service->register_entity_t<ConcreteBlockEntity>();
+    entity_service->register_entity_t<CubeEntity>();
     entity_service->register_entity_t<DebugCursorEntity>();
     entity_service->register_entity_t<FloorEntity>();
   }

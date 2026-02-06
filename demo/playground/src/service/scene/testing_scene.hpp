@@ -4,15 +4,23 @@
 
 #include "entity/box.hpp"
 #include "entity/concrete_block.hpp"
+#include "entity/cube.hpp"
 
 class TestingScene : public CommonScene
 {
-  float x_ = 0.0f;
+  glm::vec2 item_offset{0.0f};
+  float margin = 2.0f;
 
-  glm::vec3 item_position(float height, float margin = 2.0f)
+  void next_row()
   {
-    x_ += margin * 2.0f;
-    return {x_ - margin, height, 0.0f};
+    item_offset.y += margin * 2;
+    item_offset.x = 0;
+  }
+
+  glm::vec3 item_position(float height)
+  {
+    item_offset.x += margin * 2.0f;
+    return {item_offset.x - margin, height, item_offset.y};
   }
 
   void add_entity(const axgl::ptr_t<axgl::Entity>& entity)
@@ -32,13 +40,27 @@ public:
     // spotlight
     // add_light(axgl::Light::spotlight({-0.5f, 2.0f, -2.5f}, {0.2f, -1.0f, 1.2f}));
 
+    // cube
+    {
+      const auto entity = entity_service_->create_entity_t<CubeEntity>();
+      entity->set_position(item_position(0.5f));
+      add_entity(entity);
+    }
+    // spinning cube
+    {
+      const auto entity = entity_service_->create_entity_t<CubeEntity>();
+      entity->set_position(item_position(1.0f));
+      entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
+      add_entity(entity);
+    }
+    next_row();
+
     // box
     {
       const auto entity = entity_service_->create_entity_t<BoxEntity>();
       entity->set_position(item_position(0.5f));
       add_entity(entity);
     }
-
     // spinning box
     {
       const auto entity = entity_service_->create_entity_t<BoxEntity>();
@@ -46,6 +68,7 @@ public:
       entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
       add_entity(entity);
     }
+    next_row();
 
     // concrete block
     {
@@ -53,7 +76,6 @@ public:
       entity->set_position(item_position(0.5f));
       add_entity(entity);
     }
-
     // spinning concrete block
     {
       const auto entity = entity_service_->create_entity_t<ConcreteBlockEntity>();
@@ -61,5 +83,6 @@ public:
       entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
       add_entity(entity);
     }
+    next_row();
   }
 };
