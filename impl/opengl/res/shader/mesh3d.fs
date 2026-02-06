@@ -84,8 +84,10 @@ in VertexShaderOutput {
   vec3 position;
   vec3 normal;
   vec2 uv;
+  mat3 tbn;
+  vec3 tbn_position;
   vec4 light_space_position;
-} vs_out;
+} vso;
 
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out float reveal;
@@ -93,34 +95,32 @@ layout (location = 1) out float reveal;
 vec3 get_frag_diffuse()
 {
   return use_diffuse_texture
-    ? pow(texture(diffuse_texture, (vs_out.uv + uv_offset) * uv_scale).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
+    ? pow(texture(diffuse_texture, (vso.uv + uv_offset) * uv_scale).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
     : mesh_color.rgb;
 }
 
 vec3 get_frag_specular()
 {
   return use_specular_texture
-    ? texture(specular_texture, (vs_out.uv + uv_offset) * uv_scale).rgb * mesh_specular
+    ? texture(specular_texture, (vso.uv + uv_offset) * uv_scale).rgb * mesh_specular
     : vec3(mesh_specular);
 }
 
 vec3 get_frag_normal()
 {
-  return use_normal_texture
-    ? texture(normal_texture, (vs_out.uv + uv_offset) * uv_scale).rgb * vs_out.normal
-    : vec3(vs_out.normal);
+  return vec3(vso.normal);
 }
 
 float calc_shadow()
 {
-  vec3 projection_coords = vs_out.light_space_position.xyz / vs_out.light_space_position.w;
+  vec3 projection_coords = vso.light_space_position.xyz / vso.light_space_position.w;
   projection_coords = projection_coords * 0.5 + 0.5;
 
   if (projection_coords.z > 1.0) return 0.0;
 
 //  float closest_depth = texture(shadow_map, projection_coords.xy).r;
 //  float current_depth = projection_coords.z;
-//  float bias = max(0.05 * (1.0 - dot(vs_out.normal, light_dir)), 0.005);
+//  float bias = max(0.05 * (1.0 - dot(vso.normal, light_dir)), 0.005);
 //  float shadow = current_depth - bias > closest_depth  ? 1.0 : 0.0;
 //  float shadow = current_depth > closest_depth  ? 1.0 : 0.0;
   float shadow = 0.0;
@@ -163,7 +163,7 @@ vec3 calc_sun_light(LightingContext ctx, SunLight light)
 vec3 calc_spot_light(LightingContext ctx, SpotLight light)
 {
   // Diffuse
-  vec3 light_dir = normalize(light.position - vs_out.position);
+  vec3 light_dir = normalize(light.position - vso.position);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * ctx.frag_diffuse;
 
@@ -177,7 +177,7 @@ vec3 calc_spot_light(LightingContext ctx, SpotLight light)
   vec3 ambient = light.ambient * ctx.frag_diffuse;
 
   // Attenuation
-  float dis = length(light.position - vs_out.position);
+  float dis = length(light.position - vso.position);
   float attenuation = 1.0 / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
   // Cut Off
@@ -191,7 +191,7 @@ vec3 calc_spot_light(LightingContext ctx, SpotLight light)
 vec3 calc_point_light(LightingContext ctx, PointLight light)
 {
   // Diffuse
-  vec3 light_dir = normalize(light.position - vs_out.position);
+  vec3 light_dir = normalize(light.position - vso.position);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * ctx.frag_diffuse;
 
@@ -205,7 +205,7 @@ vec3 calc_point_light(LightingContext ctx, PointLight light)
   vec3 ambient = light.ambient * ctx.frag_diffuse;
 
   // Attenuation
-  float dis = length(light.position - vs_out.position);
+  float dis = length(light.position - vso.position);
   float attenuation = 1.0 / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
   return (ambient + diffuse + specular) * attenuation;
@@ -217,7 +217,7 @@ void main()
     discard;
 
   LightingContext ctx;
-  ctx.view_dir = normalize(camera_pos - vs_out.position);
+  ctx.view_dir = normalize(camera_pos - vso.position);
   ctx.frag_diffuse = get_frag_diffuse();
   ctx.frag_specular = get_frag_specular();
   ctx.frag_normal = get_frag_normal();
