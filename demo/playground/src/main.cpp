@@ -25,7 +25,7 @@ int main()
   // window
   const auto window = window_service->create_window();
   window->set_title("Demo Playground");
-#ifndef AXGL_DEMO_CONSERVATIVE
+#ifdef AXGL_DEMO_FANCY_MODE
   window->set_size(1200, 800);
 #endif
   // input
@@ -33,7 +33,7 @@ int main()
   // renderer
   const auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
-#ifndef AXGL_DEMO_CONSERVATIVE
+#ifdef AXGL_DEMO_FANCY_MODE
   renderer->set_sample_count(8);
   renderer->set_antialiasing(true);
   renderer->set_shadow_map_size(1024 * 4);

@@ -1,15 +1,15 @@
 
-option(AXGL_DEMO_CONSERVATIVE "Use conservative mode for axgl demo" ON)
+option(AXGL_DEMO_FANCY_MODE "Use fancy mode for axgl demo" ON)
 option(AXGL_DEMO_USE_OPENGL_IMPL "Use OpenGL implementation for axgl demo" ON)
 
-message("AXGL_DEMO_CONSERVATIVE: ${AXGL_DEMO_CONSERVATIVE}")
+message("AXGL_DEMO_FANCY_MODE: ${AXGL_DEMO_FANCY_MODE}")
 message("AXGL_DEMO_USE_OPENGL_IMPL: ${AXGL_DEMO_USE_OPENGL_IMPL}")
 
 if(AXGL_DEMO_USE_OPENGL_IMPL)
   add_compile_definitions(AXGL_DEMO_USE_OPENGL_IMPL)
 endif()
-if(AXGL_DEMO_CONSERVATIVE)
-  add_compile_definitions(AXGL_DEMO_CONSERVATIVE)
+if(AXGL_DEMO_FANCY_MODE)
+  add_compile_definitions(AXGL_DEMO_FANCY_MODE)
 endif()
 
 
