@@ -38,15 +38,6 @@ inline void init_plain(axgl::component::Mesh& mesh)
       glm::vec3(-0.5f, 0.0f, -0.5f),
       glm::vec3(-0.5f, 0.0f, 0.5f),
     });
-  mesh.set_normals(
-    std::array{
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-    });
   mesh.set_uv(
     std::array{
       glm::vec2(0.0f, 1.0f),
@@ -56,6 +47,7 @@ inline void init_plain(axgl::component::Mesh& mesh)
       glm::vec2(0.0f, 1.0f),
       glm::vec2(0.0f, 0.0f),
     });
+  mesh.calculate_tbn();
 }
 
 inline void init_cube(axgl::component::Mesh& mesh)
@@ -75,21 +67,6 @@ inline void init_cube(axgl::component::Mesh& mesh)
       glm::vec3(-0.5f, 0.5f, -0.5f),  glm::vec3(0.5f, 0.5f, 0.5f),    glm::vec3(0.5f, 0.5f, -0.5f),
       glm::vec3(0.5f, 0.5f, 0.5f),    glm::vec3(-0.5f, 0.5f, -0.5f),  glm::vec3(-0.5f, 0.5f, 0.5f),
     });
-  mesh.set_normals(
-    std::array{
-      glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f),
-      glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f),
-      glm::vec3(0.0f, 0.0f, 1.0f),  glm::vec3(0.0f, 0.0f, 1.0f),  glm::vec3(0.0f, 0.0f, 1.0f),
-      glm::vec3(0.0f, 0.0f, 1.0f),  glm::vec3(0.0f, 0.0f, 1.0f),  glm::vec3(0.0f, 0.0f, 1.0f),
-      -glm::vec3(1.0f, 0.0f, 0.0f), -glm::vec3(1.0f, 0.0f, 0.0f), -glm::vec3(1.0f, 0.0f, 0.0f),
-      -glm::vec3(1.0f, 0.0f, 0.0f), -glm::vec3(1.0f, 0.0f, 0.0f), -glm::vec3(1.0f, 0.0f, 0.0f),
-      glm::vec3(1.0f, 0.0f, 0.0f),  glm::vec3(1.0f, 0.0f, 0.0f),  glm::vec3(1.0f, 0.0f, 0.0f),
-      glm::vec3(1.0f, 0.0f, 0.0f),  glm::vec3(1.0f, 0.0f, 0.0f),  glm::vec3(1.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
-      glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),  glm::vec3(0.0f, 1.0f, 0.0f),  glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),  glm::vec3(0.0f, 1.0f, 0.0f),  glm::vec3(0.0f, 1.0f, 0.0f),
-    });
   mesh.set_uv(
     std::array{
       glm::vec2(0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f),
@@ -101,6 +78,7 @@ inline void init_cube(axgl::component::Mesh& mesh)
       glm::vec2(0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f),
       glm::vec2(0.0f, 0.0f),
     });
+  mesh.calculate_tbn();
 }
 
 } // namespace axgl::util

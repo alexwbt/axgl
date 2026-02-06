@@ -80,7 +80,7 @@ uniform vec2 uv_scale;
 uniform vec2 uv_offset;
 uniform sampler2D shadow_map;
 
-in VsOutput {
+in VertexShaderOutput {
   vec3 position;
   vec3 normal;
   vec2 uv;

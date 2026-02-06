@@ -16,6 +16,8 @@ public:
   {
     kVertices,
     kNormals,
+    kTangents,
+    kBitangents,
     kUV,
     kModels,
   };
@@ -103,9 +105,11 @@ public:
     {
     case kVertices: return 0;
     case kNormals: return 1;
-    case kUV: return 2;
-    case kModels: return 3;
-    default: return 4;
+    case kTangents: return 2;
+    case kBitangents: return 3;
+    case kUV: return 4;
+    case kModels: return 5;
+    default: return 6;
     }
   }
 };

@@ -1,7 +1,7 @@
 #version 410 core
 
 layout (location = 0) in vec3 position;
-layout (location = 3) in mat4 model;
+layout (location = 5) in mat4 model;
 
 uniform mat4 projection_view;
 

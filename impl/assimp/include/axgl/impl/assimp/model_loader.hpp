@@ -107,6 +107,21 @@ class ModelLoader
       mesh->set_normals(normals);
     }
 
+    if (ai_mesh->HasTangentsAndBitangents())
+    {
+      std::vector<glm::vec3> tangents;
+      std::vector<glm::vec3> bitangents;
+      tangents.reserve(ai_mesh->mNumVertices);
+      bitangents.reserve(ai_mesh->mNumVertices);
+      for (int i = 0; i < ai_mesh->mNumVertices; ++i)
+      {
+        tangents.emplace_back(ai_mesh->mTangents[i].x, ai_mesh->mTangents[i].y, ai_mesh->mTangents[i].z);
+        bitangents.emplace_back(ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y, ai_mesh->mBitangents[i].z);
+      }
+      mesh->set_tangents(tangents);
+      mesh->set_bitangents(tangents);
+    }
+
     if (ai_mesh->HasTextureCoords(0))
     {
       std::vector<glm::vec2> uv;

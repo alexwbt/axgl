@@ -28,6 +28,8 @@ class Mesh : virtual public axgl::component::Mesh,
   std::vector<glm::vec3> vertices_;
   std::vector<glm::vec2> vertices_2d_;
   std::vector<glm::vec3> normals_;
+  std::vector<glm::vec3> tangents_;
+  std::vector<glm::vec3> bitangents_;
   std::vector<glm::vec2> uv_;
   std::vector<std::uint32_t> indices_;
   // mesh data stored in GPU memory
@@ -52,6 +54,16 @@ public:
     normals_.resize(normals.size());
     std::ranges::copy(normals, normals_.begin());
   }
+  void set_tangents(const std::span<const glm::vec3>& tangents) override
+  {
+    tangents_.resize(tangents.size());
+    std::ranges::copy(tangents, tangents_.begin());
+  }
+  void set_bitangents(const std::span<const glm::vec3>& bitangents) override
+  {
+    bitangents_.resize(bitangents.size());
+    std::ranges::copy(bitangents, bitangents_.begin());
+  }
   void set_uv(const std::span<const glm::vec2>& uv) override
   {
     uv_.resize(uv.size());
@@ -70,6 +82,67 @@ public:
 #endif
   }
   [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override { return material_; }
+
+  void calculate_tbn() override
+  {
+    normals_.resize(vertices_.size(), glm::vec3(0.0f));
+    tangents_.resize(vertices_.size(), glm::vec3(0.0f));
+    bitangents_.resize(vertices_.size(), glm::vec3(0.0f));
+    const auto use_indices = !indices_.empty();
+    const auto size = use_indices ? indices_.size() : vertices_.size();
+    // calculate normals
+    for (std::size_t i = 0; i < size; i += 3)
+    {
+      const auto i0 = use_indices ? indices_[i] : i;
+      const auto i1 = use_indices ? indices_[i + 1] : i + 1;
+      const auto i2 = use_indices ? indices_[i + 2] : i + 2;
+      const auto v0 = vertices_[i0];
+      const auto v1 = vertices_[i1];
+      const auto v2 = vertices_[i2];
+      const auto normal = glm::cross(v1 - v0, v2 - v0);
+      normals_[i0] += normal;
+      normals_[i1] += normal;
+      normals_[i2] += normal;
+    }
+    // normalize normals
+    for (auto& normal : normals_)
+      normal = glm::normalize(normal);
+
+    // calculate tangents and bitangents
+    for (std::size_t i = 0; i < size; i += 3)
+    {
+      const auto i0 = use_indices ? indices_[i] : i;
+      const auto i1 = use_indices ? indices_[i + 1] : i + 1;
+      const auto i2 = use_indices ? indices_[i + 2] : i + 2;
+      const auto edge1 = vertices_[i1] - vertices_[i0];
+      const auto edge2 = vertices_[i2] - vertices_[i0];
+      const auto delta_uv1 = uv_[i1] - uv_[i0];
+      const auto delta_uv2 = uv_[i2] - uv_[i0];
+      if (const float det = delta_uv1.x * delta_uv2.y - delta_uv2.x * delta_uv1.y; fabs(det) > 1e-6f)
+      {
+        float r = 1.0f / det;
+        const auto tangent = (edge1 * delta_uv2.y - edge2 * delta_uv1.y) * r;
+        const auto bitangent = (edge2 * delta_uv1.x - edge1 * delta_uv2.x) * r;
+        tangents_[i0] += tangent;
+        tangents_[i1] += tangent;
+        tangents_[i2] += tangent;
+        bitangents_[i0] += bitangent;
+        bitangents_[i1] += bitangent;
+        bitangents_[i2] += bitangent;
+      }
+    }
+    // orthogonalize and normalize
+    for (size_t i = 0; i < vertices_.size(); ++i)
+    {
+      auto& n = normals_[i];
+      auto& t = tangents_[i];
+      auto& b = bitangents_[i];
+      t = glm::normalize(t - n * glm::dot(n, t));
+      b = glm::cross(n, t);
+      t = glm::normalize(t);
+      b = glm::normalize(b);
+    }
+  }
 
   void gather_instances(const axgl::Entity& entity) override
   {
@@ -153,6 +226,20 @@ private:
       std::array attributes{::opengl::VertexAttribute{3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
       vao_->create_vertex_buffer<glm::vec3>(
         normals_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kNormals));
+    }
+
+    if (!tangents_.empty())
+    {
+      std::array attributes{::opengl::VertexAttribute{3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+      vao_->create_vertex_buffer<glm::vec3>(
+        tangents_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kTangents));
+    }
+
+    if (!bitangents_.empty())
+    {
+      std::array attributes{::opengl::VertexAttribute{3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+      vao_->create_vertex_buffer<glm::vec3>(
+        bitangents_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kBitangents));
     }
 
     if (!uv_.empty())
