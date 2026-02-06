@@ -25,7 +25,7 @@ void main()
   gl_Position.x = -gl_Position.x;
 
   vso.position = vec3(model * vec4(position, 1.0));
-  vso.normal = normalize(mat3(transpose(inverse(model))) * normal);
+  vso.normal = normalize(mat3(transpose(inverse(model))) * normal); // TODO: conbine with TBN
   vso.uv = uv;
 
   // shadow map test

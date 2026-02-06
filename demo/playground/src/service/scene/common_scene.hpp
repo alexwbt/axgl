@@ -57,14 +57,15 @@ public:
   }
 
 protected:
-  void add_light(const axgl::Light& light)
+  auto add_light(const axgl::Light& light)
   {
-    auto light_entity = entity_service_->create_entity();
-    auto light_comp = entity_service_->create_component_t<axgl::impl::component::Light>();
+    const auto light_entity = entity_service_->create_entity();
+    const auto light_comp = entity_service_->create_component_t<axgl::impl::component::Light>();
     light_comp->light = light;
-    light_entity->components().add(std::move(light_comp));
+    light_entity->components().add(light_comp);
     light_entity->transform().position = light.position;
     light_entity->update_model_matrix();
-    entities_.add(std::move(light_entity));
+    entities_.add(light_entity);
+    return light_comp;
   }
 };

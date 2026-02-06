@@ -92,23 +92,33 @@ in VertexShaderOutput {
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out float reveal;
 
+vec2 get_uv()
+{
+  return (vso.uv + uv_offset) * uv_scale;
+}
+
 vec3 get_frag_diffuse()
 {
   return use_diffuse_texture
-    ? pow(texture(diffuse_texture, (vso.uv + uv_offset) * uv_scale).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
+    ? pow(texture(diffuse_texture, get_uv()).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
     : mesh_color.rgb;
 }
 
 vec3 get_frag_specular()
 {
   return use_specular_texture
-    ? texture(specular_texture, (vso.uv + uv_offset) * uv_scale).rgb * mesh_specular
+    ? texture(specular_texture, get_uv()).rgb * mesh_specular
     : vec3(mesh_specular);
 }
 
 vec3 get_frag_normal()
 {
-  return vec3(vso.normal);
+  if (!use_normal_texture)
+    return vec3(vso.normal);
+
+  vec3 normal_value = texture(normal_texture, get_uv()).rgb;
+  normal_value = normalize(normal_value * 2.0 - 1.0);
+  return normal_value;
 }
 
 float calc_shadow()
@@ -141,7 +151,7 @@ float calc_shadow()
 vec3 calc_sun_light(LightingContext ctx, SunLight light)
 {
   // Diffuse
-  vec3 light_dir = normalize(-light.direction);
+  vec3 light_dir = normalize(vso.tbn * -light.direction);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * ctx.frag_diffuse;
 
@@ -217,7 +227,7 @@ void main()
     discard;
 
   LightingContext ctx;
-  ctx.view_dir = normalize(camera_pos - vso.position);
+  ctx.view_dir = normalize((vso.tbn * camera_pos) - vso.tbn_position);
   ctx.frag_diffuse = get_frag_diffuse();
   ctx.frag_specular = get_frag_specular();
   ctx.frag_normal = get_frag_normal();
