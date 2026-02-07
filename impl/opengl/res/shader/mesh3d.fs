@@ -85,7 +85,6 @@ in VertexShaderOutput {
   vec3 normal;
   vec2 uv;
   mat3 tbn;
-  vec3 tbn_position;
   vec4 light_space_position;
 } vso;
 
@@ -113,12 +112,9 @@ vec3 get_frag_specular()
 
 vec3 get_frag_normal()
 {
-  if (!use_normal_texture)
-    return vec3(vso.normal);
-
-  vec3 normal_value = texture(normal_texture, get_uv()).rgb;
-  normal_value = normalize(normal_value * 2.0 - 1.0);
-  return normal_value;
+  return use_normal_texture
+    ? normalize(texture(normal_texture, get_uv()).rgb * 2.0 - 1.0)
+    : vec3(vso.normal);
 }
 
 float calc_shadow()
@@ -227,7 +223,7 @@ void main()
     discard;
 
   LightingContext ctx;
-  ctx.view_dir = normalize((vso.tbn * camera_pos) - vso.tbn_position);
+  ctx.view_dir = normalize((vso.tbn * camera_pos) - vso.position);
   ctx.frag_diffuse = get_frag_diffuse();
   ctx.frag_specular = get_frag_specular();
   ctx.frag_normal = get_frag_normal();

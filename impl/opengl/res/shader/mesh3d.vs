@@ -10,12 +10,13 @@ layout (location = 5) in mat4 model;
 uniform mat4 projection_view;
 uniform mat4 light_pv;
 
+uniform bool use_normal_texture;
+
 out VertexShaderOutput {
   vec3 position;
   vec3 normal;
   vec2 uv;
   mat3 tbn;
-  vec3 tbn_position;
   vec4 light_space_position;
 } vso;
 
@@ -24,19 +25,24 @@ void main()
   gl_Position = projection_view * model * vec4(position, 1.0);
   gl_Position.x = -gl_Position.x;
 
+  mat3 normal_matrix = transpose(inverse(mat3(model)));
+
   vso.position = vec3(model * vec4(position, 1.0));
-  vso.normal = normalize(mat3(transpose(inverse(model))) * normal); // TODO: conbine with TBN
+  vso.normal = normalize(normal_matrix * normal);
   vso.uv = uv;
 
-  // shadow map test
   vso.light_space_position = light_pv * vec4(vso.position, 1.0);
 
-  // TBN
-  mat3 normal_matrix = transpose(inverse(mat3(model)));
-  vec3 T = normalize(normal_matrix * tangent);
-  vec3 N = normalize(normal_matrix * normal);
-  T = normalize(T - dot(T, N) * N);
-  vec3 B = cross(N, T);
-  vso.tbn = transpose(mat3(T, B, N));
-  vso.tbn_position = vso.tbn * vso.position;
+  if (use_normal_texture)
+  {
+    vec3 T = normalize(normal_matrix * tangent);
+    T = normalize(T - dot(T, vso.normal) * vso.normal);
+    vec3 B = cross(vso.normal, T);
+    vso.tbn = transpose(mat3(T, B, vso.normal));
+    vso.position = vso.tbn * vso.position;
+  }
+  else
+  {
+    vso.tbn = mat3(1.0);
+  }
 }
