@@ -43,9 +43,8 @@ public:
     if (rotate_)
     {
       auto& transform = this->transform();
-      const auto delta_tick = static_cast<float>(context.delta_tick);
 
-      transform.rotation += rotation_speed_ * delta_tick;
+      transform.rotation += rotation_speed_ * context.delta_tick_f;
       update_model_matrix();
     }
   }

@@ -29,12 +29,11 @@ public:
   void update(const axgl::Realm::Context& context) override
   {
     auto& transform = this->transform();
-    const auto delta_tick = static_cast<float>(context.delta_tick);
-    theta_ += orbit_speed_ * delta_tick / radius_;
+    theta_ += orbit_speed_ * context.delta_tick_f / radius_;
     transform.position.x = std::cos(theta_) * radius_;
     transform.position.z = std::sin(theta_) * radius_;
     transform.position.y = y_ + std::sin(theta_ * radius_);
-    transform.rotation += rotation_speed_ * delta_tick;
+    transform.rotation += rotation_speed_ * context.delta_tick_f;
     update_model_matrix();
   }
 

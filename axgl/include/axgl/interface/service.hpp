@@ -17,6 +17,7 @@ public:
   {
     Axgl& axgl;
     double delta_tick;
+    float delta_tick_f;
   };
 
   virtual ~Service() = default;

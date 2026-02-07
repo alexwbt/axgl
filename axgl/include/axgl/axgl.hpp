@@ -116,6 +116,7 @@ public:
           AXGL_PLOT("Delta tick", std::round(delta_tick * 100.0) / 100.0);
           AXGL_PROFILE_SCOPE("Update");
           context.delta_tick = delta_tick;
+          context.delta_tick_f = static_cast<float>(delta_tick);
           update(context);
 #ifdef AXGL_DEBUG
           ++update_count;
