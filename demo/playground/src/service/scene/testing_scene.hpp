@@ -5,6 +5,7 @@
 #include "entity/box.hpp"
 #include "entity/concrete_block.hpp"
 #include "entity/cube.hpp"
+#include "entity/toy_block.hpp"
 
 class TestingScene : public CommonScene
 {
@@ -55,8 +56,6 @@ public:
       entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
       add_entity(entity);
     }
-    next_row();
-
     // box
     {
       const auto entity = entity_service_->create_entity_t<BoxEntity>();
@@ -81,6 +80,19 @@ public:
     // spinning concrete block
     {
       const auto entity = entity_service_->create_entity_t<ConcreteBlockEntity>();
+      entity->set_position(item_position(1.0f));
+      entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
+      add_entity(entity);
+    }
+    // toy block
+    {
+      const auto entity = entity_service_->create_entity_t<ToyBlockEntity>();
+      entity->set_position(item_position(0.5f));
+      add_entity(entity);
+    }
+    // spinning toy block
+    {
+      const auto entity = entity_service_->create_entity_t<ToyBlockEntity>();
       entity->set_position(item_position(1.0f));
       entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
       add_entity(entity);

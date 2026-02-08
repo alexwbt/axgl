@@ -11,6 +11,7 @@
 #include "scene/entity/cube.hpp"
 #include "scene/entity/debug_cursor.hpp"
 #include "scene/entity/floor.hpp"
+#include "scene/entity/toy_block.hpp"
 
 class Playground : public axgl::Service
 {
@@ -28,6 +29,7 @@ public:
     entity_service->register_entity_t<CubeEntity>();
     entity_service->register_entity_t<DebugCursorEntity>();
     entity_service->register_entity_t<FloorEntity>();
+    entity_service->register_entity_t<ToyBlockEntity>();
   }
 
   void on_start(const Context& context) override
