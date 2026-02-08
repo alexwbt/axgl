@@ -72,6 +72,7 @@ public:
     shader_.set_vec2("uv_scale", uv_scale_);
     shader_.set_vec2("uv_offset", uv_offset_);
     shader_.set_float("diffuse_texture_gamma", 2.2f);
+    shader_.set_float("height_scale", height_scale_);
 
     shader_.set_mat4("light_pv", context.lights[0].light_pv);
     shader_.set_int("shadow_map", 5);

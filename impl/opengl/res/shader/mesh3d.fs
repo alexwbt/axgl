@@ -39,7 +39,7 @@ struct PointLight
   float quadratic;
 };
 
-struct LightingContext
+struct Context
 {
   vec3 view_dir;
   vec3 frag_diffuse;
@@ -47,7 +47,6 @@ struct LightingContext
   vec3 frag_normal;
 };
 
-uniform vec3 camera_pos;
 uniform vec4 mesh_color;
 uniform float mesh_shininess;
 uniform float mesh_specular;
@@ -76,11 +75,11 @@ uniform PointLight point_lights[32];
 
 uniform bool transparent;
 uniform float alpha_discard;
-uniform vec2 uv_scale;
-uniform vec2 uv_offset;
+uniform float height_scale;
 uniform sampler2D shadow_map;
 
 in VertexShaderOutput {
+  vec3 camera_pos;
   vec3 position;
   vec3 normal;
   vec2 uv;
@@ -91,30 +90,42 @@ in VertexShaderOutput {
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out float reveal;
 
-vec2 get_uv()
+vec2 calc_height_offset(Context ctx)
 {
-  return (vso.uv + uv_offset) * uv_scale;
-}
+  // number of depth layers (min: 8, max: 32)
+  float layers = mix(8.0, 32.0, abs(dot(vec3(0.0, 0.0, 1.0), ctx.view_dir)));
+  // calculate the size of each layer
+  float layer_depth = 1.0 / layers;
+  // depth of current layer
+  float current_layer_depth = 0.0;
+  // the amount to shift the texture coordinates per layer (from vector P)
+  vec2 P = ctx.view_dir.xy / ctx.view_dir.z * height_scale;
+  vec2 delta_uv = P / layers;
 
-vec3 get_frag_diffuse()
-{
-  return use_diffuse_texture
-    ? pow(texture(diffuse_texture, get_uv()).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
-    : mesh_color.rgb;
-}
+  // initial values
+  vec2 current_uv = vso.uv;
+  float current_height_map_value = texture(height_texture, current_uv).r;
 
-vec3 get_frag_specular()
-{
-  return use_specular_texture
-    ? texture(specular_texture, get_uv()).rgb * mesh_specular
-    : vec3(mesh_specular);
-}
+  while(current_layer_depth < current_height_map_value)
+  {
+    // shift texture coordinates along direction of P
+    current_uv -= delta_uv;
+    // get depthmap value at current texture coordinates
+    current_height_map_value = texture(height_texture, current_uv).r;
+    // get depth of next layer
+    current_layer_depth += layer_depth;
+  }
 
-vec3 get_frag_normal()
-{
-  return use_normal_texture
-    ? normalize(texture(normal_texture, get_uv()).rgb * 2.0 - 1.0)
-    : vec3(vso.normal);
+  // get texture coordinates before collision (reverse operations)
+  vec2 prev_uv = current_uv + delta_uv;
+
+  // get depth after and before collision for linear interpolation
+  float after_depth  = current_height_map_value - current_layer_depth;
+  float before_depth = texture(height_texture, prev_uv).r - current_layer_depth + layer_depth;
+
+  // interpolation of texture coordinates
+  float weight = after_depth / (after_depth - before_depth);
+  return prev_uv * weight + current_uv * (1.0 - weight);
 }
 
 float calc_shadow()
@@ -144,7 +155,7 @@ float calc_shadow()
   return shadow;
 }
 
-vec3 calc_sun_light(LightingContext ctx, SunLight light)
+vec3 calc_sun_light(Context ctx, SunLight light)
 {
   // Diffuse
   vec3 light_dir = normalize(vso.tbn * -light.direction);
@@ -166,7 +177,7 @@ vec3 calc_sun_light(LightingContext ctx, SunLight light)
   return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
-vec3 calc_spot_light(LightingContext ctx, SpotLight light)
+vec3 calc_spot_light(Context ctx, SpotLight light)
 {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);
@@ -194,7 +205,7 @@ vec3 calc_spot_light(LightingContext ctx, SpotLight light)
   return (ambient + (diffuse + specular) * intensity) * attenuation;
 }
 
-vec3 calc_point_light(LightingContext ctx, PointLight light)
+vec3 calc_point_light(Context ctx, PointLight light)
 {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);
@@ -222,11 +233,24 @@ void main()
   if (mesh_color.a < alpha_discard)
     discard;
 
-  LightingContext ctx;
-  ctx.view_dir = normalize((vso.tbn * camera_pos) - vso.position);
-  ctx.frag_diffuse = get_frag_diffuse();
-  ctx.frag_specular = get_frag_specular();
-  ctx.frag_normal = get_frag_normal();
+  Context ctx;
+  ctx.view_dir = normalize(vso.camera_pos - vso.position);
+
+  vec2 uv = use_height_texture
+    ? calc_height_offset(ctx)
+    : vso.uv;
+
+  ctx.frag_diffuse = use_diffuse_texture
+    ? pow(texture(diffuse_texture, uv).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
+    : mesh_color.rgb;
+
+  ctx.frag_specular = use_specular_texture
+    ? texture(specular_texture, uv).rgb * mesh_specular
+    : vec3(mesh_specular);
+
+  ctx.frag_normal = use_normal_texture
+    ? normalize(texture(normal_texture, uv).rgb * 2.0 - 1.0)
+    : vec3(vso.normal);
 
   vec3 result = vec3(0.0);
 

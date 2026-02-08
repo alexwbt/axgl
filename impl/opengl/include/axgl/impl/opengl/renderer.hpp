@@ -53,7 +53,7 @@ class Renderer : public axgl::Renderer
   //
   // Shadow Map
   //
-  std::uint32_t shadow_map_size_ = 1024;
+  GLsizei shadow_map_size_ = 1024;
   std::unique_ptr<::opengl::Texture> shadow_texture_;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer_;
 
@@ -62,7 +62,7 @@ public:
 
   void set_sample_count(std::uint32_t sample_count) override { sample_count_ = static_cast<GLsizei>(sample_count); }
 
-  void set_shadow_map_size(std::uint32_t size) override { shadow_map_size_ = size; }
+  void set_shadow_map_size(std::uint32_t size) override { shadow_map_size_ = static_cast<GLsizei>(size); }
 
   void set_window(axgl::ptr_t<axgl::Window> window) override
   {

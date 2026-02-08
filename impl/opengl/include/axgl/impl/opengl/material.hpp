@@ -30,6 +30,7 @@ protected:
   bool enable_depth_test_ = true;
   bool enable_blend_ = false;
   float alpha_discard_ = 0.0f;
+  float height_scale_ = 0.1f;
   glm::vec2 uv_scale_{1.0f};
   glm::vec2 uv_offset_{1.0f};
 
@@ -43,6 +44,7 @@ public:
   void set_alpha_discard(const float alpha_discard) override { alpha_discard_ = alpha_discard; }
   void set_tiling(glm::vec2 tiling) override { uv_scale_ = tiling; }
   void set_offset(glm::vec2 offset) override { uv_offset_ = offset; }
+  void set_depth_scale(float depth_scale) override { height_scale_ = depth_scale; }
 
   void set_property(const std::string& key, const std::string& value) override
   {
