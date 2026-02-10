@@ -25,13 +25,14 @@ out VertexShaderOutput {
 
 void main()
 {
-  gl_Position = projection_view * model * vec4(position, 1.0);
+  vec4 position_v4 = vec4(position, 1.0);
+  gl_Position = projection_view * model * position_v4;
   gl_Position.x = -gl_Position.x;
 
-  mat3 normal_matrix = transpose(inverse(mat3(model)));
+  mat3 normal_matrix = mat3(model);
 
   vso.camera_pos = camera_pos;
-  vso.position = vec3(model * vec4(position, 1.0));
+  vso.position = vec3(model * position_v4);
   vso.normal = normalize(normal_matrix * normal);
   vso.uv = (uv + uv_offset) * uv_scale;
 
@@ -40,8 +41,7 @@ void main()
   if (use_normal_texture)
   {
     vec3 t = normalize(normal_matrix * tangent);
-    t = normalize(t - dot(t, vso.normal) * vso.normal);
-    vec3 b = cross(vso.normal, t);
+    vec3 b = normalize(normal_matrix * bitangent);
     vso.tbn = transpose(mat3(t, b, vso.normal));
     vso.position = vso.tbn * vso.position;
     vso.camera_pos = vso.tbn * vso.camera_pos;

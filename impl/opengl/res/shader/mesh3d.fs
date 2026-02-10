@@ -239,6 +239,8 @@ void main()
   vec2 uv = use_height_texture
     ? calc_height_offset(ctx)
     : vso.uv;
+//  if(uv.x > 1.0 || uv.y > 1.0 || uv.x < 0.0 || uv.y < 0.0)
+//    discard;
 
   ctx.frag_diffuse = use_diffuse_texture
     ? pow(texture(diffuse_texture, uv).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
