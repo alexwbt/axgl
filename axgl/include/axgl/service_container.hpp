@@ -6,10 +6,10 @@
 #include <ranges>
 #include <unordered_map>
 
+#include <util/string.hpp>
+
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
-
-#include <axgl/util/string.hpp>
 
 namespace axgl
 {
@@ -127,7 +127,7 @@ public:
 
   virtual void exec(const Service::Context& context, const std::string& command) const
   {
-    const auto args = axgl::util::split(command, ' ');
+    const auto args = util::split(command, ' ');
     if (args.empty()) return;
 
     if (const auto service = get_service<Service>(args[0])) service->exec(context, args);

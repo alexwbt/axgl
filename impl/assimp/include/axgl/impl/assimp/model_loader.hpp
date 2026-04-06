@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <utility>
 
+#include <util/string.hpp>
+
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -40,7 +42,7 @@ class ModelLoader
     axgl::ptr_t<axgl::EntityService> entity_service,
     axgl::ptr_t<axgl::RendererService> renderer_service,
     axgl::ptr_t<axgl::ResourceService> resource_service,
-    const axgl::ptr_t<axgl::Entity>& entity,
+    axgl::Entity& entity,
     std::string resource_key,
     std::string material_type) :
     entity_service_(std::move(entity_service)),
@@ -74,12 +76,12 @@ class ModelLoader
     process_node(entity, ai_scene->mRootNode, ai_scene);
   }
 
-  void process_node(const axgl::ptr_t<axgl::Entity>& entity, const aiNode* ai_node, const aiScene* ai_scene)
+  void process_node(axgl::Entity& entity, const aiNode* ai_node, const aiScene* ai_scene)
   {
     for (int i = 0; i < ai_node->mNumMeshes; ++i)
     {
       const aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
-      entity->components().add(load_mesh(ai_mesh, ai_scene));
+      entity.components().add(load_mesh(ai_mesh, ai_scene));
     }
 
     // add children node mesh
@@ -171,7 +173,7 @@ class ModelLoader
 
       if (*texture_path.C_Str() == '*')
       {
-        int index = std::atoi(texture_path.C_Str() + 1);
+        const int index = util::string_to_int(texture_path.C_Str() + 1);
 #ifdef AXGL_DEBUG
         if (index < 0 || index > embedded_textures_.size()) throw std::runtime_error("Invalid texture path.");
 #endif

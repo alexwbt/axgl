@@ -67,7 +67,7 @@ public:
     // model entity
     {
       const auto entity = entity_service->create_entity();
-      axgl.model_service()->load_model(entity, "backpack.glb");
+      axgl.model_service()->load_model(*entity, "backpack.glb");
       entity->transform().scale = glm::vec3(10);
       entity->update_model_matrix();
       realm->entities().add(entity);

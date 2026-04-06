@@ -8,9 +8,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(AXGL_DEBUG "Enable AXGL_DEBUG" ON)
 message("AXGL_DEBUG: ${AXGL_DEBUG}")
 
-if (AXGL_DEBUG)
+if(AXGL_DEBUG)
   add_compile_definitions(AXGL_DEBUG)
-endif ()
+endif()
 
 # External Dependencies
 add_subdirectory(_external/glm)
@@ -28,6 +28,7 @@ add_subdirectory(_external/flatbuffer)
 # Internal Libraries
 add_subdirectory(lib/net)
 add_subdirectory(lib/glad)
+add_subdirectory(lib/util)
 add_subdirectory(lib/assbin)
 add_subdirectory(lib/embedfile)
 add_subdirectory(lib/bundlefile)

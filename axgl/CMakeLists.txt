@@ -8,6 +8,7 @@ target_include_directories(axgl
 
 target_link_libraries(axgl
   INTERFACE
+  util
   glm
   spdlog
   cpptrace::cpptrace

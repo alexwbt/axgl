@@ -25,7 +25,7 @@ public:
     resource_service_ = context.axgl.resource_service();
   }
 
-  ModelResources load_model(const axgl::ptr_t<axgl::Entity> entity, const std::string& resource_key) override
+  ModelResources load_model(axgl::Entity& entity, const std::string& resource_key) override
   {
     ModelLoader loader(entity_service_, renderer_service_, resource_service_, entity, resource_key, "3d");
     return loader.resources_;
