@@ -2,7 +2,10 @@
 
 #include "common_scene.hpp"
 
+#include "component/spinning.hpp"
+
 #include "entity/box.hpp"
+#include "entity/bunny.hpp"
 #include "entity/concrete_block.hpp"
 #include "entity/cube.hpp"
 #include "entity/toy_block.hpp"
@@ -43,6 +46,14 @@ public:
     // spotlight
     // add_light(axgl::Light::spotlight({-0.5f, 2.0f, -2.5f}, {0.2f, -1.0f, 1.2f}));
 
+    // spinning component
+    axgl::ptr_t<axgl::Component> spinning_comp;
+    {
+      const auto component = entity_service_->create_component_t<SpinningComponent>();
+      component->set_rotation_speed({0.02f, 0.01f, 0.05f});
+      spinning_comp = axgl::ptr_cast<axgl::Component>(component);
+    }
+
     // cube
     {
       const auto entity = entity_service_->create_entity_t<CubeEntity>();
@@ -53,7 +64,7 @@ public:
     {
       const auto entity = entity_service_->create_entity_t<CubeEntity>();
       entity->set_position(item_position(1.0f));
-      entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
+      entity->components().add(spinning_comp);
       add_entity(entity);
     }
     // box
@@ -66,7 +77,7 @@ public:
     {
       const auto entity = entity_service_->create_entity_t<BoxEntity>();
       entity->set_position(item_position(1.0f));
-      entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
+      entity->components().add(spinning_comp);
       add_entity(entity);
     }
     next_row();
@@ -81,7 +92,7 @@ public:
     {
       const auto entity = entity_service_->create_entity_t<ConcreteBlockEntity>();
       entity->set_position(item_position(1.0f));
-      entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
+      entity->components().add(spinning_comp);
       add_entity(entity);
     }
     // toy block
@@ -94,7 +105,22 @@ public:
     {
       const auto entity = entity_service_->create_entity_t<ToyBlockEntity>();
       entity->set_position(item_position(1.0f));
-      entity->set_rotation_speed({0.02f, 0.01f, 0.05f});
+      entity->components().add(spinning_comp);
+      add_entity(entity);
+    }
+    next_row();
+
+    // bunny
+    {
+      const auto entity = entity_service_->create_entity_t<BunnyEntity>();
+      entity->set_position(item_position(0.5f));
+      add_entity(entity);
+    }
+    // spinning bunny
+    {
+      const auto entity = entity_service_->create_entity_t<BunnyEntity>();
+      entity->set_position(item_position(0.5f));
+      entity->components().add(spinning_comp);
       add_entity(entity);
     }
     next_row();

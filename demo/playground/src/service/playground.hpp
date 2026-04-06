@@ -5,7 +5,10 @@
 
 #include "scene/testing_scene.hpp"
 
+#include "scene/component/spinning.hpp"
+
 #include "scene/entity/box.hpp"
+#include "scene/entity/bunny.hpp"
 #include "scene/entity/camera.hpp"
 #include "scene/entity/concrete_block.hpp"
 #include "scene/entity/cube.hpp"
@@ -22,8 +25,11 @@ public:
   {
     const auto& axgl = context.axgl;
     const auto& entity_service = axgl.entity_service();
+    // register components
+    entity_service->register_component_t<SpinningComponent>();
     // register entities
     entity_service->register_entity_t<BoxEntity>();
+    entity_service->register_entity_t<BunnyEntity>();
     entity_service->register_entity_t<CameraEntity>();
     entity_service->register_entity_t<ConcreteBlockEntity>();
     entity_service->register_entity_t<CubeEntity>();

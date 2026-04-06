@@ -1,6 +1,8 @@
 add_executable(demo_playground)
 target_sources(demo_playground PRIVATE "src/main.cpp")
 
+target_link_libraries(demo_playground PRIVATE axgl_assimp_impl)
+
 if(AXGL_DEMO_USE_OPENGL_IMPL)
   target_link_libraries(demo_playground PRIVATE axgl_opengl_impl)
 endif()

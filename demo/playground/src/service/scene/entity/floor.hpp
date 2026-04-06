@@ -8,8 +8,6 @@
 #include <axgl/impl/entity_base.hpp>
 #include <axgl/util/mesh.hpp>
 
-#include <demo_playground/res.hpp>
-
 class FloorEntity : public axgl::impl::EntityBase
 {
 public:
@@ -26,13 +24,14 @@ private:
   {
     const auto& entity_service = axgl.entity_service();
     const auto& renderer_service = axgl.renderer_service();
+    const auto& resource_service = axgl.resource_service();
     // textures
     auto normal = renderer_service->create_texture();
     auto diffuse = renderer_service->create_texture();
     auto specular = renderer_service->create_texture();
-    normal->load_texture(demo_playground_res::get("material/wood/normal.png"));
-    diffuse->load_texture(demo_playground_res::get("material/wood/diffuse.png"));
-    specular->load_texture(demo_playground_res::get("material/wood/specular.png"));
+    normal->load_texture(resource_service->get_resource("material/wood/normal.png"));
+    diffuse->load_texture(resource_service->get_resource("material/wood/diffuse.png"));
+    specular->load_texture(resource_service->get_resource("material/wood/specular.png"));
     // material
     auto material = renderer_service->create_material("3d");
     material->add_texture(axgl::Material::TextureType::kNormal, std::move(normal));

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cube.hpp"
-#include <demo_playground/res.hpp>
 
 class BoxEntity final : public CubeEntity
 {
@@ -11,13 +10,15 @@ public:
 protected:
   [[nodiscard]] axgl::ptr_t<axgl::Material> create_material(const axgl::Axgl& axgl) const override
   {
+    const auto& renderer_service = axgl.renderer_service();
+    const auto& resource_service = axgl.resource_service();
     // textures
-    const auto diffuse = axgl.renderer_service()->create_texture();
-    const auto specular = axgl.renderer_service()->create_texture();
-    diffuse->load_texture(demo_playground_res::get("material/box/diffuse.png"));
-    specular->load_texture(demo_playground_res::get("material/box/specular.png"));
+    const auto diffuse = renderer_service->create_texture();
+    const auto specular = renderer_service->create_texture();
+    diffuse->load_texture(resource_service->get_resource("material/box/diffuse.png"));
+    specular->load_texture(resource_service->get_resource("material/box/specular.png"));
     // material
-    const auto material = axgl.renderer_service()->create_material("3d");
+    const auto material = renderer_service->create_material("3d");
     material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse);
     material->add_texture(axgl::Material::TextureType::kSpecular, specular);
     return material;

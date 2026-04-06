@@ -4,6 +4,10 @@
   #include <axgl/impl/opengl.hpp>
 #endif
 
+#include "../../../impl/assimp/include/axgl/impl/assimp.hpp"
+
+#include <demo_playground/res.hpp>
+
 #include "service/input_manager.hpp"
 #include "service/playground.hpp"
 
@@ -11,6 +15,7 @@ int main()
 {
   axgl::Axgl axgl;
   axgl::configure_default(axgl);
+  axgl::configure_assimp(axgl);
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL
   axgl::configure_glfw(axgl);
   axgl::configure_opengl(axgl);
@@ -22,6 +27,7 @@ int main()
   const auto& window_service = axgl.window_service();
   const auto& input_service = axgl.input_service();
   const auto& renderer_service = axgl.renderer_service();
+  const auto& resource_service = axgl.resource_service();
   // window
   const auto window = window_service->create_window();
   window->set_title("Demo Playground");
@@ -39,6 +45,8 @@ int main()
   renderer->set_shadow_map_size(1024 * 4);
 #endif
   renderer_service->set_active_renderer(renderer);
+  // resource
+  resource_service->load_resources(demo_playground_res::data);
 
   axgl.run();
   axgl.terminate();

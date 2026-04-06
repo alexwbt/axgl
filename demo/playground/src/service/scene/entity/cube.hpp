@@ -10,14 +10,12 @@ public:
 
 private:
   bool rotate_ = false;
-  glm::vec3 rotation_speed_{0.0f};
-  glm::vec4 color_{0.392f, 0.584f, 0.929f, 1.0f};
 
 protected:
   [[nodiscard]] virtual axgl::ptr_t<axgl::Material> create_material(const axgl::Axgl& axgl) const
   {
     const auto material = axgl.renderer_service()->create_material("3d");
-    material->set_color(color_);
+    material->set_color({0.392f, 0.584f, 0.929f, 1.0f});
     return material;
   }
 
@@ -35,25 +33,4 @@ public:
     EntityBase::on_create(context);
     components_.add(create_mesh(context.axgl));
   }
-
-  void update(const axgl::Realm::Context& context) override
-  {
-    EntityBase::update(context);
-
-    if (rotate_)
-    {
-      auto& transform = this->transform();
-
-      transform.rotation += rotation_speed_ * context.delta_tick_f;
-      update_model_matrix();
-    }
-  }
-
-  void set_rotation_speed(glm::vec3 rotation_speed)
-  {
-    rotation_speed_ = rotation_speed;
-    rotate_ = true;
-  }
-
-  void set_color(glm::vec4 color) { color_ = color; }
 };
