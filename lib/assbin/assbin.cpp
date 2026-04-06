@@ -52,7 +52,7 @@
       ((flag) & aiProcess_##option) ? "enabled" : "disabled"));                                                        \
   if (option) (flag) |= aiProcess_##option;
 
-static int convert(const std::string& input, const std::string& output, unsigned int flag)
+static int convert(const std::string& input, const std::string& output, const std::string& format, unsigned int flag)
 {
   Assimp::Importer importer;
   const auto* scene = importer.ReadFile(input, flag);
@@ -63,17 +63,40 @@ static int convert(const std::string& input, const std::string& output, unsigned
     return 1;
   }
 
-  Assimp::Exporter exporter;
-  return exporter.Export(scene, "assbin", output);
+  if (Assimp::Exporter exporter; exporter.Export(scene, format, output) != AI_SUCCESS)
+  {
+    SPDLOG_ERROR("Failed to export to format '{}': {}", format, exporter.GetErrorString());
+    return 1;
+  }
+
+  SPDLOG_INFO("Successfully exported to {}", output);
+  return 0;
+}
+
+static void list_export_formats()
+{
+  SPDLOG_INFO("{:<10} | {:<50} | {:<10}", "name", "description", "extension");
+  SPDLOG_INFO("{:-<80}", "");
+
+  const Assimp::Exporter exporter;
+  const auto format_count = exporter.GetExportFormatCount();
+  for (int i = 0; i < format_count; ++i)
+  {
+    const auto* desc = exporter.GetExportFormatDescription(i);
+    SPDLOG_INFO("{:<10} | {:<50} | {:<10}", desc->id, desc->description, desc->fileExtension);
+  }
 }
 
 int main(int argc, char** argv)
 {
-  args::ArgumentParser parser("Convert a 3d model to assimp binary format.");
+  args::ArgumentParser parser("Convert a 3d model with Assimp.");
   args::HelpFlag help(parser, "help", "Display the help menu.", {'h', "help"});
 
-  args::Positional<std::string> source(parser, "source", "The source model file.", args::Options::Required);
-  args::Positional<std::string> target(parser, "target", "The output assbin file.", args::Options::Required);
+  args::Positional<std::string> source(parser, "source", "The source model file.");
+  args::Positional<std::string> target(parser, "target", "The output model file.");
+
+  args::ValueFlag<std::string> format(parser, "format", "The output format.", {'f', "format"}, "glb2");
+  args::Flag list_formats(parser, "list-formats", "List all supported export formats and exit.", {"list-formats"});
 
   DEFINE_ASSIMP_OPTION(PresetTargetRealtime, parser);
   FOR_EACH_OPTIONS(DEFINE_ASSIMP_OPTION, parser);
@@ -97,10 +120,28 @@ int main(int argc, char** argv)
     return 1;
   }
 
+  if (list_formats)
+  {
+    list_export_formats();
+    return 0;
+  }
+
+  if (!source)
+  {
+    SPDLOG_ERROR("Option 'source' is requried.");
+    return 1;
+  }
+
+  if (!target)
+  {
+    SPDLOG_ERROR("Option 'target' is required.");
+    return 1;
+  }
+
   unsigned int flag = 0;
   if (PresetTargetRealtime) flag |= aiProcessPreset_TargetRealtime_MaxQuality;
 
   FOR_EACH_OPTIONS(USE_ASSIMP_OPTION, flag);
 
-  return convert(args::get(source), args::get(target), flag);
+  return convert(args::get(source), args::get(target), args::get(format), flag);
 }
