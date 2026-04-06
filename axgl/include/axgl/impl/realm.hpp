@@ -18,7 +18,7 @@ public:
   void update(const axgl::Service::Context& context) override { entities_.update({context, *this}); }
   void initialize(const axgl::Service::Context& context) override { }
 
-  [[nodiscard]] EntityContainer& entities() override { return entities_; }
+  [[nodiscard]] axgl::impl::EntityContainer& entities() override { return entities_; }
 };
 
 } // namespace axgl::impl

@@ -21,11 +21,11 @@ class EntityBase : virtual public Entity
   bool disabled_ = false;
   bool should_remove_ = false;
 
-  Transform transform_;
+  axgl::Transform transform_;
   glm::mat4 model_matrix_{1.0f};
 
 protected:
-  ComponentContainer components_;
+  axgl::impl::ComponentContainer components_;
 
 public:
   void tick(const Realm::Context& context) override
@@ -43,8 +43,10 @@ public:
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
   void update_model_matrix() override
   {
-    model_matrix_ = glm::translate(glm::mat4(1.0f), transform_.position - transform_.origin)
-      * glm::toMat4(glm::quat(transform_.rotation)) * glm::scale(transform_.scale);
+    model_matrix_                                                                //
+      = glm::translate(glm::mat4(1.0f), transform_.position - transform_.origin) //
+      * glm::toMat4(glm::quat(transform_.rotation))                              //
+      * glm::scale(transform_.scale);                                            //
   }
   void mark_remove(const bool should_remove) override { should_remove_ = should_remove; }
 
@@ -52,10 +54,10 @@ public:
   [[nodiscard]] std::string get_name() const override { return name_; }
   [[nodiscard]] bool is_disabled() const override { return disabled_; }
   [[nodiscard]] glm::mat4 get_model_matrix() const override { return model_matrix_; }
-  [[nodiscard]] Transform& transform() override { return transform_; }
+  [[nodiscard]] axgl::Transform& transform() override { return transform_; }
   [[nodiscard]] bool should_remove() const override { return should_remove_; }
 
-  ComponentContainer& components() override { return components_; }
+  [[nodiscard]] axgl::impl::ComponentContainer& components() override { return components_; }
 };
 
 } // namespace axgl::impl
