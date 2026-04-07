@@ -13,6 +13,8 @@ class ElementContainer : virtual public axgl::Container<axgl::gui::Element>
   std::vector<axgl::ptr_t<axgl::gui::Element>> children_;
 
 public:
+  void set_context(const Context* context) override { }
+
   void add(axgl::ptr_t<axgl::gui::Element> element) override { children_.push_back(std::move(element)); }
   void remove(const axgl::ptr_t<axgl::gui::Element>& element) override { std::erase(children_, element); }
   [[nodiscard]] std::span<const ptr_t<axgl::gui::Element>> get() const override { return children_; }

@@ -9,6 +9,7 @@ namespace axgl::impl
 
 class ComponentBase : virtual public axgl::Component, public axgl::impl::ContextHolder
 {
+protected:
   axgl::Entity* parent_ = nullptr;
   bool disabled_ = false;
 

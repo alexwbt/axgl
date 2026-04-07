@@ -7,10 +7,10 @@ class Axgl;
 
 struct Context
 {
-  axgl::Axgl* axgl;
+  axgl::Axgl* axgl = nullptr;
 
-  double delta_tick;
-  float delta_tick_f;
+  double delta_tick = 0.0;
+  float delta_tick_f = 0.0f;
 };
 
 class ContextHolder

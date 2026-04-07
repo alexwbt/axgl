@@ -105,6 +105,7 @@ public:
     }
     std::erase_if(new_entities_, [&entity](const auto& e) { return e == entity; });
   }
+
   [[nodiscard]] std::span<const axgl::ptr_t<axgl::Entity>> get() const override { return entities_; }
 };
 

@@ -10,6 +10,7 @@
 #include <axgl/interface/renderer.hpp>
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/glfw/window.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
 #include <axgl/impl/opengl/texture.hpp>
@@ -22,7 +23,7 @@
 namespace axgl::impl::opengl
 {
 
-class Renderer : public axgl::Renderer
+class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
 {
   bool initialized_glad_ = false;
   axgl::ptr_t<glfw::Window> window_;
@@ -108,8 +109,8 @@ public:
     const auto& quad_vao = ::opengl::StaticVAOs::instance().quad();
 
     // const auto& axgl = context
-    const auto& gui = context.axgl.gui_service()->get_main_ui();
-    const auto& realm = context.axgl.realm_service()->get_active_realm();
+    const auto& gui = context_->axgl->gui_service()->get_main_ui();
+    const auto& realm = context_->axgl->realm_service()->get_active_realm();
 
     const auto viewport_i = window_->get_size();
     const auto viewport_f = glm::vec2(viewport_i);
@@ -120,7 +121,7 @@ public:
       if (gui)
       {
         gui->set_size(viewport_i.x, viewport_i.y);
-        gui->init(context);
+        gui->init();
       }
 
       //
@@ -190,7 +191,7 @@ public:
       // glReadBuffer(GL_NONE);
     }
 
-    auto* camera = context.axgl.camera_service()->get_camera();
+    auto* camera = context_->axgl->camera_service()->get_camera();
     if (camera && camera->viewport != viewport_f)
     {
       camera->viewport.x = viewport_f.x;

@@ -7,11 +7,13 @@
 #include <axgl/interface/services/input_service.hpp>
 
 #include <axgl/impl/components/camera.hpp>
+#include <axgl/impl/components/transform.hpp>
+#include <axgl/impl/context_holder.hpp>
 
 namespace axgl::impl
 {
 
-class CameraService : virtual public axgl::CameraService
+class CameraService : virtual public axgl::CameraService, public axgl::impl::ContextHolder
 {
   axgl::ptr_t<axgl::CameraMode> camera_mode_;
   axgl::ptr_t<axgl::InputService> input_service_;
@@ -37,9 +39,9 @@ public:
 
   axgl::ptr_t<axgl::Entity> get_camera_entity() override { return camera_entity_; }
 
-  void initialize(const Service::Context& context) override { input_service_ = context.axgl.input_service(); }
+  void initialize() override { input_service_ = context_->axgl->input_service(); }
 
-  void update(const Service::Context& context) override
+  void update() override
   {
     if (!camera_entity_) return;
 
@@ -48,14 +50,13 @@ public:
     if (!camera_comp_) return;
 
     // update camera position with camera entity
-    auto& transform = camera_entity_->transform();
+    auto& transform = camera_entity_->get_component_t<component::Transform>()->transform;
     camera_comp_->camera.position = transform.position;
 
     // update camera entity position with camera mode
     if (!camera_mode_) return;
     camera_mode_->update(camera_comp_->camera);
     transform.position = camera_comp_->camera.position;
-    camera_entity_->update_model_matrix();
   }
 };
 

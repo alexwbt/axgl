@@ -20,6 +20,18 @@ public:
 
   [[nodiscard]] virtual axgl::Container<axgl::Entity>& children() = 0;
   [[nodiscard]] virtual axgl::Container<axgl::Component>& components() = 0;
+
+  template <typename ItemType>
+  axgl::ptr_t<ItemType> get_component_t()
+  {
+    return components().get_t<ItemType>();
+  }
+
+  template <typename ItemType>
+  axgl::ptr_t<ItemType> get_children_t()
+  {
+    return children().get_t<ItemType>();
+  }
 };
 
 } // namespace axgl

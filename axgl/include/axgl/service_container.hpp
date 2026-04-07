@@ -78,6 +78,12 @@ public:
     return get_service<ServiceType>(ServiceType::kTypeId.data());
   }
 
+  virtual void set_context(const axgl::Context* context) const
+  {
+    for (const auto& service : services())
+      service->set_context(context);
+  }
+
   virtual void initialize() const
   {
     for (const auto& service : services())

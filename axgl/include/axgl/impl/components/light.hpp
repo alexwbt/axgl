@@ -1,8 +1,10 @@
 #pragma once
 
+#include <axgl/common.hpp>
 #include <axgl/interface/light.hpp>
 
 #include <axgl/impl/component_base.hpp>
+#include <axgl/impl/components/transform.hpp>
 
 namespace axgl::impl::component
 {
@@ -16,7 +18,7 @@ public:
 
   void update() override
   {
-    const auto& transform = context_.entity.transform();
+    const auto& transform = parent_->get_component_t<component::Transform>();
     light.position = transform.position;
   }
 };

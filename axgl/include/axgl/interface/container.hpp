@@ -22,7 +22,7 @@ public:
 
   virtual void remove(const axgl::ptr_t<Item>& item) = 0;
 
-  // TODO: find a general way to iterate items
+  // TODO: return an iterator instead
   [[nodiscard]] virtual std::span<const axgl::ptr_t<Item>> get() const = 0;
 
   template <typename ItemType>

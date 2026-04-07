@@ -60,7 +60,7 @@ public:
   [[nodiscard]] glm::vec4 get_rect() const override { return rect_; }
   [[nodiscard]] glm::vec4 get_scissor_rect() const override { return scissor_rect_; }
 
-  void update(const axgl::gui::Page::Context& context) override
+  void update(const axgl::gui::Context& context) override
   {
     size_ = current_style()->get_size() * context.scale;
     position_ = current_style()->get_position() * context.scale;
@@ -92,37 +92,37 @@ public:
     update_children(context);
   }
 
-  void on_pointer_enter(const axgl::gui::Page::Context& context) override
+  void on_pointer_enter(const axgl::gui::Context& context) override
   {
     hovering_ = true;
     context.page.set_should_render(true);
   }
 
-  void on_pointer_exit(const axgl::gui::Page::Context& context) override
+  void on_pointer_exit(const axgl::gui::Context& context) override
   {
     hovering_ = false;
     context.page.set_should_render(true);
   }
 
-  void on_activate(const axgl::gui::Page::Context& context) override
+  void on_activate(const axgl::gui::Context& context) override
   {
     activated_ = true;
     context.page.set_should_render(true);
   }
 
-  void on_deactivate(const axgl::gui::Page::Context& context) override
+  void on_deactivate(const axgl::gui::Context& context) override
   {
     activated_ = false;
     context.page.set_should_render(true);
   }
 
-  void on_focus(const axgl::gui::Page::Context& context) override
+  void on_focus(const axgl::gui::Context& context) override
   {
     focused_ = true;
     context.page.set_should_render(true);
   }
 
-  void on_blur(const axgl::gui::Page::Context& context) override
+  void on_blur(const axgl::gui::Context& context) override
   {
     focused_ = false;
     context.page.set_should_render(true);
@@ -135,17 +135,17 @@ public:
   }
 
 protected:
-  void update_children(const axgl::gui::Page::Context& context)
+  void update_children(const axgl::gui::Context& context)
   {
-    axgl::gui::Page::Context current_context = context;
+    axgl::gui::Context current_context = context;
     current_context.parent = this;
     for (const auto& child : children_.get())
       child->update(current_context);
   }
 
-  void render_children(const axgl::gui::Page::RenderContext& context)
+  void render_children(const axgl::gui::Context& context)
   {
-    axgl::gui::Page::RenderContext current_context = context;
+    axgl::gui::Context current_context = context;
     current_context.parent = this;
     for (const auto& child : children_.get())
       child->render(current_context);

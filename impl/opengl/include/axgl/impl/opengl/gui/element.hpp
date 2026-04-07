@@ -18,12 +18,12 @@ class Element : virtual public axgl::gui::Element, public axgl::impl::gui::Eleme
   float content_scale_ = 1.0f;
 
 public:
-  void on_pointer_enter(const axgl::gui::Page::Context& context) override
+  void on_pointer_enter(const axgl::gui::Context& context) override
   {
     axgl::impl::gui::ElementBase::on_pointer_enter(context);
   }
 
-  void update(const axgl::gui::Page::Context& context) override
+  void update(const axgl::gui::Context& context) override
   {
     ElementBase::update(context);
 
@@ -47,7 +47,7 @@ public:
     }
   }
 
-  void render(const axgl::gui::Page::RenderContext& context) override
+  void render(const axgl::gui::Context& context) override
   {
     const auto& style = current_style();
     const auto& color = style->get_color();

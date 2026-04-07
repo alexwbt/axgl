@@ -33,8 +33,10 @@ namespace axgl
 
 class Axgl final : public ServiceContainer
 {
+  axgl::Context context_{this};
+
 public:
-  void initialize()
+  void initialize() const override
   {
 #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
     spdlog::set_level(spdlog::level::debug);
@@ -43,6 +45,7 @@ public:
     CPPTRACE_TRY
     {
 #endif
+      ServiceContainer::set_context(&context_);
       ServiceContainer::initialize();
 #ifdef AXGL_DEBUG
     }
@@ -56,7 +59,7 @@ public:
 #endif
   }
 
-  void terminate()
+  void terminate() const override
   {
 #ifdef AXGL_DEBUG
     CPPTRACE_TRY
@@ -75,7 +78,6 @@ public:
 
   void run()
   {
-    axgl::Context context{*this};
 #ifdef AXGL_DEBUG
     CPPTRACE_TRY
     {
@@ -91,8 +93,8 @@ public:
       std::int64_t update_count = 0;
 #endif
 
-      on_start(context);
-      while (running(context))
+      on_start();
+      while (running())
       {
         AXGL_PROFILE_SCOPE("Main Loop");
 
@@ -116,9 +118,9 @@ public:
           AXGL_PLOT("Delta time (ns)", delta_time);
           AXGL_PLOT("Delta tick", std::round(delta_tick * 100.0) / 100.0);
           AXGL_PROFILE_SCOPE("Update");
-          context.delta_tick = delta_tick;
-          context.delta_tick_f = static_cast<float>(delta_tick);
-          update(context);
+          context_.delta_tick = delta_tick;
+          context_.delta_tick_f = static_cast<float>(delta_tick);
+          update();
 #ifdef AXGL_DEBUG
           ++update_count;
 #endif
@@ -127,17 +129,17 @@ public:
         while (delta_tick >= 1)
         {
           AXGL_PROFILE_SCOPE("Tick");
-          tick(context);
+          tick();
           delta_tick--;
         }
 
         if (should_update)
         {
           AXGL_PROFILE_SCOPE("Render");
-          render(context);
+          render();
         }
       }
-      on_end(context);
+      on_end();
 #ifdef AXGL_DEBUG
     }
     CPPTRACE_CATCH(const std::exception& e)

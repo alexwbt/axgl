@@ -9,7 +9,7 @@
 namespace axgl::impl::opengl
 {
 
-class GuiService : virtual public axgl::GuiService
+class GuiService : virtual public axgl::GuiService, public axgl::impl::ContextHolder
 {
   axgl::ptr_t<axgl::gui::Page> main_ui_;
 
@@ -21,15 +21,19 @@ public:
     return axgl::create_ptr<axgl::impl::opengl::gui::Element>();
   }
 
-  void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) override { main_ui_ = std::move(main_ui); }
+  void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) override
+  {
+    main_ui_ = std::move(main_ui);
+    main_ui_->set_context(context_);
+  }
   [[nodiscard]] axgl::ptr_t<axgl::gui::Page> get_main_ui() const override { return main_ui_; }
 
-  void update(const axgl::Service::Context& context) override
+  void update() override
   {
     if (!main_ui_) return;
 
     AXGL_PROFILE_SCOPE("GUI Update");
-    main_ui_->update(context);
+    main_ui_->update();
   }
 };
 

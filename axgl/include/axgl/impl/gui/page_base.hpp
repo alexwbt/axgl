@@ -1,14 +1,16 @@
 #pragma once
 
+#include <axgl/interface/gui/context.hpp>
 #include <axgl/interface/gui/page.hpp>
 #include <axgl/interface/services/input_service.hpp>
 
+#include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/gui/element_container.hpp>
 
 namespace axgl::impl::gui
 {
 
-class PageBase : virtual public axgl::gui::Page
+class PageBase : virtual public axgl::gui::Page, public axgl::impl::ContextHolder
 {
 protected:
   std::uint32_t width_ = 0;
@@ -35,13 +37,13 @@ public:
   void set_scale(float scale) override { scale_ = scale; }
   void set_should_render(bool should_render) override { should_render_ = should_render; }
 
-  void init(const axgl::Service::Context& context) override { should_render_ = true; }
+  void init() override { should_render_ = true; }
 
-  void update(const axgl::Service::Context& context) override
+  void update() override
   {
-    const auto& gui_service = context.axgl.gui_service();
+    const auto& gui_service = context_->axgl->gui_service();
     const bool normal_cursor_mode
-      = context.axgl.input_service()->get_cursor_mode() == axgl::InputService::CursorMode::kNormal;
+      = context_->axgl->input_service()->get_cursor_mode() == axgl::InputService::CursorMode::kNormal;
     if (cursor_pointer_ && normal_cursor_mode)
     {
       using_cursor_ = true;
@@ -50,12 +52,13 @@ public:
     else if (using_cursor_)
     {
       using_cursor_ = false;
-      const axgl::gui::Page::Context current_context{
-        context,                     //
-        *context.axgl.gui_service(), //
-        *this,                       //
-        nullptr,                     //
-        scale_,                      //
+      const axgl::gui::Context current_context{
+        *context_,       //
+        *gui_service,    //
+        *this,           //
+        nullptr,         //
+        scale_,          //
+        glm::mat4(1.0f), //
       };
       for (const auto& element : elements_.get())
         if (element->hovering()) element->on_pointer_exit(current_context);
@@ -69,18 +72,19 @@ public:
       scale_ += scroll_pointer_->delta.y * 0.1f;
       if (scale_ <= 0.1f) scale_ = 0.1f;
     }
-    const axgl::gui::Page::Context current_context{
-      context,                     //
-      *context.axgl.gui_service(), //
-      *this,                       //
-      nullptr,                     //
-      scale_,                      //
+    const axgl::gui::Context current_context{
+      *context_,       //
+      *gui_service,    //
+      *this,           //
+      nullptr,         //
+      scale_,          //
+      glm::mat4(1.0f), //
     };
     for (const auto& element : elements_.get())
       element->update(current_context);
   }
 
-  void render(const axgl::Service::Context& context) override { should_render_ = false; }
+  void render() override { should_render_ = false; }
 
   [[nodiscard]] bool should_render() const override { return should_render_; }
   [[nodiscard]] glm::ivec2 get_size() const override { return {width_, height_}; }

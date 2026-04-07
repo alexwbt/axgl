@@ -19,11 +19,11 @@ class Page : virtual public axgl::gui::Page, public axgl::impl::gui::PageBase
   axgl::ptr_t<axgl::impl::opengl::Texture> texture_;
 
 public:
-  void init(const axgl::Service::Context& context) override
+  void init() override
   {
-    axgl::impl::gui::PageBase::init(context);
+    axgl::impl::gui::PageBase::init();
 
-    const auto texture = context.axgl.renderer_service()->create_texture();
+    const auto texture = context_->axgl->renderer_service()->create_texture();
     texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(texture);
 #ifdef AXGL_DEBUG
     if (!texture_)
@@ -44,9 +44,9 @@ public:
     framebuffer_->check_status_complete();
   }
 
-  void render(const axgl::Service::Context& context) override
+  void render() override
   {
-    axgl::impl::gui::PageBase::render(context);
+    axgl::impl::gui::PageBase::render();
 
     framebuffer_->use();
     const auto width = static_cast<GLsizei>(width_);
@@ -65,13 +65,13 @@ public:
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
     const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
-    const axgl::gui::Page::RenderContext current_context{
-      context,                     //
-      *context.axgl.gui_service(), //
-      *this,                       //
-      nullptr,                     //
-      scale_,                      //
-      projection                   //
+    const axgl::gui::Context current_context{
+      *context_,                      //
+      *context_->axgl->gui_service(), //
+      *this,                          //
+      nullptr,                        //
+      scale_,                         //
+      projection                      //
     };
     for (const auto& child : elements_.get())
       child->render(current_context);

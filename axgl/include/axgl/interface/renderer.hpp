@@ -1,6 +1,7 @@
 #pragma once
 
 #include <axgl/common.hpp>
+#include <axgl/interface/context.hpp>
 
 namespace axgl
 {
@@ -10,10 +11,9 @@ class Camera;
 class Window;
 class Light;
 
-class Renderer
+class Renderer : virtual public axgl::ContextHolder
 {
 public:
-  virtual ~Renderer() = default;
   virtual void set_antialiasing(bool enable) = 0;
   virtual void set_sample_count(std::uint32_t sample_count) = 0;
   virtual void set_shadow_map_size(std::uint32_t shadow_map_size) = 0;
