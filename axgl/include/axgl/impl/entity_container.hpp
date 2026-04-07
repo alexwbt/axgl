@@ -4,55 +4,71 @@
 #include <axgl/interface/container.hpp>
 #include <axgl/interface/entity.hpp>
 
+#include <axgl/impl/context_holder.hpp>
+
 namespace axgl::impl
 {
 
-class EntityContainer : public virtual axgl::Container<axgl::Entity>
+class EntityContainer : virtual public axgl::Container<axgl::Entity>, public axgl::impl::ContextHolder
 {
+  axgl::Entity* const parent_;
   std::vector<axgl::ptr_t<axgl::Entity>> new_entities_;
   std::vector<axgl::ptr_t<axgl::Entity>> entities_;
 
 public:
-  void tick(const axgl::Realm::Context& context) const
+  explicit EntityContainer(axgl::Entity* parent) : parent_(parent) { }
+
+  void set_context(const Context* context) override
   {
+    axgl::impl::ContextHolder::set_context(context);
+
     for (const auto& entity : entities_)
-      entity->tick(context);
+      entity->set_context(context);
+
+    for (const auto& entity : new_entities_)
+      entity->set_context(context);
   }
 
-  void update(const axgl::Realm::Context& context)
+  void tick() const
+  {
+    for (const auto& entity : entities_)
+      entity->tick();
+  }
+
+  void update()
   {
     entities_.insert(entities_.end(), new_entities_.begin(), new_entities_.end());
     new_entities_.clear();
 
     for (const auto& entity : entities_)
     {
-      if (entity->ticks() == 0) entity->on_create(context);
+      if (entity->ticks() == 0) entity->on_create();
 
-      entity->update(context);
+      entity->update();
     }
 
     if (!entities_.empty())
     {
       std::erase_if(
-        entities_, [&context](const auto& entity)
+        entities_, [&](const auto& entity)
       {
         const auto should_remove = entity->should_remove();
-        if (should_remove) entity->on_remove(context);
+        if (should_remove) entity->on_remove();
         return should_remove;
       });
     }
   }
 
-  void on_create(const axgl::Realm::Context& context) const
+  void on_create() const
   {
     for (const auto& entity : entities_)
-      entity->on_create(context);
+      entity->on_create();
   }
 
-  void on_remove(const axgl::Realm::Context& context) const
+  void on_remove() const
   {
     for (const auto& entity : entities_)
-      entity->on_remove(context);
+      entity->on_remove();
   }
 
   [[nodiscard]] auto get_by_id(std::uint64_t id) const
@@ -72,6 +88,8 @@ public:
       return;
     }
 #endif
+    entity->set_parent(parent_);
+    entity->set_context(context_);
     new_entities_.push_back(std::move(entity));
   }
 

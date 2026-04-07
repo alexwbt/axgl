@@ -1,6 +1,5 @@
 #pragma once
 
-#include <axgl/common.hpp>
 #include <axgl/interface/camera.hpp>
 
 #include <axgl/impl/component_base.hpp>

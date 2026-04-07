@@ -1,63 +1,46 @@
 #pragma once
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/transform.hpp>
-
-#include <axgl/common.hpp>
 #include <axgl/interface/entity.hpp>
-#include <axgl/interface/transform.hpp>
 
+#include <axgl/impl/component_base.hpp>
 #include <axgl/impl/component_container.hpp>
+#include <axgl/impl/entity_container.hpp>
 
 namespace axgl::impl
 {
 
-class EntityBase : virtual public Entity
+class EntityBase : virtual public Entity, public axgl::impl::ComponentBase
 {
   std::uint64_t id_ = 0;
   std::string name_;
   std::uint64_t ticks_ = 0;
-  bool disabled_ = false;
   bool should_remove_ = false;
 
-  axgl::Transform transform_;
-  glm::mat4 model_matrix_{1.0f};
-
 protected:
-  axgl::impl::ComponentContainer components_;
+  axgl::impl::ComponentContainer components_{this};
+  axgl::impl::EntityContainer children_{this};
 
 public:
-  void tick(const Realm::Context& context) override
+  void tick() override
   {
     ++ticks_;
-    components_.tick({context, *this});
+    components_.tick();
   }
-  void update(const Realm::Context& context) override { components_.update({context, *this}); }
-  void on_create(const Realm::Context& context) override { components_.on_entity_create({context, *this}); }
-  void on_remove(const Realm::Context& context) override { components_.on_entity_remove({context, *this}); }
+  void update() override { components_.update(); }
+  void on_create() override { components_.on_create(); }
+  void on_remove() override { components_.on_remove(); }
 
   [[nodiscard]] std::uint64_t ticks() const override { return ticks_; }
 
   void set_name(const std::string& name) override { name_ = name; }
-  void set_disabled(const bool disabled) override { disabled_ = disabled; }
-  void update_model_matrix() override
-  {
-    model_matrix_                                                                //
-      = glm::translate(glm::mat4(1.0f), transform_.position - transform_.origin) //
-      * glm::toMat4(glm::quat(transform_.rotation))                              //
-      * glm::scale(transform_.scale);                                            //
-  }
   void mark_remove(const bool should_remove) override { should_remove_ = should_remove; }
 
   [[nodiscard]] std::uint64_t get_id() const override { return id_; }
   [[nodiscard]] std::string get_name() const override { return name_; }
-  [[nodiscard]] bool is_disabled() const override { return disabled_; }
-  [[nodiscard]] glm::mat4 get_model_matrix() const override { return model_matrix_; }
-  [[nodiscard]] axgl::Transform& transform() override { return transform_; }
   [[nodiscard]] bool should_remove() const override { return should_remove_; }
 
   [[nodiscard]] axgl::impl::ComponentContainer& components() override { return components_; }
+  [[nodiscard]] axgl::impl::EntityContainer& children() override { return children_; }
 };
 
 } // namespace axgl::impl

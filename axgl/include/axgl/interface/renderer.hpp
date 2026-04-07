@@ -1,7 +1,6 @@
 #pragma once
 
 #include <axgl/common.hpp>
-#include <axgl/interface/service.hpp>
 
 namespace axgl
 {
@@ -23,7 +22,7 @@ public:
   [[nodiscard]] virtual int get_sample_count() const = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Window> get_window() const = 0;
 
-  virtual void render(const axgl::Service::Context& context) = 0;
+  virtual void render() = 0;
 };
 
 } // namespace axgl

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <axgl/common.hpp>
+#include <axgl/interface/context.hpp>
 
 namespace axgl
 {
@@ -8,11 +9,9 @@ namespace axgl
 class Component;
 
 template <typename Item>
-class Container
+class Container : public axgl::ContextHolder
 {
 public:
-  virtual ~Container() = default;
-
   virtual void add(axgl::ptr_t<Item> item) = 0;
 
   virtual void add_all(const std::span<const axgl::ptr_t<Item>>& item)
@@ -23,7 +22,7 @@ public:
 
   virtual void remove(const axgl::ptr_t<Item>& item) = 0;
 
-  // TODO: maybe find a better way
+  // TODO: find a general way to iterate items
   [[nodiscard]] virtual std::span<const axgl::ptr_t<Item>> get() const = 0;
 
   template <typename ItemType>

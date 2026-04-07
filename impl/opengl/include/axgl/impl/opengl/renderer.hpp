@@ -95,7 +95,7 @@ public:
 
   [[nodiscard]] axgl::ptr_t<axgl::Window> get_window() const override { return window_; }
 
-  void render(const axgl::Service::Context& context) override
+  void render() override
   {
     if (!window_ || !window_->ready())
     {
@@ -107,6 +107,7 @@ public:
     auto& screen_shader = ::opengl::StaticShaders::instance().screen();
     const auto& quad_vao = ::opengl::StaticVAOs::instance().quad();
 
+    // const auto& axgl = context
     const auto& gui = context.axgl.gui_service()->get_main_ui();
     const auto& realm = context.axgl.realm_service()->get_active_realm();
 

@@ -1,36 +1,23 @@
 #pragma once
 
-#include <axgl/common.hpp>
-
-namespace axgl
-{
-class Axgl;
-}
+#include <axgl/interface/context.hpp>
 
 namespace axgl
 {
 
-class Service
+class Service : public axgl::ContextHolder
 {
 public:
-  struct Context
-  {
-    Axgl& axgl;
-    double delta_tick;
-    float delta_tick_f;
-  };
-
-  virtual ~Service() = default;
-  virtual void initialize(const Context& context) { }
-  virtual void terminate(const Context& context) { }
-  virtual void on_start(const Context& context) { }
-  virtual void on_end(const Context& context) { }
-  virtual void tick(const Context& context) { }
-  virtual void update(const Context& context) { }
-  virtual void render(const Context& context) { }
-  virtual bool running(const Context& context) { return true; }
-  virtual bool keep_alive(const Context& context) { return false; }
-  virtual void exec(const Context& context, const std::vector<std::string>& args) { }
+  virtual void initialize() { }
+  virtual void terminate() { }
+  virtual void on_start() { }
+  virtual void on_end() { }
+  virtual void tick() { }
+  virtual void update() { }
+  virtual void render() { }
+  virtual bool running() { return true; }
+  virtual bool keep_alive() { return false; }
+  virtual void exec(const std::vector<std::string>& args) { }
 };
 
 } // namespace axgl

@@ -10,7 +10,7 @@ class Application final : public axgl::Service
   std::shared_ptr<axgl::Entity> cube_entity_;
 
 public:
-  void on_start(const Context& context) override
+  void on_start() override
   {
     const auto& axgl = context.axgl;
     const auto& window_service = axgl.window_service();
@@ -69,9 +69,9 @@ public:
     }
   }
 
-  void tick(const Context& context) override { cube_entity_->transform().rotation += glm::vec3(0.01f, 0.02f, 0.05f); }
+  void tick() override { cube_entity_->transform().rotation += glm::vec3(0.01f, 0.02f, 0.05f); }
 
-  void update(const Context& context) override { cube_entity_->update_model_matrix(); }
+  void update() override { cube_entity_->update_model_matrix(); }
 };
 
 int main()

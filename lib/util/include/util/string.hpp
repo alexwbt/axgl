@@ -10,7 +10,7 @@ namespace util
 {
 
 template <typename result_t>
-void split(const std::string& s, const char delim, result_t result)
+void split_string(const std::string& s, const char delim, result_t result)
 {
   std::istringstream iss(s);
   std::string item;
@@ -18,10 +18,10 @@ void split(const std::string& s, const char delim, result_t result)
     *result++ = item;
 }
 
-inline std::vector<std::string> split(const std::string& s, char delim)
+inline std::vector<std::string> split_string(const std::string& s, char delim)
 {
   std::vector<std::string> tokens;
-  split(s, delim, std::back_inserter(tokens));
+  split_string(s, delim, std::back_inserter(tokens));
   return tokens;
 }
 

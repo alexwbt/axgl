@@ -1,6 +1,5 @@
 #pragma once
 
-#include <axgl/common.hpp>
 #include <axgl/interface/light.hpp>
 
 #include <axgl/impl/component_base.hpp>
@@ -15,9 +14,9 @@ public:
 
   axgl::Light light{axgl::Light::Type::kSun};
 
-  void update(const axgl::Entity::Context& context) override
+  void update() override
   {
-    const auto& transform = context.entity.transform();
+    const auto& transform = context_.entity.transform();
     light.position = transform.position;
   }
 };

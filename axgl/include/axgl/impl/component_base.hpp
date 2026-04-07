@@ -1,36 +1,21 @@
 #pragma once
 
-#include <axgl/common.hpp>
 #include <axgl/interface/component.hpp>
-#include <axgl/interface/entity.hpp>
+
+#include <axgl/impl/context_holder.hpp>
 
 namespace axgl::impl
 {
 
-class ComponentBase : virtual public axgl::Component
+class ComponentBase : virtual public axgl::Component, public axgl::impl::ContextHolder
 {
-  std::uint64_t id_ = 0;
-  std::string name_;
-  std::uint64_t ticks_ = 0;
+  axgl::Entity* parent_ = nullptr;
   bool disabled_ = false;
 
 public:
-  ComponentBase()
-  {
-    // TODO: move this to entity service
-    static std::uint64_t next_id_ = 0;
-    id_ = ++next_id_;
-  }
-
-  void tick(const axgl::Entity::Context& context) override { ++ticks_; }
-
-  void set_name(const std::string& name) override { name_ = name; }
+  void set_parent(axgl::Entity* parent) override { parent_ = parent; }
   void set_disabled(const bool disabled) override { disabled_ = disabled; }
-
-  [[nodiscard]] std::uint64_t get_id() const override { return id_; }
-  [[nodiscard]] std::string get_name() const override { return name_; }
   [[nodiscard]] bool is_disabled() const override { return disabled_; }
-  [[nodiscard]] std::uint64_t ticks() const override { return ticks_; }
 };
 
 } // namespace axgl::impl

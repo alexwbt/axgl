@@ -1,6 +1,5 @@
 #pragma once
 
-#include <axgl/common.hpp>
 #include <axgl/interface/realm.hpp>
 
 #include <axgl/impl/entity_container.hpp>
@@ -11,12 +10,12 @@ namespace axgl::impl
 class Realm : public axgl::Realm
 {
 protected:
-  axgl::impl::EntityContainer entities_;
+  axgl::impl::EntityContainer entities_{nullptr};
 
 public:
-  void tick(const axgl::Service::Context& context) override { entities_.tick({context, *this}); }
-  void update(const axgl::Service::Context& context) override { entities_.update({context, *this}); }
-  void initialize(const axgl::Service::Context& context) override { }
+  void tick() override { entities_.tick(); }
+  void update() override { entities_.update(); }
+  void initialize() override { }
 
   [[nodiscard]] axgl::impl::EntityContainer& entities() override { return entities_; }
 };

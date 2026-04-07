@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include <axgl/common.hpp>
+#include <axgl/interface/context.hpp>
 #include <axgl/interface/services/camera_service.hpp>
 #include <axgl/interface/services/entity_service.hpp>
 #include <axgl/interface/services/gui_service.hpp>
@@ -42,7 +43,7 @@ public:
     CPPTRACE_TRY
     {
 #endif
-      ServiceContainer::initialize({*this});
+      ServiceContainer::initialize();
 #ifdef AXGL_DEBUG
     }
     CPPTRACE_CATCH(const std::exception& e)
@@ -61,7 +62,7 @@ public:
     CPPTRACE_TRY
     {
 #endif
-      ServiceContainer::terminate({*this});
+      ServiceContainer::terminate();
 #ifdef AXGL_DEBUG
     }
     CPPTRACE_CATCH(const std::exception& e)
@@ -74,7 +75,7 @@ public:
 
   void run()
   {
-    Service::Context context{*this};
+    axgl::Context context{*this};
 #ifdef AXGL_DEBUG
     CPPTRACE_TRY
     {

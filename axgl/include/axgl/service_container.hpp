@@ -16,7 +16,7 @@ namespace axgl
 
 class ServiceContainer
 {
-  std::unordered_map<std::string, ptr_t<Service>> service_map_;
+  std::unordered_map<std::string, axgl::ptr_t<Service>> service_map_;
 
 public:
   virtual ~ServiceContainer() = default;
@@ -25,7 +25,7 @@ public:
 
   [[nodiscard]] virtual bool has_service(const std::string& type_id) const { return service_map_.contains(type_id); }
 
-  virtual void register_service(const std::string& type_id, ptr_t<Service> service)
+  virtual void register_service(const std::string& type_id, const axgl::ptr_t<Service>& service)
   {
 #ifdef AXGL_DEBUG
     if (has_service(type_id))
@@ -55,7 +55,7 @@ public:
   }
 
   template <typename ServiceType>
-  [[nodiscard]] ptr_t<ServiceType> get_service(const std::string& type_id) const
+  [[nodiscard]] axgl::ptr_t<ServiceType> get_service(const std::string& type_id) const
   {
 #ifdef AXGL_DEBUG
     if (!has_service(type_id))
@@ -73,64 +73,64 @@ public:
   }
 
   template <typename ServiceType>
-  [[nodiscard]] ptr_t<ServiceType> get_service_t() const
+  [[nodiscard]] axgl::ptr_t<ServiceType> get_service_t() const
   {
     return get_service<ServiceType>(ServiceType::kTypeId.data());
   }
 
-  virtual void initialize(const Service::Context& context) const
+  virtual void initialize() const
   {
     for (const auto& service : services())
-      service->initialize(context);
+      service->initialize();
   }
 
-  virtual void terminate(const Service::Context& context) const
+  virtual void terminate() const
   {
     for (const auto& service : services())
-      service->terminate(context);
+      service->terminate();
   }
 
-  virtual void on_start(const Service::Context& context) const
+  virtual void on_start() const
   {
     for (const auto& service : services())
-      service->on_start(context);
+      service->on_start();
   }
 
-  virtual void on_end(const Service::Context& context) const
+  virtual void on_end() const
   {
     for (const auto& service : services())
-      service->on_end(context);
+      service->on_end();
   }
 
-  virtual void tick(const Service::Context& context) const
+  virtual void tick() const
   {
     for (const auto& service : services())
-      if (service->running(context)) service->tick(context);
+      if (service->running()) service->tick();
   }
 
-  virtual void update(const Service::Context& context) const
+  virtual void update() const
   {
     for (const auto& service : services())
-      if (service->running(context)) service->update(context);
+      if (service->running()) service->update();
   }
 
-  virtual void render(const Service::Context& context) const
+  virtual void render() const
   {
     for (const auto& service : services())
-      if (service->running(context)) service->render(context);
+      if (service->running()) service->render();
   }
 
-  [[nodiscard]] virtual bool running(const Service::Context& context) const
+  [[nodiscard]] virtual bool running() const
   {
-    return std::ranges::any_of(services(), [&](const auto& service) { return service->keep_alive(context); });
+    return std::ranges::any_of(services(), [&](const auto& service) { return service->keep_alive(); });
   }
 
-  virtual void exec(const Service::Context& context, const std::string& command) const
+  virtual void exec(const std::string& command) const
   {
-    const auto args = util::split(command, ' ');
+    const auto args = util::split_string(command, ' ');
     if (args.empty()) return;
 
-    if (const auto service = get_service<Service>(args[0])) service->exec(context, args);
+    if (const auto service = get_service<Service>(args[0])) service->exec(args);
   }
 };
 

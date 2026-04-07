@@ -1,27 +1,23 @@
 #pragma once
 
-#include <axgl/common.hpp>
-#include <axgl/interface/entity.hpp>
+#include <axgl/interface/context.hpp>
 
 namespace axgl
 {
 
-class Component
+class Entity;
+
+class Component : virtual public axgl::ContextHolder
 {
 public:
-  virtual ~Component() = default;
-  virtual void tick(const axgl::Entity::Context& context) { }
-  virtual void update(const axgl::Entity::Context& context) { }
-  virtual void on_entity_create(const axgl::Entity::Context& context) { }
-  virtual void on_entity_remove(const axgl::Entity::Context& context) { }
+  virtual void tick() { }
+  virtual void update() { }
+  virtual void on_create() { }
+  virtual void on_remove() { }
 
-  virtual void set_name(const std::string& id) = 0;
+  virtual void set_parent(axgl::Entity* parent) = 0;
   virtual void set_disabled(bool disabled) = 0;
-
-  [[nodiscard]] virtual std::uint64_t get_id() const = 0;
-  [[nodiscard]] virtual std::string get_name() const = 0;
   [[nodiscard]] virtual bool is_disabled() const = 0;
-  [[nodiscard]] virtual std::uint64_t ticks() const = 0;
 };
 
 } // namespace axgl
