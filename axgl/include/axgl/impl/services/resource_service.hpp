@@ -6,10 +6,12 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/services/resource_service.hpp>
 
+#include <axgl/impl/service_base.hpp>
+
 namespace axgl::impl
 {
 
-class ResourceService : virtual public axgl::ResourceService
+class ResourceService : virtual public axgl::ResourceService, public axgl::impl::ServiceBase
 {
   std::unordered_map<std::string, std::span<const std::uint8_t>> resources_;
 

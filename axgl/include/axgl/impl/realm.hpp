@@ -2,12 +2,13 @@
 
 #include <axgl/interface/realm.hpp>
 
+#include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/entity_container.hpp>
 
 namespace axgl::impl
 {
 
-class Realm : public axgl::Realm
+class Realm : virtual public axgl::Realm, public axgl::impl::ContextHolder
 {
 protected:
   axgl::impl::EntityContainer entities_{nullptr};

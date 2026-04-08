@@ -8,11 +8,12 @@
 #include <axgl/interface/services/entity_service.hpp>
 
 #include <axgl/impl/entity_base.hpp>
+#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl
 {
 
-class EntityService : virtual public axgl::EntityService
+class EntityService : virtual public axgl::EntityService, public axgl::impl::ServiceBase
 {
   std::unordered_map<std::string, std::function<axgl::ptr_t<axgl::Entity>()>> entity_factories_;
   std::unordered_map<std::string, std::function<axgl::ptr_t<axgl::Component>()>> component_factories_;

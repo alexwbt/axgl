@@ -5,7 +5,7 @@
 namespace axgl
 {
 
-class Service : public axgl::ContextHolder
+class Service : virtual public axgl::ContextHolder
 {
 public:
   virtual void initialize() { }

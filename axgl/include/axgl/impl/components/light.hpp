@@ -18,7 +18,7 @@ public:
 
   void update() override
   {
-    const auto& transform = parent_->get_component_t<component::Transform>();
+    const auto& transform = parent_->get_component_t<component::Transform>()->transform;
     light.position = transform.position;
   }
 };

@@ -5,26 +5,26 @@
 
 #include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
-#include <axgl/interface/service.hpp>
 #include <axgl/interface/services/renderer_service.hpp>
 #include <axgl/interface/services/text_service.hpp>
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/components/mesh.hpp>
+#include <axgl/impl/service_base.hpp>
 
 #include <opengl/text.hpp>
 
 namespace axgl::impl::opengl
 {
 
-class TextService : public axgl::TextService
+class TextService : virtual public axgl::TextService, public axgl::impl::ServiceBase
 {
   ::opengl::TextRenderer text_renderer_;
 
   axgl::ptr_t<axgl::RendererService> renderer_service_;
 
 public:
-  void initialize(const Service::Context& context) override { renderer_service_ = context.axgl.renderer_service(); }
+  void initialize() override { renderer_service_ = context_->axgl->renderer_service(); }
 
   [[nodiscard]] bool has_font(const std::string& name) const { return text_renderer_.has_font(name); }
 

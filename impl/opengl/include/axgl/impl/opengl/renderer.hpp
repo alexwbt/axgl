@@ -325,7 +325,7 @@ public:
       if (gui->should_render())
       {
         AXGL_PROFILE_SCOPE("GUI Render");
-        gui->render(context);
+        gui->render();
 
         const auto& glfw_window = window_->glfw_window();
         switch (gui->get_cursor_type())

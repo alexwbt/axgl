@@ -9,11 +9,12 @@
 #include <axgl/interface/services/input_service.hpp>
 
 #include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl::glfw
 {
 
-class InputService : public axgl::InputService
+class InputService : virtual public axgl::InputService, public axgl::impl::ServiceBase
 {
   axgl::ptr_t<axgl::impl::glfw::Window> window_;
   std::vector<axgl::ptr_t<axgl::Input>> inputs_;
@@ -235,7 +236,7 @@ public:
     return {view.begin(), view.end()};
   }
 
-  void update(const axgl::Service::Context& context) override
+  void update() override
   {
     if (!window_) return;
     const auto window = window_->glfw_window();

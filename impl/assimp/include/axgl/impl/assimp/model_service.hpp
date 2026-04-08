@@ -6,23 +6,25 @@
 #include <axgl/interface/services/renderer_service.hpp>
 #include <axgl/interface/services/resource_service.hpp>
 
+#include <axgl/impl/service_base.hpp>
+
 #include "model_loader.hpp"
 
 namespace axgl::impl::assimp
 {
 
-class ModelService : virtual public axgl::ModelService
+class ModelService : virtual public axgl::ModelService, public axgl::impl::ServiceBase
 {
   axgl::ptr_t<axgl::EntityService> entity_service_;
   axgl::ptr_t<axgl::RendererService> renderer_service_;
   axgl::ptr_t<axgl::ResourceService> resource_service_;
 
 public:
-  void initialize(const Service::Context& context) override
+  void initialize() override
   {
-    entity_service_ = context.axgl.entity_service();
-    renderer_service_ = context.axgl.renderer_service();
-    resource_service_ = context.axgl.resource_service();
+    entity_service_ = context_->axgl->entity_service();
+    renderer_service_ = context_->axgl->renderer_service();
+    resource_service_ = context_->axgl->resource_service();
   }
 
   ModelResources load_model(axgl::Entity& entity, const std::string& resource_key) override

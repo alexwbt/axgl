@@ -5,11 +5,12 @@
 
 #include <axgl/impl/opengl/gui/element.hpp>
 #include <axgl/impl/opengl/gui/page.hpp>
+#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl::opengl
 {
 
-class GuiService : virtual public axgl::GuiService, public axgl::impl::ContextHolder
+class GuiService : virtual public axgl::GuiService, public axgl::impl::ServiceBase
 {
   axgl::ptr_t<axgl::gui::Page> main_ui_;
 

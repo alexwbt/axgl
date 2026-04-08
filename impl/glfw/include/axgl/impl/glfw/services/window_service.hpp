@@ -4,23 +4,25 @@
 #include <axgl/interface/services/window_service.hpp>
 
 #include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/service_base.hpp>
+
 #include <glfw/window.hpp>
 
 namespace axgl::impl::glfw
 {
 
-class WindowService final : public axgl::WindowService
+class WindowService final : virtual public axgl::WindowService, public axgl::impl::ServiceBase
 {
 public:
-  void initialize(const axgl::Service::Context& context) override { ::glfw::Window::initialize(); }
+  void initialize() override { ::glfw::Window::initialize(); }
 
-  void terminate(const axgl::Service::Context& context) override { ::glfw::Window::terminate(); }
+  void terminate() override { ::glfw::Window::terminate(); }
 
-  void render(const axgl::Service::Context& context) override { ::glfw::Window::update_all(); }
+  void render() override { ::glfw::Window::update_all(); }
 
-  bool running(const axgl::Service::Context& context) override { return !::glfw::Window::should_close_all(); }
+  bool running() override { return !::glfw::Window::should_close_all(); }
 
-  bool keep_alive(const axgl::Service::Context& context) override { return running(context); }
+  bool keep_alive() override { return running(); }
 
   axgl::ptr_t<axgl::Window> create_window() override
   {

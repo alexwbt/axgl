@@ -8,12 +8,12 @@
 
 #include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/components/transform.hpp>
-#include <axgl/impl/context_holder.hpp>
+#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl
 {
 
-class CameraService : virtual public axgl::CameraService, public axgl::impl::ContextHolder
+class CameraService : virtual public axgl::CameraService, public axgl::impl::ServiceBase
 {
   axgl::ptr_t<axgl::CameraMode> camera_mode_;
   axgl::ptr_t<axgl::InputService> input_service_;

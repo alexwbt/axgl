@@ -17,16 +17,17 @@
 #include <axgl/impl/opengl/materials/mesh3d_material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/opengl/texture.hpp>
+#include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl::opengl
 {
 
-class RendererService : virtual public axgl::RendererService
+class RendererService : virtual public axgl::RendererService, public axgl::impl::ServiceBase
 {
   axgl::ptr_t<axgl::Renderer> renderer_;
 
 public:
-  void initialize(const Service::Context& context) override
+  void initialize() override
   {
     // set glfw context
     axgl::impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -34,7 +35,7 @@ public:
     axgl::impl::glfw::WindowService::set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   }
 
-  void render(const Context& context) override
+  void render() override
   {
     if (!renderer_)
     {
@@ -43,7 +44,7 @@ public:
 #endif
       return;
     }
-    renderer_->render(context);
+    renderer_->render();
   }
 
   axgl::ptr_t<axgl::Renderer> create_renderer() override { return axgl::create_ptr<axgl::impl::opengl::Renderer>(); }
@@ -63,7 +64,12 @@ public:
   }
 
   [[nodiscard]] axgl::ptr_t<axgl::Renderer> get_active_renderer() const override { return renderer_; }
-  void set_active_renderer(axgl::ptr_t<axgl::Renderer> renderer) override { renderer_ = std::move(renderer); }
+
+  void set_active_renderer(axgl::ptr_t<axgl::Renderer> renderer) override
+  {
+    renderer_ = std::move(renderer);
+    renderer_->set_context(context_);
+  }
 };
 
 } // namespace axgl::impl::opengl
