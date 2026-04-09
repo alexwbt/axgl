@@ -12,25 +12,25 @@ private:
   bool rotate_ = false;
 
 protected:
-  [[nodiscard]] virtual axgl::ptr_t<axgl::Material> create_material(const axgl::Axgl& axgl) const
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Material> create_material() const
   {
-    const auto material = axgl.renderer_service()->create_material("3d");
+    const auto material = axgl_->renderer_service()->create_material("3d");
     material->set_color({0.392f, 0.584f, 0.929f, 1.0f});
     return material;
   }
 
-  [[nodiscard]] virtual axgl::ptr_t<axgl::component::Mesh> create_mesh(const axgl::Axgl& axgl) const
+  [[nodiscard]] virtual axgl::ptr_t<axgl::component::Mesh> create_mesh() const
   {
-    const auto mesh = axgl.entity_service()->create_component_t<axgl::component::Mesh>();
-    mesh->set_material(create_material(axgl));
+    const auto mesh = axgl_->entity_service()->create_component_t<axgl::component::Mesh>();
+    mesh->set_material(create_material());
     axgl::util::init_cube(*mesh);
     return mesh;
   }
 
 public:
-  void on_create(const axgl::Realm::Context& context) override
+  void on_create() override
   {
-    EntityBase::on_create(context);
-    components_.add(create_mesh(context.axgl));
+    EntityBase::on_create();
+    components_.add(create_mesh());
   }
 };

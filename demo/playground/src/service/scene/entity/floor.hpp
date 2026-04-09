@@ -20,11 +20,11 @@ public:
   void set_size(float size) { size_ = size; }
 
 private:
-  static axgl::ptr_t<axgl::component::Mesh> create_mesh(const axgl::Axgl& axgl, float size)
+  static axgl::ptr_t<axgl::component::Mesh> create_mesh(const axgl::Axgl* axgl, float size)
   {
-    const auto& entity_service = axgl.entity_service();
-    const auto& renderer_service = axgl.renderer_service();
-    const auto& resource_service = axgl.resource_service();
+    const auto& entity_service = axgl->entity_service();
+    const auto& renderer_service = axgl->renderer_service();
+    const auto& resource_service = axgl->resource_service();
     // textures
     auto normal = renderer_service->create_texture();
     auto diffuse = renderer_service->create_texture();
@@ -49,13 +49,12 @@ private:
   }
 
 public:
-  void on_create(const axgl::Realm::Context& context) override
+  void on_create() override
   {
-    EntityBase::on_create(context);
+    EntityBase::on_create();
 
-    static const auto mesh = create_mesh(context.axgl, size_);
+    static const auto mesh = create_mesh(axgl_, size_);
     components_.add(mesh);
     transform().scale = {size_, 1.0f, size_};
-    update_model_matrix();
   }
 };

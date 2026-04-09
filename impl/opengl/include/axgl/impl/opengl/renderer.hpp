@@ -4,6 +4,9 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
 #include <spdlog/spdlog.h>
 
 #include <axgl/common.hpp>
@@ -109,8 +112,8 @@ public:
     const auto& quad_vao = ::opengl::StaticVAOs::instance().quad();
 
     // const auto& axgl = context
-    const auto& gui = context_->axgl->gui_service()->get_main_ui();
-    const auto& realm = context_->axgl->realm_service()->get_active_realm();
+    const auto& gui = axgl_->gui_service()->get_main_ui();
+    const auto& realm = axgl_->realm_service()->get_active_realm();
 
     const auto viewport_i = window_->get_size();
     const auto viewport_f = glm::vec2(viewport_i);
@@ -191,7 +194,7 @@ public:
       // glReadBuffer(GL_NONE);
     }
 
-    auto* camera = context_->axgl->camera_service()->get_camera();
+    auto* camera = axgl_->camera_service()->get_camera();
     if (camera && camera->viewport != viewport_f)
     {
       camera->viewport.x = viewport_f.x;
@@ -213,33 +216,12 @@ public:
       //
       // gather and submit render components
       //
-      impl::opengl::renderer::PipelineContext pipeline_context;
       std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*> render_components;
       {
         AXGL_PROFILE_SCOPE("Renderer Gather Instances");
-        for (const auto& entity : realm->entities().get())
-        {
-          if (entity->is_disabled()) continue;
-          for (const auto& component : entity->components().get())
-          {
-            if (component->is_disabled()) continue;
-            if (auto* render_comp = dynamic_cast<impl::opengl::renderer::RenderComponent*>(component.get()))
-            {
-              render_comp->gather_instances(*entity);
-
-              const auto id = render_comp->get_id();
-              render_components[id] = render_comp;
-            }
-            else if (const auto* light_comp = dynamic_cast<axgl::impl::component::Light*>(component.get()))
-            {
-              impl::opengl::renderer::LightContext light_context;
-              light_context.light = &light_comp->light;
-              if (light_context.light->casts_shadows) light_context.light_pv = light_context.light->get_pv_matrix();
-              render_context.lights.emplace_back(light_context);
-            }
-          }
-        }
+        gather_render_components(render_context, render_components, realm->entities());
       }
+      impl::opengl::renderer::PipelineContext pipeline_context;
       {
         AXGL_PROFILE_SCOPE("Renderer Submit Calls");
         for (auto* render_comp : render_components | std::views::values)
@@ -388,6 +370,49 @@ public:
     glDisable(GL_FRAMEBUFFER_SRGB);
 
     window_->swap_buffers();
+  }
+
+private:
+  static void gather_render_components(
+    impl::opengl::renderer::RenderContext& render_context,
+    std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*>& render_components,
+    const axgl::Container<axgl::Entity>& entities,
+    const glm::mat4& base_transform_matrix = glm::mat4{1.0f})
+  {
+    for (const auto& entity : entities.get())
+    {
+      if (entity->is_disabled()) continue;
+
+      // calculate transform matrix
+      const auto& [scale, rotation, origin, position] = entity->transform();
+
+      const auto& transform_matrix                  //
+        = glm::translate(glm::mat4(1.0f), position) //
+        * glm::toMat4(glm::quat(rotation))          //
+        * glm::scale(scale);
+
+      for (const auto& component : entity->components().get())
+      {
+        if (component->is_disabled()) continue;
+        if (auto* render_comp = dynamic_cast<impl::opengl::renderer::RenderComponent*>(component.get()))
+        {
+          render_comp->gather_instances(
+            base_transform_matrix * (transform_matrix * glm::translate(glm::mat4(1.0f), -origin)));
+
+          const auto id = render_comp->get_id();
+          render_components[id] = render_comp;
+        }
+        else if (const auto* light_comp = dynamic_cast<axgl::impl::component::Light*>(component.get()))
+        {
+          impl::opengl::renderer::LightContext light_context;
+          light_context.light = &light_comp->light;
+          if (light_context.light->casts_shadows) light_context.light_pv = light_context.light->get_pv_matrix();
+          render_context.lights.emplace_back(light_context);
+        }
+      }
+      gather_render_components(
+        render_context, render_components, entity->children(), base_transform_matrix * transform_matrix);
+    }
   }
 };
 

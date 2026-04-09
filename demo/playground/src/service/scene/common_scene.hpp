@@ -20,15 +20,12 @@ protected:
   axgl::ptr_t<DebugCursorEntity> debug_cursor_entity_;
 
 public:
-  void initialize(const axgl::Service::Context& context) override
+  void initialize() override
   {
-    const auto& axgl = context.axgl;
-    const auto& entity_service = axgl.entity_service();
-    const auto& camera_service = axgl.camera_service();
-
-    // services
+    const auto& entity_service = axgl_->entity_service();
+    const auto& camera_service = axgl_->camera_service();
     entity_service_ = entity_service;
-    inputs_ = axgl.get_service<InputManager>("input_manager");
+    inputs_ = axgl_->get_service<InputManager>("input_manager");
 
     // floor entity
     floor_entity_ = entity_service->create_entity_t<FloorEntity>();
@@ -49,9 +46,9 @@ public:
     entities_.add(debug_cursor_entity_);
   }
 
-  void update(const axgl::Service::Context& context) override
+  void update() override
   {
-    Realm::update(context);
+    Realm::update();
 
     if (inputs_->debug()->tick == 1) debug_cursor_entity_->set_disabled(!debug_cursor_entity_->is_disabled());
   }
@@ -64,7 +61,6 @@ protected:
     light_comp->light = light;
     light_entity->components().add(light_comp);
     light_entity->transform().position = light.position;
-    light_entity->update_model_matrix();
     entities_.add(light_entity);
     return light_comp;
   }

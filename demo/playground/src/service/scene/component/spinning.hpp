@@ -11,12 +11,10 @@ private:
   glm::vec3 rotation_speed_{0.0f};
 
 public:
-  void update(const axgl::Entity::Context& context) override
+  void parent_update(axgl::Entity* parent) override
   {
-    ComponentBase::update(context);
-
-    context.entity.transform().rotation += rotation_speed_ * context.delta_tick_f;
-    context.entity.update_model_matrix();
+    ComponentBase::parent_update(parent);
+    parent->transform().rotation += rotation_speed_ * context_->delta_tick_f;
   }
 
   void set_rotation_speed(glm::vec3 rotation_speed) { rotation_speed_ = rotation_speed; }

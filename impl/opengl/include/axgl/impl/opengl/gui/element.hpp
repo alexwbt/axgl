@@ -13,7 +13,7 @@
 namespace axgl::impl::opengl::gui
 {
 
-class Element : virtual public axgl::gui::Element, public axgl::impl::gui::ElementBase
+class Element : public axgl::impl::gui::ElementBase
 {
   float content_scale_ = 1.0f;
 
@@ -32,7 +32,7 @@ public:
       should_render_content_ = false;
       content_scale_ = context.scale;
       const auto& style = current_style();
-      const auto& text_service = context.axgl.text_service();
+      const auto& text_service = context.axgl->text_service();
       content_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(text_service->create_texture({
         .value = content_,
         .fonts = style->get_fonts(),

@@ -14,6 +14,7 @@ public:
   virtual void initialize() = 0;
   virtual void update() = 0;
   virtual void tick() = 0;
+  [[nodiscard]] virtual std::uint64_t ticks() = 0;
   [[nodiscard]] virtual axgl::Container<axgl::Entity>& entities() = 0;
 };
 

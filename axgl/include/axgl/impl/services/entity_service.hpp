@@ -29,7 +29,7 @@ public:
     component_factories_.emplace(type, component_factory);
   }
 
-  ptr_t<axgl::Entity> create_entity() override { return axgl::create_ptr<impl::EntityBase>(); }
+  ptr_t<axgl::Entity> create_entity() override { return with_context(axgl::create_ptr<impl::EntityBase>()); }
 
   ptr_t<axgl::Entity> create_entity(const std::string& type) override
   {
@@ -37,7 +37,7 @@ public:
     if (!entity_factories_.contains(type))
       throw std::runtime_error(std::format("Entity factory for '{}' not registered.", type));
 #endif
-    return entity_factories_.at(type)();
+    return with_context(entity_factories_.at(type)());
   }
 
   ptr_t<Component> create_component(const std::string& type) override
@@ -46,7 +46,7 @@ public:
     if (!component_factories_.contains(type))
       throw std::runtime_error(std::format("Component factory for '{}' not registered.", type));
 #endif
-    return component_factories_.at(type)();
+    return with_context(component_factories_.at(type)());
   }
 };
 

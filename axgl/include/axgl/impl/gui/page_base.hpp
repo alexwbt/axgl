@@ -41,9 +41,9 @@ public:
 
   void update() override
   {
-    const auto& gui_service = context_->axgl->gui_service();
+    const auto& gui_service = axgl_->gui_service();
     const bool normal_cursor_mode
-      = context_->axgl->input_service()->get_cursor_mode() == axgl::InputService::CursorMode::kNormal;
+      = axgl_->input_service()->get_cursor_mode() == axgl::InputService::CursorMode::kNormal;
     if (cursor_pointer_ && normal_cursor_mode)
     {
       using_cursor_ = true;

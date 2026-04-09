@@ -27,7 +27,7 @@ public:
     realm_->update();
   }
 
-  axgl::ptr_t<axgl::Realm> create_realm() override { return axgl::create_ptr<impl::Realm>(); }
+  axgl::ptr_t<axgl::Realm> create_realm() override { return with_context(axgl::create_ptr<impl::Realm>()); }
 
   [[nodiscard]] axgl::ptr_t<axgl::Realm> get_active_realm() const override { return realm_; }
 
@@ -35,6 +35,7 @@ public:
   {
     realm_ = std::move(realm);
     realm_->set_context(context_);
+    if (realm_->ticks() == 0) realm_->initialize();
   }
 };
 

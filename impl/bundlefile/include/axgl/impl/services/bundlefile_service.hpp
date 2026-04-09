@@ -26,7 +26,7 @@ private:
   std::unordered_map<std::string, std::unique_ptr<::bundlefile::Bundle>> bundles_;
 
 public:
-  void initialize() override { resource_service_ = context_->axgl->resource_service(); }
+  void initialize() override { resource_service_ = axgl_->resource_service(); }
 
   void load_bundlefile(const std::string& path)
   {

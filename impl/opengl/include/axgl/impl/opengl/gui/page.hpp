@@ -13,7 +13,7 @@
 namespace axgl::impl::opengl::gui
 {
 
-class Page : virtual public axgl::gui::Page, public axgl::impl::gui::PageBase
+class Page : public axgl::impl::gui::PageBase
 {
   std::unique_ptr<::opengl::Framebuffer> framebuffer_;
   axgl::ptr_t<axgl::impl::opengl::Texture> texture_;
@@ -23,7 +23,7 @@ public:
   {
     axgl::impl::gui::PageBase::init();
 
-    const auto texture = context_->axgl->renderer_service()->create_texture();
+    const auto texture = axgl_->renderer_service()->create_texture();
     texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(texture);
 #ifdef AXGL_DEBUG
     if (!texture_)
@@ -66,12 +66,12 @@ public:
 
     const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
     const axgl::gui::Context current_context{
-      *context_,                      //
-      *context_->axgl->gui_service(), //
-      *this,                          //
-      nullptr,                        //
-      scale_,                         //
-      projection                      //
+      *context_,             //
+      *axgl_->gui_service(), //
+      *this,                 //
+      nullptr,               //
+      scale_,                //
+      projection             //
     };
     for (const auto& child : elements_.get())
       child->render(current_context);

@@ -9,10 +9,10 @@ public:
   static constexpr std::string_view kTypeId = "entity::toy-block";
 
 protected:
-  [[nodiscard]] axgl::ptr_t<axgl::Material> create_material(const axgl::Axgl& axgl) const override
+  [[nodiscard]] axgl::ptr_t<axgl::Material> create_material() const override
   {
-    const auto& renderer_service = axgl.renderer_service();
-    const auto& resource_service = axgl.resource_service();
+    const auto& renderer_service = axgl_->renderer_service();
+    const auto& resource_service = axgl_->resource_service();
     // textures
     const auto diffuse = renderer_service->create_texture();
     const auto normal = renderer_service->create_texture();

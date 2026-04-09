@@ -11,13 +11,13 @@ namespace axgl::impl
 
 class ComponentContainer : virtual public axgl::Container<axgl::Component>, public axgl::impl::ContextHolder
 {
-  axgl::Entity* const parent_;
+  axgl::Entity* parent_;
   std::vector<axgl::ptr_t<axgl::Component>> components_;
 
 public:
   explicit ComponentContainer(axgl::Entity* parent) : parent_(parent) { }
 
-  void set_context(const Context* context) override
+  void set_context(const axgl::Context* context) override
   {
     axgl::impl::ContextHolder::set_context(context);
 
@@ -28,30 +28,29 @@ public:
   void tick() const
   {
     for (const auto& comp : components_)
-      if (!comp->is_disabled()) comp->tick();
+      if (!comp->is_disabled()) comp->parent_tick(parent_);
   }
 
   void update() const
   {
     for (const auto& comp : get())
-      if (!comp->is_disabled()) comp->update();
+      if (!comp->is_disabled()) comp->parent_update(parent_);
   }
 
   void on_create() const
   {
     for (const auto& comp : components_)
-      if (!comp->is_disabled()) comp->on_create();
+      if (!comp->is_disabled()) comp->on_parent_create(parent_);
   }
 
   void on_remove() const
   {
     for (const auto& comp : components_)
-      if (!comp->is_disabled()) comp->on_remove();
+      if (!comp->is_disabled()) comp->on_parent_remove(parent_);
   }
 
   void add(axgl::ptr_t<axgl::Component> component) override
   {
-    component->set_parent(parent_);
     component->set_context(context_);
     components_.push_back(std::move(component));
   }

@@ -29,16 +29,12 @@ class TestingScene : public CommonScene
     return {item_offset.x - margin, height, item_offset.y};
   }
 
-  void add_entity(const axgl::ptr_t<axgl::Entity>& entity)
-  {
-    entity->update_model_matrix();
-    entities_.add(entity);
-  }
+  void add_entity(const axgl::ptr_t<axgl::Entity>& entity) { entities_.add(entity); }
 
 public:
-  void initialize(const axgl::Service::Context& context) override
+  void initialize() override
   {
-    CommonScene::initialize(context);
+    CommonScene::initialize();
 
     // sunlight
     sunlight_ = add_light(axgl::Light::sunlight({0.2f, -1.0f, 1.2f}));
@@ -126,13 +122,13 @@ public:
     next_row();
   }
 
-  void update(const axgl::Service::Context& context) override
+  void update() override
   {
-    CommonScene::update(context);
+    CommonScene::update();
 
     if (inputs_->rotate_sun()->tick > 0)
     {
-      sunlight_->light.direction.z -= 0.05f * context.delta_tick_f;
+      sunlight_->light.direction.z -= 0.05f * context_->delta_tick_f;
       if (sunlight_->light.direction.z < -1.2f) sunlight_->light.direction.z = 1.2f;
     }
   }

@@ -18,7 +18,7 @@ class EntityContainer : virtual public axgl::Container<axgl::Entity>, public axg
 public:
   explicit EntityContainer(axgl::Entity* parent) : parent_(parent) { }
 
-  void set_context(const Context* context) override
+  void set_context(const axgl::Context* context) override
   {
     axgl::impl::ContextHolder::set_context(context);
 
@@ -32,7 +32,7 @@ public:
   void tick() const
   {
     for (const auto& entity : entities_)
-      entity->tick();
+      entity->parent_tick(parent_);
   }
 
   void update()
@@ -42,9 +42,8 @@ public:
 
     for (const auto& entity : entities_)
     {
-      if (entity->ticks() == 0) entity->on_create();
-
-      entity->update();
+      if (entity->ticks() == 0) entity->on_parent_create(parent_);
+      entity->parent_update(parent_);
     }
 
     if (!entities_.empty())
@@ -62,13 +61,13 @@ public:
   void on_create() const
   {
     for (const auto& entity : entities_)
-      entity->on_create();
+      entity->on_parent_create(parent_);
   }
 
   void on_remove() const
   {
     for (const auto& entity : entities_)
-      entity->on_remove();
+      entity->on_parent_remove(parent_);
   }
 
   [[nodiscard]] auto get_by_id(std::uint64_t id) const
@@ -88,7 +87,6 @@ public:
       return;
     }
 #endif
-    entity->set_parent(parent_);
     entity->set_context(context_);
     new_entities_.push_back(std::move(entity));
   }

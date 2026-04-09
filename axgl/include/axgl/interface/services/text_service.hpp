@@ -7,7 +7,7 @@
 namespace axgl
 {
 
-class TextService : public axgl::Service
+class TextService : virtual public axgl::Service
 {
 public:
   static constexpr std::string_view kTypeId = "service::text";

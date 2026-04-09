@@ -1,7 +1,8 @@
 #pragma once
 
 #include <axgl/common.hpp>
-#include <axgl/interface/service.hpp>
+
+#include <axgl/impl/service_base.hpp>
 
 #include "scene/testing_scene.hpp"
 
@@ -16,15 +17,14 @@
 #include "scene/entity/floor.hpp"
 #include "scene/entity/toy_block.hpp"
 
-class Playground : public axgl::Service
+class Playground : public axgl::impl::ServiceBase
 {
   std::vector<axgl::ptr_t<axgl::Realm>> scenes_;
 
 public:
-  void initialize(const Context& context) override
+  void initialize() override
   {
-    const auto& axgl = context.axgl;
-    const auto& entity_service = axgl.entity_service();
+    const auto& entity_service = axgl_->entity_service();
     // register components
     entity_service->register_component_t<SpinningComponent>();
     // register entities
@@ -38,16 +38,12 @@ public:
     entity_service->register_entity_t<ToyBlockEntity>();
   }
 
-  void on_start(const Context& context) override
+  void on_start() override
   {
     // create scenes
-    scenes_.emplace_back(axgl::create_ptr<TestingScene>());
-
-    // initialize scenes
-    for (const auto& scene : scenes_)
-      scene->initialize(context);
+    scenes_.emplace_back(with_context(axgl::create_ptr<TestingScene>()));
 
     // set first scene as active realm
-    context.axgl.realm_service()->set_active_realm(scenes_[0]);
+    axgl_->realm_service()->set_active_realm(scenes_[0]);
   }
 };

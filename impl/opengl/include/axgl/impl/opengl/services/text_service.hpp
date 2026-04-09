@@ -24,11 +24,11 @@ class TextService : virtual public axgl::TextService, public axgl::impl::Service
   axgl::ptr_t<axgl::RendererService> renderer_service_;
 
 public:
-  void initialize() override { renderer_service_ = context_->axgl->renderer_service(); }
+  void initialize() override { renderer_service_ = axgl_->renderer_service(); }
 
   [[nodiscard]] bool has_font(const std::string& name) const { return text_renderer_.has_font(name); }
 
-  void load_font(const std::string& name, const std::span<const std::uint8_t> data, const int index = 0) override
+  void load_font(const std::string& name, const std::span<const std::uint8_t> data, const int index) override
   {
 #ifdef AXGL_DEBUG
     if (text_renderer_.has_font(name)) throw std::runtime_error("Font already exists: " + name);

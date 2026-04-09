@@ -16,12 +16,11 @@ private:
   axgl::ptr_t<axgl::Input> flashlight_input_;
 
 public:
-  void on_create(const axgl::Realm::Context& context) override
+  void on_create() override
   {
-    EntityBase::on_create(context);
+    EntityBase::on_create();
 
-    const auto& axgl = context.axgl;
-    const auto& entity_service = axgl.entity_service();
+    const auto& entity_service = axgl_->entity_service();
 
     // camera
     camera_ = entity_service->create_component_t<axgl::impl::component::Camera>();
@@ -34,9 +33,9 @@ public:
     components().add(flashlight_);
   }
 
-  void update(const axgl::Realm::Context& context) override
+  void update() override
   {
-    EntityBase::update(context);
+    EntityBase::update();
 
     const auto target = camera_->camera.front();
     auto& current = flashlight_->light.direction;

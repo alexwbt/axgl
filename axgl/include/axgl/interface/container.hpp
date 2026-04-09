@@ -9,7 +9,7 @@ namespace axgl
 class Component;
 
 template <typename Item>
-class Container : public axgl::ContextHolder
+class Container : virtual public axgl::ContextHolder
 {
 public:
   virtual void add(axgl::ptr_t<Item> item) = 0;

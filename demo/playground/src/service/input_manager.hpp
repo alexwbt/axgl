@@ -2,12 +2,12 @@
 
 #include <axgl/common.hpp>
 #include <axgl/interface/input.hpp>
-#include <axgl/interface/service.hpp>
 #include <axgl/interface/services/input_service.hpp>
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/service_base.hpp>
 
-class InputManager : public axgl::Service
+class InputManager : public axgl::impl::ServiceBase
 {
   axgl::ptr_t<axgl::Input> rotate_sun_;
   axgl::ptr_t<axgl::Input> flashlight_;
@@ -20,7 +20,7 @@ public:
   [[nodiscard]] auto debug() const { return debug_; }
   [[nodiscard]] auto msaa() const { return msaa_; }
 
-  void initialize(const axgl::Service::Context& context) override
+  void initialize() override
   {
     rotate_sun_ = axgl::create_ptr<axgl::Input>("Rotate Sun", axgl::Input::Source::kKeyR);
     flashlight_ = axgl::create_ptr<axgl::Input>("Toggle Flashlight", axgl::Input::Source::kKeyF);
@@ -28,20 +28,20 @@ public:
     msaa_ = axgl::create_ptr<axgl::Input>("Toggle MSAA", axgl::Input::Source::kKeyM);
   }
 
-  void on_start(const axgl::Service::Context& context) override
+  void on_start() override
   {
-    const auto& input_service = context.axgl.input_service();
+    const auto& input_service = axgl_->input_service();
     input_service->add_input(rotate_sun_);
     input_service->add_input(flashlight_);
     input_service->add_input(debug_);
     input_service->add_input(msaa_);
   }
 
-  void update(const Context& context) override
+  void update() override
   {
     if (msaa_->tick == 1)
     {
-      const auto& renderer = context.axgl.renderer_service()->get_active_renderer();
+      const auto& renderer = axgl_->renderer_service()->get_active_renderer();
       renderer->set_antialiasing(!renderer->get_antialiasing());
     }
   }

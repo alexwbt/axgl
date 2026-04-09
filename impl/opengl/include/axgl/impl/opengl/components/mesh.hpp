@@ -144,10 +144,10 @@ public:
     }
   }
 
-  void gather_instances(const axgl::Entity& entity) override
+  void gather_instances(const glm::mat4& transform_matrix) override
   {
     if (!material_) return;
-    instanced_models_.emplace_back(entity.get_model_matrix());
+    instanced_models_.emplace_back(transform_matrix);
   }
 
   void submit_render_function(axgl::impl::opengl::renderer::PipelineContext& context) override

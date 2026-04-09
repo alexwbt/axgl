@@ -22,9 +22,9 @@ class ModelService : virtual public axgl::ModelService, public axgl::impl::Servi
 public:
   void initialize() override
   {
-    entity_service_ = context_->axgl->entity_service();
-    renderer_service_ = context_->axgl->renderer_service();
-    resource_service_ = context_->axgl->resource_service();
+    entity_service_ = axgl_->entity_service();
+    renderer_service_ = axgl_->renderer_service();
+    resource_service_ = axgl_->resource_service();
   }
 
   ModelResources load_model(axgl::Entity& entity, const std::string& resource_key) override

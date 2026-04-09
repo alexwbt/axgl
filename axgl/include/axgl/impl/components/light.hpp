@@ -4,7 +4,6 @@
 #include <axgl/interface/light.hpp>
 
 #include <axgl/impl/component_base.hpp>
-#include <axgl/impl/components/transform.hpp>
 
 namespace axgl::impl::component
 {
@@ -16,11 +15,7 @@ public:
 
   axgl::Light light{axgl::Light::Type::kSun};
 
-  void update() override
-  {
-    const auto& transform = parent_->get_component_t<component::Transform>()->transform;
-    light.position = transform.position;
-  }
+  void parent_update(axgl::Entity* parent) override { light.position = parent->transform().position; }
 };
 
 } // namespace axgl::impl::component

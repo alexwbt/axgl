@@ -7,7 +7,6 @@
 #include <axgl/interface/services/input_service.hpp>
 
 #include <axgl/impl/components/camera.hpp>
-#include <axgl/impl/components/transform.hpp>
 #include <axgl/impl/service_base.hpp>
 
 namespace axgl::impl
@@ -39,7 +38,7 @@ public:
 
   axgl::ptr_t<axgl::Entity> get_camera_entity() override { return camera_entity_; }
 
-  void initialize() override { input_service_ = context_->axgl->input_service(); }
+  void initialize() override { input_service_ = axgl_->input_service(); }
 
   void update() override
   {
@@ -50,7 +49,7 @@ public:
     if (!camera_comp_) return;
 
     // update camera position with camera entity
-    auto& transform = camera_entity_->get_component_t<component::Transform>()->transform;
+    auto& transform = camera_entity_->transform();
     camera_comp_->camera.position = transform.position;
 
     // update camera entity position with camera mode

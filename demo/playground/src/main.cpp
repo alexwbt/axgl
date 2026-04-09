@@ -3,8 +3,7 @@
   #include <axgl/impl/glfw.hpp>
   #include <axgl/impl/opengl.hpp>
 #endif
-
-#include "../../../impl/assimp/include/axgl/impl/assimp.hpp"
+#include <axgl/impl/assimp.hpp>
 
 #include <demo_playground/res.hpp>
 
