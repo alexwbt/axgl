@@ -42,7 +42,6 @@ class ModelLoader
     axgl::ptr_t<axgl::EntityService> entity_service,
     axgl::ptr_t<axgl::RendererService> renderer_service,
     axgl::ptr_t<axgl::ResourceService> resource_service,
-    axgl::Entity& entity,
     std::string resource_key,
     std::string material_type) :
     entity_service_(std::move(entity_service)),
@@ -73,20 +72,20 @@ class ModelLoader
         resources_.textures.push_back(embedded_textures_[i]);
       }
     }
-    process_node(entity, ai_scene->mRootNode, ai_scene);
+    process_node(ai_scene->mRootNode, ai_scene);
   }
 
-  void process_node(axgl::Entity& entity, const aiNode* ai_node, const aiScene* ai_scene)
+  void process_node(const aiNode* ai_node, const aiScene* ai_scene)
   {
     for (int i = 0; i < ai_node->mNumMeshes; ++i)
     {
       const aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
-      entity.components().add(load_mesh(ai_mesh, ai_scene));
+      load_mesh(ai_mesh, ai_scene);
     }
 
     // add children node mesh
     for (int i = 0; i < ai_node->mNumChildren; ++i)
-      process_node(entity, ai_node->mChildren[i], ai_scene);
+      process_node(ai_node->mChildren[i], ai_scene);
   }
 
   axgl::ptr_t<axgl::component::Mesh> load_mesh(const aiMesh* ai_mesh, const aiScene* ai_scene)

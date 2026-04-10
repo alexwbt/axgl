@@ -32,10 +32,23 @@ public:
   {
     ++ticks_;
     components_.tick();
+    children_.tick();
   }
-  void update() override { components_.update(); }
-  void on_create() override { components_.on_create(); }
-  void on_remove() override { components_.on_remove(); }
+  void update() override
+  {
+    components_.update();
+    children_.update();
+  }
+  void on_create() override
+  {
+    components_.on_create();
+    children_.on_create();
+  }
+  void on_remove() override
+  {
+    components_.on_remove();
+    children_.on_remove();
+  }
 
   [[nodiscard]] std::uint64_t ticks() const override { return ticks_; }
 

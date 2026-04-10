@@ -9,6 +9,10 @@
 
 class InputManager : public axgl::impl::ServiceBase
 {
+public:
+  static constexpr std::string_view kTypeId = "service::input-manager";
+
+private:
   axgl::ptr_t<axgl::Input> rotate_sun_;
   axgl::ptr_t<axgl::Input> flashlight_;
   axgl::ptr_t<axgl::Input> debug_;

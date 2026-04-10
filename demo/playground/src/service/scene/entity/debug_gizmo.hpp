@@ -5,7 +5,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/entity_base.hpp>
 
-class DebugCursorEntity : public axgl::impl::EntityBase
+class DebugGizmoEntity : public axgl::impl::EntityBase
 {
   static axgl::ptr_t<axgl::Component> create_axis_mesh(const axgl::Axgl* axgl, const glm::vec3& axis)
   {
@@ -22,7 +22,7 @@ class DebugCursorEntity : public axgl::impl::EntityBase
   }
 
 public:
-  static constexpr std::string_view kTypeId = "entity::debug-cursor-entity";
+  static constexpr std::string_view kTypeId = "entity::debug-gizmo";
 
   void on_create() override
   {
@@ -33,15 +33,5 @@ public:
         create_axis_mesh(axgl_, {0.0f, 0.0f, 1.0f}),
       });
     transform().scale = glm::vec3(0.05f);
-  }
-
-  void update() override
-  {
-    const auto& camera_service = axgl_->camera_service();
-    const auto* camera = camera_service->get_camera();
-    if (const auto& camera_entity = camera_service->get_camera_entity(); camera_entity && camera)
-    {
-      transform().position = camera_entity->transform().position + camera->front();
-    }
   }
 };

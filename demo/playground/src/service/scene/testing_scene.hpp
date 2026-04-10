@@ -126,7 +126,7 @@ public:
   {
     CommonScene::update();
 
-    if (inputs_->rotate_sun()->tick > 0)
+    if (input_manager_->rotate_sun()->tick > 0)
     {
       sunlight_->light.direction.z -= 0.05f * context_->delta_tick_f;
       if (sunlight_->light.direction.z < -1.2f) sunlight_->light.direction.z = 1.2f;

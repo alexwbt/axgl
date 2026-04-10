@@ -149,13 +149,6 @@ public:
 #endif
   }
 
-  template <typename ServiceType>
-  ptr_t<ServiceType> register_service_t()
-  {
-    AXGL_LOG_ERROR("Service type '{}' is not supported.", typeid(ServiceType).name());
-    return nullptr;
-  }
-
   __AXGL_DECLARE_SERVICE_GETTER(axgl::WindowService, window)
   __AXGL_DECLARE_SERVICE_GETTER(axgl::RendererService, renderer)
   __AXGL_DECLARE_SERVICE_GETTER(axgl::ResourceService, resource)
@@ -177,21 +170,8 @@ public:
 #include <axgl/impl/services/realm_service.hpp>
 #include <axgl/impl/services/resource_service.hpp>
 
-#define AXGL_DECLARE_REGISTER_SERVICE(service_type)                                                                    \
-  template <>                                                                                                          \
-  inline ptr_t<service_type> Axgl::register_service_t()                                                                \
-  {                                                                                                                    \
-    const auto service = axgl::create_ptr<service_type>();                                                             \
-    register_service(service_type::kTypeId.data(), service);                                                           \
-    return service;                                                                                                    \
-  }
-
 namespace axgl
 {
-AXGL_DECLARE_REGISTER_SERVICE(impl::CameraService)
-AXGL_DECLARE_REGISTER_SERVICE(impl::EntityService)
-AXGL_DECLARE_REGISTER_SERVICE(impl::RealmService)
-AXGL_DECLARE_REGISTER_SERVICE(impl::ResourceService)
 
 inline void configure_default(Axgl& axgl)
 {

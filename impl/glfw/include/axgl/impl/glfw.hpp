@@ -6,8 +6,6 @@
 
 namespace axgl
 {
-AXGL_DECLARE_REGISTER_SERVICE(impl::glfw::WindowService)
-AXGL_DECLARE_REGISTER_SERVICE(impl::glfw::InputService)
 
 inline void configure_glfw(Axgl& axgl)
 {

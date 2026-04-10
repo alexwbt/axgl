@@ -1,10 +1,6 @@
 #pragma once
 
-#include <axgl/common.hpp>
-#include <axgl/interface/services/entity_service.hpp>
 #include <axgl/interface/services/model_service.hpp>
-#include <axgl/interface/services/renderer_service.hpp>
-#include <axgl/interface/services/resource_service.hpp>
 
 #include <axgl/impl/service_base.hpp>
 
@@ -15,21 +11,14 @@ namespace axgl::impl::assimp
 
 class ModelService : virtual public axgl::ModelService, public axgl::impl::ServiceBase
 {
-  axgl::ptr_t<axgl::EntityService> entity_service_;
-  axgl::ptr_t<axgl::RendererService> renderer_service_;
-  axgl::ptr_t<axgl::ResourceService> resource_service_;
-
 public:
-  void initialize() override
+  ModelResources load_model(const std::string& resource_key) override
   {
-    entity_service_ = axgl_->entity_service();
-    renderer_service_ = axgl_->renderer_service();
-    resource_service_ = axgl_->resource_service();
-  }
+    const auto& entity_service = axgl_->entity_service();
+    const auto& renderer_service = axgl_->renderer_service();
+    const auto& resource_service = axgl_->resource_service();
 
-  ModelResources load_model(axgl::Entity& entity, const std::string& resource_key) override
-  {
-    ModelLoader loader(entity_service_, renderer_service_, resource_service_, entity, resource_key, "3d");
+    ModelLoader loader(entity_service, renderer_service, resource_service, resource_key, "3d");
     return loader.resources_;
   }
 };

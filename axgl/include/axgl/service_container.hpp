@@ -46,6 +46,14 @@ public:
   }
 
   template <typename ServiceType>
+  axgl::ptr_t<ServiceType> register_service_t()
+  {
+    auto service = axgl::create_ptr<ServiceType>();
+    register_service(ServiceType::kTypeId.data(), service);
+    return service;
+  }
+
+  template <typename ServiceType>
   [[nodiscard]] bool has_service_type(const std::string& type_id) const
   {
     if (!has_service(type_id)) return false;

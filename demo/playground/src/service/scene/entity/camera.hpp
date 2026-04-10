@@ -4,6 +4,9 @@
 #include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/entity_base.hpp>
 
+#include "../../input_manager.hpp"
+#include "debug_gizmo.hpp"
+
 class CameraEntity : public axgl::impl::EntityBase
 {
 public:
@@ -12,8 +15,10 @@ public:
 private:
   axgl::ptr_t<axgl::impl::component::Camera> camera_;
   axgl::ptr_t<axgl::impl::component::Light> flashlight_;
+  axgl::ptr_t<DebugGizmoEntity> debug_cursor_;
 
   axgl::ptr_t<axgl::Input> flashlight_input_;
+  axgl::ptr_t<axgl::Input> debug_input_;
 
 public:
   void on_create() override
@@ -21,6 +26,7 @@ public:
     EntityBase::on_create();
 
     const auto& entity_service = axgl_->entity_service();
+    const auto& input_manager = axgl_->get_service_t<InputManager>();
 
     // camera
     camera_ = entity_service->create_component_t<axgl::impl::component::Camera>();
@@ -31,21 +37,32 @@ public:
     flashlight_->light = axgl::Light::spotlight();
     flashlight_->set_disabled(true);
     components().add(flashlight_);
+
+    // debug cursor
+    debug_cursor_ = entity_service->create_entity_t<DebugGizmoEntity>();
+    debug_cursor_->set_disabled(true);
+    children().add(debug_cursor_);
+
+    // inputs
+    flashlight_input_ = input_manager->flashlight();
+    debug_input_ = input_manager->debug();
   }
 
   void update() override
   {
     EntityBase::update();
 
-    const auto target = camera_->camera.front();
-    auto& current = flashlight_->light.direction;
-    current += (target - current) * 0.3f;
+    const auto front = camera_->camera.front();
 
+    // update debug cursor
+    debug_cursor_->transform().position = front;
+    // toggle debug cursor
+    if (debug_input_->tick == 1) debug_cursor_->set_disabled(!debug_cursor_->is_disabled());
+
+    // update flashlight
+    auto& flashlight_dir = flashlight_->light.direction;
+    flashlight_dir += (front - flashlight_dir) * 0.3f;
+    // toggle flashlight
     if (flashlight_input_ && flashlight_input_->tick == 1) flashlight_->set_disabled(!flashlight_->is_disabled());
-  }
-
-  void set_flashlight_input(axgl::ptr_t<axgl::Input> flashlight_input)
-  {
-    flashlight_input_ = std::move(flashlight_input);
   }
 };

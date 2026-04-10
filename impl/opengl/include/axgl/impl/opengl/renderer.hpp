@@ -386,18 +386,21 @@ private:
       // calculate transform matrix
       const auto& [scale, rotation, origin, position] = entity->transform();
 
-      const auto& transform_matrix                  //
+      auto transform_matrix                         //
         = glm::translate(glm::mat4(1.0f), position) //
         * glm::toMat4(glm::quat(rotation))          //
         * glm::scale(scale);
+      transform_matrix = base_transform_matrix * transform_matrix;
 
       for (const auto& component : entity->components().get())
       {
         if (component->is_disabled()) continue;
+
         if (auto* render_comp = dynamic_cast<impl::opengl::renderer::RenderComponent*>(component.get()))
         {
-          render_comp->gather_instances(
-            base_transform_matrix * (transform_matrix * glm::translate(glm::mat4(1.0f), -origin)));
+          // render_comp->gather_instances(
+          //   base_transform_matrix * (transform_matrix * glm::translate(glm::mat4(1.0f), -origin)));
+          render_comp->gather_instances(transform_matrix);
 
           const auto id = render_comp->get_id();
           render_components[id] = render_comp;
@@ -410,8 +413,7 @@ private:
           render_context.lights.emplace_back(light_context);
         }
       }
-      gather_render_components(
-        render_context, render_components, entity->children(), base_transform_matrix * transform_matrix);
+      // gather_render_components(render_context, render_components, entity->children(), transform_matrix);
     }
   }
 };
