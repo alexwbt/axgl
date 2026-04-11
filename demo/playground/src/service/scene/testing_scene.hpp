@@ -12,6 +12,10 @@
 
 class TestingScene : public CommonScene
 {
+public:
+  static constexpr std::string_view kTypeId = "realm::testing";
+
+private:
   glm::vec2 item_offset{0.0f};
   float margin = 2.0f;
 

@@ -12,10 +12,36 @@ class RealmService : virtual public axgl::Service
 public:
   static constexpr std::string_view kTypeId = "service::realm";
 
+  virtual void register_realm_factory(
+    const std::string& type_id, std::function<axgl::ptr_t<axgl::Realm>()> realm_factory)
+    = 0;
   virtual axgl::ptr_t<axgl::Realm> create_realm() = 0;
+  virtual axgl::ptr_t<axgl::Realm> create_realm(const std::string& type_id) = 0;
 
   virtual void set_active_realm(axgl::ptr_t<axgl::Realm> realm) = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Realm> get_active_realm() const = 0;
+
+  // region convenience functions
+
+  template <typename RealmType>
+  void register_realm_t()
+  {
+    register_realm_factory(RealmType::kTypeId.data(), [] { return axgl::create_ptr<RealmType>(); });
+  }
+
+  template <typename RealmType>
+  axgl::ptr_t<RealmType> create_realm_t()
+  {
+    const auto type = RealmType::kTypeId.data();
+    auto realm = axgl::ptr_cast<RealmType>(create_realm(type));
+#ifdef AXGL_DEBUG
+    if (!realm)
+      throw std::runtime_error(std::format("Failed to create realm: {} ({})", type, typeid(RealmType).name()));
+#endif
+    return realm;
+  }
+
+  // endregion
 };
 
 } // namespace axgl

@@ -390,7 +390,6 @@ private:
 
       // calculate transform matrix
       const auto& [scale, rotation, origin, position] = entity->transform();
-
       auto transform_matrix                         //
         = glm::translate(glm::mat4(1.0f), position) //
         * glm::toMat4(glm::quat(rotation))          //

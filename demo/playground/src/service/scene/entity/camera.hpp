@@ -4,7 +4,7 @@
 #include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/entity_base.hpp>
 
-#include "debug_gizmo.hpp"
+#include "debug_axes_indicator.hpp"
 
 class CameraEntity : public axgl::impl::EntityBase
 {
@@ -14,7 +14,7 @@ public:
 private:
   axgl::ptr_t<axgl::impl::component::Camera> camera_;
   axgl::ptr_t<axgl::impl::component::Light> flashlight_;
-  axgl::ptr_t<DebugGizmoEntity> debug_cursor_;
+  axgl::ptr_t<DebugAxesIndicatorEntity> debug_cursor_;
 
   axgl::ptr_t<axgl::Input> flashlight_input_;
 
@@ -37,7 +37,8 @@ public:
     components().add(flashlight_);
 
     // debug cursor
-    debug_cursor_ = entity_service->create_entity_t<DebugGizmoEntity>();
+    debug_cursor_ = entity_service->create_entity_t<DebugAxesIndicatorEntity>();
+    debug_cursor_->transform().scale = glm::vec3(0.05f);
     children().add(debug_cursor_);
 
     // inputs

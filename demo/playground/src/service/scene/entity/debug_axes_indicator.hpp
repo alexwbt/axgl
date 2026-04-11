@@ -5,7 +5,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/entity_base.hpp>
 
-class DebugGizmoEntity : public axgl::impl::EntityBase
+class DebugAxesIndicatorEntity : public axgl::impl::EntityBase
 {
   static axgl::ptr_t<axgl::Component> create_axis_mesh(const axgl::Axgl* axgl, const glm::vec3& axis)
   {
@@ -39,7 +39,6 @@ public:
         create_axis_mesh(axgl_, {0.0f, 1.0f, 0.0f}),
         create_axis_mesh(axgl_, {0.0f, 0.0f, 1.0f}),
       });
-    transform().scale = glm::vec3(0.05f);
     set_disabled(true);
   }
 

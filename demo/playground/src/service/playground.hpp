@@ -13,7 +13,7 @@
 #include "scene/entity/camera.hpp"
 #include "scene/entity/concrete_block.hpp"
 #include "scene/entity/cube.hpp"
-#include "scene/entity/debug_gizmo.hpp"
+#include "scene/entity/debug_axes_indicator.hpp"
 #include "scene/entity/floor.hpp"
 #include "scene/entity/toy_block.hpp"
 
@@ -29,6 +29,7 @@ public:
   void initialize() override
   {
     const auto& entity_service = axgl_->entity_service();
+    const auto& realm_service = axgl_->realm_service();
     // register components
     entity_service->register_component_t<SpinningComponent>();
     // register entities
@@ -37,15 +38,18 @@ public:
     entity_service->register_entity_t<CameraEntity>();
     entity_service->register_entity_t<ConcreteBlockEntity>();
     entity_service->register_entity_t<CubeEntity>();
-    entity_service->register_entity_t<DebugGizmoEntity>();
+    entity_service->register_entity_t<DebugAxesIndicatorEntity>();
     entity_service->register_entity_t<FloorEntity>();
     entity_service->register_entity_t<ToyBlockEntity>();
+    // register scenes
+    realm_service->register_realm_t<TestingScene>();
   }
 
   void on_start() override
   {
+    const auto& realm_service = axgl_->realm_service();
     // create scenes
-    scenes_.emplace_back(with_context(axgl::create_ptr<TestingScene>()));
+    scenes_.emplace_back(realm_service->create_realm_t<TestingScene>());
 
     // set first scene as active realm
     axgl_->realm_service()->set_active_realm(scenes_[0]);

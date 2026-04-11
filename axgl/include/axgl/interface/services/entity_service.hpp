@@ -26,6 +26,8 @@ public:
   virtual axgl::ptr_t<axgl::Entity> create_entity(const std::string& type_id) = 0;
   virtual axgl::ptr_t<axgl::Component> create_component(const std::string& type_id) = 0;
 
+  // region convenience functions
+
   template <typename EntityType>
   void register_entity_t()
   {
@@ -61,6 +63,8 @@ public:
 #endif
     return component;
   }
+
+  // endregion
 };
 
 } // namespace axgl

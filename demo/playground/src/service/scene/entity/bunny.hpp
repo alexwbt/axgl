@@ -22,6 +22,6 @@ public:
     load_model(axgl_, this);
     transform().origin = {0.0f, 0.5f, 0.0f};
 
-    children().add(axgl_->entity_service()->create_entity_t<DebugGizmoEntity>());
+    children().add(axgl_->entity_service()->create_entity_t<DebugAxesIndicatorEntity>());
   }
 };
