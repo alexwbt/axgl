@@ -8,18 +8,20 @@
 
 #include <demo_text/res.hpp>
 
-class Application final : public axgl::Service
+class Application final : public axgl::impl::ServiceBase
 {
 public:
-  void on_start(const Context& context) override
+  static constexpr std::string_view kTypeId = "app";
+
+  void on_start() override
   {
-    const auto& window_service = context.axgl.window_service();
-    const auto& input_service = context.axgl.input_service();
-    const auto& renderer_service = context.axgl.renderer_service();
-    const auto& realm_service = context.axgl.realm_service();
-    const auto& entity_service = context.axgl.entity_service();
-    const auto& camera_service = context.axgl.camera_service();
-    const auto& text_service = context.axgl.text_service();
+    const auto& window_service = axgl_->window_service();
+    const auto& input_service = axgl_->input_service();
+    const auto& renderer_service = axgl_->renderer_service();
+    const auto& realm_service = axgl_->realm_service();
+    const auto& entity_service = axgl_->entity_service();
+    const auto& camera_service = axgl_->camera_service();
+    const auto& text_service = axgl_->text_service();
 
     // window
     const auto window = window_service->create_window();
@@ -36,7 +38,7 @@ public:
     renderer_service->set_active_renderer(renderer);
 
     // realm
-    const auto realm = realm_service->create_default_realm();
+    const auto realm = realm_service->create_realm();
     realm_service->set_active_realm(realm);
 
     // camera entity
@@ -87,7 +89,6 @@ public:
       const auto text_entity = entity_service->create_entity();
       text_entity->components().add(mesh);
       text_entity->transform().scale = glm::vec3(texture->get_width(), texture->get_height(), 1.0f) * 0.01f;
-      text_entity->update_model_matrix();
       realm->entities().add(text_entity);
     }
   }
@@ -101,7 +102,7 @@ int main()
   axgl::configure_glfw(axgl);
   axgl::configure_opengl(axgl);
 #endif
-  axgl.register_service("app", axgl::create_ptr<Application>());
+  axgl.register_service_t<Application>();
   axgl.initialize();
 
   axgl.run();

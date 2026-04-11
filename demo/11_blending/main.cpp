@@ -26,22 +26,22 @@ auto create_cube(const axgl::Axgl& axgl, const glm::vec3& position, const glm::v
   const auto cube = axgl.entity_service()->create_entity();
   cube->components().add(mesh);
   cube->transform().position = position;
-  cube->update_model_matrix();
   return cube;
 }
 
-class Application final : public axgl::Service
+class Application final : public axgl::impl::ServiceBase
 {
 public:
-  void on_start(const Context& context) override
+  static constexpr std::string_view kTypeId = "app";
+
+  void on_start() override
   {
-    const auto& axgl = context.axgl;
-    const auto& window_service = axgl.window_service();
-    const auto& input_service = axgl.input_service();
-    const auto& renderer_service = axgl.renderer_service();
-    const auto& realm_service = axgl.realm_service();
-    const auto& entity_service = axgl.entity_service();
-    const auto& camera_service = axgl.camera_service();
+    const auto& window_service = axgl_->window_service();
+    const auto& input_service = axgl_->input_service();
+    const auto& renderer_service = axgl_->renderer_service();
+    const auto& realm_service = axgl_->realm_service();
+    const auto& entity_service = axgl_->entity_service();
+    const auto& camera_service = axgl_->camera_service();
 
     // window
     const auto window = window_service->create_window();
@@ -58,7 +58,7 @@ public:
     renderer_service->set_active_renderer(renderer);
 
     // realm
-    const auto realm = realm_service->create_default_realm();
+    const auto realm = realm_service->create_realm();
     realm_service->set_active_realm(realm);
 
     // camera entity
@@ -84,10 +84,10 @@ public:
     }
 
     // entities
-    realm->entities().add(create_cube(axgl, {0.3f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.5f}, true));
-    realm->entities().add(create_cube(axgl, {0.0f, 0.3f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.5f}, true));
-    realm->entities().add(create_cube(axgl, {0.0f, 0.0f, 0.3f}, {0.0f, 0.0f, 1.0f, 0.5f}, true));
-    realm->entities().add(create_cube(axgl, {0.0f, 0.0f, 1.5f}, {1.0f, 0.5f, 0.2f, 1.0f}, false));
+    realm->entities().add(create_cube(*axgl_, {0.3f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.5f}, true));
+    realm->entities().add(create_cube(*axgl_, {0.0f, 0.3f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.5f}, true));
+    realm->entities().add(create_cube(*axgl_, {0.0f, 0.0f, 0.3f}, {0.0f, 0.0f, 1.0f, 0.5f}, true));
+    realm->entities().add(create_cube(*axgl_, {0.0f, 0.0f, 1.5f}, {1.0f, 0.5f, 0.2f, 1.0f}, false));
   }
 };
 
@@ -99,7 +99,7 @@ int main()
   axgl::configure_glfw(axgl);
   axgl::configure_opengl(axgl);
 #endif
-  axgl.register_service("app", axgl::create_ptr<Application>());
+  axgl.register_service_t<Application>();
   axgl.initialize();
 
   axgl.run();

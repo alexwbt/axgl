@@ -5,19 +5,22 @@
 #endif
 #include <axgl/util/mesh.hpp>
 
-class Application final : public axgl::Service
+class Application final : public axgl::impl::ServiceBase
 {
+public:
+  static constexpr std::string_view kTypeId = "app";
+
+private:
   std::shared_ptr<axgl::Entity> cube_entity_;
 
 public:
   void on_start() override
   {
-    const auto& axgl = context.axgl;
-    const auto& window_service = axgl.window_service();
-    const auto& renderer_service = axgl.renderer_service();
-    const auto& realm_service = axgl.realm_service();
-    const auto& entity_service = axgl.entity_service();
-    const auto& camera_service = axgl.camera_service();
+    const auto& window_service = axgl_->window_service();
+    const auto& renderer_service = axgl_->renderer_service();
+    const auto& realm_service = axgl_->realm_service();
+    const auto& entity_service = axgl_->entity_service();
+    const auto& camera_service = axgl_->camera_service();
 
     // window
     const auto window = window_service->create_window();
@@ -31,7 +34,7 @@ public:
     renderer_service->set_active_renderer(renderer);
 
     // realm
-    const auto realm = realm_service->create_default_realm();
+    const auto realm = realm_service->create_realm();
     realm_service->set_active_realm(realm);
 
     // camera entity
@@ -70,8 +73,6 @@ public:
   }
 
   void tick() override { cube_entity_->transform().rotation += glm::vec3(0.01f, 0.02f, 0.05f); }
-
-  void update() override { cube_entity_->update_model_matrix(); }
 };
 
 int main()
@@ -82,7 +83,7 @@ int main()
   axgl::configure_glfw(axgl);
   axgl::configure_opengl(axgl);
 #endif
-  axgl.register_service("app", axgl::create_ptr<Application>());
+  axgl.register_service_t<Application>();
   axgl.initialize();
 
   axgl.run();

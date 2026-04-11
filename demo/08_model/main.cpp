@@ -7,18 +7,21 @@
 #endif
 #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
 
-class Application final : public axgl::Service
+class Application final : public axgl::impl::ServiceBase
 {
 public:
-  void on_start(const Context& context) override
+  static constexpr std::string_view kTypeId = "app";
+
+  void on_start() override
   {
-    const auto& axgl = context.axgl;
-    const auto& window_service = axgl.window_service();
-    const auto& input_service = axgl.input_service();
-    const auto& renderer_service = axgl.renderer_service();
-    const auto& realm_service = axgl.realm_service();
-    const auto& entity_service = axgl.entity_service();
-    const auto& camera_service = axgl.camera_service();
+    const auto& window_service = axgl_->window_service();
+    const auto& input_service = axgl_->input_service();
+    const auto& renderer_service = axgl_->renderer_service();
+    const auto& realm_service = axgl_->realm_service();
+    const auto& entity_service = axgl_->entity_service();
+    const auto& camera_service = axgl_->camera_service();
+    const auto& model_service = axgl_->model_service();
+    const auto& bundlefile_service = axgl_->get_service_t<axgl::impl::bundlefile::BundlefileService>();
 
     // window
     const auto window = window_service->create_window();
@@ -35,7 +38,7 @@ public:
     renderer_service->set_active_renderer(renderer);
 
     // realm
-    const auto realm = realm_service->create_default_realm();
+    const auto realm = realm_service->create_realm();
     realm_service->set_active_realm(realm);
 
     // camera entity
@@ -61,15 +64,17 @@ public:
     }
 
     // load bundlefile
-    const auto bundlefile_service = axgl.get_service_t<axgl::impl::bundlefile::BundlefileService>();
     bundlefile_service->load_bundlefile("demo_model_res.bin");
 
     // model entity
     {
       const auto entity = entity_service->create_entity();
-      axgl.model_service()->load_model(*entity, "backpack.glb");
+      const auto model_resources = model_service->load_model("backpack.glb");
+      auto& components = entity->components();
+      for (const auto& mesh : model_resources.meshes)
+        components.add(mesh);
+
       entity->transform().scale = glm::vec3(10);
-      entity->update_model_matrix();
       realm->entities().add(entity);
     }
   }
@@ -85,7 +90,7 @@ int main()
 #endif
   axgl::configure_assimp(axgl);
   axgl::configure_bundlefile(axgl);
-  axgl.register_service("app", axgl::create_ptr<Application>());
+  axgl.register_service_t<Application>();
   axgl.initialize();
 
   axgl.run();

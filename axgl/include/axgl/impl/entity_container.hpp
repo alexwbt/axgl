@@ -105,6 +105,8 @@ public:
   }
 
   [[nodiscard]] std::span<const axgl::ptr_t<axgl::Entity>> get() const override { return entities_; }
+  [[nodiscard]] std::uint64_t size() const override { return entities_.size(); }
+  [[nodiscard]] bool empty() const override { return entities_.empty(); }
 };
 
 } // namespace axgl::impl

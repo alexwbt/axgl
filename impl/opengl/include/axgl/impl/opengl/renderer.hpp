@@ -242,6 +242,7 @@ public:
       shadow_framebuffer_->use();
       glClearDepth(1.0);
       glClear(GL_DEPTH_BUFFER_BIT);
+      if (!render_context.lights.empty())
       {
         AXGL_PROFILE_SCOPE("Render Shadow Map");
         for (const auto& render_func : pipeline_context.shadow_pass)
@@ -381,7 +382,7 @@ private:
     impl::opengl::renderer::RenderContext& render_context,
     std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*>& render_components,
     const axgl::Container<axgl::Entity>& entities,
-    const glm::mat4& base_transform_matrix = glm::mat4{1.0f})
+    const glm::mat4* base_transform_matrix = nullptr)
   {
     for (const auto& entity : entities.get())
     {
@@ -394,7 +395,7 @@ private:
         = glm::translate(glm::mat4(1.0f), position) //
         * glm::toMat4(glm::quat(rotation))          //
         * glm::scale(scale);
-      transform_matrix = base_transform_matrix * transform_matrix;
+      if (base_transform_matrix) transform_matrix = *base_transform_matrix * transform_matrix;
 
       for (const auto& component : entity->components().get())
       {
@@ -418,7 +419,8 @@ private:
           render_context.lights.emplace_back(light_context);
         }
       }
-      gather_render_components(render_context, render_components, entity->children(), transform_matrix);
+      if (!entity->children().empty())
+        gather_render_components(render_context, render_components, entity->children(), &transform_matrix);
     }
   }
 };

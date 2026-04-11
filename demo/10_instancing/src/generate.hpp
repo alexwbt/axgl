@@ -92,7 +92,6 @@ inline std::vector<axgl::ptr_t<axgl::Entity>> generate_entities(
     transform.position.z = pos_dis(gen);
     transform.rotation.y = rot_dis(gen);
     if (rotate3d) transform.rotation.x = rot_dis(gen);
-    entity->update_model_matrix();
     realm->entities().add(entity);
     entities.emplace_back(std::move(entity));
   }

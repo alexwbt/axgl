@@ -17,7 +17,7 @@ private:
   glm::vec3 rotation_speed_{0.0f};
 
 public:
-  void on_create(const axgl::Realm::Context& context) override
+  void on_create() override
   {
     const auto& position = transform().position;
     const glm::vec2 p2{position.x, position.z};
@@ -26,15 +26,14 @@ public:
     radius_ = glm::length(p2);
   }
 
-  void update(const axgl::Realm::Context& context) override
+  void update() override
   {
     auto& transform = this->transform();
-    theta_ += orbit_speed_ * context.delta_tick_f / radius_;
+    theta_ += orbit_speed_ * context_->delta_tick_f / radius_;
     transform.position.x = std::cos(theta_) * radius_;
     transform.position.z = std::sin(theta_) * radius_;
     transform.position.y = y_ + std::sin(theta_ * radius_);
-    transform.rotation += rotation_speed_ * context.delta_tick_f;
-    update_model_matrix();
+    transform.rotation += rotation_speed_ * context_->delta_tick_f;
   }
 
   void set_orbit_speed(float orbit_speed) { orbit_speed_ = orbit_speed; }

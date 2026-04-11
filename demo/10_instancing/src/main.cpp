@@ -9,21 +9,24 @@
 
 #include "generate.hpp"
 
-class Application final : public axgl::Service
+class Application final : public axgl::impl::ServiceBase
 {
+public:
+  static constexpr std::string_view kTypeId = "app";
+
+private:
   std::vector<axgl::ptr_t<axgl::Entity>> boxes_;
 
 public:
-  void on_start(const Context& context) override
+  void on_start() override
   {
-    const auto& axgl = context.axgl;
-    const auto& window_service = axgl.window_service();
-    const auto& input_service = axgl.input_service();
-    const auto& renderer_service = axgl.renderer_service();
-    const auto& realm_service = axgl.realm_service();
-    const auto& entity_service = axgl.entity_service();
-    const auto& camera_service = axgl.camera_service();
-    const auto& resource_service = axgl.resource_service();
+    const auto& window_service = axgl_->window_service();
+    const auto& input_service = axgl_->input_service();
+    const auto& renderer_service = axgl_->renderer_service();
+    const auto& realm_service = axgl_->realm_service();
+    const auto& entity_service = axgl_->entity_service();
+    const auto& camera_service = axgl_->camera_service();
+    const auto& resource_service = axgl_->resource_service();
 
     // window
     const auto window = window_service->create_window();
@@ -43,7 +46,7 @@ public:
     renderer_service->set_active_renderer(renderer);
 
     // realm
-    const auto realm = realm_service->create_default_realm();
+    const auto realm = realm_service->create_realm();
     realm_service->set_active_realm(realm);
 
     // camera entity
@@ -69,8 +72,8 @@ public:
 
     // entities
     entity_service->register_entity_t<Box>();
-    generate_entities(axgl, realm, create_grass, 5000, 20.0f, 0.0f, false);
-    boxes_ = generate_entities(axgl, realm, create_box, 2000, 40.0f, 20.0f, true);
+    generate_entities(*axgl_, realm, create_grass, 5000, 20.0f, 0.0f, false);
+    boxes_ = generate_entities(*axgl_, realm, create_box, 2000, 40.0f, 20.0f, true);
   }
 };
 
@@ -82,7 +85,7 @@ int main()
   axgl::configure_glfw(axgl);
   axgl::configure_opengl(axgl);
 #endif
-  axgl.register_service("app", axgl::create_ptr<Application>());
+  axgl.register_service_t<Application>();
   axgl.initialize();
 
   axgl.run();

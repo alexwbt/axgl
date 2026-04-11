@@ -56,6 +56,8 @@ public:
   }
   void remove(const axgl::ptr_t<axgl::Component>& component) override { std::erase(components_, component); }
   [[nodiscard]] std::span<const ptr_t<axgl::Component>> get() const override { return components_; }
+  [[nodiscard]] std::uint64_t size() const override { return components_.size(); }
+  [[nodiscard]] bool empty() const override { return components_.empty(); }
 };
 
 } // namespace axgl::impl

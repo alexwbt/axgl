@@ -17,6 +17,8 @@ public:
   void add(axgl::ptr_t<axgl::gui::Element> element) override { children_.push_back(std::move(element)); }
   void remove(const axgl::ptr_t<axgl::gui::Element>& element) override { std::erase(children_, element); }
   [[nodiscard]] std::span<const ptr_t<axgl::gui::Element>> get() const override { return children_; }
+  [[nodiscard]] std::uint64_t size() const override { return children_.size(); }
+  [[nodiscard]] bool empty() const override { return children_.empty(); }
 };
 
 } // namespace axgl::impl::gui
