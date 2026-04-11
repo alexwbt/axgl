@@ -115,7 +115,7 @@ public:
     // spinning bunny
     {
       const auto entity = entity_service_->create_entity_t<BunnyEntity>();
-      entity->set_position(item_position(0.5f));
+      entity->set_position(item_position(1.5f));
       entity->components().add(spinning_comp);
       add_entity(entity);
     }

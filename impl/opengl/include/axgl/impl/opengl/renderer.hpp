@@ -404,9 +404,7 @@ private:
 
         if (auto* render_comp = dynamic_cast<impl::opengl::renderer::RenderComponent*>(component.get()))
         {
-          // render_comp->gather_instances(
-          //   base_transform_matrix * (transform_matrix * glm::translate(glm::mat4(1.0f), -origin)));
-          render_comp->gather_instances(transform_matrix);
+          render_comp->gather_instances(transform_matrix * glm::translate(glm::mat4(1.0f), -origin));
 
           const auto id = render_comp->get_id();
           render_components[id] = render_comp;
