@@ -29,6 +29,7 @@ protected:
   axgl::Material::CullMode cull_mode_ = axgl::Material::CullMode::kCCW;
   bool enable_depth_test_ = true;
   bool enable_blend_ = false;
+  bool enable_shadow_ = true;
   float alpha_discard_ = 0.0f;
   float height_scale_ = 0.1f;
   glm::vec2 uv_scale_{1.0f};
@@ -41,22 +42,36 @@ public:
   void set_cull_mode(const axgl::Material::CullMode cull_mode) override { cull_mode_ = cull_mode; }
   void set_enable_depth_test(const bool enable_depth_test) override { enable_depth_test_ = enable_depth_test; }
   void set_enable_blend(const bool enable_blend) override { enable_blend_ = enable_blend; }
+  void set_enable_shadow(const bool enable_shadow) override { enable_shadow_ = enable_shadow; }
   void set_alpha_discard(const float alpha_discard) override { alpha_discard_ = alpha_discard; }
   void set_tiling(glm::vec2 tiling) override { uv_scale_ = tiling; }
   void set_offset(glm::vec2 offset) override { uv_offset_ = offset; }
   void set_depth_scale(float depth_scale) override { height_scale_ = depth_scale; }
-
   void set_property(const std::string& key, const std::string& value) override
   {
-    AXGL_LOG_DEBUG("Properties are not supported in color material.");
+    AXGL_LOG_DEBUG("Properties are not supported.");
   }
-
   void add_texture(const axgl::Material::TextureType type, const axgl::ptr_t<axgl::Texture> texture) override
   {
-    AXGL_LOG_DEBUG("Textures are not supported in color material.");
+    AXGL_LOG_DEBUG("Textures are not supported.");
+  }
+  [[nodiscard]] glm::vec4 get_color() const override { return color_; }
+  [[nodiscard]] float get_line_width() const override { return line_width_; }
+  [[nodiscard]] axgl::Material::DrawMode get_draw_mode() const override { return draw_mode_; }
+  [[nodiscard]] axgl::Material::CullMode get_cull_mode() const override { return cull_mode_; }
+  [[nodiscard]] bool get_enable_depth_test() const override { return enable_depth_test_; }
+  [[nodiscard]] bool get_enable_blend() const override { return enable_blend_; }
+  [[nodiscard]] bool get_enable_shadow() const override { return enable_shadow_; }
+  [[nodiscard]] float get_alpha_discard() const override { return alpha_discard_; }
+  [[nodiscard]] glm::vec2 get_tiling() const override { return uv_scale_; }
+  [[nodiscard]] glm::vec2 get_offset() const override { return uv_offset_; }
+  [[nodiscard]] float get_depth_scale() const override { return height_scale_; }
+  [[nodiscard]] std::string get_property(const std::string& key) const override { return {}; }
+  [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture(axgl::Material::TextureType type) const override
+  {
+    return nullptr;
   }
 
-  [[nodiscard]] bool enabled_blend() const { return enable_blend_; }
   [[nodiscard]] GLenum draw_mode() const
   {
     switch (draw_mode_)

@@ -220,6 +220,9 @@ public:
       {
         AXGL_PROFILE_SCOPE("Renderer Gather Instances");
         gather_render_components(render_context, render_components, realm->entities());
+        AXGL_PLOT("Renderer Entity Count", render_context.entity_count);
+        AXGL_PLOT("Renderer Component Count", render_context.component_count);
+        AXGL_PLOT("Renderer Light Count", static_cast<std::int64_t>(render_context.lights.size()));
       }
       impl::opengl::renderer::PipelineContext pipeline_context;
       {
@@ -234,6 +237,7 @@ public:
       glViewport(0, 0, shadow_map_size_, shadow_map_size_);
       glEnable(GL_DEPTH_TEST);
       glDepthFunc(GL_LESS);
+      glDepthRange(0.0f, 1.0f);
 
       shadow_framebuffer_->use();
       glClearDepth(1.0);
@@ -382,6 +386,7 @@ private:
     for (const auto& entity : entities.get())
     {
       if (entity->is_disabled()) continue;
+      ++render_context.entity_count;
 
       // calculate transform matrix
       const auto& [scale, rotation, origin, position] = entity->transform();
@@ -395,6 +400,7 @@ private:
       for (const auto& component : entity->components().get())
       {
         if (component->is_disabled()) continue;
+        ++render_context.component_count;
 
         if (auto* render_comp = dynamic_cast<impl::opengl::renderer::RenderComponent*>(component.get()))
         {
@@ -409,11 +415,13 @@ private:
         {
           impl::opengl::renderer::LightContext light_context;
           light_context.light = &light_comp->light;
+
           if (light_context.light->casts_shadows) light_context.light_pv = light_context.light->get_pv_matrix();
+
           render_context.lights.emplace_back(light_context);
         }
       }
-      // gather_render_components(render_context, render_components, entity->children(), transform_matrix);
+      gather_render_components(render_context, render_components, entity->children(), transform_matrix);
     }
   }
 };

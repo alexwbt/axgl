@@ -2,6 +2,7 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/entity_base.hpp>
+#include <axgl/util/mesh.hpp>
 
 class CubeEntity : public axgl::impl::EntityBase
 {

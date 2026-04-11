@@ -4,7 +4,6 @@
 #include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/entity_base.hpp>
 
-#include "../../input_manager.hpp"
 #include "debug_gizmo.hpp"
 
 class CameraEntity : public axgl::impl::EntityBase
@@ -18,7 +17,6 @@ private:
   axgl::ptr_t<DebugGizmoEntity> debug_cursor_;
 
   axgl::ptr_t<axgl::Input> flashlight_input_;
-  axgl::ptr_t<axgl::Input> debug_input_;
 
 public:
   void on_create() override
@@ -40,12 +38,10 @@ public:
 
     // debug cursor
     debug_cursor_ = entity_service->create_entity_t<DebugGizmoEntity>();
-    debug_cursor_->set_disabled(true);
     children().add(debug_cursor_);
 
     // inputs
     flashlight_input_ = input_manager->flashlight();
-    debug_input_ = input_manager->debug();
   }
 
   void update() override
@@ -56,8 +52,6 @@ public:
 
     // update debug cursor
     debug_cursor_->transform().position = front;
-    // toggle debug cursor
-    if (debug_input_->tick == 1) debug_cursor_->set_disabled(!debug_cursor_->is_disabled());
 
     // update flashlight
     auto& flashlight_dir = flashlight_->light.direction;

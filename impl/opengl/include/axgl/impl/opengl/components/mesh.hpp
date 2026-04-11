@@ -183,21 +183,22 @@ public:
       material_->use(c);
       vao_->draw_instanced(instance_count);
     };
-    if (material_->enabled_blend()) context.blend_pass.emplace_back(std::move(render_function));
+    if (material_->get_enable_blend()) context.blend_pass.emplace_back(std::move(render_function));
     else
     {
       context.opaque_pass.emplace_back(std::move(render_function));
-      context.shadow_pass.emplace_back([this, instance_count](const axgl::impl::opengl::renderer::LightContext& c)
-      {
-        // glEnable(GL_CULL_FACE);
-        // glFrontFace(GL_CW);
-        // glCullFace(GL_FRONT);
 
-        auto& depth_only_shader = ::opengl::StaticShaders::instance().depth_only();
-        depth_only_shader.use_program();
-        depth_only_shader.set_mat4("projection_view", c.light_pv);
-        vao_->draw_instanced(instance_count);
-      });
+      if (material_->get_enable_shadow())
+        context.shadow_pass.emplace_back([this, instance_count](const axgl::impl::opengl::renderer::LightContext& c)
+        {
+          // glEnable(GL_CULL_FACE);
+          // glFrontFace(GL_CW);
+          // glCullFace(GL_FRONT);
+          auto& depth_only_shader = ::opengl::StaticShaders::instance().depth_only();
+          depth_only_shader.use_program();
+          depth_only_shader.set_mat4("projection_view", c.light_pv);
+          vao_->draw_instanced(instance_count);
+        });
     }
   }
 

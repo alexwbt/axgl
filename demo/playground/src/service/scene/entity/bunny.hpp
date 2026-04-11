@@ -17,6 +17,8 @@ public:
 
   void on_create() override
   {
+    EntityBase::on_create();
+
     load_model(axgl_, this);
     // transform().origin = {0.25f, 0.25f, 0.25f};
 

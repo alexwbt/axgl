@@ -25,6 +25,8 @@ struct RenderContext
   glm::mat4 projection_matrix{0.0f};
   glm::mat4 projection_view_matrix{0.0f};
   std::vector<LightContext> lights;
+  std::int64_t entity_count = 0;
+  std::int64_t component_count = 0;
 };
 
 struct PipelineContext
