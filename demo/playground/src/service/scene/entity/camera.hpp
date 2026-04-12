@@ -28,18 +28,18 @@ public:
 
     // camera
     camera_ = entity_service->create_component_t<axgl::impl::component::Camera>();
-    components().add(camera_);
+    add_component(camera_);
 
     // flashlight
     flashlight_ = entity_service->create_component_t<axgl::impl::component::Light>();
     flashlight_->light = axgl::Light::spotlight();
     flashlight_->set_disabled(true);
-    components().add(flashlight_);
+    add_component(flashlight_);
 
     // debug cursor
     debug_cursor_ = entity_service->create_entity_t<DebugAxesIndicatorEntity>();
-    debug_cursor_->transform().scale = glm::vec3(0.05f);
-    children().add(debug_cursor_);
+    debug_cursor_->set_scale(glm::vec3(0.05f));
+    add_child(debug_cursor_);
 
     // inputs
     flashlight_input_ = input_manager->flashlight();
@@ -52,11 +52,14 @@ public:
     const auto front = camera_->camera.front();
 
     // update debug cursor
-    debug_cursor_->transform().position = front;
+    if (!debug_cursor_->is_disabled()) debug_cursor_->set_position(front);
 
     // update flashlight
-    auto& flashlight_dir = flashlight_->light.direction;
-    flashlight_dir += (front - flashlight_dir) * 0.3f;
+    if (!flashlight_->is_disabled())
+    {
+      auto& flashlight_dir = flashlight_->light.direction;
+      flashlight_dir += (front - flashlight_dir) * 0.3f;
+    }
     // toggle flashlight
     if (flashlight_input_ && flashlight_input_->tick == 1) flashlight_->set_disabled(!flashlight_->is_disabled());
   }

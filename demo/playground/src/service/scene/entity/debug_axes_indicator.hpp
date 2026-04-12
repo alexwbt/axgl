@@ -33,19 +33,23 @@ public:
 
     debug_input_ = axgl_->get_service_t<InputManager>()->debug();
 
-    components().add_all(
+    add_components(
       std::array{
         create_axis_mesh(axgl_, {1.0f, 0.0f, 0.0f}),
         create_axis_mesh(axgl_, {0.0f, 1.0f, 0.0f}),
         create_axis_mesh(axgl_, {0.0f, 0.0f, 1.0f}),
       });
-    set_disabled(true);
+
+    for (const auto& component : components().get())
+      component->set_disabled(true);
   }
 
   void update() override
   {
     EntityBase::update();
 
-    if (debug_input_->tick == 1) set_disabled(!is_disabled());
+    if (debug_input_->tick == 1)
+      for (const auto& component : components().get())
+        component->set_disabled(!component->is_disabled());
   }
 };

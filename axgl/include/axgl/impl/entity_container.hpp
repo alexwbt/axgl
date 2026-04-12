@@ -11,7 +11,7 @@ namespace axgl::impl
 
 class EntityContainer : virtual public axgl::Container<axgl::Entity>, public axgl::impl::ContextHolder
 {
-  axgl::Entity* const parent_;
+  axgl::Entity* parent_;
   std::vector<axgl::ptr_t<axgl::Entity>> new_entities_;
   std::vector<axgl::ptr_t<axgl::Entity>> entities_;
 

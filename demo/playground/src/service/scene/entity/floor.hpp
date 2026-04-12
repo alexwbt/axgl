@@ -55,7 +55,7 @@ public:
     EntityBase::on_create();
 
     static const auto mesh = create_mesh(axgl_, size_);
-    components_.add(mesh);
-    transform().scale = {size_, 1.0f, size_};
+    add_component(mesh);
+    set_scale({size_, 1.0f, size_});
   }
 };

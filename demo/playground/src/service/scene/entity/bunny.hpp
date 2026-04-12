@@ -20,8 +20,8 @@ public:
     EntityBase::on_create();
 
     load_model(axgl_, this);
-    transform().origin = {0.0f, 0.5f, 0.0f};
+    set_pivot({0.0f, 0.5f, 0.0f});
 
-    children().add(axgl_->entity_service()->create_entity_t<DebugAxesIndicatorEntity>());
+    add_child(axgl_->entity_service()->create_entity_t<DebugAxesIndicatorEntity>());
   }
 };

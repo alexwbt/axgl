@@ -52,7 +52,11 @@ public:
     transform().update_matrix();
   }
 
-  // void set_origin(glm::vec3 origin) { transform().pivot = origin; }
+  void set_pivot(glm::vec3 pivot)
+  {
+    transform().pivot = pivot;
+    transform().update_matrix();
+  }
 
   void add_child(const axgl::ptr_t<axgl::Entity>& child) { children().add(child); }
 

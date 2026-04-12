@@ -15,6 +15,7 @@ public:
   {
     ComponentBase::parent_update(parent);
     parent->transform().rotation += rotation_speed_ * context_->delta_tick_f;
+    parent->transform().update_matrix();
   }
 
   void set_rotation_speed(glm::vec3 rotation_speed) { rotation_speed_ = rotation_speed; }

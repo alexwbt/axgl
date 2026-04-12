@@ -415,7 +415,12 @@ private:
         }
       }
       if (!entity->children().empty())
-        gather_render_components(render_context, render_components, entity->children(), &model_matrix);
+      {
+        const auto pivot_matrix = base_transform_matrix //
+          ? *base_transform_matrix * transform.pivot_matrix
+          : transform.pivot_matrix;
+        gather_render_components(render_context, render_components, entity->children(), &pivot_matrix);
+      }
     }
   }
 };

@@ -32,6 +32,6 @@ public:
   void on_create() override
   {
     EntityBase::on_create();
-    components_.add(create_mesh());
+    add_component(create_mesh());
   }
 };
