@@ -34,6 +34,7 @@ public:
     transform.position.z = std::sin(theta_) * radius_;
     transform.position.y = y_ + std::sin(theta_ * radius_);
     transform.rotation += rotation_speed_ * context_->delta_tick_f;
+    transform.update_matrix();
   }
 
   void set_orbit_speed(float orbit_speed) { orbit_speed_ = orbit_speed; }

@@ -25,7 +25,7 @@ auto create_cube(const axgl::Axgl& axgl, const glm::vec3& position, const glm::v
   // cube entity
   const auto cube = axgl.entity_service()->create_entity();
   cube->components().add(mesh);
-  cube->transform().position = position;
+  cube->set_position(position);
   return cube;
 }
 

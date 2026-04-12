@@ -4,9 +4,6 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/transform.hpp>
 #include <spdlog/spdlog.h>
 
 #include <axgl/common.hpp>
@@ -378,6 +375,7 @@ public:
   }
 
 private:
+  // FIXME: reimplement without recursion
   static void gather_render_components(
     impl::opengl::renderer::RenderContext& render_context,
     std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*>& render_components,
@@ -389,13 +387,10 @@ private:
       if (entity->is_disabled()) continue;
       ++render_context.entity_count;
 
-      // calculate transform matrix
-      const auto& [scale, rotation, origin, position] = entity->transform();
-      auto transform_matrix                         //
-        = glm::translate(glm::mat4(1.0f), position) //
-        * glm::toMat4(glm::quat(rotation))          //
-        * glm::scale(scale);
-      if (base_transform_matrix) transform_matrix = *base_transform_matrix * transform_matrix;
+      const auto& transform = entity->transform();
+      const auto model_matrix = base_transform_matrix //
+        ? *base_transform_matrix * transform.model_matrix
+        : transform.model_matrix;
 
       for (const auto& component : entity->components().get())
       {
@@ -404,7 +399,7 @@ private:
 
         if (auto* render_comp = dynamic_cast<impl::opengl::renderer::RenderComponent*>(component.get()))
         {
-          render_comp->gather_instances(transform_matrix * glm::translate(glm::mat4(1.0f), -origin));
+          render_comp->gather_instances(model_matrix);
 
           const auto id = render_comp->get_id();
           render_components[id] = render_comp;
@@ -420,7 +415,7 @@ private:
         }
       }
       if (!entity->children().empty())
-        gather_render_components(render_context, render_components, entity->children(), &transform_matrix);
+        gather_render_components(render_context, render_components, entity->children(), &model_matrix);
     }
   }
 };

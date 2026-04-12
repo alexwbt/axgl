@@ -32,22 +32,26 @@ public:
   void tick() const
   {
     for (const auto& entity : entities_)
-      entity->parent_tick(parent_);
+      if (!entity->is_disabled() && !entity->is_static()) entity->parent_tick(parent_);
   }
 
   void update()
   {
-    entities_.insert(entities_.end(), new_entities_.begin(), new_entities_.end());
-    new_entities_.clear();
-
-    for (const auto& entity : entities_)
+    if (!new_entities_.empty())
     {
-      if (entity->ticks() == 0) entity->on_parent_create(parent_);
-      entity->parent_update(parent_);
+      entities_.insert(entities_.end(), new_entities_.begin(), new_entities_.end());
+      new_entities_.clear();
     }
 
     if (!entities_.empty())
     {
+      for (const auto& entity : entities_)
+        if (!entity->is_disabled() && !entity->is_static())
+        {
+          if (entity->ticks() == 0) entity->on_parent_create(parent_);
+          entity->parent_update(parent_);
+        }
+
       std::erase_if(
         entities_, [&](const auto& entity)
       {
@@ -61,13 +65,13 @@ public:
   void on_create() const
   {
     for (const auto& entity : entities_)
-      entity->on_parent_create(parent_);
+      if (!entity->is_disabled() && !entity->is_static()) entity->on_parent_create(parent_);
   }
 
   void on_remove() const
   {
     for (const auto& entity : entities_)
-      entity->on_parent_remove(parent_);
+      if (!entity->is_disabled() && !entity->is_static()) entity->on_parent_remove(parent_);
   }
 
   [[nodiscard]] auto get_by_id(std::uint64_t id) const

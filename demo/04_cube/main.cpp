@@ -44,6 +44,7 @@ public:
       camera_entity->components().add(camera_comp);
       realm->entities().add(camera_entity);
       camera_entity->transform().position.z = -2;
+      camera_entity->transform().update_matrix();
       camera_service->set_camera_entity(camera_entity);
     }
 
@@ -72,7 +73,12 @@ public:
     }
   }
 
-  void tick() override { cube_entity_->transform().rotation += glm::vec3(0.01f, 0.02f, 0.05f); }
+  void tick() override
+  {
+    auto& transform = cube_entity_->transform();
+    transform.rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+    transform.update_matrix();
+  }
 };
 
 int main()

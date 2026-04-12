@@ -63,6 +63,7 @@ int main()
     camera_comp->camera.far_clip = 1;
     square_entity->components().add(camera_comp);
     square_entity->transform().scale = glm::vec3(200.0f);
+    square_entity->transform().update_matrix();
     realm->entities().add(square_entity);
 
     // set camera

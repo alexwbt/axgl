@@ -48,6 +48,7 @@ public:
       camera_entity->components().add(camera_comp);
       realm->entities().add(camera_entity);
       camera_entity->transform().position.z = -2;
+      camera_entity->transform().update_matrix();
 
       // camera input
       camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
@@ -75,6 +76,7 @@ public:
         components.add(mesh);
 
       entity->transform().scale = glm::vec3(10);
+      entity->transform().update_matrix();
       realm->entities().add(entity);
     }
   }

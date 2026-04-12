@@ -56,6 +56,7 @@ public:
     if (!camera_mode_) return;
     camera_mode_->update(camera_comp_->camera);
     transform.position = camera_comp_->camera.position;
+    transform.update_matrix();
   }
 };
 

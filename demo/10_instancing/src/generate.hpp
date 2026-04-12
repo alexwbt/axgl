@@ -48,6 +48,7 @@ inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl)
   // grass entity
   const auto grass = axgl.entity_service()->create_entity();
   grass->components().add(mesh);
+  grass->set_static(true);
   return grass;
 }
 
@@ -92,6 +93,7 @@ inline std::vector<axgl::ptr_t<axgl::Entity>> generate_entities(
     transform.position.z = pos_dis(gen);
     transform.rotation.y = rot_dis(gen);
     if (rotate3d) transform.rotation.x = rot_dis(gen);
+    transform.update_matrix();
     realm->entities().add(entity);
     entities.emplace_back(std::move(entity));
   }

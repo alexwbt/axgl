@@ -34,13 +34,25 @@ public:
 
   // region convenience functions
 
-  void set_position(glm::vec3 position) { transform().position = position; }
+  void set_position(glm::vec3 position)
+  {
+    transform().position = position;
+    transform().update_matrix();
+  }
 
-  void set_scale(glm::vec3 scale) { transform().scale = scale; }
+  void set_scale(glm::vec3 scale)
+  {
+    transform().scale = scale;
+    transform().update_matrix();
+  }
 
-  void set_rotation(glm::vec3 rotation) { transform().rotation = rotation; }
+  void set_rotation(glm::vec3 rotation)
+  {
+    transform().rotation = rotation;
+    transform().update_matrix();
+  }
 
-  void set_origin(glm::vec3 origin) { transform().origin = origin; }
+  // void set_origin(glm::vec3 origin) { transform().pivot = origin; }
 
   void add_child(const axgl::ptr_t<axgl::Entity>& child) { children().add(child); }
 

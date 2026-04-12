@@ -48,6 +48,7 @@ public:
       camera_entity->components().add(camera_comp);
       realm->entities().add(camera_entity);
       camera_entity->transform().position.z = -2;
+      camera_entity->transform().update_matrix();
 
       // camera input
       camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
@@ -88,7 +89,7 @@ public:
       // entity
       const auto text_entity = entity_service->create_entity();
       text_entity->components().add(mesh);
-      text_entity->transform().scale = glm::vec3(texture->get_width(), texture->get_height(), 1.0f) * 0.01f;
+      text_entity->set_scale(glm::vec3(texture->get_width(), texture->get_height(), 1.0f) * 0.01f);
       realm->entities().add(text_entity);
     }
   }
