@@ -24,7 +24,9 @@ struct Transform final
       = glm::translate(glm::mat4(1.0f), position) //
       * glm::toMat4(glm::quat(rotation))          //
       * glm::scale(scale);
-    model_matrix = pivot_matrix * glm::translate(glm::mat4(1.0f), -pivot);
+    model_matrix = pivot != glm::vec3(0.0f)       //
+      ? pivot_matrix * glm::translate(glm::mat4(1.0f), -pivot)
+      : pivot_matrix;
   }
 };
 
