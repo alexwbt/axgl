@@ -39,6 +39,8 @@ class Mesh : virtual public axgl::component::Mesh,
   std::vector<glm::mat4> instanced_models_;
 
 public:
+  Mesh() { ComponentBase::set_static(true); }
+
   void set_vertices(const std::span<const glm::vec3>& vertices) override
   {
     vertices_.resize(vertices.size());

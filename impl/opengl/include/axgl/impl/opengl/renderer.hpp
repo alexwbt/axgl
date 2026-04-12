@@ -384,7 +384,7 @@ private:
   {
     for (const auto& entity : entities.get())
     {
-      if (entity->is_disabled()) continue;
+      if (entity->is_disabled() || entity->is_hidden()) continue;
       ++render_context.entity_count;
 
       const auto& transform = entity->transform();
@@ -394,7 +394,7 @@ private:
 
       for (const auto& component : entity->components().get())
       {
-        if (component->is_disabled()) continue;
+        if (component->is_disabled() || component->is_hidden()) continue;
         ++render_context.component_count;
 
         if (auto* render_comp = dynamic_cast<impl::opengl::renderer::RenderComponent*>(component.get()))

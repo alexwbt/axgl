@@ -45,7 +45,7 @@ public:
     {
       const auto camera_entity = entity_service->create_entity();
       const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
-      camera_entity->components().add(camera_comp);
+      camera_entity->add_component(camera_comp);
       realm->entities().add(camera_entity);
       camera_entity->transform().position.z = -2;
       camera_entity->transform().update_matrix();
@@ -60,7 +60,7 @@ public:
       const auto light_entity = entity_service->create_entity();
       const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
-      light_entity->components().add(light_comp);
+      light_entity->add_component(light_comp);
       realm->entities().add(light_entity);
     }
 
@@ -88,7 +88,7 @@ public:
       mesh->set_material(material);
       // entity
       const auto text_entity = entity_service->create_entity();
-      text_entity->components().add(mesh);
+      text_entity->add_component(mesh);
       text_entity->set_scale(glm::vec3(texture->get_width(), texture->get_height(), 1.0f) * 0.01f);
       realm->entities().add(text_entity);
     }

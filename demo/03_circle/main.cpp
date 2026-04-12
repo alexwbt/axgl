@@ -71,14 +71,14 @@ int main()
     const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
     circle_mesh(mesh_comp, 50);
     mesh_comp->set_material(material);
-    entity->components().add(mesh_comp);
+    entity->add_component(mesh_comp);
 
     // camera
     const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
     camera_comp->camera.orthographic = true;
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;
-    entity->components().add(camera_comp);
+    entity->add_component(camera_comp);
     entity->set_scale(glm::vec3(200.0f));
     realm->entities().add(entity);
 

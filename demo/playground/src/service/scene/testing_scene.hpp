@@ -64,7 +64,7 @@ public:
     {
       const auto entity = entity_service_->create_entity_t<CubeEntity>();
       entity->set_position(item_position(1.0f));
-      entity->components().add(spinning_comp);
+      entity->add_component(spinning_comp);
       add_entity(entity);
     }
     // box
@@ -77,7 +77,7 @@ public:
     {
       const auto entity = entity_service_->create_entity_t<BoxEntity>();
       entity->set_position(item_position(1.0f));
-      entity->components().add(spinning_comp);
+      entity->add_component(spinning_comp);
       add_entity(entity);
     }
     next_row();
@@ -92,7 +92,7 @@ public:
     {
       const auto entity = entity_service_->create_entity_t<ConcreteBlockEntity>();
       entity->set_position(item_position(1.0f));
-      entity->components().add(spinning_comp);
+      entity->add_component(spinning_comp);
       add_entity(entity);
     }
     // toy block
@@ -105,7 +105,7 @@ public:
     {
       const auto entity = entity_service_->create_entity_t<ToyBlockEntity>();
       entity->set_position(item_position(1.0f));
-      entity->components().add(spinning_comp);
+      entity->add_component(spinning_comp);
       add_entity(entity);
     }
     next_row();
@@ -120,7 +120,7 @@ public:
     {
       const auto entity = entity_service_->create_entity_t<BunnyEntity>();
       entity->set_position(item_position(1.5f));
-      entity->components().add(spinning_comp);
+      entity->add_component(spinning_comp);
       add_entity(entity);
     }
     next_row();

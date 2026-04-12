@@ -47,8 +47,7 @@ inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl)
 
   // grass entity
   const auto grass = axgl.entity_service()->create_entity();
-  grass->components().add(mesh);
-  grass->set_static(true);
+  grass->add_component(mesh);
   return grass;
 }
 
@@ -66,7 +65,7 @@ inline axgl::ptr_t<axgl::Entity> create_box(const axgl::Axgl& axgl)
   const auto box = axgl.entity_service()->create_entity_t<Box>();
   box->set_rotation_speed({dis(gen), dis(gen), dis(gen)});
   box->set_orbit_speed(static_cast<float>(dis(gen)));
-  box->components().add(mesh);
+  box->add_component(mesh);
   return box;
 }
 

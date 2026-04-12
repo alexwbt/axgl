@@ -39,17 +39,13 @@ public:
         create_axis_mesh(axgl_, {0.0f, 1.0f, 0.0f}),
         create_axis_mesh(axgl_, {0.0f, 0.0f, 1.0f}),
       });
-
-    for (const auto& component : components().get())
-      component->set_disabled(true);
+    set_hidden(true);
   }
 
   void update() override
   {
     EntityBase::update();
 
-    if (debug_input_->tick == 1)
-      for (const auto& component : components().get())
-        component->set_disabled(!component->is_disabled());
+    if (debug_input_->tick == 1) set_hidden(!is_hidden());
   }
 };
