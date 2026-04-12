@@ -48,6 +48,7 @@ inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl)
   // grass entity
   const auto grass = axgl.entity_service()->create_entity();
   grass->add_component(mesh);
+  grass->set_static(true);
   return grass;
 }
 
