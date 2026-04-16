@@ -61,7 +61,18 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
 public:
   void set_antialiasing(bool enable) override { msaa_ = enable; }
 
-  void set_sample_count(std::uint32_t sample_count) override { sample_count_ = static_cast<GLsizei>(sample_count); }
+  void set_sample_count(std::uint32_t sample_count) override
+  {
+    GLint max_samples;
+    glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
+
+    if (sample_count > max_samples)
+    {
+      AXGL_LOG_WARN("GL_MAX_SAMPLES: {}", max_samples);
+      sample_count_ = max_samples;
+    }
+    else sample_count_ = static_cast<GLsizei>(sample_count);
+  }
 
   void set_shadow_map_size(std::uint32_t size) override { shadow_map_size_ = static_cast<GLsizei>(size); }
 

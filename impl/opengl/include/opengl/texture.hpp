@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <cstdint>
 #include <span>
 
 #include <axgl/common.hpp>
@@ -19,7 +18,7 @@ public:
   GLenum format;
   int width = 0, height = 0;
 
-  explicit StbiImage(const std::span<const uint8_t>& data)
+  explicit StbiImage(const std::span<const std::uint8_t>& data)
   {
     int nrChannels;
     stbi_ptr = stbi_load_from_memory(data.data(), static_cast<int>(data.size()), &width, &height, &nrChannels, 0);
