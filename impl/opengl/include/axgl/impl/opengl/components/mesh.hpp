@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
@@ -118,7 +119,7 @@ public:
       const auto edge2 = vertices_[i2] - vertices_[i0];
       const auto delta_uv1 = uv_[i1] - uv_[i0];
       const auto delta_uv2 = uv_[i2] - uv_[i0];
-      if (const float det = delta_uv1.x * delta_uv2.y - delta_uv2.x * delta_uv1.y; fabs(det) > 1e-6f)
+      if (const float det = delta_uv1.x * delta_uv2.y - delta_uv2.x * delta_uv1.y; std::fabs(det) > 1e-6f)
       {
         float r = 1.0f / det;
         const auto tangent = (edge1 * delta_uv2.y - edge2 * delta_uv1.y) * r;
