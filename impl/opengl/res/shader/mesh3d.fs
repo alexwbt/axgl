@@ -76,7 +76,7 @@ uniform PointLight point_lights[32];
 uniform bool transparent;
 uniform float alpha_discard;
 uniform float height_scale;
-uniform sampler2D shadow_map;
+uniform sampler2DArray shadow_maps;
 
 in VertexShaderOutput {
   vec3 camera_pos;
