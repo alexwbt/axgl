@@ -12,6 +12,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/opengl/cascaded_shadow_map.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
@@ -25,6 +26,8 @@ namespace axgl::impl::opengl
 
 class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
 {
+  using RenderComponents = std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*>;
+
   bool initialized_glad_ = false;
   axgl::ptr_t<glfw::Window> window_;
 
@@ -224,7 +227,7 @@ public:
       //
       // gather and submit render components
       //
-      std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*> render_components;
+      RenderComponents render_components;
       {
         AXGL_PROFILE_SCOPE("Renderer Gather Instances");
         gather_render_components(render_context, render_components, realm->entities());
@@ -389,7 +392,7 @@ private:
   // FIXME: reimplement without recursion
   static void gather_render_components(
     impl::opengl::renderer::RenderContext& render_context,
-    std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*>& render_components,
+    RenderComponents& render_components,
     const axgl::Container<axgl::Entity>& entities,
     const glm::mat4* base_transform_matrix = nullptr)
   {
