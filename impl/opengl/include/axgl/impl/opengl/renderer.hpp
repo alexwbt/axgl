@@ -57,6 +57,7 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   //
   // Shadow Map
   //
+  GLsizei shadow_map_cascade_levels_ = 3;
   GLsizei shadow_map_size_ = 1024;
   std::unique_ptr<::opengl::Texture> shadow_texture_;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer_;
@@ -192,8 +193,9 @@ public:
       // setup shadow map
       //
       shadow_texture_ = std::make_unique<::opengl::Texture>();
-      shadow_texture_->load_texture(
-        0, GL_DEPTH_COMPONENT, shadow_map_size_, shadow_map_size_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+      shadow_texture_->load_texture_array(
+        0, GL_DEPTH_COMPONENT, shadow_map_size_, shadow_map_size_, shadow_map_cascade_levels_, 0, GL_DEPTH_COMPONENT,
+        GL_FLOAT, nullptr);
       shadow_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       shadow_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       shadow_texture_->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -389,7 +391,6 @@ public:
   }
 
 private:
-  // FIXME: reimplement without recursion
   static void gather_render_components(
     impl::opengl::renderer::RenderContext& render_context,
     RenderComponents& render_components,
@@ -420,11 +421,21 @@ private:
         }
         else if (const auto* light_comp = dynamic_cast<axgl::impl::component::Light*>(component.get()))
         {
+          const auto& light = light_comp->light;
+
           impl::opengl::renderer::LightContext light_context;
-          light_context.light = &light_comp->light;
-
-          if (light_context.light->casts_shadows) light_context.light_pv = light_context.light->get_pv_matrix();
-
+          light_context.light = &light;
+          if (light.casts_shadows)
+          {
+            switch (light.type)
+            {
+            case axgl::Light::Type::kSun:
+              light_context.light_pv
+                = CascadedShadowMap::get_sun_light_pv(light, render_context.projection_view_matrix);
+              break;
+            default: break;
+            }
+          }
           render_context.lights.emplace_back(light_context);
         }
       }

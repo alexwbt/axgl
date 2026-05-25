@@ -110,7 +110,7 @@ vec2 calc_height_offset(Context ctx)
   {
     // shift texture coordinates along direction of P
     current_uv -= delta_uv;
-    // get depthmap value at current texture coordinates
+    // get depth map value at current texture coordinates
     current_height_map_value = texture(height_texture, current_uv).r;
     // get depth of next layer
     current_layer_depth += layer_depth;

@@ -135,6 +135,29 @@ public:
     glTexImage2D(target_, level, internal_format, width, height, border, format, type, pixels);
   }
 
+  void load_texture_array(
+    const GLint level,
+    const GLint internal_format,
+    const GLsizei width,
+    const GLsizei height,
+    const GLsizei depth,
+    const GLint border,
+    const GLenum format,
+    const GLenum type,
+    const void* pixels)
+  {
+    if (initialized())
+    {
+      AXGL_LOG_ERROR("Texture is already initialized.");
+      return;
+    }
+    target_ = GL_TEXTURE_2D_ARRAY;
+    width_ = width;
+    height_ = height;
+
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, level, internal_format, width, height, depth, border, format, type, pixels);
+  }
+
   void load_image_texture(const std::span<const uint8_t> data)
   {
     const StbiImage texture(data);
@@ -210,20 +233,6 @@ public:
     use();
     glTexImage2DMultisample(target_, sample_size, internal_format, width, height, fixed_sample_locations);
   }
-
-  // void init_texture_array()
-  // {
-  //   if (initialized())
-  //   {
-  //     AXGL_LOG_ERROR("Texture is already initialized.");
-  //     return;
-  //   }
-  //   target_ = GL_TEXTURE_2D_ARRAY;
-  //   width_ = width;
-  //   height_ = height;
-  //
-  //   glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevelCount, GL_RGBA8, width, height, layerCount);
-  // }
 };
 
 } // namespace opengl
