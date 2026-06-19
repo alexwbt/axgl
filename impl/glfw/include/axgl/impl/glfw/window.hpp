@@ -22,7 +22,7 @@ public:
 
   void set_position(const std::uint32_t x, const std::uint32_t y) override
   {
-    if (!window_->is_destroyed()) window_->set_position(x, y);
+    if (!window_->is_destroyed()) window_->set_position(static_cast<int>(x), static_cast<int>(y));
   }
 
   void set_size(const std::uint32_t width, const std::uint32_t height) override

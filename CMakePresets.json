@@ -20,7 +20,8 @@
         "ARGS_BUILD_EXAMPLE": "OFF",
         "ASSIMP_BUILD_TESTS": "OFF",
         "GLFW_BUILD_DOCS": "OFF",
-        "ASSIMP_INSTALL": "OFF"
+        "ASSIMP_INSTALL": "OFF",
+        "FT_DISABLE_ZLIB": "ON"
       }
     },
     {

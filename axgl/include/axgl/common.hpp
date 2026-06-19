@@ -134,7 +134,7 @@ ptr_t<T> create_ptr(Args&&... args) noexcept
 }
 
 template <typename T1, typename T2>
-ptr_t<T1> ptr_cast(ptr_t<T2> ptr) noexcept
+ptr_t<T1> ptr_cast(const ptr_t<T2>& ptr) noexcept
 {
   return std::dynamic_pointer_cast<T1>(ptr);
 }

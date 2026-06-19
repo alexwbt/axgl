@@ -45,36 +45,43 @@ public:
     vertices_.resize(vertices.size());
     std::ranges::copy(vertices, vertices_.begin());
   }
+
   void set_vertices(const std::span<const glm::vec2>& vertices) override
   {
     vertices_2d_.resize(vertices.size());
     std::ranges::copy(vertices, vertices_2d_.begin());
   }
+
   void set_normals(const std::span<const glm::vec3>& normals) override
   {
     normals_.resize(normals.size());
     std::ranges::copy(normals, normals_.begin());
   }
+
   void set_tangents(const std::span<const glm::vec3>& tangents) override
   {
     tangents_.resize(tangents.size());
     std::ranges::copy(tangents, tangents_.begin());
   }
+
   void set_bitangents(const std::span<const glm::vec3>& bitangents) override
   {
     bitangents_.resize(bitangents.size());
     std::ranges::copy(bitangents, bitangents_.begin());
   }
+
   void set_uv(const std::span<const glm::vec2>& uv) override
   {
     uv_.resize(uv.size());
     std::ranges::copy(uv, uv_.begin());
   }
+
   void set_indices(const std::span<const std::uint32_t>& indices) override
   {
     indices_.resize(indices.size());
     std::ranges::copy(indices, indices_.begin());
   }
+
   void set_material(const axgl::ptr_t<axgl::Material> material) override
   {
     material_ = std::dynamic_pointer_cast<impl::opengl::Material>(material);
@@ -82,6 +89,7 @@ public:
     if (!material_) throw std::runtime_error("The provided material is not a valid opengl material.");
 #endif
   }
+
   [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override { return material_; }
 
   void calculate_tbn() override

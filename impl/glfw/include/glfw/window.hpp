@@ -87,12 +87,7 @@ public:
     string_window_hints_.clear();
   }
 
-  static bool should_close_all()
-  {
-    for (const auto& glfw_window : windows_ | std::views::keys)
-      if (!glfwWindowShouldClose(glfw_window)) return false;
-    return true;
-  }
+  static bool should_close_all() { return std::ranges::all_of(windows_ | std::views::keys, glfwWindowShouldClose); }
 
   static void update_all()
   {

@@ -38,4 +38,3 @@ public:
 };
 
 } // namespace axgl::impl::opengl
-

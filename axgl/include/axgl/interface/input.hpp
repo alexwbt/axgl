@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include <axgl/common.hpp>
 
 namespace axgl
@@ -153,8 +155,8 @@ public:
   std::uint64_t tick;
   std::vector<axgl::Input::Source> sources;
 
-  Input(const std::string& name, const std::vector<axgl::Input::Source>& sources) :
-    id(next_id()), name(name), tick(0), sources(sources)
+  Input(std::string name, const std::vector<axgl::Input::Source>& sources) :
+    id(next_id()), name(std::move(name)), tick(0), sources(sources)
   {
   }
 
