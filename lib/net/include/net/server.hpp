@@ -31,7 +31,7 @@ public:
   {
     for (auto it = sessions_.begin(); it != sessions_.end();)
     {
-      it->second->handle_input([this, &it](data_ptr_t buffer) { on_receive(it->first, std::move(buffer)); });
+      it->second->handle_input([this, &it](const data_ptr_t& buffer) { on_receive(it->first, buffer); });
 
       if (!it->second->connected())
       {
@@ -43,12 +43,12 @@ public:
     }
   }
 
-  virtual void send(const uint32_t session_id, data_ptr_t buffer)
+  virtual void send(const uint32_t session_id, const data_ptr_t& buffer)
   {
-    if (sessions_.contains(session_id)) sessions_.at(session_id)->send(std::move(buffer));
+    if (sessions_.contains(session_id)) sessions_.at(session_id)->send(buffer);
   }
 
-  virtual void send_to_all(data_ptr_t buffer)
+  virtual void send_to_all(const data_ptr_t& buffer)
   {
     for (const auto& val : sessions_ | std::views::values)
       val->send(buffer);
@@ -59,9 +59,12 @@ public:
     if (sessions_.contains(session_id)) sessions_.at(session_id)->close();
   }
 
-  virtual void on_disconnect(uint32_t session_id) { }
-  virtual void on_receive(uint32_t session_id, data_ptr_t buffer) { }
-  virtual void on_connect(uint32_t session_id, std::shared_ptr<Session> session) { }
+  virtual void on_disconnect([[maybe_unused]] uint32_t session_id) { }
+  virtual void on_receive([[maybe_unused]] uint32_t session_id, [[maybe_unused]] const data_ptr_t& buffer) { }
+  virtual void on_connect(
+    [[maybe_unused]] uint32_t session_id, [[maybe_unused]] const std::shared_ptr<Session>& session)
+  {
+  }
 
   virtual void start() = 0;
   virtual void stop() = 0;

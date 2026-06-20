@@ -19,5 +19,6 @@ if [ "$1" != "--no-tidy" ]; then
 fi
 
 find $ROOT_DIR \
-  -regex "^$ROOT_DIR/$FILE_PATTERN\\.\(cpp\|hpp\)$" \
+  -regextype posix-extended \
+  -regex "^$ROOT_DIR/$FILE_PATTERN\\.(cpp|hpp)$" \
   -exec clang-format -i {} \;

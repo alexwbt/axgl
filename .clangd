@@ -1,0 +1,16 @@
+CompileFlags:
+  CompilationDatabase: "_build/Debug"
+  Add: [-std=c++20, -Wall, -Wextra]
+  Remove: [-W*]
+
+Completion:
+  AllScopes: true
+  ArgumentLists: FullPlaceholders
+
+Diagnostics:
+  UnusedIncludes: Strict
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
