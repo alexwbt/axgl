@@ -6,7 +6,7 @@
 class Client final : public net::TcpClient
 {
 public:
-  bool stop = false;
+  bool running = false;
   using TcpClient::TcpClient;
 
   std::shared_ptr<net::Socket> new_socket(asio::ip::tcp::socket socket) override
@@ -23,10 +23,10 @@ public:
 
   void on_connect() override { send(build_message("hello world")); }
 
-  void on_receive(const net::data_ptr_t buffer) override
+  void on_receive(const net::data_ptr_t& buffer) override
   {
     print_message(*buffer);
-    stop = true;
+    running = true;
   }
 };
 
@@ -51,7 +51,7 @@ int main()
 
     client.connect("127.0.0.1", 10000);
 
-    while (!client.stop)
+    while (!client.running)
       client.update();
 
     client.disconnect();

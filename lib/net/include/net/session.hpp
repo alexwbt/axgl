@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -12,7 +13,7 @@ namespace net
 
 class Session final
 {
-  uint32_t id_;
+  std::uint32_t id_;
   std::shared_ptr<Socket> socket_;
 
   std::mutex input_queue_mutex_;
@@ -22,7 +23,7 @@ class Session final
   std::queue<data_ptr_t> output_queue_;
   asio::steady_timer output_signal_;
 
-  Session(const uint32_t id, std::shared_ptr<Socket> socket) :
+  Session(const std::uint32_t id, std::shared_ptr<Socket> socket) :
     id_(id), socket_(std::move(socket)), output_signal_(socket_->get_executor())
   {
     output_signal_.expires_at(std::chrono::steady_clock::time_point::max());
@@ -73,7 +74,7 @@ class Session final
   }
 
 public:
-  static std::shared_ptr<Session> create(const uint32_t id, std::shared_ptr<Socket> socket)
+  static std::shared_ptr<Session> create(const std::uint32_t id, std::shared_ptr<Socket> socket)
   {
     const std::shared_ptr<Session> session(new Session(id, std::move(socket)));
     // start read loop
@@ -95,6 +96,8 @@ public:
   }
 
   [[nodiscard]] bool connected() const { return socket_->connected(); }
+
+  [[nodiscard]] std::uint32_t get_id() const { return id_; }
 
   void send(data_ptr_t buffer)
   {

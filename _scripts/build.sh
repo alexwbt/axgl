@@ -20,12 +20,14 @@ rm -f $LOG_FILE
 
 cd $ROOT_DIR
 
-log
-log "##########"
-log "########## Starting cmake config ($PRESET)"
-log "##########"
+if [ "$2" != "--no-config" ]; then
+  log
+  log "##########"
+  log "########## Starting cmake config ($PRESET)"
+  log "##########"
 
-cmake --preset $PRESET | log
+  cmake --preset $PRESET | log
+fi
 
 log
 log "##########"

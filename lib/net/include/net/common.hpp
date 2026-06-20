@@ -13,7 +13,7 @@
 namespace net
 {
 
-typedef const std::vector<uint8_t> data_t;
+typedef const std::vector<std::uint8_t> data_t;
 typedef std::shared_ptr<data_t> data_ptr_t;
 
 } // namespace net

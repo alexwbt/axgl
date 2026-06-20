@@ -8,6 +8,7 @@
         "${workspaceFolder}/_external/asio/asio/include",
         "${workspaceFolder}/_external/assimp/include",
         "${workspaceFolder}/_external/cpptrace/include",
+        "${workspaceFolder}/_external/flatbuffer/include",
         "${workspaceFolder}/_external/freetype/include",
         "${workspaceFolder}/_external/ftxui/include",
         "${workspaceFolder}/_external/glfw/include",

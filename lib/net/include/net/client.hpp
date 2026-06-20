@@ -26,7 +26,7 @@ public:
   {
     if (!session_) return;
 
-    session_->handle_input([this](data_ptr_t buffer) { on_receive(std::move(buffer)); });
+    session_->handle_input([this](const data_ptr_t& buffer) { on_receive(buffer); });
 
     if (!session_->connected())
     {
@@ -44,8 +44,8 @@ public:
 
   virtual void on_connect() { }
   virtual void on_disconnect() { }
-  virtual void on_receive(data_ptr_t buffer) { }
-  virtual void connection_failed(const asio::error_code& error_code) { }
+  virtual void on_receive(const data_ptr_t&) { }
+  virtual void connection_failed(const asio::error_code&) { }
 
   virtual void connect(const std::string& host, const asio::ip::port_type& port) = 0;
 };

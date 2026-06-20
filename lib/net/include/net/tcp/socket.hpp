@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <net/common.hpp>
 #include <net/socket.hpp>
 
@@ -24,7 +25,7 @@ public:
   asio::awaitable<void> write_buffer(const data_ptr_t buffer) override
   {
     // prepend size
-    const uint32_t size = htonl(static_cast<uint32_t>(buffer->size()));
+    const std::uint32_t size = htonl(static_cast<std::uint32_t>(buffer->size()));
     const std::array buffers = {
       asio::buffer(&size, kLengthPrefixSize),
       asio::buffer(buffer->data(), buffer->size()),
@@ -32,11 +33,11 @@ public:
     co_await asio::async_write(socket_, buffers, asio::use_awaitable);
   }
 
-  asio::awaitable<void> read_buffer(std::vector<uint8_t>& buffer) override
+  asio::awaitable<void> read_buffer(std::vector<std::uint8_t>& buffer) override
   {
     // read size
     co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, kLengthPrefixSize), asio::use_awaitable);
-    const auto size = ntohl(*reinterpret_cast<uint32_t*>(buffer.data()));
+    const auto size = ntohl(*reinterpret_cast<std::uint32_t*>(buffer.data()));
     // read all of size
     co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, kLengthPrefixSize + size), asio::use_awaitable);
   }

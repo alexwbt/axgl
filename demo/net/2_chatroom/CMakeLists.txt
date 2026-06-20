@@ -16,8 +16,8 @@ function(chatroom_exec name)
   target_link_libraries(demo_net_chatroom_${name}
     PRIVATE
     net
-    axgl
     args
+    spdlog
     ftxui::dom
     ftxui::screen
     ftxui::component

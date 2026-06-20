@@ -59,12 +59,9 @@ public:
     if (sessions_.contains(session_id)) sessions_.at(session_id)->close();
   }
 
-  virtual void on_disconnect([[maybe_unused]] uint32_t session_id) { }
-  virtual void on_receive([[maybe_unused]] uint32_t session_id, [[maybe_unused]] const data_ptr_t& buffer) { }
-  virtual void on_connect(
-    [[maybe_unused]] uint32_t session_id, [[maybe_unused]] const std::shared_ptr<Session>& session)
-  {
-  }
+  virtual void on_disconnect(uint32_t) { }
+  virtual void on_receive(uint32_t, const data_ptr_t&) { }
+  virtual void on_connect(uint32_t, const std::shared_ptr<Session>&) { }
 
   virtual void start() = 0;
   virtual void stop() = 0;
