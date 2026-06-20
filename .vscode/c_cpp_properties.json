@@ -3,6 +3,29 @@
     {
       "name": "CMake",
       "configurationProvider": "ms-vscode.cmake-tools",
+      "includePath": [
+        "${workspaceFolder}/_external/args",
+        "${workspaceFolder}/_external/asio/asio/include",
+        "${workspaceFolder}/_external/assimp/include",
+        "${workspaceFolder}/_external/cpptrace/include",
+        "${workspaceFolder}/_external/freetype/include",
+        "${workspaceFolder}/_external/ftxui/include",
+        "${workspaceFolder}/_external/glfw/include",
+        "${workspaceFolder}/_external/glm",
+        "${workspaceFolder}/_external/spdlog/include",
+        "${workspaceFolder}/_external/stb",
+        "${workspaceFolder}/_external/tracy/public",
+        "${workspaceFolder}/_external/utfcpp/source",
+        "${workspaceFolder}/axgl/include",
+        "${workspaceFolder}/impl/assimp/include",
+        "${workspaceFolder}/impl/bundlefile/include",
+        "${workspaceFolder}/impl/glfw/include",
+        "${workspaceFolder}/impl/opengl/include",
+        "${workspaceFolder}/lib/bundlefile/include",
+        "${workspaceFolder}/lib/glad/include",
+        "${workspaceFolder}/lib/net/include",
+        "${workspaceFolder}/lib/util/include"
+      ],
       "compileCommands": [
         "${workspaceFolder}/_build/Debug/compile_commands.json"
       ]

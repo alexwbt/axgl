@@ -1,4 +1,7 @@
-#include "common/message.hpp"
+#include <iostream>
+#include <net/tcp/server.hpp>
+
+#include "message.hpp"
 
 class Server final : public net::TcpServer
 {
@@ -12,14 +15,11 @@ public:
     return std::make_shared<net::LengthPrefixedTcpSocket>(std::move(socket));
   }
 
-  void on_connect(const uint32_t session_id, std::shared_ptr<net::Session> session) override
-  {
-    AXGL_LOG_DEBUG("client connected: {}", session_id);
-  }
+  void on_connect(const uint32_t session_id, std::shared_ptr<net::Session> session) override { }
 
-  void on_disconnect(const uint32_t session_id) override { AXGL_LOG_DEBUG("client disconnected: {}", session_id); }
+  void on_disconnect(const uint32_t session_id) override { }
 
-  void on_receive(uint32_t session_id, const net::DataPtr buffer) override
+  void on_receive(uint32_t session_id, const net::data_ptr_t buffer) override
   {
     print_message(*buffer);
     send_to_all(build_message("shut up."));
@@ -39,10 +39,6 @@ public:
 
 int main()
 {
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
-  spdlog::set_level(spdlog::level::debug);
-#endif
-
   try
   {
     const auto io_context = std::make_shared<asio::io_context>();
@@ -58,7 +54,7 @@ int main()
       }
       catch (const std::exception& e)
       {
-        AXGL_LOG_ERROR(e.what());
+        std::cerr << e.what() << std::endl;
       }
     });
 
@@ -69,6 +65,6 @@ int main()
   }
   catch (const std::exception& e)
   {
-    AXGL_LOG_ERROR(e.what());
+    std::cerr << e.what() << std::endl;
   }
 }

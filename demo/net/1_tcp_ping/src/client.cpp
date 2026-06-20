@@ -1,4 +1,7 @@
-#include "common/message.hpp"
+#include <iostream>
+#include <net/tcp/client.hpp>
+
+#include "message.hpp"
 
 class Client final : public net::TcpClient
 {
@@ -13,18 +16,14 @@ public:
 
   void connection_failed(const asio::error_code& error_code) override
   {
-    AXGL_LOG_ERROR("connection failed: {}", error_code.message());
+    std::cout << error_code.message() << std::endl;
   }
 
-  void on_disconnect() override { AXGL_LOG_DEBUG("disconnected"); }
+  void on_disconnect() override { }
 
-  void on_connect() override
-  {
-    AXGL_LOG_DEBUG("connected");
-    send(build_message("hello world"));
-  }
+  void on_connect() override { send(build_message("hello world")); }
 
-  void on_receive(const net::DataPtr buffer) override
+  void on_receive(const net::data_ptr_t buffer) override
   {
     print_message(*buffer);
     stop = true;
@@ -33,10 +32,6 @@ public:
 
 int main()
 {
-#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
-  spdlog::set_level(spdlog::level::debug);
-#endif
-
   try
   {
     const auto io_context = std::make_shared<asio::io_context>();
@@ -50,7 +45,7 @@ int main()
       }
       catch (const std::exception& e)
       {
-        AXGL_LOG_ERROR(e.what());
+        std::cerr << e.what() << std::endl;
       }
     });
 
@@ -67,6 +62,6 @@ int main()
   }
   catch (const std::exception& e)
   {
-    AXGL_LOG_ERROR(e.what());
+    std::cerr << e.what() << std::endl;
   }
 }

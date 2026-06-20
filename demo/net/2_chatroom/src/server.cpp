@@ -2,4 +2,11 @@
 
 #include <demo_net_chatroom_fbs/message_fbs.h>
 
-int main() { AXGL_LOG_INFO("server"); }
+int main()
+{
+#if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
+  spdlog::set_level(spdlog::level::debug);
+#endif
+
+  AXGL_LOG_INFO("server");
+}
