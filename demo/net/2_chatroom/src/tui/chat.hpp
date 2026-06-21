@@ -30,12 +30,14 @@ public:
 
     std::lock_guard lock(message_mutex_);
     messages_comp_->add_message(message);
+    update();
   }
 
   void clear_messages()
   {
     std::lock_guard lock(message_mutex_);
     messages_comp_->clear_messages();
+    update();
   }
 
   ftxui::Element OnRender() override
@@ -44,6 +46,12 @@ public:
       messages_comp_->Render() | ftxui::vscroll_indicator | ftxui::yframe | ftxui::flex,
       input_comp_->Render(),
     });
+  }
+
+private:
+  void static update()
+  {
+    if (auto* screen = ftxui::ScreenInteractive::Active()) { screen->Post(ftxui::Event::Custom); }
   }
 };
 

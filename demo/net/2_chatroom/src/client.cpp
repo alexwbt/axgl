@@ -47,7 +47,7 @@ public:
   void on_receive(const net::data_ptr_t& buffer) override
   {
     if (const auto* message = read_message(buffer))
-      chat_ui->add_message(std::format("<{}> {}", message->sender()->str(), message->content()->str()));
+      chat_ui->add_message(std::format("[{}] {}", message->sender()->str(), message->content()->str()));
   }
 
 private:
@@ -58,7 +58,6 @@ private:
       chat_ui->clear_messages();
       return;
     }
-    chat_ui->add_message("Sending: " + message);
     send(build_message(username, message));
   }
 };
@@ -87,9 +86,10 @@ int main(int argc, char** argv)
       }
       catch (const std::exception& e)
       {
-        std::cerr << e.what() << std::endl;
+        client.chat_ui->add_message(std::format("Error: ", e.what()));
       }
     });
+
     auto screen = ftxui::ScreenInteractive::Fullscreen();
     std::thread ui_thread([&]
     {
