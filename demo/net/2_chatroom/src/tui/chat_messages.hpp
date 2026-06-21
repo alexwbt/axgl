@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <mutex>
 
 #include <ftxui/component/component_base.hpp>
 #include <ftxui/component/event.hpp>
@@ -18,32 +19,32 @@ class ChatMessages : public ftxui::ComponentBase
   // for mouse clicks
   std::vector<ftxui::Box> boxes_;
 
+  std::mutex mutex_;
+
 public:
   [[nodiscard]] std::int64_t size() const { return static_cast<std::int64_t>(message_values_.size()); }
 
   void set_focus(std::int64_t index)
   {
+    std::lock_guard lock(mutex_);
     const auto& max = static_cast<std::int64_t>(message_values_.size() - 1);
     focused_ = std::max<std::int64_t>(0, std::min(max, index));
   }
 
   void add_message(const std::string& message)
   {
+    std::lock_guard lock(mutex_);
     message_values_.push_back(message);
-
-    const auto& size = this->size();
-    if (size == 1) TakeFocus();
-    else if (focused_ == size - 2)
-    {
-      ++focused_;
-      TakeFocus();
-    }
+    if (focused_ == size() - 2) ++focused_;
+    if (auto* screen = ftxui::ScreenInteractive::Active()) { screen->Post(ftxui::Event::Custom); }
   }
 
   void clear_messages()
   {
+    std::lock_guard lock(mutex_);
     message_values_.clear();
     focused_ = 0;
+    if (auto* screen = ftxui::ScreenInteractive::Active()) { screen->Post(ftxui::Event::Custom); }
   }
 
   [[nodiscard]] bool Focusable() const override { return true; }
@@ -88,6 +89,8 @@ public:
   ftxui::Element OnRender() override
   {
     using namespace ftxui;
+
+    std::lock_guard lock(mutex_);
 
     const auto& size = this->size();
 

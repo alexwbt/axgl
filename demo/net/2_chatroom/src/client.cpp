@@ -32,7 +32,7 @@ public:
 
   void connection_failed(const asio::error_code& code) override
   {
-    chat_ui->add_message(std::format("Failed to connect to server: ", code.message()));
+    chat_ui->add_message("Failed to connect to server: " + code.message());
     running = false;
   }
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
       }
       catch (const std::exception& e)
       {
-        client.chat_ui->add_message(std::format("Error: ", e.what()));
+        client.chat_ui->add_message(std::format("Error: {}", e.what()));
       }
     });
 

@@ -19,7 +19,7 @@ public:
 
   virtual void disconnect()
   {
-    if (session_) session_->close();
+    if (connected()) session_->close();
   }
 
   virtual void update()
@@ -39,7 +39,7 @@ public:
 
   virtual void send(data_ptr_t buffer)
   {
-    if (session_) session_->send(std::move(buffer));
+    if (connected()) session_->send(std::move(buffer));
   }
 
   virtual void on_connect() { }
