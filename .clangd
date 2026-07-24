@@ -1,14 +1,23 @@
 CompileFlags:
   CompilationDatabase: "_build/Debug"
-  Add: [-std=c++20, -Wall, -Wextra]
-  Remove: [-W*]
+  Add:
+    [
+      -std=c++20,
+      -Wall,
+      -Wextra,
+      -Wno-c++98-compat,
+      -Wno-c++98-compat-pedantic,
+      -Wno-unused-macros,
+    ]
+  Remove: [-W*, -fno-keep-inline-dllexport, -fvisibility=hidden]
 
 Completion:
   AllScopes: true
   ArgumentLists: FullPlaceholders
 
 Diagnostics:
-  UnusedIncludes: Strict
+  UnusedIncludes: None
+  Suppress: [builtin_definition, conflicting_types]
 
 InlayHints:
   Enabled: true
