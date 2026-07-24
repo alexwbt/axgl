@@ -19,3 +19,6 @@ target_link_libraries(bundlefile_lib
   INTERFACE
   flatbuffers
 )
+
+include(${CMAKE_SOURCE_DIR}/_cmake/debug_interface_source.cmake)
+add_debug_interface_source(bundlefile_lib ./bundlefile_lib.cpp)
