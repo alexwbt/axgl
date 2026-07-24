@@ -188,5 +188,7 @@
     "stbi",
     "ubyte",
     "utfcpp"
-  ]
+  ],
+  "C_Cpp.default.cppStandard": "c++20",
+  "C_Cpp.intelliSenseEngine": "disabled"
 }

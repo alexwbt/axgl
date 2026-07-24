@@ -4,6 +4,7 @@
 #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
 #include <axgl/impl/realm.hpp>
 
+#include "../input_manager.hpp"
 #include "entity/camera.hpp"
 #include "entity/floor.hpp"
 
