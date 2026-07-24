@@ -6,6 +6,10 @@
   "editor.formatOnSave": false,
   "editor.inlayHints.enabled": "offUnlessPressed",
   "cmake.useCMakePresets": "always",
+  "cmake.exclude": [
+    "_build/**",
+    "_external/**"
+  ],
   "webgl-glsl-editor.format.placeBracesOnSeparateLine": true,
   "webgl-glsl-editor.format.placeSpacesAroundBinaryOperators": true,
   "webgl-glsl-editor.format.placeSpacesAroundAssignmentOperators": true,
