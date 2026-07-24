@@ -11,3 +11,6 @@ target_link_libraries(axgl_assimp_impl
   axgl
   assimp
 )
+
+include(${CMAKE_SOURCE_DIR}/_cmake/debug_interface_source.cmake)
+add_debug_interface_source(axgl_assimp_impl ./axgl_assimp_impl.cpp)

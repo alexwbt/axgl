@@ -11,3 +11,6 @@ target_link_libraries(axgl_bundlefile_impl
   axgl
   bundlefile_lib
 )
+
+include(${CMAKE_SOURCE_DIR}/_cmake/debug_interface_source.cmake)
+add_debug_interface_source(axgl_bundlefile_impl ./axgl_bundlefile_impl.cpp)
