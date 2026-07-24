@@ -66,7 +66,7 @@ public:
     GLint max_samples;
     glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
 
-    if (sample_count > max_samples)
+    if (sample_count > static_cast<std::uint32_t>(max_samples))
     {
       AXGL_LOG_WARN("GL_MAX_SAMPLES: {}", max_samples);
       sample_count_ = max_samples;
