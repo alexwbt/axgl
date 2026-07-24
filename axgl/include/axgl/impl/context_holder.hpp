@@ -1,5 +1,8 @@
 #pragma once
 
+#include <type_traits>
+
+#include <axgl/common.hpp>
 #include <axgl/interface/context.hpp>
 
 namespace axgl::impl
