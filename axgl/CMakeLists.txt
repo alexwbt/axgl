@@ -15,4 +15,8 @@ target_link_libraries(axgl
 )
 
 include(${CMAKE_SOURCE_DIR}/_cmake/debug_interface_source.cmake)
-add_debug_interface_source(axgl ./axgl.cpp)
+add_debug_interface_source(axgl ./axgl.cpp
+  INCLUDE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  UMBRELLA_HEADER axgl/axgl.hpp
+  LINK_LIBRARIES axgl_opengl_impl
+)

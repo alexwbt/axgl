@@ -15,5 +15,27 @@ function(add_debug_interface_source target source)
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_library(${target}_debug STATIC EXCLUDE_FROM_ALL ${source})
     target_link_libraries(${target}_debug PRIVATE ${target})
+
+    set(options)
+    set(one_value_args INCLUDE_DIRECTORY UMBRELLA_HEADER)
+    set(multi_value_args LINK_LIBRARIES)
+    cmake_parse_arguments(ARG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+
+    if(ARG_INCLUDE_DIRECTORY)
+      file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${ARG_INCLUDE_DIRECTORY}/*.hpp")
+      set(header_sources)
+
+      foreach(header IN LISTS headers)
+        file(RELATIVE_PATH header_relative "${ARG_INCLUDE_DIRECTORY}" "${header}")
+        set(header_source "${CMAKE_CURRENT_BINARY_DIR}/header_sources/${header_relative}.cpp")
+        file(GENERATE OUTPUT "${header_source}"
+          CONTENT "#include <${ARG_UMBRELLA_HEADER}>\n#include <${header_relative}>\n"
+        )
+        list(APPEND header_sources "${header_source}")
+      endforeach()
+
+      add_library(${target}_headers_debug OBJECT EXCLUDE_FROM_ALL ${header_sources})
+      target_link_libraries(${target}_headers_debug PRIVATE ${target} ${ARG_LINK_LIBRARIES})
+    endif()
   endif()
 endfunction()

@@ -1,10 +1,12 @@
 #pragma once
 
 #include <axgl/common.hpp>
+#include <axgl/interface/gui/context.hpp>
 #include <axgl/interface/gui/element.hpp>
 #include <axgl/interface/gui/style.hpp>
 
 #include <axgl/impl/gui/element_container.hpp>
+#include <axgl/impl/opengl/texture.hpp>
 
 namespace axgl::impl::gui
 {

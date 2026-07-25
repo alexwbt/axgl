@@ -4,6 +4,7 @@
 #include <axgl/interface/gui/page.hpp>
 #include <axgl/interface/services/input_service.hpp>
 
+#include <axgl/axgl.hpp>
 #include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/gui/element_container.hpp>
 
