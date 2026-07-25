@@ -6,7 +6,6 @@
 #include <axgl/interface/gui/style.hpp>
 
 #include <axgl/impl/gui/element_container.hpp>
-#include <axgl/impl/opengl/texture.hpp>
 
 namespace axgl::impl::gui
 {
@@ -35,7 +34,6 @@ protected:
 
   std::string content_;
   bool should_render_content_ = false;
-  axgl::ptr_t<axgl::impl::opengl::Texture> content_texture_;
 
 public:
   ElementBase()

@@ -14,9 +14,8 @@ target_link_libraries(axgl
   Tracy::TracyClient
 )
 
-include(${CMAKE_SOURCE_DIR}/_cmake/debug_interface_source.cmake)
-add_debug_interface_source(axgl ./axgl.cpp
+include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
+add_header_proxy(axgl ./axgl.cpp
   INCLUDE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include"
   UMBRELLA_HEADER axgl/axgl.hpp
-  LINK_LIBRARIES axgl_opengl_impl
 )

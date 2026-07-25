@@ -5,7 +5,9 @@
 #include <axgl/interface/gui/element.hpp>
 #include <axgl/interface/gui/page.hpp>
 
+#include <axgl/axgl.hpp>
 #include <axgl/impl/gui/element_base.hpp>
+#include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/static_shaders.hpp>
 #include <opengl/static_vaos.hpp>
@@ -16,6 +18,7 @@ namespace axgl::impl::opengl::gui
 class Element : public axgl::impl::gui::ElementBase
 {
   float content_scale_ = 1.0f;
+  axgl::ptr_t<axgl::impl::opengl::Texture> content_texture_;
 
 public:
   void on_pointer_enter(const axgl::gui::Context& context) override

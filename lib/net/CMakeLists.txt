@@ -7,5 +7,5 @@ target_include_directories(net
   ./include
 )
 
-include(${CMAKE_SOURCE_DIR}/_cmake/debug_interface_source.cmake)
-add_debug_interface_source(net ./net.cpp)
+include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
+add_header_proxy(net ./net.cpp)

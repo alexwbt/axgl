@@ -6,5 +6,5 @@ target_include_directories(util
   ./include
 )
 
-include(${CMAKE_SOURCE_DIR}/_cmake/debug_interface_source.cmake)
-add_debug_interface_source(util ./util.cpp)
+include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
+add_header_proxy(util ./util.cpp)

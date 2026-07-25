@@ -12,5 +12,5 @@ target_link_libraries(axgl_assimp_impl
   assimp
 )
 
-include(${CMAKE_SOURCE_DIR}/_cmake/debug_interface_source.cmake)
-add_debug_interface_source(axgl_assimp_impl ./axgl_assimp_impl.cpp)
+include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
+add_header_proxy(axgl_assimp_impl ./axgl_assimp_impl.cpp)
