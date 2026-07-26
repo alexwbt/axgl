@@ -11,47 +11,64 @@
 # compile command per INTERFACE target, which CMake exports into
 # _build/Debug/compile_commands.json for clangd to consume.
 #
-function(add_header_proxy target source)
+function(add_interface_proxy target source)
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_library(${target}_proxy STATIC EXCLUDE_FROM_ALL ${source})
     target_link_libraries(${target}_proxy PRIVATE ${target})
+  endif()
+endfunction()
 
-    #
-    # If INCLUDE_DIRECTORY is supplied, generate one synthetic .cpp per header
-    # under it. Each generated TU includes the optional UMBRELLA_HEADER first
-    # (so forward declarations resolve) and then the header itself, giving
-    # clangd a per-header compile command in compile_commands.json that is
-    # not subject to its filename-closest heuristic.
-    #
-    # Without this, an axgl header shadowed by a same-named source elsewhere
-    # in the build (e.g. axgl/.../gui/context.hpp vs. _external/glfw/context.c)
-    # would have clangd borrow the third-party compile command, which lacks
-    # the AXGL include paths and -D macros needed to resolve <axgl/...>.
-    #
+#
+# Adds the headers of a header-only target as synthesized compile units of an
+# existing proxy target, so clangd/clang-tidy get diagnostics for every header
+# individually rather than only for the umbrella header.
+#
+# For each .hpp under INCLUDE_DIRECTORY it generates a tiny .cpp (in the build
+# dir) that includes the umbrella header (if any) plus the header itself, then
+# adds those generated .cpps as sources of `proxy_target`. Debug-gated like
+# add_interface_proxy: in release this is a no-op, so the release build stays
+# zero-cost.
+#
+function(add_header_sources proxy_target)
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Parse optional one-value keyword arguments into ARG_INCLUDE_DIRECTORY /
+    # ARG_UMBRELLA_HEADER.
     set(one_value_args INCLUDE_DIRECTORY UMBRELLA_HEADER)
     cmake_parse_arguments(ARG "" "${one_value_args}" "" ${ARGN})
 
     if(ARG_INCLUDE_DIRECTORY)
+      # Recursively collect every .hpp under the include dir. CONFIGURE_DEPENDS
+      # makes CMake re-run when headers are added/removed so the generated
+      # source set stays in sync.
       file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${ARG_INCLUDE_DIRECTORY}/*.hpp")
       set(header_sources)
 
+      # Build the umbrella-header include line once; empty when none was given
+      # so generated .cpps include the target header standalone.
       if(ARG_UMBRELLA_HEADER)
         set(umbrella_header_line "#include <${ARG_UMBRELLA_HEADER}>\n")
       else()
         set(umbrella_header_line "")
       endif()
 
+      # Emit one synthesized .cpp per header. The path mirrors the header's
+      # relative location under INCLUDE_DIRECTORY so generated files don't
+      # collide. file(GENERATE) runs at build time, so it picks up headers
+      # added after configure without needing a reconfigure.
       foreach(header IN LISTS headers)
         file(RELATIVE_PATH header_relative "${ARG_INCLUDE_DIRECTORY}" "${header}")
         set(header_source "${CMAKE_CURRENT_BINARY_DIR}/header_sources/${header_relative}.cpp")
         file(GENERATE OUTPUT "${header_source}"
-          CONTENT "${umbrella_header_line}\n#include <${header_relative}>\n"
+          CONTENT "${umbrella_header_line}#include <${header_relative}>\n"
         )
         list(APPEND header_sources "${header_source}")
       endforeach()
 
-      add_library(${target}_header_proxy OBJECT EXCLUDE_FROM_ALL ${header_sources})
-      target_link_libraries(${target}_header_proxy PRIVATE ${target})
+      # Attach the generated sources and the include dir so the proxy compiles
+      # each header with the right search paths, exporting one compile command
+      # per header into compile_commands.json for clangd/clang-tidy.
+      target_sources(${proxy_target} PRIVATE ${header_sources})
+      target_include_directories(${proxy_target} PRIVATE ${ARG_INCLUDE_DIRECTORY})
     endif()
   endif()
 endfunction()

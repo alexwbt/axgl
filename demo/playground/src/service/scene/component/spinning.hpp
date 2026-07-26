@@ -1,5 +1,8 @@
 #pragma once
 
+#include <axgl/common.hpp>
+#include <axgl/interface/entity.hpp>
+
 #include <axgl/impl/component_base.hpp>
 
 class SpinningComponent : public axgl::impl::ComponentBase

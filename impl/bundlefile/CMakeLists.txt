@@ -13,4 +13,4 @@ target_link_libraries(axgl_bundlefile_impl
 )
 
 include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
-add_header_proxy(axgl_bundlefile_impl ./axgl_bundlefile_impl.cpp)
+add_interface_proxy(axgl_bundlefile_impl ./axgl_bundlefile_impl.cpp)

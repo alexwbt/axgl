@@ -3,6 +3,8 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/entity_base.hpp>
 
+#include "debug_axes_indicator.hpp"
+
 class BunnyEntity : public axgl::impl::EntityBase
 {
   static void load_model(const axgl::Axgl* axgl, BunnyEntity* entity)

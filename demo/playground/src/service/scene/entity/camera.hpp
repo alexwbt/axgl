@@ -4,6 +4,7 @@
 #include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/entity_base.hpp>
 
+#include "../../input_manager.hpp"
 #include "debug_axes_indicator.hpp"
 
 class CameraEntity : public axgl::impl::EntityBase

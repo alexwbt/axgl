@@ -15,7 +15,8 @@ target_link_libraries(axgl
 )
 
 include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
-add_header_proxy(axgl ./axgl.cpp
+add_interface_proxy(axgl ./axgl.cpp)
+add_header_sources(axgl_proxy
   INCLUDE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include"
   UMBRELLA_HEADER axgl/axgl.hpp
 )

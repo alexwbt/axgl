@@ -21,4 +21,4 @@ target_link_libraries(bundlefile_lib
 )
 
 include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
-add_header_proxy(bundlefile_lib ./bundlefile_lib.cpp)
+add_interface_proxy(bundlefile_lib ./bundlefile_lib.cpp)

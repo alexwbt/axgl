@@ -8,4 +8,4 @@ target_include_directories(net
 )
 
 include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
-add_header_proxy(net ./net.cpp)
+add_interface_proxy(net ./net.cpp)
