@@ -192,6 +192,7 @@
     "skybox",
     "spdlog",
     "stbi",
+    "STREQUAL",
     "ubyte",
     "utfcpp"
   ]

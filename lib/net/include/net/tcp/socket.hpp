@@ -6,6 +6,10 @@
 
 #ifdef _WIN32
   #include <winsock2.h>
+  // winsock2.h transitively includes windows.h -> winuser.h, which defines the
+  // GetMessage macro (-> GetMessageA/W). Undefine it so downstream code can
+  // use flatbuffers' generated GetMessage without the preprocessor rewriting the token.
+  #undef GetMessage
 #else
   #include <arpa/inet.h>
 #endif
