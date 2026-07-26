@@ -12,5 +12,5 @@ target_link_libraries(axgl_glfw_impl
   glfw
 )
 
-include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
-add_interface_proxy(axgl_glfw_impl ./axgl_glfw_impl.cpp)
+include(${CMAKE_SOURCE_DIR}/_cmake/compile_proxy.cmake)
+add_compile_proxy(axgl_glfw_impl "${CMAKE_CURRENT_SOURCE_DIR}/include")

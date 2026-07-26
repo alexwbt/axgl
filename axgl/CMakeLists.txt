@@ -14,9 +14,5 @@ target_link_libraries(axgl
   Tracy::TracyClient
 )
 
-include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
-add_interface_proxy(axgl ./axgl.cpp)
-add_header_sources(axgl_proxy
-  INCLUDE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  UMBRELLA_HEADER axgl/axgl.hpp
-)
+include(${CMAKE_SOURCE_DIR}/_cmake/compile_proxy.cmake)
+add_compile_proxy(axgl "${CMAKE_CURRENT_SOURCE_DIR}/include")

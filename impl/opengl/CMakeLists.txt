@@ -18,5 +18,5 @@ target_link_libraries(axgl_opengl_impl
 
 embed_resource(axgl_opengl_impl res)
 
-include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
-add_interface_proxy(axgl_opengl_impl ./axgl_opengl_impl.cpp)
+include(${CMAKE_SOURCE_DIR}/_cmake/compile_proxy.cmake)
+add_compile_proxy(axgl_opengl_impl "${CMAKE_CURRENT_SOURCE_DIR}/include")

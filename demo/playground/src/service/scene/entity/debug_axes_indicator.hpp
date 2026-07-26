@@ -5,6 +5,8 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/entity_base.hpp>
 
+#include "../../input_manager.hpp"
+
 class DebugAxesIndicatorEntity : public axgl::impl::EntityBase
 {
   static axgl::ptr_t<axgl::Component> create_axis_mesh(const axgl::Axgl* axgl, const glm::vec3& axis)

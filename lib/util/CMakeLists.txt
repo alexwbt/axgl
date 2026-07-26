@@ -6,5 +6,5 @@ target_include_directories(util
   ./include
 )
 
-include(${CMAKE_SOURCE_DIR}/_cmake/header_proxy.cmake)
-add_interface_proxy(util ./util.cpp)
+include(${CMAKE_SOURCE_DIR}/_cmake/compile_proxy.cmake)
+add_compile_proxy(util "${CMAKE_CURRENT_SOURCE_DIR}/include")
