@@ -15,18 +15,18 @@ function(add_compile_proxy target include_directory)
     file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${include_directory}/*.hpp")
     list(APPEND headers ${ARG_HEADER_FILES})
 
-    set(header_sources)
+    set(source_files)
 
     foreach(header IN LISTS headers)
       file(RELATIVE_PATH header_relative "${include_directory}" "${header}")
-      set(header_source "${CMAKE_CURRENT_BINARY_DIR}/header_sources/${header_relative}.cpp")
+      set(header_source "${CMAKE_CURRENT_BINARY_DIR}/compile_proxy/${header_relative}.cpp")
       file(GENERATE OUTPUT "${header_source}"
         CONTENT "#include <${header_relative}>\n"
       )
-      list(APPEND header_sources "${header_source}")
+      list(APPEND source_files "${header_source}")
     endforeach()
 
-    add_library(${target}_proxy STATIC EXCLUDE_FROM_ALL ${header_sources})
+    add_library(${target}_proxy STATIC EXCLUDE_FROM_ALL ${source_files})
     target_include_directories(${target}_proxy PRIVATE ${include_directory})
 
     # link dependencies
