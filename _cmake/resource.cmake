@@ -1,5 +1,12 @@
 #
-# Function to embed resource files into a target
+# Embeds resource files (textures, fonts, etc.) into a target as compiled C++
+# via the `embedfile` tool. Emits a single .cpp/.hpp pair, adds the .cpp as a
+# source of `target`, and exposes the resources/ dir on the include path.
+# Re-runs only when a resource file changes.
+#
+# target     - existing target to attach the generated sources/includes to.
+# source_dir - directory (relative to CMAKE_CURRENT_SOURCE_DIR) whose files
+#              are embedded; recursion is handled by embedfile itself.
 #
 function(embed_resource target source_dir)
   set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/resources/${target})
@@ -26,7 +33,13 @@ function(embed_resource target source_dir)
 endfunction()
 
 #
-# Function to bundle resource files into a binary file
+# Bundles resource files into a single binary blob via the `bundlefile` tool.
+# Unlike embed_resource, this produces a runtime file (next to the binary)
+# rather than compiled-in data.
+#
+# target     - existing target that depends on the generated .bin.
+# source_dir - directory (relative to CMAKE_CURRENT_SOURCE_DIR) whose files
+#              are bundled; recursion is handled by bundlefile itself.
 #
 function(bundle_resource target source_dir)
   set(OUTPUT_FILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}_${source_dir}.bin)
@@ -50,7 +63,15 @@ function(bundle_resource target source_dir)
 endfunction()
 
 #
-# Function to compile flatbuffers
+# Compiles flatbuffer schemas (*.fbs) into C++ headers via `flatc --cpp`.
+# Emits one <name>_fbs.h per schema into the build dir and adds it to the
+# target's include path (INTERFACE scope for INTERFACE targets, PUBLIC
+# otherwise). Also generates a Debug-only proxy static library so
+# clangd/clang-tidy get a compile command per generated header.
+#
+# target     - existing target that uses the generated headers.
+# source_dir - directory (relative to CMAKE_CURRENT_SOURCE_DIR) holding the
+#              *.fbs files; globbed recursively.
 #
 function(compile_fbs target source_dir)
   set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers/${target})
@@ -83,18 +104,6 @@ function(compile_fbs target source_dir)
     target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers)
   endif()
 
-  #
-  # Generate proxy library
-  #
-  # flatc emits header-only *_fbs.h files with no .cpp companions, so they
-  # produce no compile commands of their own. Without a TU that includes
-  # them, clangd (and clang-tidy) cannot resolve includes or surface
-  # diagnostics on the generated headers. Emit one synthetic .cpp per
-  # *_fbs.h, add them to a Debug-only EXCLUDE_FROM_ALL static library
-  # linked to ${target} (and gated on the FBS generation), so the Debug
-  # build produces per-header compile commands in compile_commands.json
-  # without affecting the release build or linking anything.
-  #
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(PROXY_SOURCES)
 
