@@ -1,4 +1,3 @@
-
 #include <args.hxx>
 #include <spdlog/fmt/bundled/color.h>
 #include <spdlog/spdlog.h>
@@ -8,6 +7,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+// cSpell:words infacing
 #define FOR_EACH_OPTIONS(macro, arg)                                                                                   \
   macro(CalcTangentSpace, arg);                                                                                        \
   macro(JoinIdenticalVertices, arg);                                                                                   \
@@ -80,7 +80,7 @@ static void list_export_formats()
 
   const Assimp::Exporter exporter;
   const auto format_count = exporter.GetExportFormatCount();
-  for (int i = 0; i < format_count; ++i)
+  for (size_t i = 0; i < format_count; ++i)
   {
     const auto* desc = exporter.GetExportFormatDescription(i);
     SPDLOG_INFO("{:<10} | {:<50} | {:<10}", desc->id, desc->description, desc->fileExtension);
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 
   if (!source)
   {
-    SPDLOG_ERROR("Option 'source' is requried.");
+    SPDLOG_ERROR("Option 'source' is required.");
     return 1;
   }
 
