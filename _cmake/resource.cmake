@@ -60,9 +60,8 @@ function(compile_fbs target source_dir)
 
   set(OUTPUT_FILES)
   foreach(item IN LISTS FBS_FILES)
-    string(REPLACE ".fbs" "" base_name "${item}")
-    string(CONCAT new_item "${base_name}_fbs.h")
-    list(APPEND OUTPUT_FILES "${OUTPUT_DIR}/${new_item}")
+    get_filename_component(output_header "${item}" NAME_WLE)
+    list(APPEND OUTPUT_FILES "${OUTPUT_DIR}/${output_header}_fbs.h")
   endforeach()
 
   add_custom_command(
@@ -82,5 +81,37 @@ function(compile_fbs target source_dir)
     target_include_directories(${target} INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers)
   else()
     target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers)
+  endif()
+
+  #
+  # Generate proxy library
+  #
+  # flatc emits header-only *_fbs.h files with no .cpp companions, so they
+  # produce no compile commands of their own. Without a TU that includes
+  # them, clangd (and clang-tidy) cannot resolve includes or surface
+  # diagnostics on the generated headers. Emit one synthetic .cpp per
+  # *_fbs.h, add them to a Debug-only EXCLUDE_FROM_ALL static library
+  # linked to ${target} (and gated on the FBS generation), so the Debug
+  # build produces per-header compile commands in compile_commands.json
+  # without affecting the release build or linking anything.
+  #
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(PROXY_SOURCES)
+
+    foreach(output IN LISTS OUTPUT_FILES)
+      file(RELATIVE_PATH header_relative "${CMAKE_CURRENT_BINARY_DIR}/flatbuffers" "${output}")
+      set(proxy_source "${CMAKE_CURRENT_BINARY_DIR}/flatbuffer_sources/${header_relative}.cpp")
+      file(GENERATE OUTPUT "${proxy_source}"
+        CONTENT "#include <${header_relative}>\n"
+      )
+      list(APPEND PROXY_SOURCES "${proxy_source}")
+    endforeach()
+
+    if(PROXY_SOURCES)
+      add_library(${target}_fbs_proxy STATIC EXCLUDE_FROM_ALL ${PROXY_SOURCES})
+      target_include_directories(${target}_fbs_proxy PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers)
+      target_link_libraries(${target}_fbs_proxy PRIVATE flatbuffers)
+      add_dependencies(${target}_fbs_proxy ${FBS_TARGET})
+    endif()
   endif()
 endfunction()

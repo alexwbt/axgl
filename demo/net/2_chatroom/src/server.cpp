@@ -4,8 +4,6 @@
 #include <net/tcp/server.hpp>
 #include <net/tcp/socket.hpp>
 
-#include <demo_net_chatroom_fbs/message_fbs.h>
-
 #include "fbs/message.hpp"
 
 class Server final : public net::TcpServer

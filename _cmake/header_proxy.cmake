@@ -35,11 +35,17 @@ function(add_header_proxy target source)
       file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${ARG_INCLUDE_DIRECTORY}/*.hpp")
       set(header_sources)
 
+      if(ARG_UMBRELLA_HEADER)
+        set(umbrella_header_line "#include <${ARG_UMBRELLA_HEADER}>\n")
+      else()
+        set(umbrella_header_line "")
+      endif()
+
       foreach(header IN LISTS headers)
         file(RELATIVE_PATH header_relative "${ARG_INCLUDE_DIRECTORY}" "${header}")
         set(header_source "${CMAKE_CURRENT_BINARY_DIR}/header_sources/${header_relative}.cpp")
         file(GENERATE OUTPUT "${header_source}"
-          CONTENT "#include <${ARG_UMBRELLA_HEADER}>\n#include <${header_relative}>\n"
+          CONTENT "${umbrella_header_line}\n#include <${header_relative}>\n"
         )
         list(APPEND header_sources "${header_source}")
       endforeach()

@@ -3,6 +3,7 @@
 #include <demo_net_chatroom_fbs/message_fbs.h>
 
 #include <net/common.hpp>
+#include <net/tcp/socket.hpp>
 
 inline net::data_ptr_t build_message(const std::string& sender, const std::string& content)
 {
