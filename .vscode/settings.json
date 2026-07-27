@@ -155,6 +155,14 @@
     "valarray": "cpp",
     "__memory": "cpp"
   },
+  "cSpell.ignorePaths": [
+    ".git",
+    ".vscode",
+    "_log",
+    "_build",
+    "_external",
+    "lib/glad"
+  ],
   "cSpell.words": [
     "ARGN",
     "asio",
@@ -162,6 +170,7 @@
     "ASSIMP",
     "axgl",
     "bitangent",
+    "bitangents",
     "BNDL",
     "bundlefile",
     "cpptrace",
@@ -196,5 +205,21 @@
     "STREQUAL",
     "ubyte",
     "utfcpp"
+  ],
+  "cSpell.overrides": [
+    {
+      "filename": ".clangd",
+      "words": [
+        "Wextra",
+        "dllexport",
+        "fvisibility"
+      ]
+    },
+    {
+      "filename": "lib/assbin/assbin.cpp",
+      "words": [
+        "infacing"
+      ]
+    }
   ]
 }

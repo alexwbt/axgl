@@ -1,11 +1,6 @@
 #
-# Adds a static library that compiles every .hpp
-# under INCLUDE_DIRECTORY (plus optional HEADER_FILES) so clangd/clang-tidy
-# get a compile command per header.
-#
-# target            - target the proxy mirrors.
-# include_directory - *.hpp glob root and relative-path base for generated cpp files.
-# HEADER_FILES      - extra headers outside INCLUDE_DIRECTORY.
+# Adds a static library that compiles every .hpp under INCLUDE_DIRECTORY (plus optional HEADER_FILES)
+# so clangd/clang-tidy get a compile command per header.
 #
 function(add_compile_proxy target include_directory)
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -18,10 +13,12 @@ function(add_compile_proxy target include_directory)
     set(source_files)
 
     foreach(header IN LISTS headers)
-      file(RELATIVE_PATH header_relative "${include_directory}" "${header}")
-      set(header_source "${CMAKE_CURRENT_BINARY_DIR}/compile_proxy/${header_relative}.cpp")
+      file(RELATIVE_PATH header_relative_path "${include_directory}" "${header}")
+      get_filename_component(header_dir "${header_relative_path}" DIRECTORY)
+      get_filename_component(header_name "${header_relative_path}" NAME_WE)
+      set(header_source "${CMAKE_CURRENT_BINARY_DIR}/compile_proxy/${header_dir}/${header_name}.cpp")
       file(GENERATE OUTPUT "${header_source}"
-        CONTENT "#include <${header_relative}>\n"
+        CONTENT "#include <${header_relative_path}>\n"
       )
       list(APPEND source_files "${header_source}")
     endforeach()
@@ -39,6 +36,7 @@ function(add_compile_proxy target include_directory)
       # copy dependencies otherwise
       get_target_property(target_source_libs ${target} LINK_LIBRARIES)
       get_target_property(target_interface_libs ${target} INTERFACE_LINK_LIBRARIES)
+      get_target_property(target_include_dirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
 
       if(target_source_libs)
         target_link_libraries(${target}_proxy PRIVATE ${target_source_libs})
@@ -46,6 +44,10 @@ function(add_compile_proxy target include_directory)
 
       if(target_interface_libs)
         target_link_libraries(${target}_proxy PRIVATE ${target_interface_libs})
+      endif()
+
+      if(target_include_dirs)
+        target_include_directories(${target}_proxy PRIVATE ${target_include_dirs})
       endif()
     endif()
   endif()

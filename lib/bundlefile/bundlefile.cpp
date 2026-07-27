@@ -26,7 +26,6 @@ static std::string entry_to_string(const std::filesystem::path& path)
 static std::vector<File> read_directory(const std::string& source)
 {
   std::vector<File> files;
-  std::hash<std::string> to_hash;
   for (const auto& entry : std::filesystem::recursive_directory_iterator(source))
   {
     if (!std::filesystem::is_directory(entry.path()))

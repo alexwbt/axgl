@@ -47,11 +47,13 @@ public:
   void set_tiling(glm::vec2 tiling) override { uv_scale_ = tiling; }
   void set_offset(glm::vec2 offset) override { uv_offset_ = offset; }
   void set_depth_scale(float depth_scale) override { height_scale_ = depth_scale; }
-  void set_property(const std::string& key, const std::string& value) override
+  void set_property([[maybe_unused]] const std::string& key, [[maybe_unused]] const std::string& value) override
   {
     AXGL_LOG_DEBUG("Properties are not supported.");
   }
-  void add_texture(const axgl::Material::TextureType type, const axgl::ptr_t<axgl::Texture> texture) override
+  void add_texture(
+    [[maybe_unused]] const axgl::Material::TextureType type,
+    [[maybe_unused]] const axgl::ptr_t<axgl::Texture> texture) override
   {
     AXGL_LOG_DEBUG("Textures are not supported.");
   }
@@ -66,8 +68,8 @@ public:
   [[nodiscard]] glm::vec2 get_tiling() const override { return uv_scale_; }
   [[nodiscard]] glm::vec2 get_offset() const override { return uv_offset_; }
   [[nodiscard]] float get_depth_scale() const override { return height_scale_; }
-  [[nodiscard]] std::string get_property(const std::string& key) const override { return {}; }
-  [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture(axgl::Material::TextureType type) const override
+  [[nodiscard]] std::string get_property([[maybe_unused]] const std::string& key) const override { return {}; }
+  [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture([[maybe_unused]] axgl::Material::TextureType type) const override
   {
     return nullptr;
   }
@@ -87,7 +89,7 @@ public:
     }
   }
 
-  virtual void use(const impl::opengl::renderer::RenderContext& context)
+  virtual void use([[maybe_unused]] const impl::opengl::renderer::RenderContext& context)
   {
     if (enable_depth_test_)
     {

@@ -7,7 +7,6 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-// cSpell:words infacing
 #define FOR_EACH_OPTIONS(macro, arg)                                                                                   \
   macro(CalcTangentSpace, arg);                                                                                        \
   macro(JoinIdenticalVertices, arg);                                                                                   \

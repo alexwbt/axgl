@@ -94,7 +94,7 @@ function(compile_fbs target source_dir)
     target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers)
   endif()
 
-  if (ARG_OUTPUT_FILES_OUT)
+  if(ARG_OUTPUT_FILES_OUT)
     set(${ARG_OUTPUT_FILES_OUT} ${OUTPUT_FILES} PARENT_SCOPE)
   endif()
 endfunction()

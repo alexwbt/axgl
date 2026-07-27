@@ -211,7 +211,7 @@ public:
     }
   }
 
-  std::uint64_t get_id() override { return ComponentBase::get_id(); }
+  [[nodiscard]] std::uint64_t get_id() const override { return ComponentBase::get_id(); }
 
 private:
   void create_vao()

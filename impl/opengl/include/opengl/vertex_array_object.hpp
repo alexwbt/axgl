@@ -81,7 +81,7 @@ public:
     bind();
     auto buffer = std::make_unique<BufferObject>(GL_ARRAY_BUFFER);
     buffer->set_data(data, GL_STATIC_DRAW);
-    for (int i = 0; i < attributes.size(); i++)
+    for (size_t i = 0; i < attributes.size(); i++)
     {
       const auto index = attributes_offset + i;
       const auto& [size, type, normalized, stride, pointer] = attributes[i];
