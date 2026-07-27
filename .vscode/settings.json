@@ -186,6 +186,7 @@
     "ftxui",
     "gameloop",
     "glfw",
+    "imgui",
     "inout",
     "Lsizei",
     "MESG",
@@ -216,9 +217,33 @@
       ]
     },
     {
+      "filename": "_scripts/format.sh",
+      "words": [
+        "regextype"
+      ]
+    },
+    {
       "filename": "lib/assbin/assbin.cpp",
       "words": [
         "infacing"
+      ]
+    },
+    {
+      "filename": "AGENTS.md",
+      "words": [
+        "Allman",
+        "Wextra",
+        "DAXGL",
+        "MSVC",
+        "mswsock",
+        "bugprone",
+        "Codegen"
+      ]
+    },
+    {
+      "filename": "CMakePresets.json",
+      "words": [
+        "UNITTESTS"
       ]
     }
   ]

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <axgl/common.hpp>
+#include <axgl/interface/entity.hpp>
 #include <axgl/interface/light.hpp>
 
 #include <axgl/impl/component_base.hpp>

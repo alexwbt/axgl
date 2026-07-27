@@ -6,6 +6,7 @@
 #include <axgl/interface/services/camera_service.hpp>
 #include <axgl/interface/services/input_service.hpp>
 
+#include <axgl/axgl.hpp>
 #include <axgl/impl/components/camera.hpp>
 #include <axgl/impl/service_base.hpp>
 

@@ -11,19 +11,21 @@
 #include <glm/glm.hpp>
 #include <spdlog/spdlog.h>
 
+#include <axgl/common.hpp>
+
 namespace glfw
 {
 
 struct EventListener
 {
   virtual ~EventListener() = default;
-  virtual void on_key_down(int key) { }
-  virtual void on_key_up(int key) { }
-  virtual void on_mouse_down(int button) { }
-  virtual void on_mouse_up(int button) { }
-  virtual void on_mouse_move(double x, double y) { }
-  virtual void on_scroll(double x, double y) { }
-  virtual void on_resize(int width, int height) { }
+  virtual void on_key_down([[maybe_unused]] int key) { }
+  virtual void on_key_up([[maybe_unused]] int key) { }
+  virtual void on_mouse_down([[maybe_unused]] int button) { }
+  virtual void on_mouse_up([[maybe_unused]] int button) { }
+  virtual void on_mouse_move([[maybe_unused]] double x, [[maybe_unused]] double y) { }
+  virtual void on_scroll([[maybe_unused]] double x, [[maybe_unused]] double y) { }
+  virtual void on_resize([[maybe_unused]] int width, [[maybe_unused]] int height) { }
 };
 
 class Window final
@@ -111,7 +113,8 @@ private:
     AXGL_LOG_ERROR("GLFW Error {}: {}", error, description);
   }
 
-  static void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
+  static void key_callback(
+    GLFWwindow* glfw_window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods)
   {
     const auto listener = get_window_event_listener(glfw_window);
     if (!listener) return;
@@ -138,7 +141,7 @@ private:
     if (const auto listener = get_window_event_listener(glfw_window)) listener->on_scroll(x, y);
   }
 
-  static void mouse_button_callback(GLFWwindow* glfw_window, int button, int action, int mods)
+  static void mouse_button_callback(GLFWwindow* glfw_window, int button, int action, [[maybe_unused]] int mods)
   {
     const auto listener = get_window_event_listener(glfw_window);
     if (!listener) return;
