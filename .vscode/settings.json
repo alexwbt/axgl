@@ -10,6 +10,18 @@
   "C_Cpp.default.cppStandard": "c++20",
   "C_Cpp.clang_format_style": "file",
   "vscode_custom_css.imports": ["file:///${workspaceFolder}/.vscode/style.css"],
+  "[json][jsonc][yaml][css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[cmake]": {
+    "editor.defaultFormatter": "josetr.cmake-language-support-vscode"
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "[cpp][hpp]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
   "webgl-glsl-editor.format.placeBracesOnSeparateLine": true,
   "webgl-glsl-editor.format.placeSpacesAroundBinaryOperators": true,
   "webgl-glsl-editor.format.placeSpacesAroundAssignmentOperators": true,
@@ -200,7 +212,6 @@
     "Infacing",
     "inout",
     "Lightmap",
-    "MESG",
     "Metalness",
     "msaa",
     "MSVC",
@@ -231,7 +242,11 @@
     },
     {
       "filename": "**/*.fbs",
-      "words": ["BNDL"]
+      "words": ["BNDL", "MESG"]
+    },
+    {
+      "filename": "**/*.{fs,vs}",
+      "words": ["ivec", "texel", "isinf"]
     }
   ]
 }

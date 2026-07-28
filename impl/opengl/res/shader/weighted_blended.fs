@@ -1,7 +1,7 @@
 #version 410 core
 
-uniform sampler2D accum;
-uniform sampler2D reveal;
+uniform sampler2D accumulation_texture;
+uniform sampler2D reveal_texture;
 
 out vec4 frag_color;
 
@@ -25,15 +25,15 @@ void main()
   // fragment coordination
   ivec2 coords = ivec2(gl_FragCoord.xy);
 
-  // fragment revealage
-  float revealage = texelFetch(reveal, coords, 0).r;
+  // fragment reveal
+  float reveal_value = texelFetch(reveal_texture, coords, 0).r;
 
   // save the blending and color texture fetch cost if there is not a transparent fragment
-  if (approximate_equal(revealage, 1.0f))
+  if (approximate_equal(reveal_value, 1.0f))
     discard;
 
   // fragment color
-  vec4 accumulation = texelFetch(accum, coords, 0);
+  vec4 accumulation = texelFetch(accumulation_texture, coords, 0);
 
   // suppress overflow
   if (isinf(max3(abs(accumulation.rgb))))
@@ -43,5 +43,5 @@ void main()
   vec3 average_color = accumulation.rgb / max(accumulation.a, EPSILON);
 
   // blend pixels
-  frag_color = vec4(average_color, 1.0f - revealage);
+  frag_color = vec4(average_color, 1.0f - reveal_value);
 }

@@ -35,7 +35,7 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   GLsizei sample_count_ = 4;
 
   std::unique_ptr<::opengl::Texture> multisample_texture_;
-  std::unique_ptr<::opengl::Renderbuffer> multisample_renderbuffer_;
+  std::unique_ptr<::opengl::Renderbuffer> multisample_depth_stencil_;
   std::unique_ptr<::opengl::Framebuffer> multisample_framebuffer_;
 
   std::unique_ptr<::opengl::Texture> screen_texture_;
@@ -143,12 +143,12 @@ public:
         multisample_texture_->init_multisample_texture(sample_count_, GL_RGBA16F, viewport_i.x, viewport_i.y, GL_TRUE);
         multisample_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         multisample_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        multisample_renderbuffer_ = std::make_unique<::opengl::Renderbuffer>();
-        multisample_renderbuffer_->init_multisample_renderbuffer(
+        multisample_depth_stencil_ = std::make_unique<::opengl::Renderbuffer>();
+        multisample_depth_stencil_->init_multisample_renderbuffer(
           sample_count_, GL_DEPTH24_STENCIL8, viewport_i.x, viewport_i.y);
         multisample_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
         multisample_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *multisample_texture_);
-        multisample_framebuffer_->attach_renderbuffer(GL_DEPTH_STENCIL_ATTACHMENT, *multisample_renderbuffer_);
+        multisample_framebuffer_->attach_renderbuffer(GL_DEPTH_STENCIL_ATTACHMENT, *multisample_depth_stencil_);
         multisample_framebuffer_->check_status_complete("renderer_multisample_framebuffer");
       }
 
@@ -162,7 +162,7 @@ public:
       screen_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       depth_texture_ = std::make_unique<::opengl::Texture>();
       depth_texture_->load_texture(
-        0, GL_DEPTH_COMPONENT, viewport_i.x, viewport_i.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        0, GL_DEPTH_COMPONENT24, viewport_i.x, viewport_i.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
       screen_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
       screen_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *screen_texture_);
       screen_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
@@ -183,6 +183,7 @@ public:
       blend_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
       blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *accum_texture_);
       blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
+      blend_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
       blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
       blend_framebuffer_->check_status_complete("renderer_blend_framebuffer");
     }
@@ -284,7 +285,7 @@ public:
 
       //
       // Resolve MSAA -> non-MSAA so the transparent pass and composite can
-      // sample the opaque color and share the resolved depth buffer.
+      // sample the opaque color and depth-test against the resolved depth.
       //
       if (msaa_)
       {
@@ -292,21 +293,23 @@ public:
         multisample_framebuffer_->use_read();
         screen_framebuffer_->use_write();
         glBlitFramebuffer(
-          0, 0, viewport_i.x, viewport_i.y, //
-          0, 0, viewport_i.x, viewport_i.y, //
-          GL_COLOR_BUFFER_BIT, GL_NEAREST   //
+          0, 0, viewport_i.x, viewport_i.y,                     //
+          0, 0, viewport_i.x, viewport_i.y,                     //
+          GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST //
         );
       }
 
       //
       // Transparent Render Pass (always non-MSAA): weighted blended OIT.
-      // Reads the resolved depth for depth-testing; writes accum + reveal.
+      // Depth-tests against the resolved opaque depth (read-only) so fully
+      // occluded transparent fragments are discarded; writes accum + reveal.
       //
       if (!pipeline_context.blend_pass.empty())
       {
         glDisable(GL_BLEND);
         glDepthMask(GL_FALSE);
-        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
 
         blend_framebuffer_->use();
         glClearBufferfv(GL_COLOR, 0, &zero_filler_[0]);
@@ -339,8 +342,8 @@ public:
         accum_texture_->use(GL_TEXTURE0);
         reveal_texture_->use(GL_TEXTURE1);
         blend_shader.use_program();
-        blend_shader.set_int("accum", 0);
-        blend_shader.set_int("reveal", 1);
+        blend_shader.set_int("accumulation_texture", 0);
+        blend_shader.set_int("reveal_texture", 1);
         quad_vao.draw();
       }
     }

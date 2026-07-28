@@ -110,7 +110,7 @@ vec2 calc_height_offset(Context ctx)
   {
     // shift texture coordinates along direction of P
     current_uv -= delta_uv;
-    // get depthmap value at current texture coordinates
+    // get depth map value at current texture coordinates
     current_height_map_value = texture(height_texture, current_uv).r;
     // get depth of next layer
     current_layer_depth += layer_depth;
@@ -266,11 +266,11 @@ void main()
   for (int i = 0; i < point_lights_size; ++i)
     result += calc_point_light(ctx, point_lights[i]);
 
-  // weight function for blending (McGuire & Bavoil 2013)
+  // weight function for blending
   float weight = transparent
     ? clamp(pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0), 1e-2, 3e3)
     : 1.0f;
-  // premultiply color by alpha so the composite can recover the weighted average
+  // pre-multiply color by alpha so the composite recovers the weighted average
   frag_color = vec4(result * mesh_color.a, mesh_color.a) * weight;
   reveal = mesh_color.a;
 }
