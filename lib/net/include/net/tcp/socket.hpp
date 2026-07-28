@@ -29,7 +29,7 @@ public:
   asio::awaitable<void> write_buffer(const data_ptr_t buffer) override
   {
     // prepend size
-    const std::uint32_t size = htonl(static_cast<std::uint32_t>(buffer->size()));
+    const std::uint32_t size = htonl(util::narrow<std::uint32_t>(buffer->size()));
     const std::array buffers = {
       asio::buffer(&size, kLengthPrefixSize),
       asio::buffer(buffer->data(), buffer->size()),

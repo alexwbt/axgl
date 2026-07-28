@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <unordered_map>
 
+#include <util/numcast.hpp>
+
 #include <ft2build.h>
 #include <utf8.h>
 #include FT_FREETYPE_H
@@ -47,15 +49,15 @@ class Character final
   glm::ivec2 offset{0};
   glm::ivec2 advance{0};
 
-  void load(FT_Face face, bool vertical)
+  void load(FT_Face face, [[maybe_unused]] bool vertical)
   {
     const auto& glyph = face->glyph;
     const auto& bitmap = glyph->bitmap;
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     texture.load_texture(
-      0, GL_RED, static_cast<GLsizei>(bitmap.width), static_cast<GLsizei>(bitmap.rows), 0, GL_RED, GL_UNSIGNED_BYTE,
-      bitmap.buffer);
+      0, GL_RED, util::clamp_cast<GLsizei>(bitmap.width), util::clamp_cast<GLsizei>(bitmap.rows), 0, GL_RED,
+      GL_UNSIGNED_BYTE, bitmap.buffer);
     texture.set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     texture.set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -85,7 +87,7 @@ public:
 
   Font(FT_Library library, const std::span<const uint8_t> buffer, const int index)
   {
-    if (FT_New_Memory_Face(library, buffer.data(), static_cast<FT_Long>(buffer.size()), index, &face_))
+    if (FT_New_Memory_Face(library, buffer.data(), util::narrow<FT_Long>(buffer.size()), index, &face_))
       throw std::runtime_error("Failed to load font face from memory.");
   }
 
@@ -185,7 +187,8 @@ public:
 
   [[nodiscard]] int get_renderable_font(const std::vector<std::string>& font, std::uint32_t c) const
   {
-    for (int i = 0; i < font.size(); ++i)
+    const int size = util::clamp_cast<int>(font.size());
+    for (int i = 0; i < size; ++i)
       if (has_font(font[i]) && fonts_.at(font[i])->has_char(c)) return i;
     return -1;
   }

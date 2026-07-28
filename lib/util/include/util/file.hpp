@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include <util/numcast.hpp>
+
 namespace util
 {
 
@@ -30,7 +32,7 @@ inline std::vector<uint8_t> read_file(const std::string& path)
   file.seekg(0, std::ios::beg);
 
   std::vector<uint8_t> buffer(size);
-  file.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(size));
+  file.read(reinterpret_cast<char*>(buffer.data()), util::clamp_cast<std::streamsize>(size));
 
   return buffer;
 }

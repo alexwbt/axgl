@@ -10,6 +10,8 @@
 
 #include <asio.hpp>
 
+#include <util/numcast.hpp>
+
 namespace net
 {
 

@@ -6,15 +6,10 @@
   "editor.formatOnSave": false,
   "editor.inlayHints.enabled": "offUnlessPressed",
   "cmake.useCMakePresets": "always",
-  "cmake.exclude": [
-    "_build/**",
-    "_external/**"
-  ],
+  "cmake.exclude": ["_build/**", "_external/**"],
   "C_Cpp.default.cppStandard": "c++20",
   "C_Cpp.clang_format_style": "file",
-  "vscode_custom_css.imports": [
-    "file:///${workspaceFolder}/.vscode/style.css"
-  ],
+  "vscode_custom_css.imports": ["file:///${workspaceFolder}/.vscode/style.css"],
   "webgl-glsl-editor.format.placeBracesOnSeparateLine": true,
   "webgl-glsl-editor.format.placeSpacesAroundBinaryOperators": true,
   "webgl-glsl-editor.format.placeSpacesAroundAssignmentOperators": true,
@@ -158,6 +153,13 @@
     "valarray": "cpp",
     "__memory": "cpp"
   },
+  "cSpell.ignoreRegExpList": [
+    "\\bgl[A-Z][a-zA-Z0-9]*\\b",
+    "\\bGL_[A-Z0-9_]+\\b",
+    "\\bglfw[A-Z][a-zA-Z0-9]*\\b",
+    "\\bGLFW_[A-Z0-9_]+\\b",
+    "[^a-zA-Z0-9]-[D|W|f][a-zA-Z0-9-]*"
+  ],
   "cSpell.ignorePaths": [
     ".git",
     ".vscode",
@@ -167,15 +169,17 @@
     "lib/glad"
   ],
   "cSpell.words": [
-    "ARGN",
+    "Allman",
     "asio",
     "assbin",
     "ASSIMP",
     "axgl",
     "bitangent",
     "bitangents",
-    "BNDL",
+    "bugprone",
     "bundlefile",
+    "Clearcoat",
+    "Codegen",
     "cpptrace",
     "cubemap",
     "embedfile",
@@ -184,70 +188,48 @@
     "flatbuffer",
     "flatbuffers",
     "flatc",
+    "fontface",
     "Framebuffer",
     "freetype",
     "ftxui",
     "gameloop",
     "glfw",
     "imgui",
+    "Infacing",
     "inout",
-    "Lsizei",
+    "Lightmap",
     "MESG",
+    "Metalness",
     "msaa",
+    "MSVC",
+    "mswsock",
     "MULTISAMPLE",
     "opengl",
-    "Parameteri",
+    "orthogonalize",
     "Perlin",
     "Phong",
-    "Programiv",
     "Renderable",
     "renderbuffer",
     "Shaderiv",
     "skybox",
     "spdlog",
     "stbi",
-    "STREQUAL",
     "ubyte",
+    "Unrenderable",
     "utfcpp"
   ],
   "cSpell.overrides": [
     {
-      "filename": ".clangd",
-      "words": [
-        "Wextra",
-        "dllexport",
-        "fvisibility"
-      ]
-    },
-    {
       "filename": "_scripts/format.sh",
-      "words": [
-        "regextype"
-      ]
+      "words": ["regextype"]
     },
     {
-      "filename": "lib/assbin/assbin.cpp",
-      "words": [
-        "infacing"
-      ]
+      "filename": "**/{CMakePresets.json,CMakeLists.txt,*.cmake}",
+      "words": ["ARGN", "STREQUAL", "UNITTESTS"]
     },
     {
-      "filename": "AGENTS.md",
-      "words": [
-        "Allman",
-        "Wextra",
-        "DAXGL",
-        "MSVC",
-        "mswsock",
-        "bugprone",
-        "Codegen"
-      ]
-    },
-    {
-      "filename": "CMakePresets.json",
-      "words": [
-        "UNITTESTS"
-      ]
+      "filename": "**/*.fbs",
+      "words": ["BNDL"]
     }
   ]
 }

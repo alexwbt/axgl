@@ -140,7 +140,7 @@ private:
     const GLuint id = glCreateShader(shader.type);
 
     const GLchar* code = shader.source_code.data();
-    const auto size = static_cast<GLint>(shader.source_code.size());
+    const auto size = util::narrow<GLint>(shader.source_code.size());
     glShaderSource(id, 1, &code, &size);
 
     glCompileShader(id);

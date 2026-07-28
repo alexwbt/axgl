@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/numcast.hpp"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -184,7 +185,7 @@ public:
     }
     else vao_->update_buffer_data<glm::mat4>(instanced_models_buffer_id_, instanced_models_);
 
-    const auto instance_count = static_cast<GLsizei>(instanced_models_.size());
+    const auto instance_count = util::clamp_cast<GLsizei>(instanced_models_.size());
     instanced_models_.clear();
 
     const auto render_function = [this, instance_count](const axgl::impl::opengl::renderer::RenderContext& c)

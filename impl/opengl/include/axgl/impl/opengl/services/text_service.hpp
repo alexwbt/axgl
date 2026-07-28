@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/numcast.hpp"
 #include <cstdint>
 #include <memory>
 
@@ -50,7 +51,7 @@ public:
     text_renderer_.render_text(
       text, options.value, options.fonts,
       {
-        .size = static_cast<std::uint32_t>(options.font_size),
+        .size = util::clamp_cast<std::uint32_t>(options.font_size),
         .color = options.font_color,
         .vertical = options.vertical,
       });

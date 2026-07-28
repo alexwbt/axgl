@@ -6,7 +6,7 @@
   #include <axgl/impl/opengl.hpp>
 #endif
 
-static void circle_mesh(const std::shared_ptr<axgl::component::Mesh>& mesh, const std::size_t vert_count)
+static void circle_mesh(const std::shared_ptr<axgl::component::Mesh>& mesh, const std::uint32_t vert_count)
 {
   std::vector<glm::vec2> vertices;
   std::vector<std::uint32_t> indices;
@@ -15,7 +15,7 @@ static void circle_mesh(const std::shared_ptr<axgl::component::Mesh>& mesh, cons
   indices.reserve(vert_count * 3);
 
   const float delta = static_cast<float>(2 * std::numbers::pi) / static_cast<float>(vert_count);
-  for (int i = 0; i < vert_count; ++i)
+  for (std::uint32_t i = 0; i < vert_count; ++i)
   {
     const auto r = static_cast<float>(i) * delta;
     vertices.emplace_back(sin(r), cos(r));

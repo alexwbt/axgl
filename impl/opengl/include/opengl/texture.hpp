@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/numcast.hpp"
 #include <array>
 #include <span>
 
@@ -21,7 +22,7 @@ public:
   explicit StbiImage(const std::span<const std::uint8_t>& data)
   {
     int nrChannels;
-    stbi_ptr = stbi_load_from_memory(data.data(), static_cast<int>(data.size()), &width, &height, &nrChannels, 0);
+    stbi_ptr = stbi_load_from_memory(data.data(), util::narrow<int>(data.size()), &width, &height, &nrChannels, 0);
 
     switch (nrChannels)
     {

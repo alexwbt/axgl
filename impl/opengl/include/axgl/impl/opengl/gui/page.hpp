@@ -32,7 +32,8 @@ public:
 
     const auto opengl_texture = texture_->get_texture();
     opengl_texture->load_texture(
-      0, GL_RGBA, static_cast<GLsizei>(width_), static_cast<GLsizei>(height_), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+      0, GL_RGBA, util::clamp_cast<GLsizei>(width_), util::clamp_cast<GLsizei>(height_), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+      nullptr);
     opengl_texture->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     opengl_texture->set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     opengl_texture->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -49,8 +50,8 @@ public:
     axgl::impl::gui::PageBase::render();
 
     framebuffer_->use();
-    const auto width = static_cast<GLsizei>(width_);
-    const auto height = static_cast<GLsizei>(height_);
+    const auto width = util::clamp_cast<GLsizei>(width_);
+    const auto height = util::clamp_cast<GLsizei>(height_);
     glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);

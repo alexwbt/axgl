@@ -63,7 +63,7 @@ class ModelLoader
     if (ai_scene->HasTextures())
     {
       embedded_textures_.resize(ai_scene->mNumTextures);
-      for (int i = 0; i < ai_scene->mNumTextures; ++i)
+      for (unsigned int i = 0; i < ai_scene->mNumTextures; ++i)
       {
         embedded_textures_[i] = renderer_service_->create_texture();
         embedded_textures_[i]->load_texture(
@@ -77,14 +77,14 @@ class ModelLoader
 
   void process_node(const aiNode* ai_node, const aiScene* ai_scene)
   {
-    for (int i = 0; i < ai_node->mNumMeshes; ++i)
+    for (unsigned int i = 0; i < ai_node->mNumMeshes; ++i)
     {
       const aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
       load_mesh(ai_mesh, ai_scene);
     }
 
     // add children node mesh
-    for (int i = 0; i < ai_node->mNumChildren; ++i)
+    for (unsigned int i = 0; i < ai_node->mNumChildren; ++i)
       process_node(ai_node->mChildren[i], ai_scene);
   }
 
@@ -95,7 +95,7 @@ class ModelLoader
 
     std::vector<glm::vec3> vertices;
     vertices.reserve(ai_mesh->mNumVertices);
-    for (int i = 0; i < ai_mesh->mNumVertices; ++i)
+    for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
       vertices.emplace_back(ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z);
     mesh->set_vertices(vertices);
 
@@ -103,7 +103,7 @@ class ModelLoader
     {
       std::vector<glm::vec3> normals;
       normals.reserve(ai_mesh->mNumVertices);
-      for (int i = 0; i < ai_mesh->mNumVertices; ++i)
+      for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
         normals.emplace_back(ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z);
       mesh->set_normals(normals);
     }
@@ -114,7 +114,7 @@ class ModelLoader
       std::vector<glm::vec3> bitangents;
       tangents.reserve(ai_mesh->mNumVertices);
       bitangents.reserve(ai_mesh->mNumVertices);
-      for (int i = 0; i < ai_mesh->mNumVertices; ++i)
+      for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
       {
         tangents.emplace_back(ai_mesh->mTangents[i].x, ai_mesh->mTangents[i].y, ai_mesh->mTangents[i].z);
         bitangents.emplace_back(ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y, ai_mesh->mBitangents[i].z);
@@ -127,7 +127,7 @@ class ModelLoader
     {
       std::vector<glm::vec2> uv;
       uv.reserve(ai_mesh->mNumVertices);
-      for (int i = 0; i < ai_mesh->mNumVertices; ++i)
+      for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
         uv.emplace_back(ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y);
       mesh->set_uv(uv);
     }
@@ -135,8 +135,8 @@ class ModelLoader
     if (ai_mesh->HasFaces())
     {
       std::vector<uint32_t> indices;
-      for (int i = 0; i < ai_mesh->mNumFaces; ++i)
-        for (int j = 0; j < ai_mesh->mFaces[i].mNumIndices; ++j)
+      for (unsigned int i = 0; i < ai_mesh->mNumFaces; ++i)
+        for (unsigned int j = 0; j < ai_mesh->mFaces[i].mNumIndices; ++j)
           indices.push_back(ai_mesh->mFaces[i].mIndices[j]);
       mesh->set_indices(indices);
     }
@@ -164,17 +164,17 @@ class ModelLoader
     const axgl::ptr_t<axgl::Material>& material,
     const axgl::Material::TextureType texture_type)
   {
-    const auto count = ai_material->GetTextureCount(ai_texture_type);
-    for (int i = 0; i < count; ++i)
+    const unsigned int count = ai_material->GetTextureCount(ai_texture_type);
+    for (unsigned int i = 0; i < count; ++i)
     {
       aiString texture_path;
       ai_material->GetTexture(ai_texture_type, i, &texture_path);
 
       if (*texture_path.C_Str() == '*')
       {
-        const int index = util::string_to_int(texture_path.C_Str() + 1);
+        const auto index = util::narrow<std::size_t>(util::string_to_long(texture_path.C_Str() + 1));
 #ifdef AXGL_DEBUG
-        if (index < 0 || index > embedded_textures_.size()) throw std::runtime_error("Invalid texture path.");
+        if (index > embedded_textures_.size()) throw std::runtime_error("Invalid texture path.");
 #endif
         material->add_texture(texture_type, embedded_textures_[index]);
       }

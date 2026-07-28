@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/numcast.hpp"
 #include <memory>
 
 #include <glad/glad.h>
@@ -71,10 +72,10 @@ public:
       AXGL_LOG_WARN("GL_MAX_SAMPLES: {}", max_samples);
       sample_count_ = max_samples;
     }
-    else sample_count_ = static_cast<GLsizei>(sample_count);
+    else sample_count_ = util::clamp_cast<GLsizei>(sample_count);
   }
 
-  void set_shadow_map_size(std::uint32_t size) override { shadow_map_size_ = static_cast<GLsizei>(size); }
+  void set_shadow_map_size(std::uint32_t size) override { shadow_map_size_ = util::clamp_cast<GLsizei>(size); }
 
   void set_window(axgl::ptr_t<axgl::Window> window) override
   {
@@ -170,12 +171,12 @@ public:
       //
       // accum_texture_ = std::make_unique<::opengl::Texture>();
       // accum_texture_->load_texture(0, GL_RGBA16F, viewport_i.x, viewport_i.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
-      // accum_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      // accum_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      // accum_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      // accum_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       // reveal_texture_ = std::make_unique<::opengl::Texture>();
       // reveal_texture_->load_texture(0, GL_R8, viewport_i.x, viewport_i.y, 0, GL_RED, GL_FLOAT, nullptr);
-      // reveal_texture_->set_parameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      // reveal_texture_->set_parameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      // reveal_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      // reveal_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       // blend_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
       // blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *accum_texture_);
       // blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
@@ -330,10 +331,10 @@ public:
         case gui::CursorType::kText: glfw_window->use_standard_cursor(GLFW_IBEAM_CURSOR); break;
         case gui::CursorType::kPointer: glfw_window->use_standard_cursor(GLFW_POINTING_HAND_CURSOR); break;
         case gui::CursorType::kCrosshair: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
-        case gui::CursorType::kResizeNS: glfw_window->use_standard_cursor(GLFW_RESIZE_NS_CURSOR); break;
-        case gui::CursorType::kResizeEW: glfw_window->use_standard_cursor(GLFW_RESIZE_EW_CURSOR); break;
-        case gui::CursorType::kResizeNESW: glfw_window->use_standard_cursor(GLFW_RESIZE_NESW_CURSOR); break;
-        case gui::CursorType::kResizeNWSE: glfw_window->use_standard_cursor(GLFW_RESIZE_NWSE_CURSOR); break;
+        case gui::CursorType::kResizeVertical: glfw_window->use_standard_cursor(GLFW_RESIZE_NS_CURSOR); break;
+        case gui::CursorType::kResizeHorizontal: glfw_window->use_standard_cursor(GLFW_RESIZE_EW_CURSOR); break;
+        case gui::CursorType::kResizeDiagonalLeft: glfw_window->use_standard_cursor(GLFW_RESIZE_NESW_CURSOR); break;
+        case gui::CursorType::kResizeDiagonalRight: glfw_window->use_standard_cursor(GLFW_RESIZE_NWSE_CURSOR); break;
         case gui::CursorType::kResize: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
         case gui::CursorType::kNotAllowed: glfw_window->use_standard_cursor(GLFW_NOT_ALLOWED_CURSOR); break;
         }

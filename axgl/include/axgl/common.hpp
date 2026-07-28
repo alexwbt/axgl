@@ -27,6 +27,8 @@
 #include <spdlog/spdlog.h>
 #include <tracy/Tracy.hpp>
 
+#include <util/numcast.hpp>
+
 //
 // profiling
 //
