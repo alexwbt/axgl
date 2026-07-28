@@ -17,11 +17,12 @@ demos).
 
 ## Build
 
-- Use CMake presets, not raw `cmake ..`:
-  - `cmake --preset debug && cmake --build --preset debug`
-  - `cmake --preset release && cmake --build --preset release`
-- Or the wrapper: `_scripts/build.sh [debug|release] [--no-config]` (logs to
-  `_log/build.log`). `--no-config` skips the configure step.
+- Use the wrapper: `_scripts/build.sh [debug|release] [--no-config]` (logs to
+  `_log/build.log` plus a timestamped archive in `_log/`). `--no-config` skips
+  the configure step. The default preset is `debug`.
+- Check `_log/build.log` for errors/output instead of relying on stdout, which
+  may be empty, truncated, or intermixed with runtime output. Use the Read
+  tool (or Grep) on `_log/build.log`, not `tail`/`cat` via Bash.
 - Binaries go to `_bin/`; build artifacts to `_build/{Debug,Release}`.
   `CMAKE_EXPORT_COMPILE_COMMANDS` is ON, so `compile_commands.json` lands in
   `_build/Debug` — this is what `.clangd` and clang-tidy (`-p _build/Debug`)
