@@ -176,6 +176,8 @@
     "axgl",
     "bitangent",
     "bitangents",
+    "blinn",
+    "blit",
     "bugprone",
     "bundlefile",
     "Clearcoat",

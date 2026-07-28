@@ -266,10 +266,11 @@ void main()
   for (int i = 0; i < point_lights_size; ++i)
     result += calc_point_light(ctx, point_lights[i]);
 
-  // weight function for blending
+  // weight function for blending (McGuire & Bavoil 2013)
   float weight = transparent
     ? clamp(pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0), 1e-2, 3e3)
     : 1.0f;
-  frag_color = vec4(result, mesh_color.a) * weight;
+  // premultiply color by alpha so the composite can recover the weighted average
+  frag_color = vec4(result * mesh_color.a, mesh_color.a) * weight;
   reveal = mesh_color.a;
 }

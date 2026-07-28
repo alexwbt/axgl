@@ -17,9 +17,11 @@ demos).
 
 ## Build
 
-- Use the wrapper: `_scripts/build.sh [debug|release] [--no-config]` (logs to
-  `_log/build.log` plus a timestamped archive in `_log/`). `--no-config` skips
-  the configure step. The default preset is `debug`.
+- Use the wrapper: `_scripts/build.sh [debug|release] [target] [--no-config]`
+  (logs to `_log/build.log` plus a timestamped archive in `_log/`). `--no-config`
+  skips the configure step. The default preset is `debug`. Pass a CMake target
+  name (e.g. `demo_blending`) to build only that target; `--no-config` can
+  appear in any position.
 - Check `_log/build.log` for errors/output instead of relying on stdout, which
   may be empty, truncated, or intermixed with runtime output. Use the Read
   tool (or Grep) on `_log/build.log`, not `tail`/`cat` via Bash.

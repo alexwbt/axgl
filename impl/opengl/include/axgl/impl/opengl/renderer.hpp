@@ -43,14 +43,13 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   std::unique_ptr<::opengl::Framebuffer> screen_framebuffer_;
 
   //
-  // Blending
+  // Blending (weighted blended OIT)
   //
-  // std::unique_ptr<::opengl::Texture> depth_texture_;
-  // std::unique_ptr<::opengl::Texture> accum_texture_;
-  // std::unique_ptr<::opengl::Texture> reveal_texture_;
-  // std::unique_ptr<::opengl::Framebuffer> blend_framebuffer_;
-  // static constexpr glm::vec4 zero_filler_{0.0f};
-  // static constexpr glm::vec4 one_filler_{1.0f};
+  std::unique_ptr<::opengl::Texture> accum_texture_;
+  std::unique_ptr<::opengl::Texture> reveal_texture_;
+  std::unique_ptr<::opengl::Framebuffer> blend_framebuffer_;
+  static constexpr glm::vec4 zero_filler_{0.0f};
+  static constexpr glm::vec4 one_filler_{1.0f};
 
   //
   // Shadow Map
@@ -116,11 +115,10 @@ public:
       return;
     }
 
-    // auto& blend_shader = ::opengl::StaticShaders::instance().weighted_blended();
+    auto& blend_shader = ::opengl::StaticShaders::instance().weighted_blended();
     auto& screen_shader = ::opengl::StaticShaders::instance().screen();
     const auto& quad_vao = ::opengl::StaticVAOs::instance().quad();
 
-    // const auto& axgl = context
     const auto& gui = axgl_->gui_service()->get_main_ui();
     const auto& realm = axgl_->realm_service()->get_active_realm();
 
@@ -137,12 +135,12 @@ public:
       }
 
       //
-      // setup opaque pass framebuffer
+      // setup MSAA framebuffer (opaque pass only)
       //
       if (msaa_)
       {
         multisample_texture_ = std::make_unique<::opengl::Texture>();
-        multisample_texture_->init_multisample_texture(sample_count_, GL_RGB, viewport_i.x, viewport_i.y, GL_TRUE);
+        multisample_texture_->init_multisample_texture(sample_count_, GL_RGBA16F, viewport_i.x, viewport_i.y, GL_TRUE);
         multisample_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         multisample_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         multisample_renderbuffer_ = std::make_unique<::opengl::Renderbuffer>();
@@ -154,8 +152,12 @@ public:
         multisample_framebuffer_->check_status_complete("renderer_multisample_framebuffer");
       }
 
+      //
+      // setup resolved (non-MSAA) framebuffer: holds the resolved opaque color
+      // + the shared depth texture that the transparent pass also reads.
+      //
       screen_texture_ = std::make_unique<::opengl::Texture>();
-      screen_texture_->load_texture(0, GL_RGB, viewport_i.x, viewport_i.y, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+      screen_texture_->load_texture(0, GL_RGBA16F, viewport_i.x, viewport_i.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
       screen_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       screen_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       depth_texture_ = std::make_unique<::opengl::Texture>();
@@ -167,21 +169,22 @@ public:
       screen_framebuffer_->check_status_complete("renderer_screen_framebuffer");
 
       //
-      // setup blend (transparent) pass framebuffer
+      // setup blend (transparent) pass framebuffer (always non-MSAA): shares
+      // depth_texture_ with screen_framebuffer_ for depth-tested blending.
       //
-      // accum_texture_ = std::make_unique<::opengl::Texture>();
-      // accum_texture_->load_texture(0, GL_RGBA16F, viewport_i.x, viewport_i.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
-      // accum_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      // accum_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      // reveal_texture_ = std::make_unique<::opengl::Texture>();
-      // reveal_texture_->load_texture(0, GL_R8, viewport_i.x, viewport_i.y, 0, GL_RED, GL_FLOAT, nullptr);
-      // reveal_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      // reveal_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      // blend_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
-      // blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *accum_texture_);
-      // blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
-      // blend_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
-      // blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
+      accum_texture_ = std::make_unique<::opengl::Texture>();
+      accum_texture_->load_texture(0, GL_RGBA16F, viewport_i.x, viewport_i.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr);
+      accum_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      accum_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      reveal_texture_ = std::make_unique<::opengl::Texture>();
+      reveal_texture_->load_texture(0, GL_R8, viewport_i.x, viewport_i.y, 0, GL_RED, GL_FLOAT, nullptr);
+      reveal_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      reveal_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      blend_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+      blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *accum_texture_);
+      blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
+      blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
+      blend_framebuffer_->check_status_complete("renderer_blend_framebuffer");
     }
 
     if (!shadow_texture_ || shadow_map_size_ != shadow_texture_->get_width())
@@ -199,8 +202,6 @@ public:
       shadow_texture_->set_parameter(GL_TEXTURE_BORDER_COLOR, std::array{1.0f, 1.0f, 1.0f, 1.0f});
       shadow_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
       shadow_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *shadow_texture_);
-      // glDrawBuffer(GL_NONE);
-      // glReadBuffer(GL_NONE);
     }
 
     auto* camera = axgl_->camera_service()->get_camera();
@@ -261,11 +262,10 @@ public:
       }
 
       //
-      // Opaque Render Pass
+      // Opaque Render Pass (MSAA if enabled)
       //
       glViewport(0, 0, viewport_i.x, viewport_i.y);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glDisable(GL_BLEND);
       glEnable(GL_DEPTH_TEST);
       glDepthFunc(GL_LESS);
       glDepthMask(GL_TRUE);
@@ -283,38 +283,70 @@ public:
       }
 
       //
-      // Transparent Render Pass
+      // Resolve MSAA -> non-MSAA so the transparent pass and composite can
+      // sample the opaque color and share the resolved depth buffer.
       //
-      // glDepthMask(GL_FALSE);
-      // glBlendFunci(0, GL_ONE, GL_ONE);
-      // glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
-      // glBlendEquation(GL_FUNC_ADD);
-      //
-      // blend_framebuffer_->use();
-      // glClearBufferfv(GL_COLOR, 0, &zero_filler_[0]);
-      // glClearBufferfv(GL_COLOR, 1, &one_filler_[0]);
-      // {
-      //   AXGL_PROFILE_SCOPE("Renderer Transparent Pass");
-      //   for (const auto& render_func : render_context.blend_pass)
-      //     render_func(render_context);
-      // }
+      if (msaa_)
+      {
+        AXGL_PROFILE_SCOPE("Renderer MSAA Resolve");
+        multisample_framebuffer_->use_read();
+        screen_framebuffer_->use_write();
+        glBlitFramebuffer(
+          0, 0, viewport_i.x, viewport_i.y, //
+          0, 0, viewport_i.x, viewport_i.y, //
+          GL_COLOR_BUFFER_BIT, GL_NEAREST   //
+        );
+      }
 
       //
-      // Composite Render Pass
+      // Transparent Render Pass (always non-MSAA): weighted blended OIT.
+      // Reads the resolved depth for depth-testing; writes accum + reveal.
       //
-      // glDepthFunc(GL_ALWAYS);
-      // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      // render_framebuffer_->use();
-      // accum_texture_->use(GL_TEXTURE0);
-      // reveal_texture_->use(GL_TEXTURE1);
-      // blend_shader.use_program();
-      // blend_shader.set_int("accum", 0);
-      // blend_shader.set_int("reveal", 1);
-      // quad_vao.draw();
+      if (!pipeline_context.blend_pass.empty())
+      {
+        glDisable(GL_BLEND);
+        glDepthMask(GL_FALSE);
+        glDisable(GL_DEPTH_TEST);
+
+        blend_framebuffer_->use();
+        glClearBufferfv(GL_COLOR, 0, &zero_filler_[0]);
+        glClearBufferfv(GL_COLOR, 1, &one_filler_[0]);
+
+        glEnable(GL_BLEND);
+        glBlendFunci(0, GL_ONE, GL_ONE);
+        glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+        glBlendEquation(GL_FUNC_ADD);
+
+        {
+          AXGL_PROFILE_SCOPE("Renderer Transparent Pass");
+          for (const auto& render_func : pipeline_context.blend_pass)
+            render_func(render_context);
+        }
+      }
+
+      //
+      // Composite Pass: blend the weighted-blended transparent result on top
+      // of the resolved opaque color in screen_framebuffer_.
+      //
+      if (!pipeline_context.blend_pass.empty())
+      {
+        screen_framebuffer_->use();
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        accum_texture_->use(GL_TEXTURE0);
+        reveal_texture_->use(GL_TEXTURE1);
+        blend_shader.use_program();
+        blend_shader.set_int("accum", 0);
+        blend_shader.set_int("reveal", 1);
+        quad_vao.draw();
+      }
     }
 
     //
-    // Render Main GUI
+    // Render Main GUI onto screen_framebuffer_ (non-MSAA)
     //
     if (gui)
     {
@@ -345,7 +377,10 @@ public:
       if (!gui_texture)
         throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::Renderer");
 #endif
-      multisample_framebuffer_->use();
+      screen_framebuffer_->use();
+      glDisable(GL_DEPTH_TEST);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       gui_texture->use(GL_TEXTURE0);
       screen_shader.use_program();
       screen_shader.set_int("screen", 0);
@@ -353,21 +388,7 @@ public:
     }
 
     //
-    // Resolve multisample buffers
-    //
-    if (msaa_)
-    {
-      multisample_framebuffer_->use_read();
-      screen_framebuffer_->use_write();
-      glBlitFramebuffer(
-        0, 0, viewport_i.x, viewport_i.y, //
-        0, 0, viewport_i.x, viewport_i.y, //
-        GL_COLOR_BUFFER_BIT, GL_NEAREST   //
-      );
-    }
-
-    //
-    // Render To Screen
+    // Render To Screen (final blit with gamma correction)
     //
     glDisable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
