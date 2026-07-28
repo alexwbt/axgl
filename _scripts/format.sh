@@ -5,7 +5,6 @@ ROOT_DIRNAME="$(basename "$ROOT_DIR")"
 
 FILE_PATTERN="(axgl|demo|impl|lib)/.*"
 
-
 if [ "$1" != "--no-tidy" ]; then
   find $ROOT_DIR \
     -regextype posix-extended \

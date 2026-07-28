@@ -17,7 +17,7 @@
     "editor.defaultFormatter": "josetr.cmake-language-support-vscode"
   },
   "[shellscript]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
+    "editor.defaultFormatter": "mkhl.shfmt"
   },
   "[cpp][hpp]": {
     "editor.defaultFormatter": "xaver.clang-format"
