@@ -29,7 +29,7 @@ public:
   void set_property(const std::string& key, const std::string& value) override
   {
     if (key == "shininess") shininess_ = std::stof(value);
-    if (key == "specular") specular_ = std::stof(value);
+    else if (key == "specular") specular_ = std::stof(value);
 #ifdef AXGL_DEBUG
     else AXGL_LOG_WARN("Property {} is not supported in mesh3d material.", key);
 #endif
