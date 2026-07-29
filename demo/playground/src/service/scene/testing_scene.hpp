@@ -9,6 +9,7 @@
 #include "entity/concrete_block.hpp"
 #include "entity/cube.hpp"
 #include "entity/toy_block.hpp"
+#include "entity/transparent_cube.hpp"
 
 class TestingScene : public CommonScene
 {
@@ -67,6 +68,23 @@ public:
       entity->add_component(spinning_comp);
       add_entity(entity);
     }
+    next_row();
+
+    // transparent cube
+    {
+      const auto entity = entity_service_->create_entity_t<TransparentCubeEntity>();
+      entity->set_position(item_position(0.5f));
+      add_entity(entity);
+    }
+    // transparent spinning cube
+    {
+      const auto entity = entity_service_->create_entity_t<TransparentCubeEntity>();
+      entity->set_position(item_position(1.0f));
+      entity->add_component(spinning_comp);
+      add_entity(entity);
+    }
+    next_row();
+
     // box
     {
       const auto entity = entity_service_->create_entity_t<BoxEntity>();
@@ -95,6 +113,8 @@ public:
       entity->add_component(spinning_comp);
       add_entity(entity);
     }
+    next_row();
+
     // toy block
     {
       const auto entity = entity_service_->create_entity_t<ToyBlockEntity>();

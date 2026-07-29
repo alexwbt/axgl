@@ -13,11 +13,7 @@ auto create_cube(const axgl::Axgl& axgl, const glm::vec3& position, const glm::v
   // material
   const auto material = renderer_service->create_material("3d");
   material->set_color(color);
-  if (blend)
-  {
-    material->set_enable_blend(true);
-    material->set_property("shininess", "0");
-  }
+  if (blend) material->set_enable_blend(true);
   // mesh
   const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
   axgl::util::init_cube(*mesh);

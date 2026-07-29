@@ -4,6 +4,7 @@
 
 #include <axgl/impl/service_base.hpp>
 
+#include "scene/entity/transparent_cube.hpp"
 #include "scene/testing_scene.hpp"
 
 #include "scene/component/spinning.hpp"
@@ -41,6 +42,7 @@ public:
     entity_service->register_entity_t<DebugAxesIndicatorEntity>();
     entity_service->register_entity_t<FloorEntity>();
     entity_service->register_entity_t<ToyBlockEntity>();
+    entity_service->register_entity_t<TransparentCubeEntity>();
     // register scenes
     realm_service->register_realm_t<TestingScene>();
   }

@@ -9,9 +9,6 @@ class CubeEntity : public axgl::impl::EntityBase
 public:
   static constexpr std::string_view kTypeId = "entity::cube";
 
-private:
-  bool rotate_ = false;
-
 protected:
   [[nodiscard]] virtual axgl::ptr_t<axgl::Material> create_material() const
   {
