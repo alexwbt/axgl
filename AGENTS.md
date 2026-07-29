@@ -17,11 +17,13 @@ demos).
 
 ## Build
 
-- Use the wrapper: `_scripts/build.sh [debug|release] [target] [--no-config]`
+- Use the wrapper: `_scripts/build.sh [debug|release] [--target <target>] [--no-config]`
   (logs to `_log/build.log` plus a timestamped archive in `_log/`). `--no-config`
-  skips the configure step. The default preset is `debug`. Pass a CMake target
-  name (e.g. `demo_blending`) to build only that target; `--no-config` can
-  appear in any position.
+  skips the configure step. The default preset is `debug`. Use `--target <target>`
+  (e.g. `--target demo_blending`) to build only that target; `--no-config` can
+  appear in any position. Preset may be given as a positional arg (`debug`);
+  flags can appear in any position. When testing a change, build the `debug`
+  preset only (it is the default).
 - Check `_log/build.log` for errors/output instead of relying on stdout, which
   may be empty, truncated, or intermixed with runtime output. Use the Read
   tool (or Grep) on `_log/build.log`, not `tail`/`cat` via Bash.

@@ -39,9 +39,10 @@ int main()
   const auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
 #ifdef AXGL_DEMO_FANCY_MODE
-  renderer->set_sample_count(8);
-  renderer->set_antialiasing(true);
-  renderer->set_shadow_map_size(1024 * 4);
+  renderer->set_flag(axgl::Renderer::Flag::kMultiSample, true);
+  renderer->set_flag(axgl::Renderer::Flag::kShadow, true);
+  renderer->set_value(axgl::Renderer::ValueKey::kMultiSampleCount, 8);
+  renderer->set_value(axgl::Renderer::ValueKey::kShadowMapSize, 1024 * 4);
 #endif
   renderer_service->set_active_renderer(renderer);
   // resource

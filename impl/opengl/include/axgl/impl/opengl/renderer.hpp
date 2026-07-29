@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <spdlog/spdlog.h>
@@ -23,6 +21,27 @@
 namespace axgl::impl::opengl
 {
 
+#ifdef AXGL_DEBUG
+inline std::string get_renderer_flag_name(Renderer::Flag flag)
+{
+  switch (flag)
+  {
+  case Renderer::Flag::kMultiSample: return "MultiSample";
+  case Renderer::Flag::kShadow: return "Shadow";
+  }
+  [[unlikely]] std::abort();
+}
+inline std::string get_renderer_value_key_name(Renderer::ValueKey valuekey)
+{
+  switch (valuekey)
+  {
+  case Renderer::ValueKey::kMultiSampleCount: return "MultiSampleCount";
+  case Renderer::ValueKey::kShadowMapSize: return "ShadowMapSize";
+  }
+  [[unlikely]] std::abort();
+}
+#endif
+
 class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
 {
   bool initialized_glad_ = false;
@@ -30,16 +49,19 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
 
   glm::vec2 viewport_{0.0f};
 
+  std::unique_ptr<::opengl::Texture> screen_texture_;
+  std::unique_ptr<::opengl::Texture> depth_texture_;
+  std::unique_ptr<::opengl::Framebuffer> screen_framebuffer_;
+
+  //
+  // MSAA
+  //
   bool msaa_ = false;
   GLsizei sample_count_ = 4;
 
   std::unique_ptr<::opengl::Texture> multisample_texture_;
   std::unique_ptr<::opengl::Renderbuffer> multisample_depth_stencil_;
   std::unique_ptr<::opengl::Framebuffer> multisample_framebuffer_;
-
-  std::unique_ptr<::opengl::Texture> screen_texture_;
-  std::unique_ptr<::opengl::Texture> depth_texture_;
-  std::unique_ptr<::opengl::Framebuffer> screen_framebuffer_;
 
   //
   // Blending (weighted blended OIT)
@@ -53,28 +75,12 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   //
   // Shadow Map
   //
+  bool shadow_ = false;
   GLsizei shadow_map_size_ = 1024;
   std::unique_ptr<::opengl::Texture> shadow_texture_;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer_;
 
 public:
-  void set_antialiasing(bool enable) override { msaa_ = enable; }
-
-  void set_sample_count(std::uint32_t sample_count) override
-  {
-    GLint max_samples;
-    glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
-
-    if (sample_count > static_cast<std::uint32_t>(max_samples))
-    {
-      AXGL_LOG_WARN("GL_MAX_SAMPLES: {}", max_samples);
-      sample_count_ = max_samples;
-    }
-    else sample_count_ = util::clamp_cast<GLsizei>(sample_count);
-  }
-
-  void set_shadow_map_size(std::uint32_t size) override { shadow_map_size_ = util::clamp_cast<GLsizei>(size); }
-
   void set_window(axgl::ptr_t<axgl::Window> window) override
   {
     window_ = std::dynamic_pointer_cast<glfw::Window>(std::move(window));
@@ -100,11 +106,66 @@ public:
     window_->swap_buffers();
   }
 
-  [[nodiscard]] bool get_antialiasing() const override { return msaa_; }
-
-  [[nodiscard]] int get_sample_count() const override { return sample_count_; }
-
   [[nodiscard]] axgl::ptr_t<axgl::Window> get_window() const override { return window_; }
+
+  void set_flag(Flag flag, bool enable) override
+  {
+    switch (flag)
+    {
+    case Flag::kMultiSample: msaa_ = enable; break;
+    case Flag::kShadow: shadow_ = enable; break;
+    default:
+#ifdef AXGL_DEBUG
+      AXGL_LOG_WARN("Flag \"{}\" is not supported in opengl renderer.", get_renderer_flag_name(flag));
+#endif
+    }
+  }
+
+  void set_value(ValueKey key, const std::string& value) override
+  {
+    switch (key)
+    {
+    case ValueKey::kMultiSampleCount:
+    {
+      GLint max_samples;
+      glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
+
+      const int sample_count = std::stoi(value);
+      if (sample_count > max_samples)
+      {
+        AXGL_LOG_WARN("GL_MAX_SAMPLES: {}", max_samples);
+        sample_count_ = max_samples;
+      }
+      else sample_count_ = sample_count;
+      break;
+    }
+    case ValueKey::kShadowMapSize: shadow_map_size_ = std::stoi(value); break;
+    default:
+#ifdef AXGL_DEBUG
+      AXGL_LOG_WARN("Value key \"{}\" is not supported in opengl renderer.", get_renderer_value_key_name(key));
+#endif
+    }
+  }
+
+  [[nodiscard]] bool get_flag(Flag flag) const override
+  {
+    switch (flag)
+    {
+    case Flag::kMultiSample: return msaa_;
+    case Flag::kShadow: return shadow_;
+    default: return false;
+    }
+  }
+
+  [[nodiscard]] std::string get_value(ValueKey key) const override
+  {
+    switch (key)
+    {
+    case ValueKey::kMultiSampleCount: return std::to_string(sample_count_);
+    case ValueKey::kShadowMapSize: return std::to_string(shadow_map_size_);
+    default: return "";
+    }
+  }
 
   void render() override
   {
@@ -187,7 +248,7 @@ public:
       blend_framebuffer_->check_status_complete("renderer_blend_framebuffer");
     }
 
-    if (!shadow_texture_ || shadow_map_size_ != shadow_texture_->get_width())
+    if (shadow_ && (!shadow_texture_ || shadow_map_size_ != shadow_texture_->get_width()))
     {
       //
       // setup shadow map
@@ -244,21 +305,24 @@ public:
       //
       // Shadow Map Render Pass
       //
-      glViewport(0, 0, shadow_map_size_, shadow_map_size_);
-      glEnable(GL_DEPTH_TEST);
-      glDepthFunc(GL_LESS);
-      glDepthRange(0.0f, 1.0f);
-
-      shadow_framebuffer_->use();
-      glClearDepth(1.0);
-      glClear(GL_DEPTH_BUFFER_BIT);
-      if (!render_context.lights.empty())
+      if (shadow_)
       {
-        AXGL_PROFILE_SCOPE("Render Shadow Map");
-        for (const auto& render_func : pipeline_context.shadow_pass)
-          render_func(render_context.lights[0]);
+        glViewport(0, 0, shadow_map_size_, shadow_map_size_);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        glDepthRange(0.0f, 1.0f);
 
-        render_context.lights[0].shadow_map = shadow_texture_.get();
+        shadow_framebuffer_->use();
+        glClearDepth(1.0);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        if (!render_context.lights.empty())
+        {
+          AXGL_PROFILE_SCOPE("Render Shadow Map");
+          for (const auto& render_func : pipeline_context.shadow_pass)
+            render_func(render_context.lights[0]);
+
+          render_context.lights[0].shadow_map = shadow_texture_.get();
+        }
       }
 
       //
@@ -411,7 +475,7 @@ public:
 
 private:
   // FIXME: reimplement without recursion
-  static void gather_render_components(
+  void gather_render_components(
     impl::opengl::renderer::RenderContext& render_context,
     std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*>& render_components,
     const axgl::Container<axgl::Entity>& entities,
@@ -444,7 +508,8 @@ private:
           impl::opengl::renderer::LightContext light_context;
           light_context.light = &light_comp->light;
 
-          if (light_context.light->casts_shadows) light_context.light_pv = light_context.light->get_pv_matrix();
+          if (shadow_ && light_context.light->casts_shadows)
+            light_context.light_pv = light_context.light->get_pv_matrix();
 
           render_context.lights.emplace_back(light_context);
         }

@@ -76,6 +76,8 @@ uniform PointLight point_lights[32];
 uniform bool transparent;
 uniform float alpha_discard;
 uniform float height_scale;
+
+uniform bool enable_shadow;
 uniform sampler2D shadow_map;
 
 in VertexShaderOutput
@@ -174,7 +176,7 @@ vec3 calc_sun_light(Context ctx, SunLight light)
   vec3 ambient = light.ambient * ctx.frag_diffuse;
 
   // Shadow
-  float shadow = calc_shadow();
+  float shadow = enable_shadow ? calc_shadow() : 0.0;
 
   return ambient + (1.0 - shadow) * (diffuse + specular);
 }

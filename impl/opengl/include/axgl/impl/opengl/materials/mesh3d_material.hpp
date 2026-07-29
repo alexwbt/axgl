@@ -74,9 +74,15 @@ public:
     shader_.set_float("diffuse_texture_gamma", 2.2f);
     shader_.set_float("height_scale", height_scale_);
 
-    shader_.set_mat4("light_pv", context.lights[0].light_pv);
-    shader_.set_int("shadow_map", 5);
-    context.lights[0].shadow_map->use(GL_TEXTURE5);
+    // shadow
+    const bool enable_shadow = context.lights[0].shadow_map != nullptr;
+    shader_.set_int("enable_shadow", enable_shadow);
+    if (enable_shadow)
+    {
+      shader_.set_mat4("light_pv", context.lights[0].light_pv);
+      shader_.set_int("shadow_map", 5);
+      context.lights[0].shadow_map->use(GL_TEXTURE5);
+    }
 
     use_lights(context.lights);
 

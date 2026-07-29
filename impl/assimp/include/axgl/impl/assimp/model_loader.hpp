@@ -172,7 +172,7 @@ class ModelLoader
 
       if (*texture_path.C_Str() == '*')
       {
-        const auto index = util::narrow<std::size_t>(util::string_to_long(texture_path.C_Str() + 1));
+        const auto index = util::narrow<std::size_t>(std::stoul(texture_path.C_Str() + 1));
 #ifdef AXGL_DEBUG
         if (index > embedded_textures_.size()) throw std::runtime_error("Invalid texture path.");
 #endif

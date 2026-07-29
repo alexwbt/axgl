@@ -1,17 +1,32 @@
 #! /bin/bash
 
-PRESET=${1:-debug}
-shift
-
+PRESET="debug"
 TARGET=""
 NO_CONFIG=0
 
-for arg in "$@"; do
-  if [ "$arg" = "--no-config" ]; then
+while [ $# -gt 0 ]; do
+  case "$1" in
+  --no-config)
     NO_CONFIG=1
-  elif [ -z "$TARGET" ]; then
-    TARGET="$arg"
-  fi
+    shift
+    ;;
+  --target)
+    if [ $# -lt 2 ]; then
+      echo "error: --target requires an argument" >&2
+      exit 1
+    fi
+    TARGET="$2"
+    shift 2
+    ;;
+  -*)
+    echo "error: unknown option '$1'" >&2
+    exit 1
+    ;;
+  *)
+    PRESET="$1"
+    shift
+    ;;
+  esac
 done
 
 ROOT_DIR="$(cd "$(dirname "$0")" && cd .. && pwd)"

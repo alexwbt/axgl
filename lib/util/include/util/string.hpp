@@ -88,16 +88,4 @@ inline void string_to_vec3(const std::string& value, float& x, float& y, float& 
   }
 }
 
-inline long string_to_long(const std::string& value)
-{
-  const char* string_value = value.c_str();
-  char* end = nullptr;
-  errno = 0;
-  const auto long_value = std::strtol(string_value, &end, 10);
-  if (end == string_value) throw std::invalid_argument("string_to_int: no digits found");
-  if (errno == ERANGE) throw std::out_of_range("string_to_int: value out of range");
-  if (*end != '\0') throw std::invalid_argument("string_to_int: trailing characters");
-  return long_value;
-}
-
 } // namespace util

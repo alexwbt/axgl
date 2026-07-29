@@ -9,6 +9,7 @@
   "cmake.exclude": ["_build/**", "_external/**"],
   "C_Cpp.default.cppStandard": "c++20",
   "C_Cpp.clang_format_style": "file",
+  "clangd.arguments": ["--background-index", "--log=verbose"],
   "vscode_custom_css.imports": ["file:///${workspaceFolder}/.vscode/style.css"],
   "[json][jsonc][yaml][css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

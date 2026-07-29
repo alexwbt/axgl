@@ -13,6 +13,7 @@ uniform mat4 light_pv;
 uniform vec2 uv_scale;
 uniform vec2 uv_offset;
 uniform bool use_normal_texture;
+uniform bool enable_shadow;
 
 out VertexShaderOutput
 {
@@ -38,7 +39,7 @@ void main()
   vso.normal = normalize(normal_matrix * normal);
   vso.uv = (uv + uv_offset) * uv_scale;
 
-  vso.light_space_position = light_pv * vec4(vso.position, 1.0);
+  if (enable_shadow) vso.light_space_position = light_pv * vec4(vso.position, 1.0);
 
   if (use_normal_texture)
   {
@@ -48,5 +49,5 @@ void main()
     vso.position = vso.tbn * vso.position;
     vso.camera_pos = vso.tbn * vso.camera_pos;
   }
-  else { vso.tbn = mat3(1.0); }
+  else vso.tbn = mat3(1.0);
 }
