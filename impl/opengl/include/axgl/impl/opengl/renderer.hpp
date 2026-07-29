@@ -1,6 +1,5 @@
 #pragma once
 
-#include "util/numcast.hpp"
 #include <memory>
 
 #include <glad/glad.h>

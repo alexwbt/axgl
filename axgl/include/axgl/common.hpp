@@ -61,7 +61,10 @@ void operator delete(void* _Block) noexcept
     free(_Block);
   }
 }
-void operator delete(void* _Block, std::size_t) noexcept { operator delete(_Block); }
+void operator delete(void* _Block, std::size_t) noexcept
+{
+  operator delete(_Block);
+}
 void operator delete[](void* _Block) noexcept
 {
   if (_Block)

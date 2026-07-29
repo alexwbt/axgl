@@ -1,11 +1,11 @@
 #version 410 core
 
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 normal;
-layout (location = 2) in vec3 tangent;
-layout (location = 3) in vec3 bitangent;
-layout (location = 4) in vec2 uv;
-layout (location = 5) in mat4 model;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec3 tangent;
+layout(location = 3) in vec3 bitangent;
+layout(location = 4) in vec2 uv;
+layout(location = 5) in mat4 model;
 
 uniform vec3 camera_pos;
 uniform mat4 projection_view;
@@ -14,14 +14,16 @@ uniform vec2 uv_scale;
 uniform vec2 uv_offset;
 uniform bool use_normal_texture;
 
-out VertexShaderOutput {
+out VertexShaderOutput
+{
   vec3 camera_pos;
   vec3 position;
   vec3 normal;
   vec2 uv;
   mat3 tbn;
   vec4 light_space_position;
-} vso;
+}
+vso;
 
 void main()
 {
@@ -46,8 +48,5 @@ void main()
     vso.position = vso.tbn * vso.position;
     vso.camera_pos = vso.tbn * vso.camera_pos;
   }
-  else
-  {
-    vso.tbn = mat3(1.0);
-  }
+  else { vso.tbn = mat3(1.0); }
 }

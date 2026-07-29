@@ -1,30 +1,41 @@
+#
+# Base style
+#
 BasedOnStyle: LLVM
+
+#
+# Column / line length
+#
+ColumnLimit: 120
+InsertNewlineAtEOF: true
+
+#
+# Indentation
+#
 IndentWidth: 2
 TabWidth: 2
-BracedInitializerIndentWidth: 2
-ConstructorInitializerIndentWidth: 2
+UseTab: Never
 ContinuationIndentWidth: 2
 PPIndentWidth: 2
 ObjCBlockIndentWidth: 2
-UseTab: Never
-ColumnLimit: 120
-InsertNewlineAtEOF: true
+BracedInitializerIndentWidth: 2
+ConstructorInitializerIndentWidth: 2
+LambdaBodyIndentation: OuterScope
+NamespaceIndentation: None
+CompactNamespaces: false
+IndentCaseLabels: false
+IndentCaseBlocks: false
+IndentPPDirectives: BeforeHash
+
+#
+# Pointers
+#
 PointerAlignment: Left
 DerivePointerAlignment: false
-AllowShortBlocksOnASingleLine: Always
-SpaceInEmptyBlock: true
-AllowShortCaseExpressionOnASingleLine: true
-AllowShortCaseLabelsOnASingleLine: true
-IndentCaseBlocks: false
-IndentCaseLabels: false
-LambdaBodyIndentation: OuterScope
-AllowShortLambdasOnASingleLine: All
-PackConstructorInitializers: NextLine
-BreakConstructorInitializers: AfterColon
-AlignAfterOpenBracket: AlwaysBreak
-BinPackParameters: OnePerLine
-AllowAllParametersOfDeclarationOnNextLine: true
-AllowAllArgumentsOnNextLine: true
+
+#
+# Braces (Allman style)
+#
 BreakBeforeBraces: Allman
 BraceWrapping:
   AfterControlStatement: true
@@ -44,23 +55,64 @@ BraceWrapping:
   SplitEmptyFunction: false
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
-SortIncludes: true
-NamespaceIndentation: None
-CompactNamespaces: false
-KeepEmptyLines:
-  AtStartOfBlock: false
-  AtEndOfFile: true
-  AtStartOfFile: true
-KeepEmptyLinesAtTheStartOfBlocks: false
-MaxEmptyLinesToKeep: 1
-BreakTemplateDeclarations: Yes
-BreakAfterAttributes: Never
-PenaltyReturnTypeOnItsOwnLine: 9999
-BreakBeforeTernaryOperators: true
-BreakBeforeBinaryOperators: All
+SpaceInEmptyBlock: true
+
+#
+# Short constructs on a single line
+#
+AllowShortBlocksOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortLambdasOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortCaseExpressionOnASingleLine: true
+
+#
+# Alignment
+#
+AlignAfterOpenBracket: AlwaysBreak
+AlignOperands: DontAlign
 AlignTrailingComments:
   Kind: Always
   OverEmptyLines: 2
-AlignOperands: DontAlign
-IndentPPDirectives: BeforeHash
-AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+
+#
+# Parameter / argument packing
+#
+BinPackParameters: OnePerLine
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllArgumentsOnNextLine: true
+
+#
+# Constructors / initializers
+#
+PackConstructorInitializers: NextLine
+BreakConstructorInitializers: AfterColon
+
+#
+# Templates / attributes
+#
+BreakTemplateDeclarations: Yes
+BreakAfterAttributes: Never
+
+#
+# Operators / break penalties
+#
+BreakBeforeTernaryOperators: true
+BreakBeforeBinaryOperators: All
+PenaltyReturnTypeOnItsOwnLine: 9999
+
+#
+# Includes
+#
+SortIncludes: true
+
+#
+# Empty lines
+#
+KeepEmptyLines:
+  AtStartOfFile: true
+  AtStartOfBlock: false
+  AtEndOfFile: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1

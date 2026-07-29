@@ -19,7 +19,7 @@
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
   },
-  "[cpp][hpp]": {
+  "[cpp][hpp][glsl]": {
     "editor.defaultFormatter": "xaver.clang-format"
   },
   "webgl-glsl-editor.format.placeBracesOnSeparateLine": true,

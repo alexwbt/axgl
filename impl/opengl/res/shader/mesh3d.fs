@@ -78,17 +78,19 @@ uniform float alpha_discard;
 uniform float height_scale;
 uniform sampler2D shadow_map;
 
-in VertexShaderOutput {
+in VertexShaderOutput
+{
   vec3 camera_pos;
   vec3 position;
   vec3 normal;
   vec2 uv;
   mat3 tbn;
   vec4 light_space_position;
-} vso;
+}
+vso;
 
-layout (location = 0) out vec4 frag_color;
-layout (location = 1) out float reveal;
+layout(location = 0) out vec4 frag_color;
+layout(location = 1) out float reveal;
 
 vec2 calc_height_offset(Context ctx)
 {
@@ -106,7 +108,7 @@ vec2 calc_height_offset(Context ctx)
   vec2 current_uv = vso.uv;
   float current_height_map_value = texture(height_texture, current_uv).r;
 
-  while(current_layer_depth < current_height_map_value)
+  while (current_layer_depth < current_height_map_value)
   {
     // shift texture coordinates along direction of P
     current_uv -= delta_uv;
@@ -120,7 +122,7 @@ vec2 calc_height_offset(Context ctx)
   vec2 prev_uv = current_uv + delta_uv;
 
   // get depth after and before collision for linear interpolation
-  float after_depth  = current_height_map_value - current_layer_depth;
+  float after_depth = current_height_map_value - current_layer_depth;
   float before_depth = texture(height_texture, prev_uv).r - current_layer_depth + layer_depth;
 
   // interpolation of texture coordinates
@@ -135,16 +137,16 @@ float calc_shadow()
 
   if (projection_coords.z > 1.0) return 0.0;
 
-//  float closest_depth = texture(shadow_map, projection_coords.xy).r;
-//  float current_depth = projection_coords.z;
-//  float bias = max(0.05 * (1.0 - dot(vso.normal, light_dir)), 0.005);
-//  float shadow = current_depth - bias > closest_depth  ? 1.0 : 0.0;
-//  float shadow = current_depth > closest_depth  ? 1.0 : 0.0;
+  //  float closest_depth = texture(shadow_map, projection_coords.xy).r;
+  //  float current_depth = projection_coords.z;
+  //  float bias = max(0.05 * (1.0 - dot(vso.normal, light_dir)), 0.005);
+  //  float shadow = current_depth - bias > closest_depth  ? 1.0 : 0.0;
+  //  float shadow = current_depth > closest_depth  ? 1.0 : 0.0;
   float shadow = 0.0;
   vec2 texel_size = 1.0 / textureSize(shadow_map, 0);
-  for(int x = -1; x <= 1; ++x)
+  for (int x = -1; x <= 1; ++x)
   {
-    for(int y = -1; y <= 1; ++y)
+    for (int y = -1; y <= 1; ++y)
     {
       float pcf_depth = texture(shadow_map, projection_coords.xy + vec2(x, y) * texel_size).r;
       shadow += projection_coords.z > pcf_depth ? 1.0 : 0.0;
@@ -164,9 +166,9 @@ vec3 calc_sun_light(Context ctx, SunLight light)
 
   // Specular
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
-  vec3 specular = diffuse_value == 0.0 ? vec3(0.0) : light.specular
-    * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess)
-    * ctx.frag_specular;
+  vec3 specular = diffuse_value == 0.0
+    ? vec3(0.0)
+    : light.specular * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess) * ctx.frag_specular;
 
   // Ambient
   vec3 ambient = light.ambient * ctx.frag_diffuse;
@@ -186,9 +188,9 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
 
   // Specular
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
-  vec3 specular = diffuse_value == 0.0 ? vec3(0.0) : light.specular
-    * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess)
-    * ctx.frag_specular;
+  vec3 specular = diffuse_value == 0.0
+    ? vec3(0.0)
+    : light.specular * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess) * ctx.frag_specular;
 
   // Ambient
   vec3 ambient = light.ambient * ctx.frag_diffuse;
@@ -214,9 +216,9 @@ vec3 calc_point_light(Context ctx, PointLight light)
 
   // Specular
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
-  vec3 specular = diffuse_value == 0.0 ? vec3(0.0) : light.specular
-    * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess)
-    * ctx.frag_specular;
+  vec3 specular = diffuse_value == 0.0
+    ? vec3(0.0)
+    : light.specular * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess) * ctx.frag_specular;
 
   // Ambient
   vec3 ambient = light.ambient * ctx.frag_diffuse;
@@ -230,29 +232,22 @@ vec3 calc_point_light(Context ctx, PointLight light)
 
 void main()
 {
-  if (mesh_color.a < alpha_discard)
-    discard;
+  if (mesh_color.a < alpha_discard) discard;
 
   Context ctx;
   ctx.view_dir = normalize(vso.camera_pos - vso.position);
 
-  vec2 uv = use_height_texture
-    ? calc_height_offset(ctx)
-    : vso.uv;
-//  if(uv.x > 1.0 || uv.y > 1.0 || uv.x < 0.0 || uv.y < 0.0)
-//    discard;
+  vec2 uv = use_height_texture ? calc_height_offset(ctx) : vso.uv;
+  //  if(uv.x > 1.0 || uv.y > 1.0 || uv.x < 0.0 || uv.y < 0.0)
+  //    discard;
 
   ctx.frag_diffuse = use_diffuse_texture
     ? pow(texture(diffuse_texture, uv).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
     : mesh_color.rgb;
 
-  ctx.frag_specular = use_specular_texture
-    ? texture(specular_texture, uv).rgb * mesh_specular
-    : vec3(mesh_specular);
+  ctx.frag_specular = use_specular_texture ? texture(specular_texture, uv).rgb * mesh_specular : vec3(mesh_specular);
 
-  ctx.frag_normal = use_normal_texture
-    ? normalize(texture(normal_texture, uv).rgb * 2.0 - 1.0)
-    : vec3(vso.normal);
+  ctx.frag_normal = use_normal_texture ? normalize(texture(normal_texture, uv).rgb * 2.0 - 1.0) : vec3(vso.normal);
 
   vec3 result = vec3(0.0);
 

@@ -5,6 +5,9 @@
 
 namespace axgl
 {
-inline void configure_bundlefile(Axgl& axgl) { axgl.register_service_t<impl::bundlefile::BundlefileService>(); }
+inline void configure_bundlefile(Axgl& axgl)
+{
+  axgl.register_service_t<impl::bundlefile::BundlefileService>();
+}
 
 } // namespace axgl

@@ -19,5 +19,5 @@ fi
 
 find $ROOT_DIR \
   -regextype posix-extended \
-  -regex "^$ROOT_DIR/$FILE_PATTERN\\.(cpp|hpp)$" \
+  -regex "^$ROOT_DIR/$FILE_PATTERN\\.(cpp|hpp|fs|vs)$" \
   -exec clang-format -i {} \;

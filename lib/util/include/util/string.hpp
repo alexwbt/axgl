@@ -72,7 +72,10 @@ constexpr std::size_t hash_string(const char* str, const std::size_t hash = 5381
   return (*str == '\0') ? hash : hash_string(str + 1, (hash * 33) ^ static_cast<std::size_t>(*str));
 }
 
-constexpr std::size_t hash_string(const std::string& value) { return hash_string(value.c_str()); }
+constexpr std::size_t hash_string(const std::string& value)
+{
+  return hash_string(value.c_str());
+}
 
 inline void string_to_vec3(const std::string& value, float& x, float& y, float& z)
 {

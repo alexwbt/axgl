@@ -1,6 +1,6 @@
 #! /bin/sh
 
-FILE_PATTERN="^\(axgl\|demo\|impl\|lib\).*\\.\(cpp\|hpp\)$"
+FILE_PATTERN="^\(axgl\|demo\|impl\|lib\).*\\.\(cpp\|hpp\|vs\|fs\)$"
 FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -e "$FILE_PATTERN" | tr '\n' ' ')
 
 clang-format -i $FILES

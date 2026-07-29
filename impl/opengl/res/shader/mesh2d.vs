@@ -1,8 +1,8 @@
 #version 410 core
 
-layout (location = 0) in vec2 position;
-layout (location = 1) in vec2 uv;
-layout (location = 2) in mat4 instance_model;
+layout(location = 0) in vec2 position;
+layout(location = 1) in vec2 uv;
+layout(location = 2) in mat4 instance_model;
 
 uniform mat4 projection_view;
 uniform mat4 projection_view_model;

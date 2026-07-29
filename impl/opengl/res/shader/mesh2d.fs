@@ -10,7 +10,6 @@ in vec2 vert_uv;
 
 out vec4 frag_color;
 
-
 vec4 texture_color()
 {
   vec4 value = texture(mesh_texture, vert_uv);
@@ -19,10 +18,7 @@ vec4 texture_color()
 
 void main()
 {
-  frag_color = use_texture
-    ? texture_color() * mesh_color
-    : mesh_color;
+  frag_color = use_texture ? texture_color() * mesh_color : mesh_color;
 
-  if (frag_color.a < alpha_discard)
-    discard;
+  if (frag_color.a < alpha_discard) discard;
 }
