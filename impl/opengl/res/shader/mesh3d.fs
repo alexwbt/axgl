@@ -168,7 +168,7 @@ vec3 calc_sun_light(Context ctx, SunLight light)
 
   // Specular
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
-  vec3 specular = diffuse_value == 0.0
+  vec3 specular = (diffuse_value == 0.0 || mesh_shininess == 0.0)
     ? vec3(0.0)
     : light.specular * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess) * ctx.frag_specular;
 
@@ -190,7 +190,7 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
 
   // Specular
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
-  vec3 specular = diffuse_value == 0.0
+  vec3 specular = (diffuse_value == 0.0 || mesh_shininess == 0.0)
     ? vec3(0.0)
     : light.specular * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess) * ctx.frag_specular;
 
@@ -218,7 +218,7 @@ vec3 calc_point_light(Context ctx, PointLight light)
 
   // Specular
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
-  vec3 specular = diffuse_value == 0.0
+  vec3 specular = (diffuse_value == 0.0 || mesh_shininess == 0.0)
     ? vec3(0.0)
     : light.specular * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess) * ctx.frag_specular;
 
