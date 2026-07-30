@@ -37,7 +37,7 @@ inline void setup(axgl::Axgl& axgl)
   // renderer
   const auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
-  renderer->set_flag(axgl::Renderer::Flag::kMultiSample, true);
-  renderer->set_value(axgl::Renderer::ValueKey::kMultiSampleCount, 8);
+  renderer->set_enable_msaa(true);
+  renderer->set_msaa_sample_count(8);
   renderer_service->set_active_renderer(renderer);
 }

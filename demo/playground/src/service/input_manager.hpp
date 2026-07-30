@@ -50,12 +50,12 @@ public:
     if (msaa_->tick == 1)
     {
       const auto& renderer = axgl_->renderer_service()->get_active_renderer();
-      renderer->toggle_flag(axgl::Renderer::Flag::kMultiSample);
+      renderer->set_enable_msaa(!renderer->get_enable_msaa());
     }
     else if (shadow_->tick == 1)
     {
       const auto& renderer = axgl_->renderer_service()->get_active_renderer();
-      renderer->toggle_flag(axgl::Renderer::Flag::kShadow);
+      renderer->set_enable_shadow(!renderer->get_enable_shadow());
     }
   }
 };
