@@ -205,7 +205,6 @@
     "fontface",
     "Framebuffer",
     "freetype",
-    "ftxui",
     "gameloop",
     "glfw",
     "imgui",

@@ -14,27 +14,45 @@ add_compile_proxy(demo_net_chatroom_fbs
   HEADER_FILES ${fbs_output_files}
 )
 
-function(chatroom_exec name)
-  add_executable(demo_net_chatroom_${name})
-  target_sources(demo_net_chatroom_${name}
-    PRIVATE
-    ./src/${name}.cpp
-  )
-  target_link_libraries(demo_net_chatroom_${name}
-    PRIVATE
-    net
-    args
-    spdlog
-    ftxui::dom
-    ftxui::screen
-    ftxui::component
-    demo_net_chatroom_fbs
-  )
+add_executable(demo_net_chatroom_server)
+target_sources(demo_net_chatroom_server PRIVATE ./src/server.cpp)
+target_link_libraries(demo_net_chatroom_server
+  PRIVATE
+  net
+  args
+  spdlog
+  demo_net_chatroom_fbs
+)
 
-  if(WIN32 AND MINGW)
-    target_link_libraries(demo_net_chatroom_${name} PRIVATE ws2_32 mswsock)
-  endif()
-endfunction()
+if(WIN32 AND MINGW)
+  target_link_libraries(demo_net_chatroom_server PRIVATE ws2_32 mswsock)
+endif()
 
-chatroom_exec(client)
-chatroom_exec(server)
+add_executable(demo_net_chatroom_client
+  ./src/client.cpp
+  ${CMAKE_SOURCE_DIR}/_external/imgui/imgui.cpp
+  ${CMAKE_SOURCE_DIR}/_external/imgui/imgui_draw.cpp
+  ${CMAKE_SOURCE_DIR}/_external/imgui/imgui_tables.cpp
+  ${CMAKE_SOURCE_DIR}/_external/imgui/imgui_widgets.cpp
+  ${CMAKE_SOURCE_DIR}/_external/imgui/misc/cpp/imgui_stdlib.cpp
+  ${CMAKE_SOURCE_DIR}/_external/imgui/backends/imgui_impl_glfw.cpp
+  ${CMAKE_SOURCE_DIR}/_external/imgui/backends/imgui_impl_opengl3.cpp
+)
+
+target_include_directories(demo_net_chatroom_client
+  PRIVATE
+  ${CMAKE_SOURCE_DIR}/_external/imgui
+)
+
+target_link_libraries(demo_net_chatroom_client
+  PRIVATE
+  net
+  args
+  glfw
+  glad
+  demo_net_chatroom_fbs
+)
+
+if(WIN32 AND MINGW)
+  target_link_libraries(demo_net_chatroom_client PRIVATE ws2_32 mswsock)
+endif()

@@ -8,7 +8,7 @@ demos).
 
 - Submodules: `git submodule update --init --recursive`. All third-party deps
   live under `_external/` (glm, glfw, spdlog, assimp, asio, flatbuffers, tracy,
-  freetype, ftxui, args, cpptrace, utfcpp, stb, imgui). They are built as part
+  freetype, args, cpptrace, utfcpp, stb, imgui). They are built as part
   of the CMake tree, not fetched.
 - Git LFS is required. `core.hooksPath` is set to `.githooks`; the hooks abort
   checkout/commit/merge/push if `git-lfs` is missing. LFS tracks `*.png`,
