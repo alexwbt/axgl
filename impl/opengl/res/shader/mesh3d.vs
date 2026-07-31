@@ -80,9 +80,22 @@ void main()
 
   if (enable_shadow) vso.light_space_position = light_pv * vec4(vso.position, 1.0);
 
-  // build a tangent->world TBN matrix when normal or height mapping is active.
-  // the bitangent's handedness is derived from the input bitangent to handle
-  // faces with flipped UV winding (e.g. the procedural cube in init_cube).
+  // Build a tangent->world TBN matrix when normal or height mapping is active.
+  //
+  // Handedness: a mesh's UV layout can have inconsistent winding across faces
+  // (e.g. init_cube has 6 faces, some right-handed, some left-handed). If we
+  // unconditionally set b = cross(n, t) we force every face to right-handed,
+  // which flips the V axis of the tangent space on originally left-handed
+  // faces. Those faces' normal maps are then mirrored on V, so bumps become
+  // dents and the lighting appears to "shift" as the object rotates and
+  // different faces come into view.
+  //
+  // To avoid this, the bitangent's handedness sign (w) is derived from the
+  // input bitangent: w = sign(dot(cross(n, t), b_in)). The reconstructed,
+  // orthonormal bitangent is then scaled by w so each face's TBN basis matches
+  // its UV winding. calculate_tbn() in the C++ mesh component performs the
+  // same handedness derivation for procedurally-generated meshes; this shader
+  // path handles assimp-loaded meshes that provide their own bitangents.
   if (use_normal_texture || use_height_texture)
   {
     vec3 t = normalize(normal_matrix * tangent);

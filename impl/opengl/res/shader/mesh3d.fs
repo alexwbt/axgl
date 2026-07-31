@@ -314,8 +314,12 @@ void main()
   // specular: from texture or uniform
   ctx.frag_specular = use_specular_texture ? texture(specular_texture, uv).rgb * mesh_specular : vec3(mesh_specular);
 
-  // normal: tangent-space sample transformed to world space via TBN, or the
-  // interpolated world-space normal when no normal map is bound
+  // Normal: normal maps store a tangent-space direction encoded as [0,1] RGB.
+  // Decode to [-1,1], then transform to world space via vso.tbn (tangent->world
+  // matrix). This is done per-fragment using the single interpolated TBN rather
+  // than per-vertex in the VS, so the basis is consistent across the triangle.
+  // When no normal map is bound, use the interpolated world-space normal.
+  // See mesh3d.vs for why the TBN's handedness (bitangent sign) matters.
   ctx.frag_normal
     = use_normal_texture ? normalize(vso.tbn * (texture(normal_texture, uv).rgb * 2.0 - 1.0)) : normalize(vso.normal);
 

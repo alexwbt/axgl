@@ -141,8 +141,23 @@ public:
         bitangents_[i2] += bitangent;
       }
     }
-    // orthogonalize and normalize, preserving the handedness sign from the
-    // raw bitangent so faces with flipped UV winding keep a consistent TBN basis
+    // Orthogonalize and normalize the tangent/bitangent against the normal.
+    //
+    // Handedness preservation (the w sign below) is critical for correct
+    // normal mapping. A mesh's UV layout can have inconsistent winding across
+    // faces (e.g. init_cube's 6 faces: some are right-handed, some left-handed).
+    // The raw bitangent computed above encodes that handedness via the sign of
+    // dot(cross(n, t), b). If we unconditionally set b = cross(n, t) we force
+    // every face to right-handed, which flips the V axis of the tangent space
+    // on originally left-handed faces. The result: those faces' normal maps are
+    // mirrored on V, so bumps become dents and the lighting appears to "shift"
+    // as the object rotates and different faces come into view.
+    //
+    // Instead we capture the original handedness sign (w) from the raw
+    // bitangent and apply it to the reconstructed, orthonormal bitangent so
+    // each face's TBN basis matches its UV winding. The vertex shader
+    // (mesh3d.vs) performs the same handedness derivation from the input
+    // bitangent for assimp-loaded meshes that bypass calculate_tbn().
     for (size_t i = 0; i < vertices_.size(); ++i)
     {
       auto& n = normals_[i];
