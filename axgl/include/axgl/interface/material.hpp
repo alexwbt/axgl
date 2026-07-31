@@ -50,6 +50,7 @@ public:
   virtual void set_tiling(glm::vec2 tiling) = 0;
   virtual void set_offset(glm::vec2 offset) = 0;
   virtual void set_depth_scale(float depth_scale) = 0;
+  virtual void set_normal_scale(float normal_scale) = 0;
   virtual void set_property(const std::string& key, const std::string& value) = 0;
   virtual void add_texture(axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture) = 0;
 
@@ -64,6 +65,7 @@ public:
   [[nodiscard]] virtual glm::vec2 get_tiling() const = 0;
   [[nodiscard]] virtual glm::vec2 get_offset() const = 0;
   [[nodiscard]] virtual float get_depth_scale() const = 0;
+  [[nodiscard]] virtual float get_normal_scale() const = 0;
   [[nodiscard]] virtual std::string get_property(const std::string& key) const = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Texture> get_texture(axgl::Material::TextureType type) const = 0;
 };

@@ -105,6 +105,7 @@ uniform PointLight point_lights[32];
 uniform bool transparent;
 uniform float alpha_discard;
 uniform float height_scale;
+uniform float normal_scale;
 
 uniform bool enable_shadow;
 uniform sampler2D shadow_map;
@@ -320,8 +321,9 @@ void main()
   // than per-vertex in the VS, so the basis is consistent across the triangle.
   // When no normal map is bound, use the interpolated world-space normal.
   // See mesh3d.vs for why the TBN's handedness (bitangent sign) matters.
-  ctx.frag_normal
-    = use_normal_texture ? normalize(vso.tbn * (texture(normal_texture, uv).rgb * 2.0 - 1.0)) : normalize(vso.normal);
+  vec3 normal_sample = texture(normal_texture, uv).rgb * 2.0 - 1.0;
+  normal_sample.xy *= normal_scale;
+  ctx.frag_normal = use_normal_texture ? normalize(vso.tbn * normal_sample) : normalize(vso.normal);
 
   // accumulate light contributions from all active lights
   vec3 result = vec3(0.0);

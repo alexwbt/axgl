@@ -73,6 +73,7 @@ public:
     shader_.set_vec2("uv_offset", uv_offset_);
     shader_.set_float("diffuse_texture_gamma", 2.2f);
     shader_.set_float("height_scale", height_scale_);
+    shader_.set_float("normal_scale", normal_scale_);
 
     // shadow
     const bool enable_shadow = context.lights[0].shadow_map != nullptr;
