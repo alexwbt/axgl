@@ -52,7 +52,7 @@ class ModelLoader
   {
     Assimp::Importer importer;
     const auto& data = resource_service_->get_resource(resource_key_);
-    const auto* ai_scene = importer.ReadFileFromMemory(data.data(), data.size(), 0);
+    const auto* ai_scene = importer.ReadFileFromMemory(data.data(), data.size(), aiProcess_CalcTangentSpace);
 #ifdef AXGL_DEBUG
     if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode)
     {

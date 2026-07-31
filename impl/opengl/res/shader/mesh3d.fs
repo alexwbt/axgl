@@ -184,7 +184,7 @@ vec3 calc_sun_light(Context ctx, SunLight light)
 vec3 calc_spot_light(Context ctx, SpotLight light)
 {
   // Diffuse
-  vec3 light_dir = normalize(light.position - vso.position);
+  vec3 light_dir = normalize(vso.tbn * light.position - vso.position);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * ctx.frag_diffuse;
 
@@ -198,11 +198,11 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
   vec3 ambient = light.ambient * ctx.frag_diffuse;
 
   // Attenuation
-  float dis = length(light.position - vso.position);
+  float dis = length(vso.tbn * light.position - vso.position);
   float attenuation = 1.0 / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
   // Cut Off
-  float theta = dot(light_dir, normalize(-light.direction));
+  float theta = dot(light_dir, normalize(-(vso.tbn * light.direction)));
   float epsilon = light.cut_off - light.outer_cut_off;
   float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
 
@@ -212,7 +212,7 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
 vec3 calc_point_light(Context ctx, PointLight light)
 {
   // Diffuse
-  vec3 light_dir = normalize(light.position - vso.position);
+  vec3 light_dir = normalize(vso.tbn * light.position - vso.position);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * ctx.frag_diffuse;
 
@@ -226,7 +226,7 @@ vec3 calc_point_light(Context ctx, PointLight light)
   vec3 ambient = light.ambient * ctx.frag_diffuse;
 
   // Attenuation
-  float dis = length(light.position - vso.position);
+  float dis = length(vso.tbn * light.position - vso.position);
   float attenuation = 1.0 / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
   return (ambient + diffuse + specular) * attenuation;

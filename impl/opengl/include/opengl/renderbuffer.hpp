@@ -1,5 +1,6 @@
 #pragma once
 
+#include <axgl/common.hpp>
 #include <glad/glad.h>
 
 namespace opengl
