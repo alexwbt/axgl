@@ -226,6 +226,7 @@
     "skybox",
     "spdlog",
     "stbi",
+    "stdlib",
     "ubyte",
     "Unrenderable",
     "utfcpp"
