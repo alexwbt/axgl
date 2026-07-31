@@ -120,7 +120,7 @@ class ModelLoader
         bitangents.emplace_back(ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y, ai_mesh->mBitangents[i].z);
       }
       mesh->set_tangents(tangents);
-      mesh->set_bitangents(tangents);
+      mesh->set_bitangents(bitangents);
     }
 
     if (ai_mesh->HasTextureCoords(0))
