@@ -141,14 +141,16 @@ public:
         bitangents_[i2] += bitangent;
       }
     }
-    // orthogonalize and normalize
+    // orthogonalize and normalize, preserving the handedness sign from the
+    // raw bitangent so faces with flipped UV winding keep a consistent TBN basis
     for (size_t i = 0; i < vertices_.size(); ++i)
     {
       auto& n = normals_[i];
       auto& t = tangents_[i];
       auto& b = bitangents_[i];
+      const float w = (glm::dot(glm::cross(n, t), b) < 0.0f) ? -1.0f : 1.0f;
       t = glm::normalize(t - n * glm::dot(n, t));
-      b = glm::cross(n, t);
+      b = w * glm::cross(n, t);
       t = glm::normalize(t);
       b = glm::normalize(b);
     }

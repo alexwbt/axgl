@@ -1,4 +1,40 @@
 #version 410 core
+/**
+ * mesh3d.vs - Vertex shader for 3D mesh rendering (Blinn-Phong + normal/height mapping).
+ *
+ * Outputs world-space position, normal, and a tangent->world TBN matrix to the
+ * fragment shader. Lighting and parallax are computed in world space in the FS;
+ * the TBN matrix is only used to transform normal-map samples (tangent->world)
+ * and to derive the tangent-space view direction for parallax occlusion mapping.
+ *
+ * Inputs:
+ *   location 0: position       - vertex position (object space)
+ *   location 1: normal         - vertex normal (object space)
+ *   location 2: tangent        - vertex tangent (object space)
+ *   location 3: bitangent     - vertex bitangent (object space, used for handedness)
+ *   location 4: uv            - texture coordinates
+ *   location 5: model         - per-instance model matrix (instanced rendering)
+ *
+ * Uniforms:
+ *   camera_pos          - world-space camera position
+ *   projection_view     - combined projection * view matrix
+ *   light_pv            - light projection * view matrix (for shadow mapping)
+ *   uv_scale / uv_offset- texture coordinate transform
+ *   use_normal_texture  - normal map present (enables TBN construction)
+ *   use_height_texture  - height map present (enables TBN construction for POM)
+ *   enable_shadow       - shadow mapping enabled
+ *
+ * Outputs (vso):
+ *   camera_pos          - world-space camera position (untransformed)
+ *   position            - world-space fragment position
+ *   normal              - world-space normal (normalized)
+ *   uv                  - scaled/offset texture coordinates
+ *   tbn                 - tangent->world matrix (columns: t, b, n); identity if
+ *                        no normal/height texture
+ *   light_space_position - clip-space position in the light's frustum (shadows)
+ *
+ * Note: gl_Position.x is negated to match the engine's handedness convention.
+ */
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
@@ -13,6 +49,7 @@ uniform mat4 light_pv;
 uniform vec2 uv_scale;
 uniform vec2 uv_offset;
 uniform bool use_normal_texture;
+uniform bool use_height_texture;
 uniform bool enable_shadow;
 
 out VertexShaderOutput
@@ -30,9 +67,11 @@ void main()
 {
   vec4 position_v4 = vec4(position, 1.0);
   gl_Position = projection_view * model * position_v4;
+  // negate x to match the engine's handedness convention
   gl_Position.x = -gl_Position.x;
 
-  mat3 normal_matrix = mat3(model);
+  // inverse-transpose for correct normals under non-uniform scaling
+  mat3 normal_matrix = transpose(inverse(mat3(model)));
 
   vso.camera_pos = camera_pos;
   vso.position = vec3(model * position_v4);
@@ -41,13 +80,16 @@ void main()
 
   if (enable_shadow) vso.light_space_position = light_pv * vec4(vso.position, 1.0);
 
-  if (use_normal_texture)
+  // build a tangent->world TBN matrix when normal or height mapping is active.
+  // the bitangent's handedness is derived from the input bitangent to handle
+  // faces with flipped UV winding (e.g. the procedural cube in init_cube).
+  if (use_normal_texture || use_height_texture)
   {
     vec3 t = normalize(normal_matrix * tangent);
-    vec3 b = normalize(normal_matrix * bitangent);
-    vso.tbn = transpose(mat3(t, b, vso.normal));
-    vso.position = vso.tbn * vso.position;
-    vso.camera_pos = vso.tbn * vso.camera_pos;
+    vec3 b_in = normalize(normal_matrix * bitangent);
+    float w = (dot(cross(vso.normal, t), b_in) < 0.0) ? -1.0 : 1.0;
+    vec3 b = w * cross(vso.normal, t);
+    vso.tbn = mat3(t, b, vso.normal);
   }
   else vso.tbn = mat3(1.0);
 }

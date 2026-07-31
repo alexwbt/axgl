@@ -1,4 +1,33 @@
 #version 410 core
+/**
+ * mesh3d.fs - Fragment shader for 3D mesh rendering.
+ *
+ * Implements Blinn-Phong lighting with support for:
+ *   - Diffuse/specular/normal/height textures
+ *   - Parallax occlusion mapping (POM) for height textures
+ *   - Normal mapping (tangent-space samples transformed to world space)
+ *   - Sun, point, and spot lights (up to 32 each)
+ *   - Shadow mapping with 3x3 PCF
+ *   - Weighted blended transparency (output to MRT: color + reveal)
+ *
+ * Coordinate spaces:
+ *   All lighting is computed in world space. The TBN matrix from the vertex
+ *   shader (tangent->world) is used to transform normal-map samples to world
+ *   space, and its transpose (world->tangent) is used only inside
+ *   calc_height_offset to derive the tangent-space view direction for POM.
+ *   Light positions/directions and the fragment position are all world space.
+ *
+ * Texture units:
+ *   0: diffuse  (gamma-corrected via diffuse_texture_gamma)
+ *   1: specular
+ *   2: normal   (tangent-space, [0,1] -> [-1,1])
+ *   3: height  (single-channel, sampled at base mip via textureLod)
+ *   5: shadow map
+ *
+ * Outputs:
+ *   location 0: frag_color - weighted, alpha-premultiplied color
+ *   location 1: reveal     - per-pixel coverage for weighted blended OIT
+ */
 
 struct SunLight
 {
@@ -94,28 +123,44 @@ vso;
 layout(location = 0) out vec4 frag_color;
 layout(location = 1) out float reveal;
 
+/**
+ * Parallax occlusion mapping: offsets texture coordinates based on the view
+ * direction and a height map to simulate surface relief.
+ *
+ * The world-space view direction is converted to tangent space via the
+ * transpose of vso.tbn (world->tangent). The ray is then marched through
+ * depth layers; UVs are shifted opposite to the tangent-space view xy.
+ *
+ * view_dir.z is clamped to avoid unbounded UV displacement at grazing angles.
+ * textureLod(..., 0) forces base-mip sampling to preserve height-field detail.
+ */
 vec2 calc_height_offset(Context ctx)
 {
-  // number of depth layers (min: 8, max: 32)
-  float layers = mix(8.0, 32.0, abs(dot(vec3(0.0, 0.0, 1.0), ctx.view_dir)));
+  // tangent-space view direction (TBN columns are t,b,n so transpose maps world->tangent)
+  vec3 view_dir_tangent = transpose(vso.tbn) * ctx.view_dir;
+
+  // number of depth layers (min: 8, max: 32), more layers when viewing head-on
+  float layers = mix(8.0, 32.0, abs(view_dir_tangent.z));
   // calculate the size of each layer
   float layer_depth = 1.0 / layers;
   // depth of current layer
   float current_layer_depth = 0.0;
   // the amount to shift the texture coordinates per layer (from vector P)
-  vec2 P = ctx.view_dir.xy / ctx.view_dir.z * height_scale;
+  // clamp view_dir.z to avoid unbounded displacement at grazing angles
+  vec2 P = view_dir_tangent.xy / max(abs(view_dir_tangent.z), 0.1) * height_scale;
   vec2 delta_uv = P / layers;
 
   // initial values
   vec2 current_uv = vso.uv;
-  float current_height_map_value = texture(height_texture, current_uv).r;
+  float current_height_map_value = textureLod(height_texture, current_uv, 0.0).r;
 
+  // march layers until the ray crosses the height-field surface
   while (current_layer_depth < current_height_map_value)
   {
     // shift texture coordinates along direction of P
     current_uv -= delta_uv;
     // get depth map value at current texture coordinates
-    current_height_map_value = texture(height_texture, current_uv).r;
+    current_height_map_value = textureLod(height_texture, current_uv, 0.0).r;
     // get depth of next layer
     current_layer_depth += layer_depth;
   }
@@ -125,25 +170,28 @@ vec2 calc_height_offset(Context ctx)
 
   // get depth after and before collision for linear interpolation
   float after_depth = current_height_map_value - current_layer_depth;
-  float before_depth = texture(height_texture, prev_uv).r - current_layer_depth + layer_depth;
+  float before_depth = textureLod(height_texture, prev_uv, 0.0).r - current_layer_depth + layer_depth;
 
-  // interpolation of texture coordinates
+  // interpolation of texture coordinates between the two surrounding layers
   float weight = after_depth / (after_depth - before_depth);
   return prev_uv * weight + current_uv * (1.0 - weight);
 }
 
+/**
+ * Shadow factor via 3x3 percentage-closer filtering (PCF).
+ * Returns 0.0 (fully lit) to 1.0 (fully shadowed).
+ * Fragments beyond the light frustum (z > 1.0) are considered lit.
+ */
 float calc_shadow()
 {
+  // perspective divide and remap to [0,1]
   vec3 projection_coords = vso.light_space_position.xyz / vso.light_space_position.w;
   projection_coords = projection_coords * 0.5 + 0.5;
 
+  // beyond the far plane: not in shadow
   if (projection_coords.z > 1.0) return 0.0;
 
-  //  float closest_depth = texture(shadow_map, projection_coords.xy).r;
-  //  float current_depth = projection_coords.z;
-  //  float bias = max(0.05 * (1.0 - dot(vso.normal, light_dir)), 0.005);
-  //  float shadow = current_depth - bias > closest_depth  ? 1.0 : 0.0;
-  //  float shadow = current_depth > closest_depth  ? 1.0 : 0.0;
+  // 3x3 PCF: average 9 depth comparisons around the fragment
   float shadow = 0.0;
   vec2 texel_size = 1.0 / textureSize(shadow_map, 0);
   for (int x = -1; x <= 1; ++x)
@@ -159,14 +207,20 @@ float calc_shadow()
   return shadow;
 }
 
+/**
+ * Sun (directional) light contribution.
+ * light.direction points from the light toward the scene; negate for the
+ * light-to-surface direction. Applies shadowing from the first light's
+ * shadow map.
+ */
 vec3 calc_sun_light(Context ctx, SunLight light)
 {
   // Diffuse
-  vec3 light_dir = normalize(vso.tbn * -light.direction);
+  vec3 light_dir = normalize(-light.direction);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * ctx.frag_diffuse;
 
-  // Specular
+  // Specular (skipped when the surface faces away or shininess is 0 to avoid pow(0,0) NaN)
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
   vec3 specular = (diffuse_value == 0.0 || mesh_shininess == 0.0)
     ? vec3(0.0)
@@ -181,10 +235,14 @@ vec3 calc_sun_light(Context ctx, SunLight light)
   return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
+/**
+ * Spot light contribution with distance attenuation and a soft cone cutoff.
+ * light.direction points from the light toward the scene.
+ */
 vec3 calc_spot_light(Context ctx, SpotLight light)
 {
   // Diffuse
-  vec3 light_dir = normalize(vso.tbn * light.position - vso.position);
+  vec3 light_dir = normalize(light.position - vso.position);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * ctx.frag_diffuse;
 
@@ -198,21 +256,24 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
   vec3 ambient = light.ambient * ctx.frag_diffuse;
 
   // Attenuation
-  float dis = length(vso.tbn * light.position - vso.position);
+  float dis = length(light.position - vso.position);
   float attenuation = 1.0 / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
-  // Cut Off
-  float theta = dot(light_dir, normalize(-(vso.tbn * light.direction)));
+  // Cut Off (soft edge between cut_off and outer_cut_off)
+  float theta = dot(light_dir, normalize(-light.direction));
   float epsilon = light.cut_off - light.outer_cut_off;
   float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
 
   return (ambient + (diffuse + specular) * intensity) * attenuation;
 }
 
+/**
+ * Point light contribution with distance attenuation (no cutoff cone).
+ */
 vec3 calc_point_light(Context ctx, PointLight light)
 {
   // Diffuse
-  vec3 light_dir = normalize(vso.tbn * light.position - vso.position);
+  vec3 light_dir = normalize(light.position - vso.position);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * ctx.frag_diffuse;
 
@@ -226,7 +287,7 @@ vec3 calc_point_light(Context ctx, PointLight light)
   vec3 ambient = light.ambient * ctx.frag_diffuse;
 
   // Attenuation
-  float dis = length(vso.tbn * light.position - vso.position);
+  float dis = length(light.position - vso.position);
   float attenuation = 1.0 / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
   return (ambient + diffuse + specular) * attenuation;
@@ -234,36 +295,42 @@ vec3 calc_point_light(Context ctx, PointLight light)
 
 void main()
 {
+  // alpha test: discard transparent fragments for non-blended passes
   if (mesh_color.a < alpha_discard) discard;
 
   Context ctx;
+  // world-space view direction (from fragment toward camera)
   ctx.view_dir = normalize(vso.camera_pos - vso.position);
 
+  // parallax occlusion mapping: offset UVs based on the height map and view
+  // direction; falls back to the base UVs when no height texture is bound
   vec2 uv = use_height_texture ? calc_height_offset(ctx) : vso.uv;
-  //  if(uv.x > 1.0 || uv.y > 1.0 || uv.x < 0.0 || uv.y < 0.0)
-  //    discard;
 
+  // diffuse: gamma-decode the texture then tint with mesh_color
   ctx.frag_diffuse = use_diffuse_texture
     ? pow(texture(diffuse_texture, uv).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
     : mesh_color.rgb;
 
+  // specular: from texture or uniform
   ctx.frag_specular = use_specular_texture ? texture(specular_texture, uv).rgb * mesh_specular : vec3(mesh_specular);
 
-  ctx.frag_normal = use_normal_texture ? normalize(texture(normal_texture, uv).rgb * 2.0 - 1.0) : vec3(vso.normal);
+  // normal: tangent-space sample transformed to world space via TBN, or the
+  // interpolated world-space normal when no normal map is bound
+  ctx.frag_normal
+    = use_normal_texture ? normalize(vso.tbn * (texture(normal_texture, uv).rgb * 2.0 - 1.0)) : normalize(vso.normal);
 
+  // accumulate light contributions from all active lights
   vec3 result = vec3(0.0);
-
-  // sun lights
   for (int i = 0; i < sun_lights_size; ++i)
     result += calc_sun_light(ctx, sun_lights[i]);
-  // spot lights
   for (int i = 0; i < spot_lights_size; ++i)
     result += calc_spot_light(ctx, spot_lights[i]);
-  // point lights
   for (int i = 0; i < point_lights_size; ++i)
     result += calc_point_light(ctx, point_lights[i]);
 
-  // weight function for blending
+  // weighted blended order-independent transparency (OIT):
+  // weight by alpha and depth so that transparent surfaces blend correctly
+  // without sorted draw order. opaque passes use weight = 1.0.
   float weight = transparent
     ? clamp(pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0), 1e-2, 3e3)
     : 1.0f;
