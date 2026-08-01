@@ -27,7 +27,7 @@ protected:
     material->add_texture(axgl::Material::TextureType::kSpecular, specular);
     material->add_texture(axgl::Material::TextureType::kNormal, normal);
     material->add_texture(axgl::Material::TextureType::kHeight, height);
-    material->set_depth_scale(0.05f);
+    material->set_depth_scale(0.01f);
     return material;
   }
 };
