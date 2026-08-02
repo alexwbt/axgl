@@ -1,8 +1,7 @@
 ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 PRESET ?= debug
-TARGET ?=
-RUN_TARGET ?= demo_playground
+TARGET ?= demo_playground
 
 CMAKE ?= cmake
 CLEAN := $(ROOT)/_scripts/clean.sh
@@ -11,7 +10,7 @@ FORMAT := $(ROOT)/_scripts/format.sh
 
 .DEFAULT_GOAL := debug
 
-.PHONY: all debug release configure target run format tidy clean setup help
+.PHONY: all debug release target run format tidy clean setup help
 .PHONY: demo_%
 
 all: debug
@@ -22,9 +21,6 @@ debug:
 release:
 	$(BUILD) release
 
-configure:
-	$(BUILD) $(PRESET)
-
 target:
 	$(BUILD) $(PRESET) --target $(TARGET)
 
@@ -32,10 +28,9 @@ demo_%:
 	$(BUILD) $(PRESET) --target $@
 
 run:
-	$(BUILD) $(PRESET) --target $(RUN_TARGET)
-	@BIN="$(ROOT)/_bin/$(RUN_TARGET).exe"; \
-	[ -f "$$BIN" ] || BIN="$(ROOT)/_bin/$(RUN_TARGET)"; \
-	[ -f "$$BIN" ] || { echo "error: $(RUN_TARGET) not built" >&2; exit 1; }; \
+	@BIN="$(ROOT)/_bin/$(TARGET).exe"; \
+	[ -f "$$BIN" ] || BIN="$(ROOT)/_bin/$(TARGET)"; \
+	[ -f "$$BIN" ] || { echo "error: $(TARGET) not built" >&2; exit 1; }; \
 	echo "== running $$BIN"; \
 	"$$BIN"
 
@@ -55,9 +50,8 @@ help:
 	@echo "axgl build targets"
 	@echo "  make                             build debug preset"
 	@echo "  make release                     build release preset"
-	@echo "  make target TARGET=<name>        build one target"
-	@echo "  make run [RUN_TARGET=<name>]     build and run (default: demo_playground)"
-	@echo "  make configure [PRESET=release]  cmake configure only"
+	@echo "  make target TARGET=<name>        build one target (default: demo_playground)"
+	@echo "  make run [TARGET=<name>]         build and run (default: demo_playground)"
 	@echo "  make <demo_target>               e.g. make demo_window"
 	@echo "  make format                      clang-format"
 	@echo "  make tidy                        clang-tidy + clang-format"

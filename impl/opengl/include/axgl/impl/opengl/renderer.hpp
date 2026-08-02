@@ -156,7 +156,7 @@ private:
     screen_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
     screen_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *screen_texture_);
     screen_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
-    screen_framebuffer_->check_status_complete("renderer_screen_framebuffer");
+    screen_framebuffer_->check_status_complete("axgl::impl::opengl::Renderer -> screen_framebuffer_");
   }
 
   void setup_blend_framebuffer(const glm::ivec2& viewport)
@@ -174,7 +174,7 @@ private:
     blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
     blend_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
     blend_framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
-    blend_framebuffer_->check_status_complete("renderer_blend_framebuffer");
+    blend_framebuffer_->check_status_complete("axgl::impl::opengl::Renderer -> blend_framebuffer_");
   }
 
   void setup_msaa_framebuffer(const glm::ivec2& viewport)
@@ -188,7 +188,7 @@ private:
     msaa_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
     msaa_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *msaa_texture_);
     msaa_framebuffer_->attach_renderbuffer(GL_DEPTH_STENCIL_ATTACHMENT, *msaa_depth_stencil_);
-    msaa_framebuffer_->check_status_complete("renderer_multisample_framebuffer");
+    msaa_framebuffer_->check_status_complete("axgl::impl::opengl::Renderer -> msaa_framebuffer_");
   }
 
   void setup_shadow_framebuffer()
@@ -244,7 +244,7 @@ private:
     {
       shadow_framebuffer_->use();
       shadow_framebuffer_->attach_texture_layer(GL_DEPTH_ATTACHMENT, *shadow_texture_, c);
-      shadow_framebuffer_->check_status_complete("renderer_shadow_framebuffer");
+      shadow_framebuffer_->check_status_complete("axgl::impl::opengl::Renderer -> shadow_framebuffer_");
       glClearDepth(1.0);
       glClear(GL_DEPTH_BUFFER_BIT);
 

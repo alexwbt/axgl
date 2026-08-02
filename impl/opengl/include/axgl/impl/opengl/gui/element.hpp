@@ -34,19 +34,24 @@ public:
     {
       should_render_content_ = false;
       content_scale_ = context.scale;
-      const auto& style = current_style();
-      const auto& text_service = context.axgl->text_service();
-      content_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(text_service->create_texture({
-        .value = content_,
-        .fonts = style->get_fonts(),
-        .font_color = style->get_font_color(),
-        .font_size = style->get_font_size() * content_scale_,
-        .vertical = false,
-      }));
+
+      if (!content_.empty())
+      {
+        const auto& style = current_style();
+        const auto& text_service = context.axgl->text_service();
+        content_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(text_service->create_texture({
+          .value = content_,
+          .fonts = style->get_fonts(),
+          .font_color = style->get_font_color(),
+          .font_size = style->get_font_size() * content_scale_,
+          .vertical = false,
+        }));
 #ifdef AXGL_DEBUG
-      if (!content_texture_)
-        AXGL_LOG_WARN("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::gui::Element");
+        if (!content_texture_)
+          AXGL_LOG_WARN("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::gui::Element");
 #endif
+      }
+      else content_texture_ = nullptr;
     }
   }
 

@@ -63,28 +63,28 @@ int main()
     element1->hover_style()->with(hover_style);
     element1->active_style()->with(active_style);
     element1->set_content("Hello world");
-    // {
-    //   const auto element2 = gui_service->create_element();
-    //   element1->children().add(element2);
-    //   element2->style()
-    //     ->with(square_style)                  //
-    //     ->set_color({1.0f, 0.5f, 0.3f, 1.0f}) //
-    //     ;
-    //   element2->hover_style()->with(hover_style);
-    //   element2->active_style()->with(active_style);
-    //   {
-    //     const auto element3 = gui_service->create_element();
-    //     element2->children().add(element3);
-    //     element3->style()
-    //       ->with(square_style)                  //
-    //       ->set_position({-20.0f, 10.0f})       //
-    //       ->set_size({300.0f, 10.0f})           //
-    //       ->set_color({0.0f, 0.5f, 0.3f, 1.0f}) //
-    //       ;
-    //     element3->hover_style()->with(hover_style);
-    //     element3->active_style()->with(active_style);
-    //   }
-    // }
+    {
+      const auto element2 = gui_service->create_element();
+      element1->children().add(element2);
+      element2->style()
+        ->with(square_style)                  //
+        ->set_color({1.0f, 0.5f, 0.3f, 1.0f}) //
+        ;
+      element2->hover_style()->with(hover_style);
+      element2->active_style()->with(active_style);
+      {
+        const auto element3 = gui_service->create_element();
+        element2->children().add(element3);
+        element3->style()
+          ->with(square_style)                  //
+          ->set_position({-20.0f, 10.0f})       //
+          ->set_size({300.0f, 10.0f})           //
+          ->set_color({0.0f, 0.5f, 0.3f, 1.0f}) //
+          ;
+        element3->hover_style()->with(hover_style);
+        element3->active_style()->with(active_style);
+      }
+    }
   }
 
   axgl.run();
