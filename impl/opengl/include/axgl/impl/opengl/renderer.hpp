@@ -10,6 +10,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/glfw/window.hpp>
+#include <axgl/impl/opengl/cascaded_shadow_map.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
@@ -55,7 +56,11 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   // Shadow Map
   //
   bool enable_shadow_ = false;
+  GLsizei shadow_map_cascade_levels_ = static_cast<GLsizei>(CascadedShadowMap::kCascadeCount);
   GLsizei shadow_map_size_ = 1024;
+  // clamps the effective far used for cascade splitting so resolution
+  // concentrates on the visible band rather than stretching to camera_far.
+  float shadow_distance_ = 100.0f;
   std::unique_ptr<::opengl::Texture> shadow_texture_;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer_;
 
@@ -107,6 +112,9 @@ public:
         .view_matrix = camera->view_matrix(),
         .projection_matrix = camera->projection_matrix(),
         .projection_view_matrix = camera->projection_view_matrix(),
+        .inverse_projection_view_matrix = glm::inverse(camera->projection_view_matrix()),
+        .camera_near = camera->near_clip,
+        .camera_far = camera->far_clip,
       };
 
       std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*> render_components;
@@ -185,38 +193,67 @@ private:
 
   void setup_shadow_framebuffer()
   {
+    // one 2D-array texture layer per cascade; the FBO attaches a single layer
+    // at a time in the render loop below.
     shadow_texture_ = std::make_unique<::opengl::Texture>();
-    shadow_texture_->load_texture(
-      0, GL_DEPTH_COMPONENT, shadow_map_size_, shadow_map_size_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    shadow_texture_->load_texture_array(
+      0, GL_DEPTH_COMPONENT, shadow_map_size_, shadow_map_size_, shadow_map_cascade_levels_, 0, GL_DEPTH_COMPONENT,
+      GL_FLOAT, nullptr);
     shadow_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     shadow_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     shadow_texture_->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     shadow_texture_->set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     shadow_texture_->set_parameter(GL_TEXTURE_BORDER_COLOR, std::array{1.0f, 1.0f, 1.0f, 1.0f});
+    shadow_texture_->set_parameter(GL_TEXTURE_COMPARE_MODE, GL_NONE);
     shadow_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
-    shadow_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *shadow_texture_);
   }
 
   void render_shadow_pass(
     impl::opengl::renderer::RenderContext& render_context,
     const impl::opengl::renderer::PipelineContext& pipeline_context)
   {
+    if (render_context.lights.empty()) return;
+
+    // find the shadow-casting sun light (cascades are sun-only); point/spot
+    // keep the single light_pv fallback path in gather_render_components.
+    impl::opengl::renderer::LightContext* sun_light_context = nullptr;
+    for (auto& lc : render_context.lights)
+    {
+      if (lc.light && lc.light->type == axgl::Light::Type::kSun && lc.light->casts_shadows)
+      {
+        sun_light_context = &lc;
+        break;
+      }
+    }
+    if (!sun_light_context) return;
+
+    sun_light_context->cascades = CascadedShadowMap::compute_cascades(
+      *sun_light_context->light, render_context.inverse_projection_view_matrix, render_context.camera_near,
+      render_context.camera_far, shadow_distance_);
+
     glViewport(0, 0, shadow_map_size_, shadow_map_size_);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthRange(0.0f, 1.0f);
 
-    shadow_framebuffer_->use();
-    glClearDepth(1.0);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    if (!render_context.lights.empty())
+    AXGL_PROFILE_SCOPE("Render Shadow Map");
+    // render the scene once per cascade: attach layer c, set its light_pv,
+    // clear, draw. the depth_only shader reads light_pv from the LightContext
+    // so no shadow-pass shader changes are needed.
+    for (GLsizei c = 0; c < shadow_map_cascade_levels_; ++c)
     {
-      AXGL_PROFILE_SCOPE("Render Shadow Map");
-      for (const auto& render_func : pipeline_context.shadow_pass)
-        render_func(render_context.lights[0]);
+      shadow_framebuffer_->use();
+      shadow_framebuffer_->attach_texture_layer(GL_DEPTH_ATTACHMENT, *shadow_texture_, c);
+      shadow_framebuffer_->check_status_complete("renderer_shadow_framebuffer");
+      glClearDepth(1.0);
+      glClear(GL_DEPTH_BUFFER_BIT);
 
-      render_context.lights[0].shadow_map = shadow_texture_.get();
+      sun_light_context->light_pv = sun_light_context->cascades[c].light_pv;
+      for (const auto& render_func : pipeline_context.shadow_pass)
+        render_func(*sun_light_context);
     }
+
+    sun_light_context->shadow_map = shadow_texture_.get();
   }
 
   void render_opaque_pass(
@@ -391,7 +428,11 @@ private:
           impl::opengl::renderer::LightContext light_context;
           light_context.light = &light_comp->light;
 
-          if (enable_shadow_ && light_context.light->casts_shadows)
+          // sun lights get per-cascade PVs computed in render_shadow_pass;
+          // point/spot keep the single-matrix fallback from Light::get_pv_matrix.
+          if (
+            enable_shadow_ && light_context.light->casts_shadows
+            && light_context.light->type != axgl::Light::Type::kSun)
             light_context.light_pv = light_context.light->get_pv_matrix();
 
           render_context.lights.emplace_back(light_context);
@@ -463,11 +504,13 @@ public:
   {
     shadow_map_size_ = util::narrow<GLsizei>(shadow_map_size);
   }
+  void set_shadow_distance(float shadow_distance) override { shadow_distance_ = shadow_distance; }
   [[nodiscard]] bool get_enable_shadow() const override { return enable_shadow_; }
   [[nodiscard]] std::uint32_t get_shadow_map_size() const override
   {
     return util::narrow<std::uint32_t>(shadow_map_size_);
   }
+  [[nodiscard]] float get_shadow_distance() const override { return shadow_distance_; }
 };
 
 } // namespace axgl::impl::opengl

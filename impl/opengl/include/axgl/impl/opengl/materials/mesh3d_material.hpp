@@ -5,6 +5,7 @@
 #include <axgl/common.hpp>
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/opengl/cascaded_shadow_map.hpp>
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/renderer/render_context.hpp>
 #include <axgl/impl/opengl/texture.hpp>
@@ -75,14 +76,35 @@ public:
     shader_.set_float("height_scale", height_scale_);
     shader_.set_float("normal_scale", normal_scale_);
 
-    // shadow
-    const bool enable_shadow = context.lights[0].shadow_map != nullptr;
+    // shadow: scan for the shadow-casting light (don't assume lights[0]).
+    const impl::opengl::renderer::LightContext* shadow_light = nullptr;
+    for (const auto& lc : context.lights)
+    {
+      if (lc.shadow_map != nullptr)
+      {
+        shadow_light = &lc;
+        break;
+      }
+    }
+    const bool enable_shadow = shadow_light != nullptr;
     shader_.set_int("enable_shadow", enable_shadow);
     if (enable_shadow)
     {
-      shader_.set_mat4("light_pv", context.lights[0].light_pv);
-      shader_.set_int("shadow_map", 5);
-      context.lights[0].shadow_map->use(GL_TEXTURE5);
+      // upload the per-cascade light PVs + split distances and bind the
+      // sampler2DArray; the FS selects the cascade by fragment distance.
+      const auto cascade_count = static_cast<GLsizei>(impl::opengl::CascadedShadowMap::kCascadeCount);
+      std::array<glm::mat4, impl::opengl::CascadedShadowMap::kCascadeCount> cascade_pvs{};
+      std::array<float, impl::opengl::CascadedShadowMap::kCascadeCount> cascade_far{};
+      for (std::size_t i = 0; i < impl::opengl::CascadedShadowMap::kCascadeCount; ++i)
+      {
+        cascade_pvs[i] = shadow_light->cascades[i].light_pv;
+        cascade_far[i] = shadow_light->cascades[i].split_far;
+      }
+      shader_.set_int("cascade_count", cascade_count);
+      shader_.set_mat4_array("cascade_light_pv", cascade_count, cascade_pvs.data());
+      shader_.set_float_array("cascade_split_far", cascade_count, cascade_far.data());
+      shader_.set_int("shadow_maps", 5);
+      shadow_light->shadow_map->use(GL_TEXTURE5);
     }
 
     use_lights(context.lights);

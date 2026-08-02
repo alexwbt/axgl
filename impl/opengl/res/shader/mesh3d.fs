@@ -7,7 +7,7 @@
  *   - Parallax occlusion mapping (POM) for height textures
  *   - Normal mapping (tangent-space samples transformed to world space)
  *   - Sun, point, and spot lights (up to 32 each)
- *   - Shadow mapping with 3x3 PCF
+ *   - Cascaded shadow mapping with 3x3 PCF (sampler2DArray, per-cascade selection)
  *   - Weighted blended transparency (output to MRT: color + reveal)
  *
  * Coordinate spaces:
@@ -22,7 +22,7 @@
  *   1: specular
  *   2: normal   (tangent-space, [0,1] -> [-1,1])
  *   3: height  (single-channel, sampled at base mip via textureLod)
- *   5: shadow map
+ *   5: shadow maps (2D array, one layer per cascade)
  *
  * Outputs:
  *   location 0: frag_color - weighted, alpha-premultiplied color
@@ -108,7 +108,10 @@ uniform float height_scale;
 uniform float normal_scale;
 
 uniform bool enable_shadow;
-uniform sampler2D shadow_map;
+uniform int cascade_count;
+uniform mat4 cascade_light_pv[3];
+uniform float cascade_split_far[3];
+uniform sampler2DArray shadow_maps;
 
 in VertexShaderOutput
 {
@@ -117,7 +120,7 @@ in VertexShaderOutput
   vec3 normal;
   vec2 uv;
   mat3 tbn;
-  vec4 light_space_position;
+  vec4 light_space_position[3];
 }
 vso;
 
@@ -179,28 +182,49 @@ vec2 calc_height_offset(Context ctx)
 }
 
 /**
- * Shadow factor via 3x3 percentage-closer filtering (PCF).
+ * Cascaded shadow factor via 3x3 percentage-closer filtering (PCF).
+ * Selects the cascade whose split_far exceeds the fragment's distance from
+ * the camera, then samples the corresponding layer of the shadow map array.
  * Returns 0.0 (fully lit) to 1.0 (fully shadowed).
- * Fragments beyond the light frustum (z > 1.0) are considered lit.
  */
 float calc_shadow()
 {
-  // perspective divide and remap to [0,1]
-  vec3 projection_coords = vso.light_space_position.xyz / vso.light_space_position.w;
+  // select the first cascade whose far split covers this fragment's distance
+  // from the camera. nearer cascades have higher depth precision.
+  float frag_distance = length(vso.position - vso.camera_pos);
+
+  int cascade_index = 0;
+  for (int i = 0; i < cascade_count; ++i)
+  {
+    if (frag_distance <= cascade_split_far[i])
+    {
+      cascade_index = i;
+      break;
+    }
+    cascade_index = i;
+  }
+
+  // project into the selected cascade's light clip space and remap to [0,1]
+  vec3 projection_coords = vso.light_space_position[cascade_index].xyz / vso.light_space_position[cascade_index].w;
   projection_coords = projection_coords * 0.5 + 0.5;
 
-  // beyond the far plane: not in shadow
+  // beyond the light's far plane: not in shadow
   if (projection_coords.z > 1.0) return 0.0;
 
-  // 3x3 PCF: average 9 depth comparisons around the fragment
+  // bias scales per cascade: farther cascades have lower depth precision and
+  // need a larger bias to avoid self-shadowing acne.
+  float bias = 0.00005 * (cascade_index + 1);
   float shadow = 0.0;
-  vec2 texel_size = 1.0 / textureSize(shadow_map, 0);
+  // textureSize on a sampler2DArray returns ivec3(w, h, layers); .xy is the
+  // per-layer texel size.
+  vec2 texel_size = 1.0 / textureSize(shadow_maps, 0).xy;
   for (int x = -1; x <= 1; ++x)
   {
     for (int y = -1; y <= 1; ++y)
     {
-      float pcf_depth = texture(shadow_map, projection_coords.xy + vec2(x, y) * texel_size).r;
-      shadow += projection_coords.z > pcf_depth ? 1.0 : 0.0;
+      // sample the array with vec3(uv, layer)
+      float pcf_depth = texture(shadow_maps, vec3(projection_coords.xy + vec2(x, y) * texel_size, cascade_index)).r;
+      shadow += projection_coords.z - bias > pcf_depth ? 1.0 : 0.0;
     }
   }
   shadow /= 9.0;

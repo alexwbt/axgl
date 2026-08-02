@@ -124,6 +124,14 @@ public:
   {
     glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]);
   }
+  void set_mat4_array(const std::string& name, const GLsizei count, const glm::mat4* mats)
+  {
+    glUniformMatrix4fv(get_uniform_location(name), count, GL_FALSE, &mats[0][0][0]);
+  }
+  void set_float_array(const std::string& name, const GLsizei count, const GLfloat* values)
+  {
+    glUniform1fv(get_uniform_location(name), count, values);
+  }
 
   void use_program() const { glUseProgram(program_id_); }
 

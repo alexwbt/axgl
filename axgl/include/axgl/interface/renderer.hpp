@@ -25,8 +25,10 @@ public:
   // shadow
   virtual void set_enable_shadow(bool enable_shadow) = 0;
   virtual void set_shadow_map_size(std::uint32_t shadow_map_size) = 0;
+  virtual void set_shadow_distance(float shadow_distance) = 0;
   [[nodiscard]] virtual bool get_enable_shadow() const = 0;
   [[nodiscard]] virtual std::uint32_t get_shadow_map_size() const = 0;
+  [[nodiscard]] virtual float get_shadow_distance() const = 0;
 };
 
 } // namespace axgl

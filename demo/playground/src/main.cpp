@@ -43,6 +43,7 @@ int main()
   renderer->set_enable_shadow(true);
   renderer->set_msaa_sample_count(8);
   renderer->set_shadow_map_size(1024 * 4);
+  renderer->set_shadow_distance(50.0f);
 #endif
   renderer_service->set_active_renderer(renderer);
   // resource

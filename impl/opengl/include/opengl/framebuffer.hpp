@@ -52,6 +52,12 @@ public:
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture.get_target(), texture.get_id(), 0);
   }
 
+  void attach_texture_layer(const GLenum attachment, const ::opengl::Texture& texture, const GLint layer) const
+  {
+    use();
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, attachment, texture.get_id(), 0, layer);
+  }
+
   void attach_renderbuffer(const GLenum attachment, const ::opengl::Renderbuffer& renderbuffer) const
   {
     use();
