@@ -6,3 +6,4 @@ FILE_PATTERN="^\(axgl\|demo\|impl\|lib\).*\\.\(cpp\|hpp\|vs\|fs\)$"
 FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -e "$FILE_PATTERN" | tr '\n' ' ')
 
 sh "$ROOT_DIR/_scripts/format.sh" --files $FILES
+git add $FILES

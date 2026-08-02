@@ -104,11 +104,11 @@ public:
         center += glm::vec3(v);
       center /= static_cast<float>(corners.size());
 
-    // light.direction points from the light toward the scene, so the eye is at
-    // center - light_dir (looking back toward center). center + light_dir
-    // would place the light on the wrong side looking up through the floor.
-    const glm::vec3 light_dir = glm::normalize(light.direction);
-    const glm::mat4 light_view = glm::lookAt(center - light_dir, center, glm::vec3(0.0f, 1.0f, 0.0f));
+      // light.direction points from the light toward the scene, so the eye is at
+      // center - light_dir (looking back toward center). center + light_dir
+      // would place the light on the wrong side looking up through the floor.
+      const glm::vec3 light_dir = glm::normalize(light.direction);
+      const glm::mat4 light_view = glm::lookAt(center - light_dir, center, glm::vec3(0.0f, 1.0f, 0.0f));
 
       float min_x = std::numeric_limits<float>::max();
       float max_x = std::numeric_limits<float>::lowest();
