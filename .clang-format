@@ -10,6 +10,11 @@ ColumnLimit: 120
 InsertNewlineAtEOF: true
 
 #
+# Line endings
+#
+LineEnding: LF
+
+#
 # Indentation
 #
 IndentWidth: 2

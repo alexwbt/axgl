@@ -1,5 +1,6 @@
 {
   "files.autoSave": "off",
+  "files.eol": "\n",
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
@@ -12,9 +13,6 @@
   "vscode_custom_css.imports": ["file:///${workspaceFolder}/.vscode/style.css"],
   "[json][jsonc][yaml][css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[cmake]": {
-    "editor.defaultFormatter": "josetr.cmake-language-support-vscode"
   },
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
