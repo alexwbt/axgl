@@ -136,6 +136,14 @@ public:
       render_opaque_pass(render_context, pipeline_context, viewport_i);
       if (enable_blend_) render_transparent_pass(render_context, pipeline_context);
     }
+    else
+    {
+      // only clear screen texture if no camera or realm exists
+      screen_framebuffer_->use();
+      glViewport(0, 0, viewport_i.x, viewport_i.y);
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+    }
 
     // render screen
     render_gui(gui);
