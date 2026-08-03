@@ -26,6 +26,7 @@ public:
 
   [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& children() = 0;
 
+  virtual void init(const axgl::gui::Context& context) = 0;
   virtual void update(const axgl::gui::Context& context) = 0;
   virtual void render(const axgl::gui::Context& context) = 0;
 

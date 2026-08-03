@@ -16,17 +16,11 @@ class GuiService : virtual public axgl::GuiService, public axgl::impl::ServiceBa
 {
   std::unordered_map<std::string, axgl::ptr_t<axgl::gui::Style>> styles_;
 
+  bool initialized_ = false;
   axgl::ptr_t<axgl::gui::Page> main_ui_;
-  std::vector<axgl::ptr_t<axgl::gui::Page>> pages_;
 
 public:
-  axgl::ptr_t<axgl::gui::Page> create_page() override
-  {
-    auto page = axgl::create_ptr<axgl::impl::opengl::gui::Page>();
-    page->set_context(context_);
-    pages_.emplace_back(page);
-    return page;
-  }
+  axgl::ptr_t<axgl::gui::Page> create_page() override { return axgl::create_ptr<axgl::impl::opengl::gui::Page>(); }
 
   axgl::ptr_t<axgl::gui::Element> create_element() override
   {
@@ -56,14 +50,30 @@ public:
     return it->second;
   }
 
-  void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) override { main_ui_ = std::move(main_ui); }
+  void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) override
+  {
+    if (main_ui)
+    {
+      main_ui_ = std::move(main_ui);
+      main_ui_->set_context(context_);
+      initialized_ = false;
+    }
+    else main_ui_ = nullptr;
+  }
   [[nodiscard]] axgl::ptr_t<axgl::gui::Page> get_main_ui() const override { return main_ui_; }
 
   void update() override
   {
-    AXGL_PROFILE_SCOPE("GUI Update");
-    for (const auto& page : pages_)
-      page->update();
+    if (main_ui_)
+    {
+      if (!initialized_)
+      {
+        main_ui_->init();
+        initialized_ = true;
+      }
+      AXGL_PROFILE_SCOPE("GUI Update");
+      main_ui_->update();
+    }
 
     // reset updated
     for (const auto& entry : styles_)

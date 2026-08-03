@@ -23,61 +23,67 @@ public:
   {
     axgl::impl::gui::PageBase::init();
 
-    const auto texture = axgl_->renderer_service()->create_texture();
-    texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(texture);
+    if (width_ > 0 && height_ > 0)
+    {
+      const auto texture = axgl_->renderer_service()->create_texture();
+      texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(texture);
 #ifdef AXGL_DEBUG
-    if (!texture_)
-      throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::gui::Page");
+      if (!texture_)
+        throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::gui::Page");
 #endif
 
-    const auto opengl_texture = texture_->get_texture();
-    opengl_texture->load_texture(
-      0, GL_RGBA, util::clamp_cast<GLsizei>(width_), util::clamp_cast<GLsizei>(height_), 0, GL_RGBA, GL_UNSIGNED_BYTE,
-      nullptr);
-    opengl_texture->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    opengl_texture->set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    opengl_texture->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    opengl_texture->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      const auto opengl_texture = texture_->get_texture();
+      opengl_texture->load_texture(
+        0, GL_RGBA, util::clamp_cast<GLsizei>(width_), util::clamp_cast<GLsizei>(height_), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+        nullptr);
+      opengl_texture->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      opengl_texture->set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      opengl_texture->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      opengl_texture->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    framebuffer_ = std::make_unique<::opengl::Framebuffer>();
-    framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *opengl_texture);
-    framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_STENCIL_ATTACHMENT});
-    framebuffer_->check_status_complete("axgl::impl::gui::Page::init -> framebuffer_");
+      framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+      framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *opengl_texture);
+      framebuffer_->set_draw_buffers({GL_COLOR_ATTACHMENT0, GL_STENCIL_ATTACHMENT});
+      framebuffer_->check_status_complete("axgl::impl::gui::Page::init -> framebuffer_");
+    }
   }
 
   void render() override
   {
     axgl::impl::gui::PageBase::render();
 
-    framebuffer_->use();
-    const auto width = util::clamp_cast<GLsizei>(width_);
-    const auto height = util::clamp_cast<GLsizei>(height_);
-    glViewport(0, 0, width, height);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    if (width_ > 0 && height_ > 0 && framebuffer_)
+    {
+      framebuffer_->use();
+      const auto width = util::clamp_cast<GLsizei>(width_);
+      const auto height = util::clamp_cast<GLsizei>(height_);
+      glViewport(0, 0, width, height);
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
 
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+      glDisable(GL_DEPTH_TEST);
+      glDisable(GL_CULL_FACE);
 
-    glEnable(GL_SCISSOR_TEST);
-    glScissor(0, 0, width, height);
+      glEnable(GL_SCISSOR_TEST);
+      glScissor(0, 0, width, height);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-    const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
-    const axgl::gui::Context current_context{
-      *context_,             //
-      *axgl_->gui_service(), //
-      *this,                 //
-      nullptr,               //
-      scale_,                //
-      projection             //
-    };
-    for (const auto& child : elements_.get())
-      child->render(current_context);
+      const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
+      const axgl::gui::Context current_context{
+        *context_,             //
+        *axgl_->gui_service(), //
+        *this,                 //
+        nullptr,               //
+        scale_,                //
+        projection             //
+      };
+      for (const auto& child : elements_.get())
+        child->render(current_context);
 
-    glDisable(GL_SCISSOR_TEST);
+      glDisable(GL_SCISSOR_TEST);
+    }
   }
 
   [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture() const override { return texture_; }

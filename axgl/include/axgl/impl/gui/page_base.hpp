@@ -38,7 +38,22 @@ public:
   void set_scale(float scale) override { scale_ = scale; }
   void set_should_render(bool should_render) override { should_render_ = should_render; }
 
-  void init() override { should_render_ = true; }
+  void init() override
+  {
+    const auto& gui_service = axgl_->gui_service();
+    const axgl::gui::Context current_context{
+      *context_,       //
+      *gui_service,    //
+      *this,           //
+      nullptr,         //
+      scale_,          //
+      glm::mat4(1.0f), //
+    };
+    for (const auto& element : elements_.get())
+      element->init(current_context);
+
+    should_render_ = true;
+  }
 
   void update() override
   {

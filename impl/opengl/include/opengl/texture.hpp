@@ -102,7 +102,14 @@ public:
     use();
   }
 
-  void use() const { glBindTexture(target_, id_); }
+  void use() const
+  {
+#ifdef AXGL_DEBUG
+    if (width_ <= 0 || height_ <= 0)
+      AXGL_LOG_WARN("Texture is used with invalid size: width {}, height {}", width_, height_);
+#endif
+    glBindTexture(target_, id_);
+  }
 
   void set_parameter(const GLenum param, const GLint value) const { glTexParameteri(target_, param, value); }
 
@@ -196,6 +203,8 @@ public:
       }
     }
 
+    width_ = texture[0].width;
+    height_ = texture[0].height;
     use();
     set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
