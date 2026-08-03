@@ -22,7 +22,7 @@ release:
 	$(BUILD) release
 
 target:
-	$(BUILD) $(PRESET) --target $(TARGET)
+	$(BUILD) $(PRESET) --target $(TARGET) --no-config
 
 demo_%:
 	$(BUILD) $(PRESET) --target $@
