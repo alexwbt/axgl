@@ -17,27 +17,17 @@ public:
   [[nodiscard]] virtual bool focused() const = 0;
   [[nodiscard]] virtual bool hovering() const = 0;
   [[nodiscard]] virtual bool activated() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<Style> style() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<Style> focus_style() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<Style> hover_style() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<Style> active_style() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<Style> current_style() const
-  {
-    if (activated()) return active_style();
-    if (hovering()) return hover_style();
-    if (focused()) return focus_style();
-    return style();
-  }
-
-  [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& children() = 0;
+  [[nodiscard]] virtual axgl::gui::Style* style() const = 0;
 
   [[nodiscard]] virtual glm::vec2 get_position() const = 0;
   [[nodiscard]] virtual glm::vec2 get_size() const = 0;
   [[nodiscard]] virtual glm::vec4 get_rect() const = 0;
   [[nodiscard]] virtual glm::vec4 get_scissor_rect() const = 0;
 
-  virtual void render(const axgl::gui::Context& context) = 0;
+  [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& children() = 0;
+
   virtual void update(const axgl::gui::Context& context) = 0;
+  virtual void render(const axgl::gui::Context& context) = 0;
 
   virtual void on_pointer_enter(const axgl::gui::Context& context) = 0;
   virtual void on_pointer_exit(const axgl::gui::Context& context) = 0;
@@ -46,6 +36,9 @@ public:
   virtual void on_focus(const axgl::gui::Context& context) = 0;
   virtual void on_blur(const axgl::gui::Context& context) = 0;
 
+  virtual axgl::gui::Style* set_style(const std::vector<std::string>& styles) = 0;
+  virtual void append_style(const std::string& style) = 0;
+  virtual void remove_style(const std::string& style) = 0;
   virtual void set_content(const std::string& content) = 0;
 };
 

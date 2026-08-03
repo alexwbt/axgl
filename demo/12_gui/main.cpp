@@ -38,51 +38,31 @@ int main()
   page->set_focus_activate_input(focus_activate_input);
   gui_service->set_main_ui(page);
 
-  const auto square_style = axgl::create_ptr<axgl::gui::Style>();
-  square_style
-    ->set_cursor(axgl::gui::CursorType::kPointer) //
-    ->set_position({10.0f, 10.0f})                //
-    ->set_size({300.0f, 300.0f})                  //
-    ->set_font_size(48.0f)                        //
-    ->set_fonts({"arial", "noto-tc"})             //
-    ;
-
-  const auto hover_style = axgl::create_ptr<axgl::gui::Style>();
-  hover_style->set_opacity(0.8f);
-
-  const auto active_style = axgl::create_ptr<axgl::gui::Style>();
-  active_style->set_opacity(0.6f);
+  gui_service->create_style("box")
+    ->set_cursor(axgl::gui::CursorType::kPointer)
+    ->set_position({10.0f, 10.0f})
+    ->set_size({300.0f, 300.0f})
+    ->set_font_size(48.0f)
+    ->set_fonts({"arial", "noto-tc"});
+  gui_service->create_style("box:hover")->set_opacity(0.8f);
+  gui_service->create_style("box:active")->set_opacity(0.6f);
 
   {
     const auto element1 = gui_service->create_element();
     page->elements().add(element1);
-    element1->style()
-      ->with(square_style)                     //
-      ->set_color({0.39f, 0.58f, 0.93f, 1.0f}) //
-      ;
-    element1->hover_style()->with(hover_style);
-    element1->active_style()->with(active_style);
+    element1->set_style({"box"})->set_color({0.39f, 0.58f, 0.93f, 1.0f});
     element1->set_content("Hello world");
     {
       const auto element2 = gui_service->create_element();
       element1->children().add(element2);
-      element2->style()
-        ->with(square_style)                  //
-        ->set_color({1.0f, 0.5f, 0.3f, 1.0f}) //
-        ;
-      element2->hover_style()->with(hover_style);
-      element2->active_style()->with(active_style);
+      element2->set_style({"box"})->set_color({1.0f, 0.5f, 0.3f, 1.0f});
       {
         const auto element3 = gui_service->create_element();
         element2->children().add(element3);
-        element3->style()
-          ->with(square_style)                  //
-          ->set_position({-20.0f, 10.0f})       //
-          ->set_size({300.0f, 10.0f})           //
-          ->set_color({0.0f, 0.5f, 0.3f, 1.0f}) //
-          ;
-        element3->hover_style()->with(hover_style);
-        element3->active_style()->with(active_style);
+        element3->set_style({"box"})
+          ->set_position({-20.0f, 10.0f})
+          ->set_size({300.0f, 10.0f})
+          ->set_color({0.0f, 0.5f, 0.3f, 1.0f});
       }
     }
   }

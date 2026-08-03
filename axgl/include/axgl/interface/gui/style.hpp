@@ -1,8 +1,5 @@
 #pragma once
 
-#include <algorithm>
-#include <ranges>
-
 #include <axgl/common.hpp>
 
 #define __AXGL_GUI_STYLE_PROPERTY(type, name, init)                                                                    \
@@ -13,27 +10,22 @@ private:                                                                        
 public:                                                                                                                \
   type get_##name() const                                                                                              \
   {                                                                                                                    \
-    if (using_##name##_) return name##_;                                                                               \
-    for (const auto& style : std::ranges::views::reverse(shared_styles_))                                              \
-      if (const auto style_ptr = style.lock(); style_ptr && style_ptr->using_##name()) return style_ptr->get_##name(); \
     return name##_;                                                                                                    \
   }                                                                                                                    \
   Style* set_##name(const type&(name))                                                                                 \
   {                                                                                                                    \
     name##_ = name;                                                                                                    \
     using_##name##_ = true;                                                                                            \
+    updated_ = true;                                                                                                   \
     return this;                                                                                                       \
   };                                                                                                                   \
   bool using_##name() const                                                                                            \
   {                                                                                                                    \
-    return using_##name##_                                                                                             \
-      || std::ranges::any_of(                                                                                          \
-             shared_styles_, [](const auto& e)                                                                         \
-    {                                                                                                                  \
-      const auto style_ptr = e.lock();                                                                                 \
-      return style_ptr && style_ptr->using_##name();                                                                   \
-    });                                                                                                                \
+    return using_##name##_;                                                                                            \
   }
+
+#define __AXGL_GUI_STYLE_APPLY_TO(name)                                                                                \
+  if (using_##name##_) target.set_##name(name##_)
 
 namespace axgl::gui
 {
@@ -61,13 +53,26 @@ enum class TextAlign
 
 class Style
 {
-  std::vector<axgl::ref_t<Style>> shared_styles_;
+private:
+  bool updated_ = false;
 
 public:
-  Style* with(const axgl::ptr_t<Style>& shared_style)
+  [[nodiscard]] bool updated() const { return updated_; }
+  void reset_updated() { updated_ = false; }
+
+  void apply_to(Style& target)
   {
-    shared_styles_.emplace_back(shared_style);
-    return this;
+    __AXGL_GUI_STYLE_APPLY_TO(position);
+    __AXGL_GUI_STYLE_APPLY_TO(size);
+    __AXGL_GUI_STYLE_APPLY_TO(color);
+    __AXGL_GUI_STYLE_APPLY_TO(opacity);
+    __AXGL_GUI_STYLE_APPLY_TO(cursor);
+    // content
+    __AXGL_GUI_STYLE_APPLY_TO(fonts);
+    __AXGL_GUI_STYLE_APPLY_TO(font_color);
+    __AXGL_GUI_STYLE_APPLY_TO(font_size);
+    __AXGL_GUI_STYLE_APPLY_TO(line_height);
+    __AXGL_GUI_STYLE_APPLY_TO(text_align);
   }
 
   __AXGL_GUI_STYLE_PROPERTY(glm::vec2, position, {0.0f})

@@ -47,11 +47,11 @@ if [ -z "$CLANG_FORMAT_SKIP_VERSION_CHECK" ]; then
   CF_VERSION=$($CLANG_FORMAT --version 2>/dev/null)
   CF_MAJOR=$(echo "$CF_VERSION" | sed -n 's/.*version \([0-9][0-9]*\)\..*/\1/p')
   if [ -z "$CF_MAJOR" ]; then
-    echo "error: clang-format not found on PATH" >&2
+    echo "error: $CLANG_FORMAT not found" >&2
     exit 1
   fi
   if [ "$CF_MAJOR" != "$REQUIRED_CLANG_FORMAT_MAJOR" ]; then
-    echo "error: clang-format $REQUIRED_CLANG_FORMAT_MAJOR required, found $CF_MAJOR ($CF_VERSION)" >&2
+    echo "error: $CLANG_FORMAT $REQUIRED_CLANG_FORMAT_MAJOR required, found $CF_MAJOR ($CF_VERSION)" >&2
     exit 1
   fi
 fi

@@ -21,11 +21,6 @@ class Element : public axgl::impl::gui::ElementBase
   axgl::ptr_t<axgl::impl::opengl::Texture> content_texture_;
 
 public:
-  void on_pointer_enter(const axgl::gui::Context& context) override
-  {
-    axgl::impl::gui::ElementBase::on_pointer_enter(context);
-  }
-
   void update(const axgl::gui::Context& context) override
   {
     ElementBase::update(context);
@@ -37,13 +32,12 @@ public:
 
       if (!content_.empty())
       {
-        const auto& style = current_style();
         const auto& text_service = context.axgl->text_service();
         content_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(text_service->create_texture({
           .value = content_,
-          .fonts = style->get_fonts(),
-          .font_color = style->get_font_color(),
-          .font_size = style->get_font_size() * content_scale_,
+          .fonts = computed_style_->get_fonts(),
+          .font_color = computed_style_->get_font_color(),
+          .font_size = computed_style_->get_font_size() * content_scale_,
           .vertical = false,
         }));
 #ifdef AXGL_DEBUG
@@ -57,10 +51,9 @@ public:
 
   void render(const axgl::gui::Context& context) override
   {
-    const auto& style = current_style();
-    const auto& color = style->get_color();
-    const auto& opacity = style->get_opacity();
-    const auto& font_color = style->get_font_color();
+    const auto& color = computed_style_->get_color();
+    const auto& opacity = computed_style_->get_opacity();
+    const auto& font_color = computed_style_->get_font_color();
 
     const auto model                                                //
       = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
