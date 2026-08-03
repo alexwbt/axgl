@@ -25,7 +25,7 @@ public:                                                                         
   }
 
 #define __AXGL_GUI_STYLE_APPLY_TO(name)                                                                                \
-  if (using_##name##_) target.set_##name(name##_)
+  if (using_##name##_) target.name##_ = name##_
 
 namespace axgl::gui
 {
@@ -60,7 +60,7 @@ public:
   [[nodiscard]] bool updated() const { return updated_; }
   void reset_updated() { updated_ = false; }
 
-  void apply_to(Style& target)
+  void apply_to(Style& target, bool mark_updated = true) const
   {
     __AXGL_GUI_STYLE_APPLY_TO(position);
     __AXGL_GUI_STYLE_APPLY_TO(size);
@@ -73,6 +73,7 @@ public:
     __AXGL_GUI_STYLE_APPLY_TO(font_size);
     __AXGL_GUI_STYLE_APPLY_TO(line_height);
     __AXGL_GUI_STYLE_APPLY_TO(text_align);
+    if (mark_updated) target.updated_ = true;
   }
 
   __AXGL_GUI_STYLE_PROPERTY(glm::vec2, position, {0.0f})

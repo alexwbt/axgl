@@ -77,8 +77,9 @@ public:
     {
       computed_style_ = std::make_unique<axgl::gui::Style>();
       for (const auto& style : using_styles_)
-        style->apply_to(*computed_style_);
-      element_style_->apply_to(*computed_style_);
+        style->apply_to(*computed_style_, false);
+      element_style_->apply_to(*computed_style_, false);
+      element_style_->reset_updated();
       updated_styles_ = false;
     }
 
