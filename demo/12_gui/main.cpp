@@ -39,7 +39,7 @@ int main()
   gui_service->set_main_ui(page);
 
   gui_service->create_style("box")
-    ->set_cursor(axgl::gui::CursorType::kPointer)
+    ->set_cursor(axgl::gui::Cursor::kPointer)
     ->set_position({10.0f, 10.0f})
     ->set_size({300.0f, 300.0f})
     ->set_font_size(48.0f)

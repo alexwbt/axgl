@@ -16,8 +16,8 @@ class Element;
 
 struct Context : axgl::Context
 {
-  axgl::GuiService& gui_service;
-  axgl::gui::Page& page;
+  axgl::GuiService* gui_service;
+  axgl::gui::Page* page;
   axgl::gui::Element* parent;
   float scale = 1.0f;
   const glm::mat4& projection;

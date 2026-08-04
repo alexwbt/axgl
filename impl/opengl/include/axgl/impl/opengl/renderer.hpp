@@ -352,19 +352,19 @@ private:
       gui->render();
 
       const auto& glfw_window = window_->glfw_window();
-      switch (gui->get_cursor_type())
+      switch (gui->get_cursor())
       {
       default:
-      case gui::CursorType::kNormal: glfw_window->use_standard_cursor(GLFW_ARROW_CURSOR); break;
-      case gui::CursorType::kText: glfw_window->use_standard_cursor(GLFW_IBEAM_CURSOR); break;
-      case gui::CursorType::kPointer: glfw_window->use_standard_cursor(GLFW_POINTING_HAND_CURSOR); break;
-      case gui::CursorType::kCrosshair: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
-      case gui::CursorType::kResizeVertical: glfw_window->use_standard_cursor(GLFW_RESIZE_NS_CURSOR); break;
-      case gui::CursorType::kResizeHorizontal: glfw_window->use_standard_cursor(GLFW_RESIZE_EW_CURSOR); break;
-      case gui::CursorType::kResizeDiagonalLeft: glfw_window->use_standard_cursor(GLFW_RESIZE_NESW_CURSOR); break;
-      case gui::CursorType::kResizeDiagonalRight: glfw_window->use_standard_cursor(GLFW_RESIZE_NWSE_CURSOR); break;
-      case gui::CursorType::kResize: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
-      case gui::CursorType::kNotAllowed: glfw_window->use_standard_cursor(GLFW_NOT_ALLOWED_CURSOR); break;
+      case gui::Cursor::kNormal: glfw_window->use_standard_cursor(GLFW_ARROW_CURSOR); break;
+      case gui::Cursor::kText: glfw_window->use_standard_cursor(GLFW_IBEAM_CURSOR); break;
+      case gui::Cursor::kPointer: glfw_window->use_standard_cursor(GLFW_POINTING_HAND_CURSOR); break;
+      case gui::Cursor::kCrosshair: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
+      case gui::Cursor::kResizeVertical: glfw_window->use_standard_cursor(GLFW_RESIZE_NS_CURSOR); break;
+      case gui::Cursor::kResizeHorizontal: glfw_window->use_standard_cursor(GLFW_RESIZE_EW_CURSOR); break;
+      case gui::Cursor::kResizeDiagonalLeft: glfw_window->use_standard_cursor(GLFW_RESIZE_NESW_CURSOR); break;
+      case gui::Cursor::kResizeDiagonalRight: glfw_window->use_standard_cursor(GLFW_RESIZE_NWSE_CURSOR); break;
+      case gui::Cursor::kResize: glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR); break;
+      case gui::Cursor::kNotAllowed: glfw_window->use_standard_cursor(GLFW_NOT_ALLOWED_CURSOR); break;
       }
     }
 

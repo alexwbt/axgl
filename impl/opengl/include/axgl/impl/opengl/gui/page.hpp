@@ -68,16 +68,16 @@ public:
       glScissor(0, 0, width, height);
 
       glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
       const glm::mat4 projection = glm::ortho(static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
       const axgl::gui::Context current_context{
-        *context_,             //
-        *axgl_->gui_service(), //
-        *this,                 //
-        nullptr,               //
-        scale_,                //
-        projection             //
+        *context_,                  //
+        axgl_->gui_service().get(), //
+        this,                       //
+        nullptr,                    //
+        scale_,                     //
+        projection                  //
       };
       for (const auto& child : elements_.get())
         child->render(current_context);

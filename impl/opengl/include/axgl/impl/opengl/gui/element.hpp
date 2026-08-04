@@ -84,10 +84,10 @@ public:
     }
 
     glScissor(
-      util::clamp_cast<GLint>(scissor_rect_.x),                             //
-      context.page.get_size().y - util::clamp_cast<GLint>(scissor_rect_.w), //
-      util::clamp_cast<GLsizei>(scissor_rect_.z - scissor_rect_.x),         //
-      util::clamp_cast<GLsizei>(scissor_rect_.w - scissor_rect_.y));        //
+      util::clamp_cast<GLint>(scissor_rect_.x),                              //
+      context.page->get_size().y - util::clamp_cast<GLint>(scissor_rect_.w), //
+      util::clamp_cast<GLsizei>(scissor_rect_.z - scissor_rect_.x),          //
+      util::clamp_cast<GLsizei>(scissor_rect_.w - scissor_rect_.y));         //
 
     render_children(context);
   }

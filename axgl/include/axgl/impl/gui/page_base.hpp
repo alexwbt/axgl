@@ -21,7 +21,7 @@ protected:
   float scale_ = 1.0f;
   bool should_render_ = false;
   bool using_cursor_ = false;
-  axgl::gui::CursorType cursor_type_ = axgl::gui::CursorType::kNormal;
+  axgl::gui::Cursor cursor_ = axgl::gui::Cursor::kNormal;
   axgl::ptr_t<axgl::Pointer> cursor_pointer_;
   axgl::ptr_t<axgl::Pointer> scroll_pointer_;
   axgl::ptr_t<axgl::Input> scale_input_;
@@ -42,12 +42,12 @@ public:
   {
     const auto& gui_service = axgl_->gui_service();
     const axgl::gui::Context current_context{
-      *context_,       //
-      *gui_service,    //
-      *this,           //
-      nullptr,         //
-      scale_,          //
-      glm::mat4(1.0f), //
+      *context_,         //
+      gui_service.get(), //
+      this,              //
+      nullptr,           //
+      scale_,            //
+      glm::mat4(1.0f),   //
     };
     for (const auto& element : elements_.get())
       element->init(current_context);
@@ -63,18 +63,18 @@ public:
     if (cursor_pointer_ && normal_cursor_mode)
     {
       using_cursor_ = true;
-      cursor_type_ = axgl::gui::CursorType::kNormal;
+      cursor_ = axgl::gui::Cursor::kNormal;
     }
     else if (using_cursor_)
     {
       using_cursor_ = false;
       const axgl::gui::Context current_context{
-        *context_,       //
-        *gui_service,    //
-        *this,           //
-        nullptr,         //
-        scale_,          //
-        glm::mat4(1.0f), //
+        *context_,         //
+        gui_service.get(), //
+        this,              //
+        nullptr,           //
+        scale_,            //
+        glm::mat4(1.0f),   //
       };
       for (const auto& element : elements_.get())
         if (element->hovering()) element->on_pointer_exit(current_context);
@@ -89,12 +89,12 @@ public:
       if (scale_ <= 0.1f) scale_ = 0.1f;
     }
     const axgl::gui::Context current_context{
-      *context_,       //
-      *gui_service,    //
-      *this,           //
-      nullptr,         //
-      scale_,          //
-      glm::mat4(1.0f), //
+      *context_,         //
+      gui_service.get(), //
+      this,              //
+      nullptr,           //
+      scale_,            //
+      glm::mat4(1.0f),   //
     };
     for (const auto& element : elements_.get())
       element->update(current_context);
@@ -106,8 +106,8 @@ public:
   [[nodiscard]] glm::ivec2 get_size() const override { return {width_, height_}; }
   [[nodiscard]] axgl::Container<axgl::gui::Element>& elements() override { return elements_; }
 
-  void set_cursor_type(axgl::gui::CursorType cursor_type) override { cursor_type_ = cursor_type; }
-  [[nodiscard]] axgl::gui::CursorType get_cursor_type() override { return cursor_type_; }
+  void set_cursor(axgl::gui::Cursor cursor) override { cursor_ = cursor; }
+  [[nodiscard]] axgl::gui::Cursor get_cursor() override { return cursor_; }
 
   void set_cursor_pointer(axgl::ptr_t<axgl::Pointer> cursor) override { cursor_pointer_ = std::move(cursor); }
   void set_scroll_pointer(axgl::ptr_t<axgl::Pointer> scroll) override { scroll_pointer_ = std::move(scroll); }

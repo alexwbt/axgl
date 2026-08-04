@@ -33,8 +33,8 @@ public:
   [[nodiscard]] virtual axgl::ptr_t<axgl::Texture> get_texture() const = 0;
   [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& elements() = 0;
 
-  virtual void set_cursor_type(axgl::gui::CursorType cursor_type) = 0;
-  [[nodiscard]] virtual axgl::gui::CursorType get_cursor_type() = 0;
+  virtual void set_cursor(axgl::gui::Cursor cursor) = 0;
+  [[nodiscard]] virtual axgl::gui::Cursor get_cursor() = 0;
 
   virtual void set_cursor_pointer(axgl::ptr_t<axgl::Pointer> cursor) = 0;
   virtual void set_scroll_pointer(axgl::ptr_t<axgl::Pointer> scroll) = 0;

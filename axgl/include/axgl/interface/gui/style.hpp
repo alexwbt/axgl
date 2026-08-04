@@ -30,7 +30,16 @@ public:                                                                         
 namespace axgl::gui
 {
 
-enum class CursorType
+enum class Display
+{
+  kBlock,
+  kInline,
+  kInlineBlock,
+  kFlex,
+  kGrid,
+};
+
+enum class Cursor
 {
   kNormal,
   kText,
@@ -80,7 +89,7 @@ public:
   __AXGL_GUI_STYLE_PROPERTY(glm::vec2, size, {0.0f})
   __AXGL_GUI_STYLE_PROPERTY(glm::vec4, color, {0.0f})
   __AXGL_GUI_STYLE_PROPERTY(float, opacity, = 1.0f)
-  __AXGL_GUI_STYLE_PROPERTY(CursorType, cursor, = CursorType::kNormal)
+  __AXGL_GUI_STYLE_PROPERTY(Cursor, cursor, = Cursor::kNormal)
   // content
   __AXGL_GUI_STYLE_PROPERTY(std::vector<std::string>, fonts, );
   __AXGL_GUI_STYLE_PROPERTY(glm::vec4, font_color, {1.0f})
@@ -88,8 +97,9 @@ public:
   __AXGL_GUI_STYLE_PROPERTY(float, line_height, = 1.5f)
   __AXGL_GUI_STYLE_PROPERTY(TextAlign, text_align, = TextAlign::kCenter)
   // layout
-  // __AXGL_GUI_STYLE_PROPERTY(glm::vec4, margin, {0.0f})
-  // __AXGL_GUI_STYLE_PROPERTY(glm::vec4, padding, {0.0f})
+  __AXGL_GUI_STYLE_PROPERTY(Display, display, = Display::kBlock)
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, margin, {0.0f})
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, padding, {0.0f})
 };
 
 } // namespace axgl::gui

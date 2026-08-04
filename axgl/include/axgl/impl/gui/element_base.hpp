@@ -78,8 +78,8 @@ public:
       scissor_rect_.w = std::min(scissor_rect_.w, parent_rect.w);
     }
 
-    const auto& active_input = context.page.get_activate_input();
-    const auto& pointer = context.page.get_cursor_pointer();
+    const auto& active_input = context.page->get_activate_input();
+    const auto& pointer = context.page->get_cursor_pointer();
     const bool pointer_in_rect = pointer       //
       && pointer->position.x > scissor_rect_.x //
       && pointer->position.y > scissor_rect_.y //
@@ -91,7 +91,7 @@ public:
     if (hovering_ && !pointer_in_rect) on_pointer_exit(context);
     if (!activated_ && hovering_ && active_input->tick == 1) on_activate(context);
     if (activated_ && active_input->tick == 0) on_deactivate(context);
-    if (hovering_) context.page.set_cursor_type(computed_style_->get_cursor());
+    if (hovering_) context.page->set_cursor(computed_style_->get_cursor());
 
     update_styles(context);
     update_children(context);
@@ -101,42 +101,42 @@ public:
   {
     hovering_ = true;
     update_styles_ = true;
-    context.page.set_should_render(true);
+    context.page->set_should_render(true);
   }
 
   void on_pointer_exit(const axgl::gui::Context& context) override
   {
     hovering_ = false;
     update_styles_ = true;
-    context.page.set_should_render(true);
+    context.page->set_should_render(true);
   }
 
   void on_activate(const axgl::gui::Context& context) override
   {
     activated_ = true;
     update_styles_ = true;
-    context.page.set_should_render(true);
+    context.page->set_should_render(true);
   }
 
   void on_deactivate(const axgl::gui::Context& context) override
   {
     activated_ = false;
     update_styles_ = true;
-    context.page.set_should_render(true);
+    context.page->set_should_render(true);
   }
 
   void on_focus(const axgl::gui::Context& context) override
   {
     focused_ = true;
     update_styles_ = true;
-    context.page.set_should_render(true);
+    context.page->set_should_render(true);
   }
 
   void on_blur(const axgl::gui::Context& context) override
   {
     focused_ = false;
     update_styles_ = true;
-    context.page.set_should_render(true);
+    context.page->set_should_render(true);
   }
 
   axgl::gui::Style* set_style(const std::vector<std::string>& styles) override
@@ -218,9 +218,9 @@ protected:
   }
 
 private:
-  void set_using_style(const GuiService& gui_context, const std::string& name)
+  void set_using_style(const GuiService* gui_context, const std::string& name)
   {
-    if (const auto& style_ptr = gui_context.get_style(name)) using_styles_.emplace_back(style_ptr);
+    if (const auto& style_ptr = gui_context->get_style(name)) using_styles_.emplace_back(style_ptr);
   }
 };
 
