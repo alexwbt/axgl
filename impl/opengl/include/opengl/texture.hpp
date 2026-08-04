@@ -1,6 +1,5 @@
 #pragma once
 
-#include "util/numcast.hpp"
 #include <array>
 #include <span>
 
@@ -105,8 +104,16 @@ public:
   void use() const
   {
 #ifdef AXGL_DEBUG
+    if (!initialized())
+    {
+      const auto trace = cpptrace::generate_trace();
+      AXGL_LOG_ERROR("Using uninitialized texture.\n{}", trace.to_string());
+    }
     if (width_ <= 0 || height_ <= 0)
-      AXGL_LOG_WARN("Texture is used with invalid size: width {}, height {}", width_, height_);
+    {
+      const auto trace = cpptrace::generate_trace();
+      AXGL_LOG_WARN("Texture is used with invalid size: width {}, height {}\n{}", width_, height_, trace.to_string());
+    }
 #endif
     glBindTexture(target_, id_);
   }

@@ -54,17 +54,17 @@ class Character final
     const auto& glyph = face->glyph;
     const auto& bitmap = glyph->bitmap;
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    texture.load_texture(
-      0, GL_RED, util::clamp_cast<GLsizei>(bitmap.width), util::clamp_cast<GLsizei>(bitmap.rows), 0, GL_RED,
-      GL_UNSIGNED_BYTE, bitmap.buffer);
-    texture.set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    texture.set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    texture.set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    size.x = texture.get_width();
-    size.y = texture.get_height();
+    size.x = util::narrow<int>(bitmap.width);
+    size.y = util::narrow<int>(bitmap.rows);
+    if (bitmap.width > 0 && bitmap.rows > 0)
+    {
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+      texture.load_texture(0, GL_RED, size.x, size.y, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.buffer);
+      texture.set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      texture.set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      texture.set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
     offset.x = glyph->bitmap_left;
     offset.y = glyph->bitmap_top - size.y;
     advance.x = glyph->advance.x >> 6;
@@ -263,13 +263,16 @@ public:
       std::uint32_t c = utf8::next(it, end);
       if (!chars.contains(c)) continue;
 
-      chars[c].texture.use(GL_TEXTURE0);
-      glm::vec3 scale(chars[c].size, 1.0f);
-      glm::vec3 offset(chars[c].offset - min_offset, 0.0f);
-      auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
-      shader.set_mat4("projection_view_model", projection * model);
+      if (chars[c].texture.initialized())
+      {
+        chars[c].texture.use(GL_TEXTURE0);
+        glm::vec3 scale(chars[c].size, 1.0f);
+        glm::vec3 offset(chars[c].offset - min_offset, 0.0f);
+        auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
+        shader.set_mat4("projection_view_model", projection * model);
 
-      quad.draw();
+        quad.draw();
+      }
 
       if (options.vertical) advance.y += static_cast<float>(chars[c].advance.y);
       else advance.x += static_cast<float>(chars[c].advance.x);

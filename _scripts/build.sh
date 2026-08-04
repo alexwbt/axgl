@@ -49,17 +49,17 @@ cd $ROOT_DIR
 
 if [ $NO_CONFIG -eq 0 ]; then
   log
-  log "##########"
-  log "########## Starting cmake config ($PRESET)"
-  log "##########"
+  log "#"
+  log "# Starting cmake config ($PRESET)"
+  log "#"
 
   cmake --preset $PRESET | log
 fi
 
 log
-log "##########"
-log "########## Starting cmake build ($PRESET${TARGET:+ target=$TARGET})"
-log "##########"
+log "#"
+log "# Starting cmake build ($PRESET${TARGET:+ target=$TARGET})"
+log "#"
 
 if [ -n "$TARGET" ]; then
   cmake --build --preset $PRESET --target "$TARGET" | log
