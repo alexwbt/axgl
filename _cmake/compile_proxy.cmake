@@ -7,7 +7,7 @@ function(add_compile_proxy target include_directory)
     cmake_parse_arguments(ARG "" "" "HEADER_FILES" ${ARGN})
 
     # add header sources
-    file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${include_directory}/*.hpp")
+    file(GLOB_RECURSE headers "${include_directory}/*.hpp")
     list(APPEND headers ${ARG_HEADER_FILES})
 
     set(source_files)
