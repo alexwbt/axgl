@@ -1,9 +1,5 @@
 #pragma once
 
-#include "util/numcast.hpp"
-#include <cstdint>
-#include <memory>
-
 #include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
 #include <axgl/interface/services/renderer_service.hpp>

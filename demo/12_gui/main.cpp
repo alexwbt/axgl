@@ -51,7 +51,7 @@ int main()
     const auto element1 = gui_service->create_element();
     page->elements().add(element1);
     element1->set_style({"box"})->set_color({0.39f, 0.58f, 0.93f, 1.0f});
-    element1->set_content("Hello world");
+    // element1->set_content("Hello world");
     {
       const auto element2 = gui_service->create_element();
       element1->children().add(element2);

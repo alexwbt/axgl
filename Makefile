@@ -21,6 +21,9 @@ debug:
 release:
 	$(BUILD) release
 
+config:
+	$(BUILD) $(PRESET) --no-build
+
 target:
 	$(BUILD) $(PRESET) --target $(TARGET) --no-config
 

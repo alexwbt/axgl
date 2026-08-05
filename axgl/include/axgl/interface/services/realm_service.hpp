@@ -21,8 +21,6 @@ public:
   virtual void set_active_realm(axgl::ptr_t<axgl::Realm> realm) = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Realm> get_active_realm() const = 0;
 
-  // region convenience functions
-
   template <typename RealmType>
   void register_realm_t()
   {
@@ -40,8 +38,6 @@ public:
 #endif
     return realm;
   }
-
-  // endregion
 };
 
 } // namespace axgl

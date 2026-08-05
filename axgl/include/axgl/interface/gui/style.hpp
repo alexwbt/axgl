@@ -16,7 +16,7 @@ public:                                                                         
   {                                                                                                                    \
     name##_ = name;                                                                                                    \
     using_##name##_ = true;                                                                                            \
-    updated_ = true;                                                                                                   \
+    modified_ = true;                                                                                                  \
     return this;                                                                                                       \
   };                                                                                                                   \
   bool using_##name() const                                                                                            \
@@ -63,11 +63,11 @@ enum class TextAlign
 class Style
 {
 private:
-  bool updated_ = false;
+  bool modified_ = false;
 
 public:
-  [[nodiscard]] bool updated() const { return updated_; }
-  void reset_updated() { updated_ = false; }
+  [[nodiscard]] bool is_modified() const { return modified_; }
+  void reset_modified() { modified_ = false; }
 
   void apply_to(Style& target, bool mark_updated = true) const
   {
@@ -82,7 +82,7 @@ public:
     __AXGL_GUI_STYLE_APPLY_TO(font_size);
     __AXGL_GUI_STYLE_APPLY_TO(line_height);
     __AXGL_GUI_STYLE_APPLY_TO(text_align);
-    if (mark_updated) target.updated_ = true;
+    if (mark_updated) target.modified_ = true;
   }
 
   __AXGL_GUI_STYLE_PROPERTY(glm::vec2, position, {0.0f})

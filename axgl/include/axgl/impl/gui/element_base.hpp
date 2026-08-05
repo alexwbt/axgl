@@ -39,22 +39,18 @@ protected:
   glm::vec4 rect_{0.0f};
   glm::vec4 scissor_rect_{0.0f};
 
-  std::string content_;
-  bool should_render_content_ = false;
-
 public:
   [[nodiscard]] std::uint64_t get_id() const override { return id_; }
-  [[nodiscard]] bool focusable() const override { return focusable_; }
-  [[nodiscard]] bool focused() const override { return focused_; }
-  [[nodiscard]] bool hovering() const override { return hovering_; }
-  [[nodiscard]] bool activated() const override { return activated_; }
-  [[nodiscard]] axgl::gui::Style* style() const override { return element_style_.get(); }
-
   [[nodiscard]] glm::vec2 get_position() const override { return position_; }
   [[nodiscard]] glm::vec2 get_size() const override { return size_; }
   [[nodiscard]] glm::vec4 get_rect() const override { return rect_; }
-  [[nodiscard]] glm::vec4 get_scissor_rect() const override { return scissor_rect_; }
+  [[nodiscard]] glm::vec4 get_visible_rect() const override { return scissor_rect_; }
+  [[nodiscard]] bool is_focusable() const override { return focusable_; }
+  [[nodiscard]] bool is_focused() const override { return focused_; }
+  [[nodiscard]] bool is_hovering() const override { return hovering_; }
+  [[nodiscard]] bool is_activated() const override { return activated_; }
 
+  [[nodiscard]] axgl::gui::Style* style() const override { return element_style_.get(); }
   [[nodiscard]] axgl::Container<axgl::gui::Element>& children() override { return children_; }
 
   void init(const axgl::gui::Context& context) override
@@ -139,6 +135,10 @@ public:
     context.page->set_should_render(true);
   }
 
+  void set_position(glm::vec2 position) override { position_ = position; }
+
+  void set_size(glm::vec2 size) override { size_ = size; }
+
   axgl::gui::Style* set_style(const std::vector<std::string>& styles) override
   {
     styles_.clear();
@@ -157,12 +157,6 @@ public:
   {
     update_styles_ = true;
     std::erase_if(styles_, [&style](const auto& s) { return s == style; });
-  }
-
-  void set_content(const std::string& content) override
-  {
-    content_ = content;
-    should_render_content_ = true;
   }
 
 protected:
@@ -205,14 +199,14 @@ protected:
       }
     }
     if (
-      update_styles_ || element_style_->updated() //
-      || std::ranges::any_of(using_styles_, [](const auto& s) { return s->updated(); }))
+      update_styles_ || element_style_->is_modified() //
+      || std::ranges::any_of(using_styles_, [](const auto& s) { return s->is_modified(); }))
     {
       computed_style_ = std::make_unique<axgl::gui::Style>();
       for (const auto& style : using_styles_)
         style->apply_to(*computed_style_, false);
       element_style_->apply_to(*computed_style_, false);
-      element_style_->reset_updated();
+      element_style_->reset_modified();
       update_styles_ = false;
     }
   }

@@ -32,8 +32,6 @@ public:
   void on_parent_create([[maybe_unused]] axgl::Entity* parent) override { on_create(); }
   void on_parent_remove([[maybe_unused]] axgl::Entity* parent) override { on_remove(); }
 
-  // region convenience functions
-
   void set_position(glm::vec3 position)
   {
     transform().position = position;
@@ -80,8 +78,6 @@ public:
   {
     return components().get_t<ItemType>();
   }
-
-  // endregion
 };
 
 } // namespace axgl

@@ -77,7 +77,7 @@ public:
         glm::mat4(1.0f),   //
       };
       for (const auto& element : elements_.get())
-        if (element->hovering()) element->on_pointer_exit(current_context);
+        if (element->is_hovering()) element->on_pointer_exit(current_context);
     }
 
     if (

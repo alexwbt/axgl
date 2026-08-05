@@ -189,8 +189,8 @@ vec2 calc_height_offset(Context ctx)
  */
 float calc_shadow()
 {
-  // select the first cascade whose far split covers this fragment's distance
-  // from the camera. nearer cascades have higher depth precision.
+  // Select the first cascade whose far split covers this fragment's distance
+  // from the camera. Nearer cascades have higher depth precision.
   float frag_distance = length(vso.position - vso.camera_pos);
 
   int cascade_index = 0;
@@ -358,9 +358,9 @@ void main()
   for (int i = 0; i < point_lights_size; ++i)
     result += calc_point_light(ctx, point_lights[i]);
 
-  // weighted blended order-independent transparency (OIT):
+  // Weighted blended order-independent transparency (OIT):
   // weight by alpha and depth so that transparent surfaces blend correctly
-  // without sorted draw order. opaque passes use weight = 1.0.
+  // without sorted draw order. Opaque passes use weight = 1.0.
   float weight = transparent
     ? clamp(pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0), 1e-2, 3e3)
     : 1.0f;

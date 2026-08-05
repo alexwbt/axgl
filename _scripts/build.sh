@@ -3,11 +3,16 @@
 PRESET="debug"
 TARGET=""
 NO_CONFIG=0
+NO_BUILD=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
   --no-config)
     NO_CONFIG=1
+    shift
+    ;;
+  --no-build)
+    NO_BUILD=1
     shift
     ;;
   --target)
@@ -56,13 +61,15 @@ if [ $NO_CONFIG -eq 0 ]; then
   cmake --preset $PRESET | log
 fi
 
-log
-log "#"
-log "# Starting cmake build ($PRESET${TARGET:+ target=$TARGET})"
-log "#"
+if [ $NO_BUILD -eq 0 ]; then
+  log
+  log "#"
+  log "# Starting cmake build ($PRESET${TARGET:+ target=$TARGET})"
+  log "#"
 
-if [ -n "$TARGET" ]; then
-  cmake --build --preset $PRESET --target "$TARGET" | log
-else
-  cmake --build --preset $PRESET | log
+  if [ -n "$TARGET" ]; then
+    cmake --build --preset $PRESET --target "$TARGET" | log
+  else
+    cmake --build --preset $PRESET | log
+  fi
 fi

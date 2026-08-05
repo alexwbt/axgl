@@ -13,17 +13,16 @@ public:
   virtual ~Element() = default;
 
   [[nodiscard]] virtual std::uint64_t get_id() const = 0;
-  [[nodiscard]] virtual bool focusable() const = 0;
-  [[nodiscard]] virtual bool focused() const = 0;
-  [[nodiscard]] virtual bool hovering() const = 0;
-  [[nodiscard]] virtual bool activated() const = 0;
-  [[nodiscard]] virtual axgl::gui::Style* style() const = 0;
-
   [[nodiscard]] virtual glm::vec2 get_position() const = 0;
   [[nodiscard]] virtual glm::vec2 get_size() const = 0;
   [[nodiscard]] virtual glm::vec4 get_rect() const = 0;
-  [[nodiscard]] virtual glm::vec4 get_scissor_rect() const = 0;
+  [[nodiscard]] virtual glm::vec4 get_visible_rect() const = 0;
+  [[nodiscard]] virtual bool is_focusable() const = 0;
+  [[nodiscard]] virtual bool is_focused() const = 0;
+  [[nodiscard]] virtual bool is_hovering() const = 0;
+  [[nodiscard]] virtual bool is_activated() const = 0;
 
+  [[nodiscard]] virtual axgl::gui::Style* style() const = 0;
   [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& children() = 0;
 
   virtual void init(const axgl::gui::Context& context) = 0;
@@ -37,10 +36,12 @@ public:
   virtual void on_focus(const axgl::gui::Context& context) = 0;
   virtual void on_blur(const axgl::gui::Context& context) = 0;
 
+  virtual void set_position(glm::vec2 position) = 0;
+  virtual void set_size(glm::vec2 size) = 0;
+
   virtual axgl::gui::Style* set_style(const std::vector<std::string>& styles) = 0;
   virtual void append_style(const std::string& style) = 0;
   virtual void remove_style(const std::string& style) = 0;
-  virtual void set_content(const std::string& content) = 0;
 };
 
 } // namespace axgl::gui

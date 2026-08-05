@@ -77,7 +77,7 @@ public:
 
     // reset updated
     for (const auto& entry : styles_)
-      entry.second->reset_updated();
+      entry.second->reset_modified();
   }
 };
 

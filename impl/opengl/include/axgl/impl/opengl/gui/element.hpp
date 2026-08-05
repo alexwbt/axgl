@@ -17,44 +17,26 @@ namespace axgl::impl::opengl::gui
 
 class Element : public axgl::impl::gui::ElementBase
 {
-  float content_scale_ = 1.0f;
-  axgl::ptr_t<axgl::impl::opengl::Texture> content_texture_;
-
 public:
-  void update(const axgl::gui::Context& context) override
-  {
-    ElementBase::update(context);
-
-    if (should_render_content_ || content_scale_ != context.scale)
-    {
-      should_render_content_ = false;
-      content_scale_ = context.scale;
-
-      if (!content_.empty())
-      {
-        const auto& text_service = context.axgl->text_service();
-        content_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(text_service->create_texture({
-          .value = content_,
-          .fonts = computed_style_->get_fonts(),
-          .font_color = computed_style_->get_font_color(),
-          .font_size = computed_style_->get_font_size() * content_scale_,
-          .vertical = false,
-        }));
-#ifdef AXGL_DEBUG
-        if (!content_texture_)
-          AXGL_LOG_WARN("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::gui::Element");
-#endif
-      }
-      else content_texture_ = nullptr;
-    }
-  }
-
   void render(const axgl::gui::Context& context) override
   {
+    render_base(context);
+    render_children(context);
+  }
+
+protected:
+  void render_base(const axgl::gui::Context& context)
+  {
+    const auto scissor_x = util::clamp_cast<GLint>(scissor_rect_.x);
+    const auto scissor_y = context.page->get_size().y - util::clamp_cast<GLint>(scissor_rect_.w);
+    const auto scissor_width = util::clamp_cast<GLsizei>(scissor_rect_.z - scissor_rect_.x);
+    const auto scissor_height = util::clamp_cast<GLsizei>(scissor_rect_.w - scissor_rect_.y);
+
+    if (scissor_width <= 0 || scissor_height <= 0) return;
+    glScissor(scissor_x, scissor_y, scissor_width, scissor_height);
+
     const auto& color = computed_style_->get_color();
     const auto& opacity = computed_style_->get_opacity();
-    const auto& font_color = computed_style_->get_font_color();
-
     const auto model                                                //
       = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
       * glm::scale(glm::vec3(size_.x, size_.y, 1.0f));              //
@@ -65,31 +47,6 @@ public:
     shader.set_float("opacity", opacity);
     shader.set_mat4("projection_view_model", context.projection * model);
     ::opengl::StaticVAOs::instance().quad().draw();
-
-    if (content_texture_)
-    {
-      const auto size = glm::vec3(content_texture_->get_width(), content_texture_->get_height(), 1.0f);
-      const auto content_model                                        //
-        = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
-        * glm::scale(size);                                           //
-      auto& content_shader = ::opengl::StaticShaders::instance().gui();
-      content_shader.use_program();
-      content_texture_->use(GL_TEXTURE0);
-      content_shader.set_int("background_texture", 0);
-      content_shader.set_bool("use_texture", true);
-      content_shader.set_vec4("color", font_color);
-      content_shader.set_float("opacity", opacity);
-      content_shader.set_mat4("projection_view_model", context.projection * content_model);
-      ::opengl::StaticVAOs::instance().quad().draw();
-    }
-
-    glScissor(
-      util::clamp_cast<GLint>(scissor_rect_.x),                              //
-      context.page->get_size().y - util::clamp_cast<GLint>(scissor_rect_.w), //
-      util::clamp_cast<GLsizei>(scissor_rect_.z - scissor_rect_.x),          //
-      util::clamp_cast<GLsizei>(scissor_rect_.w - scissor_rect_.y));         //
-
-    render_children(context);
   }
 };
 
