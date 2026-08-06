@@ -86,13 +86,12 @@ fi
 #
 if [ $NO_BUILD -eq 0 ] && [ -z "$TARGET" ] && [ "$PRESET" = "debug" ]; then
   BUILD_DIR="$ROOT_DIR/_build/Debug"
-  CC_JSON="$BUILD_DIR/compile_commands.json"
-  if [ -f "$CC_JSON" ] && [ -x "$ROOT_DIR/_bin/compile_proxy.exe" ]; then
-    log
-    log "#"
-    log "# Post-processing compile_commands.json"
-    log "#"
-
-    "$ROOT_DIR/_bin/compile_proxy.exe" "$BUILD_DIR" | log
+  COMPILE_COMMANDS="$BUILD_DIR/compile_commands.json"
+  COMPILE_PROXY="$ROOT_DIR/_bin/compile_proxy"
+  [ -x "$COMPILE_PROXY" ] || COMPILE_PROXY="$COMPILE_PROXY.exe"
+  if [ -f "$COMPILE_COMMANDS" ] && [ -x "$COMPILE_PROXY" ]; then
+    "$COMPILE_PROXY" "$BUILD_DIR" | log
+  else
+    log "compile_proxy skipped."
   fi
 fi

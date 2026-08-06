@@ -31,7 +31,7 @@ static std::string_view get_include_path(const std::string& file_content)
   return {file_content.data() + begin + 1, end - begin - 1};
 }
 
-static void resolve_header_file(std::string& file, const std::string& command)
+static void resolve_header_file(std::string& file, std::string_view command)
 {
   // read cpp
   const auto file_content = util::read_text_file(file);
@@ -93,7 +93,7 @@ static int fix_compile_proxy(const std::string& directory)
     std::string_view output = entry[OUTPUT_FIELD];
 
     // process
-    if (is_proxy_file(file)) resolve_header_file(file, command.data());
+    if (is_proxy_file(file)) resolve_header_file(file, command);
 
     // write
     if (!first) builder.append_comma();
@@ -151,4 +151,3 @@ int main(const int argc, char** argv)
     return 1;
   }
 }
-
