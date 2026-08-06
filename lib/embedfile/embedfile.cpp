@@ -143,6 +143,7 @@ int main(const int argc, char** argv)
   catch (const args::Completion& e)
   {
     std::cout << e.what();
+    return 0;
   }
   catch (const args::Help&)
   {

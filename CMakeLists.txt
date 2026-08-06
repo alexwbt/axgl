@@ -27,6 +27,7 @@ add_subdirectory(_external/spdlog)
 add_subdirectory(_external/assimp)
 add_subdirectory(_external/utfcpp)
 add_subdirectory(_external/cpptrace)
+add_subdirectory(_external/simdjson)
 add_subdirectory(_external/freetype)
 add_subdirectory(_external/flatbuffer)
 
@@ -37,6 +38,7 @@ add_subdirectory(lib/util)
 add_subdirectory(lib/assbin)
 add_subdirectory(lib/embedfile)
 add_subdirectory(lib/bundlefile)
+add_subdirectory(lib/compile_proxy)
 
 # AXGL
 add_subdirectory(axgl)

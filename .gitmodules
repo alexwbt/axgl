@@ -37,3 +37,6 @@
 [submodule "_external/tracy"]
 	path = _external/tracy
 	url = https://github.com/wolfpld/tracy.git
+[submodule "_external/simdjson"]
+	path = _external/simdjson
+	url = https://github.com/simdjson/simdjson.git

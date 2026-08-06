@@ -11,9 +11,9 @@ CLANG_FORMAT=clang-format
 #
 # Mode parsing
 #
-#   no args                   -> full-tree clang-tidy + clang-format
-#   --no-tidy                 -> full-tree clang-format only
-#   --files <f1> <f2> ...     -> clang-format only the listed files
+#   no args                       -> full-tree clang-tidy + clang-format
+#   --no-tidy                     -> full-tree clang-format only
+#   --files <file-1> <file-2> ... -> clang-format only the listed files
 #
 FILES_MODE=0
 RUN_TIDY=1
