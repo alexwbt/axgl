@@ -22,7 +22,9 @@ protected:
 public:
   virtual ~Server() = default;
 
-  Server(std::shared_ptr<asio::io_context> io_context, const asio::ip::port_type& port) :
+  Server(
+    std::shared_ptr<asio::io_context> io_context,
+    const asio::ip::port_type& port) :
     io_context_(std::move(io_context)), port_(port)
   {
   }
@@ -31,7 +33,8 @@ public:
   {
     for (auto it = sessions_.begin(); it != sessions_.end();)
     {
-      it->second->handle_input([this, &it](const data_ptr_t& buffer) { on_receive(it->first, buffer); });
+      it->second->handle_input([this, &it](const data_ptr_t& buffer)
+      { on_receive(it->first, buffer); });
 
       if (!it->second->connected())
       {

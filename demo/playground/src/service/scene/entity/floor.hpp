@@ -20,7 +20,8 @@ public:
   void set_size(float size) { size_ = size; }
 
 private:
-  static axgl::ptr_t<axgl::component::Mesh> create_mesh(const axgl::Axgl* axgl, float size)
+  static axgl::ptr_t<axgl::component::Mesh> create_mesh(
+    const axgl::Axgl* axgl, float size)
   {
     const auto& entity_service = axgl->entity_service();
     const auto& renderer_service = axgl->renderer_service();
@@ -29,21 +30,28 @@ private:
     auto normal = renderer_service->create_texture();
     auto diffuse = renderer_service->create_texture();
     auto specular = renderer_service->create_texture();
-    normal->load_texture(resource_service->get_resource("material/wood/normal.png"));
-    diffuse->load_texture(resource_service->get_resource("material/wood/diffuse.png"));
-    specular->load_texture(resource_service->get_resource("material/wood/specular.png"));
+    normal->load_texture(
+      resource_service->get_resource("material/wood/normal.png"));
+    diffuse->load_texture(
+      resource_service->get_resource("material/wood/diffuse.png"));
+    specular->load_texture(
+      resource_service->get_resource("material/wood/specular.png"));
     // material
     auto material = renderer_service->create_material("3d");
-    material->add_texture(axgl::Material::TextureType::kNormal, std::move(normal));
-    material->add_texture(axgl::Material::TextureType::kDiffuse, std::move(diffuse));
-    material->add_texture(axgl::Material::TextureType::kSpecular, std::move(specular));
+    material->add_texture(
+      axgl::Material::TextureType::kNormal, std::move(normal));
+    material->add_texture(
+      axgl::Material::TextureType::kDiffuse, std::move(diffuse));
+    material->add_texture(
+      axgl::Material::TextureType::kSpecular, std::move(specular));
     material->set_tiling(glm::vec2(size) / 3.0f);
     material->set_enable_shadow(false);
     // material->set_color({0.392f, 0.584f, 0.929f, 1.0f});
     // material->set_property("shininess", "2.0");
     // material->set_property("specular", "0.0");
     // mesh
-    const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+    const auto mesh
+      = entity_service->create_component_t<axgl::component::Mesh>();
     axgl::util::init_plain(*mesh);
     mesh->set_material(std::move(material));
     return mesh;

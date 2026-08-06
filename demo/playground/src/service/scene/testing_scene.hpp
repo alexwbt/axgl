@@ -34,7 +34,10 @@ private:
     return {item_offset.x - margin, height, item_offset.y};
   }
 
-  void add_entity(const axgl::ptr_t<axgl::Entity>& entity) { entities_.add(entity); }
+  void add_entity(const axgl::ptr_t<axgl::Entity>& entity)
+  {
+    entities_.add(entity);
+  }
 
 public:
   void initialize() override
@@ -45,12 +48,14 @@ public:
     sunlight_ = add_light(axgl::Light::sunlight({0.2f, -1.0f, 1.2f}));
 
     // spotlight
-    // add_light(axgl::Light::spotlight({-0.5f, 2.0f, -2.5f}, {0.2f, -1.0f, 1.2f}));
+    // add_light(axgl::Light::spotlight({-0.5f, 2.0f, -2.5f}, {0.2f,
+    // -1.0f, 1.2f}));
 
     // spinning component
     axgl::ptr_t<axgl::Component> spinning_comp;
     {
-      const auto component = entity_service_->create_component_t<SpinningComponent>();
+      const auto component
+        = entity_service_->create_component_t<SpinningComponent>();
       component->set_rotation_speed({0.02f, 0.01f, 0.05f});
       spinning_comp = axgl::ptr_cast<axgl::Component>(component);
     }
@@ -72,13 +77,15 @@ public:
 
     // transparent cube
     {
-      const auto entity = entity_service_->create_entity_t<TransparentCubeEntity>();
+      const auto entity
+        = entity_service_->create_entity_t<TransparentCubeEntity>();
       entity->set_position(item_position(0.5f));
       add_entity(entity);
     }
     // transparent spinning cube
     {
-      const auto entity = entity_service_->create_entity_t<TransparentCubeEntity>();
+      const auto entity
+        = entity_service_->create_entity_t<TransparentCubeEntity>();
       entity->set_position(item_position(1.0f));
       entity->add_component(spinning_comp);
       add_entity(entity);
@@ -102,13 +109,15 @@ public:
 
     // concrete block
     {
-      const auto entity = entity_service_->create_entity_t<ConcreteBlockEntity>();
+      const auto entity
+        = entity_service_->create_entity_t<ConcreteBlockEntity>();
       entity->set_position(item_position(0.5f));
       add_entity(entity);
     }
     // spinning concrete block
     {
-      const auto entity = entity_service_->create_entity_t<ConcreteBlockEntity>();
+      const auto entity
+        = entity_service_->create_entity_t<ConcreteBlockEntity>();
       entity->set_position(item_position(1.0f));
       entity->add_component(spinning_comp);
       add_entity(entity);
@@ -153,7 +162,8 @@ public:
     if (input_manager_->rotate_sun()->tick > 0)
     {
       sunlight_->light.direction.z -= 0.05f * context_->delta_tick_f;
-      if (sunlight_->light.direction.z < -1.2f) sunlight_->light.direction.z = 1.2f;
+      if (sunlight_->light.direction.z < -1.2f)
+        sunlight_->light.direction.z = 1.2f;
     }
   }
 };

@@ -38,5 +38,8 @@ public:
   }
 
   void set_orbit_speed(float orbit_speed) { orbit_speed_ = orbit_speed; }
-  void set_rotation_speed(glm::vec3 rotation_speed) { rotation_speed_ = rotation_speed; }
+  void set_rotation_speed(glm::vec3 rotation_speed)
+  {
+    rotation_speed_ = rotation_speed;
+  }
 };

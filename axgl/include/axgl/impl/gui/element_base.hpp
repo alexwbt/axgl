@@ -25,8 +25,10 @@ protected:
   bool hovering_ = false;
   bool activated_ = false;
 
-  std::unique_ptr<axgl::gui::Style> element_style_ = std::make_unique<axgl::gui::Style>();
-  std::unique_ptr<axgl::gui::Style> computed_style_ = std::make_unique<axgl::gui::Style>();
+  std::unique_ptr<axgl::gui::Style> element_style_
+    = std::make_unique<axgl::gui::Style>();
+  std::unique_ptr<axgl::gui::Style> computed_style_
+    = std::make_unique<axgl::gui::Style>();
 
   bool update_styles_ = false;
   std::vector<std::string> styles_;
@@ -44,14 +46,23 @@ public:
   [[nodiscard]] glm::vec2 get_position() const override { return position_; }
   [[nodiscard]] glm::vec2 get_size() const override { return size_; }
   [[nodiscard]] glm::vec4 get_rect() const override { return rect_; }
-  [[nodiscard]] glm::vec4 get_visible_rect() const override { return scissor_rect_; }
+  [[nodiscard]] glm::vec4 get_visible_rect() const override
+  {
+    return scissor_rect_;
+  }
   [[nodiscard]] bool is_focusable() const override { return focusable_; }
   [[nodiscard]] bool is_focused() const override { return focused_; }
   [[nodiscard]] bool is_hovering() const override { return hovering_; }
   [[nodiscard]] bool is_activated() const override { return activated_; }
 
-  [[nodiscard]] axgl::gui::Style* style() const override { return element_style_.get(); }
-  [[nodiscard]] axgl::Container<axgl::gui::Element>& children() override { return children_; }
+  [[nodiscard]] axgl::gui::Style* style() const override
+  {
+    return element_style_.get();
+  }
+  [[nodiscard]] axgl::Container<axgl::gui::Element>& children() override
+  {
+    return children_;
+  }
 
   void init(const axgl::gui::Context& context) override
   {
@@ -85,7 +96,8 @@ public:
 
     if (!hovering_ && pointer_in_rect) on_pointer_enter(context);
     if (hovering_ && !pointer_in_rect) on_pointer_exit(context);
-    if (!activated_ && hovering_ && active_input->tick == 1) on_activate(context);
+    if (!activated_ && hovering_ && active_input->tick == 1)
+      on_activate(context);
     if (activated_ && active_input->tick == 0) on_deactivate(context);
     if (hovering_) context.page->set_cursor(computed_style_->get_cursor());
 
@@ -200,7 +212,8 @@ protected:
     }
     if (
       update_styles_ || element_style_->is_modified() //
-      || std::ranges::any_of(using_styles_, [](const auto& s) { return s->is_modified(); }))
+      || std::ranges::any_of(
+        using_styles_, [](const auto& s) { return s->is_modified(); }))
     {
       computed_style_ = std::make_unique<axgl::gui::Style>();
       for (const auto& style : using_styles_)
@@ -214,7 +227,8 @@ protected:
 private:
   void set_using_style(const GuiService* gui_context, const std::string& name)
   {
-    if (const auto& style_ptr = gui_context->get_style(name)) using_styles_.emplace_back(style_ptr);
+    if (const auto& style_ptr = gui_context->get_style(name))
+      using_styles_.emplace_back(style_ptr);
   }
 };
 

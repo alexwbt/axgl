@@ -11,29 +11,42 @@
 namespace axgl::impl
 {
 
-class ResourceService : virtual public axgl::ResourceService, public axgl::impl::ServiceBase
+class ResourceService : virtual public axgl::ResourceService,
+                        public axgl::impl::ServiceBase
 {
   std::unordered_map<std::string, std::span<const std::uint8_t>> resources_;
 
 public:
-  void load_resource(const std::string& key, const std::span<const std::uint8_t> data) override
+  void load_resource(
+    const std::string& key, const std::span<const std::uint8_t> data) override
   {
     resources_[key] = data;
   }
 
-  void load_resources(std::unordered_map<std::string, std::span<const std::uint8_t>> data) override
+  void load_resources(
+    std::unordered_map<std::string, std::span<const std::uint8_t>> data)
+    override
   {
     resources_.insert(data.begin(), data.end());
   }
 
-  void unload_resource(const std::string& key) override { resources_.erase(key); }
+  void unload_resource(const std::string& key) override
+  {
+    resources_.erase(key);
+  }
 
-  [[nodiscard]] bool has_resource(const std::string& key) const override { return resources_.contains(key); }
+  [[nodiscard]] bool has_resource(const std::string& key) const override
+  {
+    return resources_.contains(key);
+  }
 
-  const std::span<const std::uint8_t>& get_resource(const std::string& key) override
+  const std::span<const std::uint8_t>& get_resource(
+    const std::string& key) override
   {
 #ifdef AXGL_DEBUG
-    if (!has_resource(key)) throw std::runtime_error("Resource service does not contain resource: " + key);
+    if (!has_resource(key))
+      throw std::runtime_error(
+        "Resource service does not contain resource: " + key);
 #endif
     return resources_.at(key);
   }

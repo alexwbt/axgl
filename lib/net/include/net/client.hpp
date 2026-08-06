@@ -15,7 +15,10 @@ protected:
 public:
   virtual ~Client() = default;
 
-  explicit Client(std::shared_ptr<asio::io_context> io_context) : io_context_(std::move(io_context)) { }
+  explicit Client(std::shared_ptr<asio::io_context> io_context) :
+    io_context_(std::move(io_context))
+  {
+  }
 
   virtual void disconnect()
   {
@@ -26,7 +29,8 @@ public:
   {
     if (!session_) return;
 
-    session_->handle_input([this](const data_ptr_t& buffer) { on_receive(buffer); });
+    session_->handle_input([this](const data_ptr_t& buffer)
+    { on_receive(buffer); });
 
     if (!session_->connected())
     {
@@ -47,7 +51,8 @@ public:
   virtual void on_receive(const data_ptr_t&) { }
   virtual void connection_failed(const asio::error_code&) { }
 
-  virtual void connect(const std::string& host, const asio::ip::port_type& port) = 0;
+  virtual void connect(const std::string& host, const asio::ip::port_type& port)
+    = 0;
 };
 
 } // namespace net

@@ -16,7 +16,10 @@ public:
 
   axgl::Light light{axgl::Light::Type::kSun};
 
-  void parent_update(axgl::Entity* parent) override { light.position = parent->transform().position; }
+  void parent_update(axgl::Entity* parent) override
+  {
+    light.position = parent->transform().position;
+  }
 };
 
 } // namespace axgl::impl::component

@@ -33,7 +33,8 @@
 // profiling
 //
 #ifdef AXGL_DEBUG
-  #define AXGL_PROFILE_SCOPE(name) ZoneNamedN(TracyConcat(___tracy_scoped_zone, TracyLine), name, true)
+  #define AXGL_PROFILE_SCOPE(name)                                             \
+    ZoneNamedN(TracyConcat(___tracy_scoped_zone, TracyLine), name, true)
   #define AXGL_PLOT(name, value) TracyPlot(name, value)
   #define AXGL_ALLOC(pointer, size) TracyAlloc(ptr, _Size);
   #define AXGL_FREE(pointer) TracyFree(_Block);

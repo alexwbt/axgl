@@ -26,19 +26,22 @@ static std::string entry_to_string(const std::filesystem::path& path)
 static std::vector<File> read_directory(const std::string& source)
 {
   std::vector<File> files;
-  for (const auto& entry : std::filesystem::recursive_directory_iterator(source))
+  for (const auto& entry :
+       std::filesystem::recursive_directory_iterator(source))
   {
     if (!std::filesystem::is_directory(entry.path()))
     {
       auto path = entry_to_string(entry.path());
-      auto key = entry_to_string(std::filesystem::relative(entry.path(), source));
+      auto key
+        = entry_to_string(std::filesystem::relative(entry.path(), source));
       files.push_back({path, key});
     }
   }
   return files;
 }
 
-static int write_files(const std::vector<File>& files, const std::string& target)
+static int write_files(
+  const std::vector<File>& files, const std::string& target)
 {
   flatbuffers::FlatBufferBuilder builder;
 
@@ -72,7 +75,9 @@ static int write_files(const std::vector<File>& files, const std::string& target
     return 1;
   }
 
-  output_stream.write(reinterpret_cast<const char*>(builder.GetBufferPointer()), builder.GetSize());
+  output_stream.write(
+    reinterpret_cast<const char*>(builder.GetBufferPointer()),
+    builder.GetSize());
 
   return 0;
 }
@@ -96,11 +101,15 @@ static int bundle_files(const std::string& source, const std::string& target)
 
 int main(int argc, char** argv)
 {
-  args::ArgumentParser parser("Bundles all files in a directory into a binary file.");
+  args::ArgumentParser parser(
+    "Bundles all files in a directory into a binary file.");
   args::HelpFlag help(parser, "help", "Display the help menu.", {'h', "help"});
 
-  args::Positional<std::string> source(parser, "source", "The source directory to bundle.", args::Options::Required);
-  args::Positional<std::string> target(parser, "target", "The output binary file.", args::Options::Required);
+  args::Positional<std::string> source(
+    parser, "source", "The source directory to bundle.",
+    args::Options::Required);
+  args::Positional<std::string> target(
+    parser, "target", "The output binary file.", args::Options::Required);
 
   try
   {

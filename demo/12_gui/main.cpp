@@ -12,12 +12,18 @@ int main()
   const auto& input_service = axgl.input_service();
 
   // input
-  const auto cursor_pointer = axgl::create_ptr<axgl::Pointer>("Cursor", axgl::Pointer::Source::kMouseMove);
-  const auto scroll_pointer = axgl::create_ptr<axgl::Pointer>("GUI Scroll", axgl::Pointer::Source::kScroll);
-  const auto scale_input = axgl::create_ptr<axgl::Input>("GUI Scale", axgl::Input::Source::kKeyLeftControl);
-  const auto activate_input = axgl::create_ptr<axgl::Input>("GUI Activate", axgl::Input::Source::kMouseButton1);
-  const auto focus_switch_input = axgl::create_ptr<axgl::Input>("GUI Focus Next", axgl::Input::Source::kKeyTab);
-  const auto focus_activate_input = axgl::create_ptr<axgl::Input>("GUI Focus Next", axgl::Input::Source::kKeyEnter);
+  const auto cursor_pointer = axgl::create_ptr<axgl::Pointer>(
+    "Cursor", axgl::Pointer::Source::kMouseMove);
+  const auto scroll_pointer = axgl::create_ptr<axgl::Pointer>(
+    "GUI Scroll", axgl::Pointer::Source::kScroll);
+  const auto scale_input = axgl::create_ptr<axgl::Input>(
+    "GUI Scale", axgl::Input::Source::kKeyLeftControl);
+  const auto activate_input = axgl::create_ptr<axgl::Input>(
+    "GUI Activate", axgl::Input::Source::kMouseButton1);
+  const auto focus_switch_input = axgl::create_ptr<axgl::Input>(
+    "GUI Focus Next", axgl::Input::Source::kKeyTab);
+  const auto focus_activate_input = axgl::create_ptr<axgl::Input>(
+    "GUI Focus Next", axgl::Input::Source::kKeyEnter);
   input_service->add_pointer(cursor_pointer);
   input_service->add_pointer(scroll_pointer);
   input_service->add_input(scale_input);

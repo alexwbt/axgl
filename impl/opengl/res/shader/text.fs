@@ -9,5 +9,6 @@ out vec4 frag_color;
 
 void main()
 {
-  frag_color = text_color * vec4(1.0, 1.0, 1.0, texture(text_texture, vert_uv).r);
+  frag_color
+    = text_color * vec4(1.0, 1.0, 1.0, texture(text_texture, vert_uv).r);
 }

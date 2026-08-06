@@ -40,14 +40,21 @@ public:
   virtual void set_scroll_pointer(axgl::ptr_t<axgl::Pointer> scroll) = 0;
   virtual void set_scale_input(axgl::ptr_t<axgl::Input> scale) = 0;
   virtual void set_activate_input(axgl::ptr_t<axgl::Input> activate) = 0;
-  virtual void set_focus_switch_input(axgl::ptr_t<axgl::Input> focus_switch) = 0;
-  virtual void set_focus_activate_input(axgl::ptr_t<axgl::Input> focus_activate) = 0;
-  [[nodiscard]] virtual axgl::ptr_t<axgl::Pointer> get_cursor_pointer() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<axgl::Pointer> get_scroll_pointer() const = 0;
+  virtual void set_focus_switch_input(axgl::ptr_t<axgl::Input> focus_switch)
+    = 0;
+  virtual void set_focus_activate_input(axgl::ptr_t<axgl::Input> focus_activate)
+    = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Pointer> get_cursor_pointer() const
+    = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Pointer> get_scroll_pointer() const
+    = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_scale_input() const = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_activate_input() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_focus_switch_input() const = 0;
-  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_focus_activate_input() const = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_focus_switch_input() const
+    = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_focus_activate_input()
+    const
+    = 0;
 };
 
 } // namespace axgl::gui

@@ -13,7 +13,8 @@
 namespace axgl::impl
 {
 
-class CameraService : virtual public axgl::CameraService, public axgl::impl::ServiceBase
+class CameraService : virtual public axgl::CameraService,
+                      public axgl::impl::ServiceBase
 {
   axgl::ptr_t<axgl::CameraMode> camera_mode_;
   axgl::ptr_t<axgl::InputService> input_service_;
@@ -35,9 +36,15 @@ public:
     camera_entity_ = std::move(camera_entity);
   }
 
-  axgl::Camera* get_camera() override { return camera_comp_ ? &camera_comp_->camera : nullptr; }
+  axgl::Camera* get_camera() override
+  {
+    return camera_comp_ ? &camera_comp_->camera : nullptr;
+  }
 
-  axgl::ptr_t<axgl::Entity> get_camera_entity() override { return camera_entity_; }
+  axgl::ptr_t<axgl::Entity> get_camera_entity() override
+  {
+    return camera_entity_;
+  }
 
   void initialize() override { input_service_ = axgl_->input_service(); }
 
@@ -46,7 +53,8 @@ public:
     if (!camera_entity_) return;
 
     // get camera component if not present
-    if (!camera_comp_) camera_comp_ = camera_entity_->components().get_t<component::Camera>();
+    if (!camera_comp_)
+      camera_comp_ = camera_entity_->components().get_t<component::Camera>();
     if (!camera_comp_) return;
 
     // update camera position with camera entity

@@ -14,7 +14,10 @@ class Window : public axgl::Window
   axgl::ptr_t<::glfw::Window> window_;
 
 public:
-  explicit Window(axgl::ptr_t<::glfw::Window> window) : window_(std::move(window)) { }
+  explicit Window(axgl::ptr_t<::glfw::Window> window) :
+    window_(std::move(window))
+  {
+  }
 
   void set_title(const std::string& title) override
   {
@@ -23,12 +26,15 @@ public:
 
   void set_position(const std::uint32_t x, const std::uint32_t y) override
   {
-    if (!window_->is_destroyed()) window_->set_position(util::clamp_cast<int>(x), util::clamp_cast<int>(y));
+    if (!window_->is_destroyed())
+      window_->set_position(util::clamp_cast<int>(x), util::clamp_cast<int>(y));
   }
 
   void set_size(const std::uint32_t width, const std::uint32_t height) override
   {
-    if (!window_->is_destroyed()) window_->set_size(util::clamp_cast<int>(width), util::clamp_cast<int>(height));
+    if (!window_->is_destroyed())
+      window_->set_size(
+        util::clamp_cast<int>(width), util::clamp_cast<int>(height));
   }
 
   void maximize() override { }
@@ -51,7 +57,10 @@ public:
     if (!window_->is_destroyed()) window_->swap_buffers();
   }
 
-  [[nodiscard]] glm::ivec2 get_size() const override { return window_->get_size(); }
+  [[nodiscard]] glm::ivec2 get_size() const override
+  {
+    return window_->get_size();
+  }
 
   [[nodiscard]] auto glfw_window() const { return window_; }
 };

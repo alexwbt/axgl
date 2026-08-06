@@ -160,7 +160,10 @@ public:
   {
   }
 
-  Input(const std::string& name, axgl::Input::Source source) : Input(name, std::vector{source}) { }
+  Input(const std::string& name, axgl::Input::Source source) :
+    Input(name, std::vector{source})
+  {
+  }
 };
 
 } // namespace axgl

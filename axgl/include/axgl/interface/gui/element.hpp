@@ -39,7 +39,8 @@ public:
   virtual void set_position(glm::vec2 position) = 0;
   virtual void set_size(glm::vec2 size) = 0;
 
-  virtual axgl::gui::Style* set_style(const std::vector<std::string>& styles) = 0;
+  virtual axgl::gui::Style* set_style(const std::vector<std::string>& styles)
+    = 0;
   virtual void append_style(const std::string& style) = 0;
   virtual void remove_style(const std::string& style) = 0;
 };

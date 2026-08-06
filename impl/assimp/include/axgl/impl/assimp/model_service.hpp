@@ -9,7 +9,8 @@
 namespace axgl::impl::assimp
 {
 
-class ModelService : virtual public axgl::ModelService, public axgl::impl::ServiceBase
+class ModelService : virtual public axgl::ModelService,
+                     public axgl::impl::ServiceBase
 {
 public:
   ModelResources load_model(const std::string& resource_key) override
@@ -18,7 +19,8 @@ public:
     const auto& renderer_service = axgl_->renderer_service();
     const auto& resource_service = axgl_->resource_service();
 
-    ModelLoader loader(entity_service, renderer_service, resource_service, resource_key, "3d");
+    ModelLoader loader(
+      entity_service, renderer_service, resource_service, resource_key, "3d");
     return loader.resources_;
   }
 };

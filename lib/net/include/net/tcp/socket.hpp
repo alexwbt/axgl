@@ -8,7 +8,8 @@
   #include <winsock2.h>
   // winsock2.h transitively includes windows.h -> winuser.h, which defines the
   // GetMessage macro (-> GetMessageA/W). Undefine it so downstream code can
-  // use flatbuffers' generated GetMessage without the preprocessor rewriting the token.
+  // use flatbuffers' generated GetMessage without the preprocessor rewriting
+  // the token.
   #undef GetMessage
 #else
   #include <arpa/inet.h>
@@ -24,12 +25,16 @@ class LengthPrefixedTcpSocket final : public Socket
 public:
   static constexpr size_t kLengthPrefixSize = 4;
 
-  explicit LengthPrefixedTcpSocket(asio::ip::tcp::socket socket) : socket_(std::move(socket)) { }
+  explicit LengthPrefixedTcpSocket(asio::ip::tcp::socket socket) :
+    socket_(std::move(socket))
+  {
+  }
 
   asio::awaitable<void> write_buffer(const data_ptr_t buffer) override
   {
     // prepend size
-    const std::uint32_t size = htonl(util::narrow<std::uint32_t>(buffer->size()));
+    const std::uint32_t size
+      = htonl(util::narrow<std::uint32_t>(buffer->size()));
     const std::array buffers = {
       asio::buffer(&size, kLengthPrefixSize),
       asio::buffer(buffer->data(), buffer->size()),
@@ -40,15 +45,22 @@ public:
   asio::awaitable<void> read_buffer(std::vector<std::uint8_t>& buffer) override
   {
     // read size
-    co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, kLengthPrefixSize), asio::use_awaitable);
+    co_await asio::async_read(
+      socket_, asio::dynamic_buffer(buffer, kLengthPrefixSize),
+      asio::use_awaitable);
     const auto size = ntohl(*reinterpret_cast<std::uint32_t*>(buffer.data()));
     // read all of size
-    co_await asio::async_read(socket_, asio::dynamic_buffer(buffer, kLengthPrefixSize + size), asio::use_awaitable);
+    co_await asio::async_read(
+      socket_, asio::dynamic_buffer(buffer, kLengthPrefixSize + size),
+      asio::use_awaitable);
   }
 
   void close() override { socket_.close(); }
   bool connected() override { return socket_.is_open(); }
-  asio::any_io_executor get_executor() override { return socket_.get_executor(); }
+  asio::any_io_executor get_executor() override
+  {
+    return socket_.get_executor();
+  }
 };
 
 } // namespace net

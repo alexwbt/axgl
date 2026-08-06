@@ -22,7 +22,8 @@
 namespace axgl::impl::opengl
 {
 
-class RendererService : virtual public axgl::RendererService, public axgl::impl::ServiceBase
+class RendererService : virtual public axgl::RendererService,
+                        public axgl::impl::ServiceBase
 {
   axgl::ptr_t<axgl::Renderer> renderer_;
 
@@ -30,9 +31,12 @@ public:
   void initialize() override
   {
     // set glfw context
-    axgl::impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    axgl::impl::glfw::WindowService::set_window_hint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    axgl::impl::glfw::WindowService::set_window_hint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    axgl::impl::glfw::WindowService::set_window_hint(
+      GLFW_CONTEXT_VERSION_MAJOR, 4);
+    axgl::impl::glfw::WindowService::set_window_hint(
+      GLFW_CONTEXT_VERSION_MINOR, 1);
+    axgl::impl::glfw::WindowService::set_window_hint(
+      GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   }
 
   void render() override
@@ -47,15 +51,24 @@ public:
     renderer_->render();
   }
 
-  axgl::ptr_t<axgl::Renderer> create_renderer() override { return axgl::create_ptr<axgl::impl::opengl::Renderer>(); }
+  axgl::ptr_t<axgl::Renderer> create_renderer() override
+  {
+    return axgl::create_ptr<axgl::impl::opengl::Renderer>();
+  }
 
-  axgl::ptr_t<axgl::Texture> create_texture() override { return axgl::create_ptr<axgl::impl::opengl::Texture>(); }
+  axgl::ptr_t<axgl::Texture> create_texture() override
+  {
+    return axgl::create_ptr<axgl::impl::opengl::Texture>();
+  }
 
   axgl::ptr_t<axgl::Material> create_material(const std::string& type) override
   {
-    if (type == "2d") return axgl::create_ptr<axgl::impl::opengl::Mesh2dMaterial>();
-    if (type == "3d") return axgl::create_ptr<axgl::impl::opengl::Mesh3dMaterial>();
-    if (type == "color") return axgl::create_ptr<axgl::impl::opengl::ColorMaterial>();
+    if (type == "2d")
+      return axgl::create_ptr<axgl::impl::opengl::Mesh2dMaterial>();
+    if (type == "3d")
+      return axgl::create_ptr<axgl::impl::opengl::Mesh3dMaterial>();
+    if (type == "color")
+      return axgl::create_ptr<axgl::impl::opengl::ColorMaterial>();
 #ifdef AXGL_DEBUG
     throw std::runtime_error("Unsupported material type: " + type);
 #else
@@ -63,7 +76,10 @@ public:
 #endif
   }
 
-  [[nodiscard]] axgl::ptr_t<axgl::Renderer> get_active_renderer() const override { return renderer_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Renderer> get_active_renderer() const override
+  {
+    return renderer_;
+  }
 
   void set_active_renderer(axgl::ptr_t<axgl::Renderer> renderer) override
   {

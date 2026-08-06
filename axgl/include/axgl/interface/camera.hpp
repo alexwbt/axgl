@@ -33,9 +33,18 @@ public:
   [[nodiscard]] glm::vec3 up() const { return up_; }
   [[nodiscard]] glm::vec3 front() const { return front_; }
   [[nodiscard]] glm::vec3 horizontal_right() const { return horizontal_right_; }
-  [[nodiscard]] glm::mat4 view_matrix() const { return projection_view_matrix_; }
-  [[nodiscard]] glm::mat4 projection_matrix() const { return projection_view_matrix_; }
-  [[nodiscard]] glm::mat4 projection_view_matrix() const { return projection_view_matrix_; }
+  [[nodiscard]] glm::mat4 view_matrix() const
+  {
+    return projection_view_matrix_;
+  }
+  [[nodiscard]] glm::mat4 projection_matrix() const
+  {
+    return projection_view_matrix_;
+  }
+  [[nodiscard]] glm::mat4 projection_view_matrix() const
+  {
+    return projection_view_matrix_;
+  }
 
   void update()
   {
@@ -48,11 +57,14 @@ public:
     const auto sin_yaw = glm::sin(yaw_radians);
     const auto cos_yaw = glm::cos(yaw_radians);
 
-    front_ = glm::normalize(glm::vec3(sin_yaw * sin_pitch, cos_pitch, cos_yaw * sin_pitch));
+    front_ = glm::normalize(
+      glm::vec3(sin_yaw * sin_pitch, cos_pitch, cos_yaw * sin_pitch));
 
     const auto rotation = glm::rotate(glm::mat4(1.0f), roll_radians, front_);
     horizontal_right_ = glm::normalize(glm::cross(front_, glm::vec3(0, -1, 0)));
-    up_ = glm::normalize(glm::vec3(rotation * glm::vec4(glm::cross(front_, horizontal_right_), 1)));
+    up_ = glm::normalize(
+      glm::vec3(
+        rotation * glm::vec4(glm::cross(front_, horizontal_right_), 1)));
 
     update_projection_view_matrix();
   }
@@ -66,7 +78,8 @@ public:
     if (orthographic)
     {
       const auto v = viewport * 0.5f;
-      projection_matrix_ = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
+      projection_matrix_
+        = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
     }
     else if (viewport.y > 0)
     {
@@ -79,7 +92,10 @@ public:
     projection_view_matrix_ = projection_matrix_ * view_matrix_;
   }
 
-  void set_projection_view_matrix(const glm::mat4& pv) { projection_view_matrix_ = pv; }
+  void set_projection_view_matrix(const glm::mat4& pv)
+  {
+    projection_view_matrix_ = pv;
+  }
 };
 
 } // namespace axgl

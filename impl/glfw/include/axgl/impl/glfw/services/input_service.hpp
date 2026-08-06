@@ -14,12 +14,14 @@
 namespace axgl::impl::glfw
 {
 
-class InputService : virtual public axgl::InputService, public axgl::impl::ServiceBase
+class InputService : virtual public axgl::InputService,
+                     public axgl::impl::ServiceBase
 {
   axgl::ptr_t<axgl::impl::glfw::Window> window_;
   std::vector<axgl::ptr_t<axgl::Input>> inputs_;
   std::vector<axgl::ptr_t<axgl::Pointer>> pointers_;
-  axgl::InputService::CursorMode cursor_mode_ = axgl::InputService::CursorMode::kNormal;
+  axgl::InputService::CursorMode cursor_mode_
+    = axgl::InputService::CursorMode::kNormal;
 
   static int to_glfw_keycode(const axgl::Input::Source source)
   {
@@ -167,10 +169,14 @@ class InputService : virtual public axgl::InputService, public axgl::impl::Servi
     }
   }
 
-  static bool get_glfw_input(const axgl::Input::Source source, const axgl::ptr_t<::glfw::Window>& window)
+  static bool get_glfw_input(
+    const axgl::Input::Source source, const axgl::ptr_t<::glfw::Window>& window)
   {
-    if (const auto keycode = to_glfw_keycode(source); keycode != -1 && window->key_down(keycode)) return true;
-    if (const auto mouse_button = to_glfw_mouse_button(source); mouse_button != -1 && window->mouse_down(mouse_button))
+    if (const auto keycode = to_glfw_keycode(source);
+        keycode != -1 && window->key_down(keycode))
+      return true;
+    if (const auto mouse_button = to_glfw_mouse_button(source);
+        mouse_button != -1 && window->mouse_down(mouse_button))
       return true;
     return false;
   }
@@ -200,16 +206,29 @@ public:
     using enum axgl::InputService::CursorMode;
     switch (mode)
     {
-    case kLocked: window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED); break;
-    case kNormal: window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_NORMAL); break;
+    case kLocked:
+      window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      break;
+    case kNormal:
+      window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+      break;
     }
   }
 
-  [[nodiscard]] axgl::InputService::CursorMode get_cursor_mode() const override { return cursor_mode_; }
+  [[nodiscard]] axgl::InputService::CursorMode get_cursor_mode() const override
+  {
+    return cursor_mode_;
+  }
 
-  void add_input(axgl::ptr_t<axgl::Input> input) override { inputs_.push_back(std::move(input)); }
+  void add_input(axgl::ptr_t<axgl::Input> input) override
+  {
+    inputs_.push_back(std::move(input));
+  }
 
-  void add_pointer(axgl::ptr_t<axgl::Pointer> pointer) override { pointers_.push_back(std::move(pointer)); }
+  void add_pointer(axgl::ptr_t<axgl::Pointer> pointer) override
+  {
+    pointers_.push_back(std::move(pointer));
+  }
 
   void remove_input(std::uint64_t id) override
   {
@@ -218,20 +237,27 @@ public:
 
   void remove_pointer(std::uint64_t id) override
   {
-    std::erase_if(pointers_, [id](const auto& pointer) { return pointer->id == id; });
+    std::erase_if(
+      pointers_, [id](const auto& pointer) { return pointer->id == id; });
   }
 
-  [[nodiscard]] std::vector<axgl::ptr_t<axgl::Input>> get_input_by_source(axgl::Input::Source source) override
+  [[nodiscard]] std::vector<axgl::ptr_t<axgl::Input>> get_input_by_source(
+    axgl::Input::Source source) override
   {
     const auto contains = [&source](const auto& e)
-    { return std::find(e->sources.begin(), e->sources.end(), source) != e->sources.end(); };
+    {
+      return std::find(e->sources.begin(), e->sources.end(), source)
+        != e->sources.end();
+    };
     auto view = inputs_ | std::views::filter(contains);
     return {view.begin(), view.end()};
   }
 
-  [[nodiscard]] std::vector<axgl::ptr_t<axgl::Pointer>> get_pointer_by_source(axgl::Pointer::Source source) override
+  [[nodiscard]] std::vector<axgl::ptr_t<axgl::Pointer>> get_pointer_by_source(
+    axgl::Pointer::Source source) override
   {
-    const auto is_source = [&source](const auto& e) { return e->source == source; };
+    const auto is_source
+      = [&source](const auto& e) { return e->source == source; };
     auto view = pointers_ | std::views::filter(is_source);
     return {view.begin(), view.end()};
   }
@@ -244,8 +270,9 @@ public:
     for (const auto& input : inputs_)
     {
       const auto active = std::ranges::any_of(
-        input->sources,                                                            //
-        [&window](const auto& source) { return get_glfw_input(source, window); }); //
+        input->sources,                            //
+        [&window](const auto& source)
+      { return get_glfw_input(source, window); }); //
       if (active) input->tick++;
       else input->tick = 0;
     }

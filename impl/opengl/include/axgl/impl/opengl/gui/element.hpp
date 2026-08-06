@@ -28,9 +28,12 @@ protected:
   void render_base(const axgl::gui::Context& context)
   {
     const auto scissor_x = util::clamp_cast<GLint>(scissor_rect_.x);
-    const auto scissor_y = context.page->get_size().y - util::clamp_cast<GLint>(scissor_rect_.w);
-    const auto scissor_width = util::clamp_cast<GLsizei>(scissor_rect_.z - scissor_rect_.x);
-    const auto scissor_height = util::clamp_cast<GLsizei>(scissor_rect_.w - scissor_rect_.y);
+    const auto scissor_y
+      = context.page->get_size().y - util::clamp_cast<GLint>(scissor_rect_.w);
+    const auto scissor_width
+      = util::clamp_cast<GLsizei>(scissor_rect_.z - scissor_rect_.x);
+    const auto scissor_height
+      = util::clamp_cast<GLsizei>(scissor_rect_.w - scissor_rect_.y);
 
     if (scissor_width <= 0 || scissor_height <= 0) return;
     glScissor(scissor_x, scissor_y, scissor_width, scissor_height);

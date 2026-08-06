@@ -30,11 +30,23 @@ public:
     texture_->generate_mipmap();
   }
 
-  [[nodiscard]] std::uint32_t get_width() override { return texture_->get_width(); }
-  [[nodiscard]] std::uint32_t get_height() override { return texture_->get_height(); }
+  [[nodiscard]] std::uint32_t get_width() override
+  {
+    return texture_->get_width();
+  }
+  [[nodiscard]] std::uint32_t get_height() override
+  {
+    return texture_->get_height();
+  }
 
-  void replace_texture(axgl::ptr_t<::opengl::Texture> texture) { texture_ = std::move(texture); }
-  [[nodiscard]] axgl::ptr_t<::opengl::Texture> get_texture() const { return texture_; }
+  void replace_texture(axgl::ptr_t<::opengl::Texture> texture)
+  {
+    texture_ = std::move(texture);
+  }
+  [[nodiscard]] axgl::ptr_t<::opengl::Texture> get_texture() const
+  {
+    return texture_;
+  }
 };
 
 } // namespace axgl::impl::opengl

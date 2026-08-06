@@ -7,7 +7,8 @@
  *   - Parallax occlusion mapping (POM) for height textures
  *   - Normal mapping (tangent-space samples transformed to world space)
  *   - Sun, point, and spot lights (up to 32 each)
- *   - Cascaded shadow mapping with 3x3 PCF (sampler2DArray, per-cascade selection)
+ *   - Cascaded shadow mapping with 3x3 PCF (sampler2DArray, per-cascade
+ * selection)
  *   - Weighted blended transparency (output to MRT: color + reveal)
  *
  * Coordinate spaces:
@@ -140,7 +141,8 @@ layout(location = 1) out float reveal;
  */
 vec2 calc_height_offset(Context ctx)
 {
-  // tangent-space view direction (TBN columns are t,b,n so transpose maps world->tangent)
+  // tangent-space view direction (TBN columns are t,b,n so transpose maps
+  // world->tangent)
   vec3 view_dir_tangent = transpose(vso.tbn) * ctx.view_dir;
 
   // number of depth layers (min: 8, max: 32), more layers when viewing head-on
@@ -151,12 +153,14 @@ vec2 calc_height_offset(Context ctx)
   float current_layer_depth = 0.0;
   // the amount to shift the texture coordinates per layer (from vector P)
   // clamp view_dir.z to avoid unbounded displacement at grazing angles
-  vec2 P = view_dir_tangent.xy / max(abs(view_dir_tangent.z), 0.1) * height_scale;
+  vec2 P
+    = view_dir_tangent.xy / max(abs(view_dir_tangent.z), 0.1) * height_scale;
   vec2 delta_uv = P / layers;
 
   // initial values
   vec2 current_uv = vso.uv;
-  float current_height_map_value = textureLod(height_texture, current_uv, 0.0).r;
+  float current_height_map_value
+    = textureLod(height_texture, current_uv, 0.0).r;
 
   // march layers until the ray crosses the height-field surface
   while (current_layer_depth < current_height_map_value)
@@ -174,7 +178,8 @@ vec2 calc_height_offset(Context ctx)
 
   // get depth after and before collision for linear interpolation
   float after_depth = current_height_map_value - current_layer_depth;
-  float before_depth = textureLod(height_texture, prev_uv, 0.0).r - current_layer_depth + layer_depth;
+  float before_depth = textureLod(height_texture, prev_uv, 0.0).r
+    - current_layer_depth + layer_depth;
 
   // interpolation of texture coordinates between the two surrounding layers
   float weight = after_depth / (after_depth - before_depth);
@@ -205,7 +210,8 @@ float calc_shadow()
   }
 
   // project into the selected cascade's light clip space and remap to [0,1]
-  vec3 projection_coords = vso.light_space_position[cascade_index].xyz / vso.light_space_position[cascade_index].w;
+  vec3 projection_coords = vso.light_space_position[cascade_index].xyz
+    / vso.light_space_position[cascade_index].w;
   projection_coords = projection_coords * 0.5 + 0.5;
 
   // beyond the light's far plane: not in shadow
@@ -223,7 +229,11 @@ float calc_shadow()
     for (int y = -1; y <= 1; ++y)
     {
       // sample the array with vec3(uv, layer)
-      float pcf_depth = texture(shadow_maps, vec3(projection_coords.xy + vec2(x, y) * texel_size, cascade_index)).r;
+      float pcf_depth
+        = texture(
+            shadow_maps,
+            vec3(projection_coords.xy + vec2(x, y) * texel_size, cascade_index))
+            .r;
       shadow += projection_coords.z - bias > pcf_depth ? 1.0 : 0.0;
     }
   }
@@ -245,11 +255,14 @@ vec3 calc_sun_light(Context ctx, SunLight light)
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
   vec3 diffuse = light.diffuse * diffuse_value * ctx.frag_diffuse;
 
-  // Specular (skipped when the surface faces away or shininess is 0 to avoid pow(0,0) NaN)
+  // Specular (skipped when the surface faces away or shininess is 0 to avoid
+  // pow(0,0) NaN)
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
   vec3 specular = (diffuse_value == 0.0 || mesh_shininess == 0.0)
     ? vec3(0.0)
-    : light.specular * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess) * ctx.frag_specular;
+    : light.specular
+      * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess)
+      * ctx.frag_specular;
 
   // Ambient
   vec3 ambient = light.ambient * ctx.frag_diffuse;
@@ -275,14 +288,17 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
   vec3 specular = (diffuse_value == 0.0 || mesh_shininess == 0.0)
     ? vec3(0.0)
-    : light.specular * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess) * ctx.frag_specular;
+    : light.specular
+      * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess)
+      * ctx.frag_specular;
 
   // Ambient
   vec3 ambient = light.ambient * ctx.frag_diffuse;
 
   // Attenuation
   float dis = length(light.position - vso.position);
-  float attenuation = 1.0 / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
+  float attenuation = 1.0
+    / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
   // Cut Off (soft edge between cut_off and outer_cut_off)
   float theta = dot(light_dir, normalize(-light.direction));
@@ -306,14 +322,17 @@ vec3 calc_point_light(Context ctx, PointLight light)
   vec3 reflect_dir = reflect(-light_dir, ctx.frag_normal);
   vec3 specular = (diffuse_value == 0.0 || mesh_shininess == 0.0)
     ? vec3(0.0)
-    : light.specular * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess) * ctx.frag_specular;
+    : light.specular
+      * pow(max(dot(ctx.view_dir, reflect_dir), 0.0), mesh_shininess)
+      * ctx.frag_specular;
 
   // Ambient
   vec3 ambient = light.ambient * ctx.frag_diffuse;
 
   // Attenuation
   float dis = length(light.position - vso.position);
-  float attenuation = 1.0 / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
+  float attenuation = 1.0
+    / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
   return (ambient + diffuse + specular) * attenuation;
 }
@@ -333,11 +352,14 @@ void main()
 
   // diffuse: gamma-decode the texture then tint with mesh_color
   ctx.frag_diffuse = use_diffuse_texture
-    ? pow(texture(diffuse_texture, uv).rgb, vec3(diffuse_texture_gamma)) * mesh_color.rgb
+    ? pow(texture(diffuse_texture, uv).rgb, vec3(diffuse_texture_gamma))
+      * mesh_color.rgb
     : mesh_color.rgb;
 
   // specular: from texture or uniform
-  ctx.frag_specular = use_specular_texture ? texture(specular_texture, uv).rgb * mesh_specular : vec3(mesh_specular);
+  ctx.frag_specular = use_specular_texture
+    ? texture(specular_texture, uv).rgb * mesh_specular
+    : vec3(mesh_specular);
 
   // Normal: normal maps store a tangent-space direction encoded as [0,1] RGB.
   // Decode to [-1,1], then transform to world space via vso.tbn (tangent->world
@@ -347,7 +369,8 @@ void main()
   // See mesh3d.vs for why the TBN's handedness (bitangent sign) matters.
   vec3 normal_sample = texture(normal_texture, uv).rgb * 2.0 - 1.0;
   normal_sample.xy *= normal_scale;
-  ctx.frag_normal = use_normal_texture ? normalize(vso.tbn * normal_sample) : normalize(vso.normal);
+  ctx.frag_normal = use_normal_texture ? normalize(vso.tbn * normal_sample)
+                                       : normalize(vso.normal);
 
   // accumulate light contributions from all active lights
   vec3 result = vec3(0.0);
@@ -361,9 +384,11 @@ void main()
   // Weighted blended order-independent transparency (OIT):
   // weight by alpha and depth so that transparent surfaces blend correctly
   // without sorted draw order. Opaque passes use weight = 1.0.
-  float weight = transparent
-    ? clamp(pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0), 1e-2, 3e3)
-    : 1.0f;
+  float weight = transparent ? clamp(
+                                 pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0)
+                                   * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0),
+                                 1e-2, 3e3)
+                             : 1.0f;
   // pre-multiply color by alpha so the composite recovers the weighted average
   frag_color = vec4(result * mesh_color.a, mesh_color.a) * weight;
   reveal = mesh_color.a;

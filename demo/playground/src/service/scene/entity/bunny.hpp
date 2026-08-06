@@ -9,8 +9,10 @@ class BunnyEntity : public axgl::impl::EntityBase
 {
   static void load_model(const axgl::Axgl* axgl, BunnyEntity* entity)
   {
-    static const auto resources = axgl->model_service()->load_model("bunny.glb");
-    for (auto& components = entity->components(); const auto& mesh : resources.meshes)
+    static const auto resources
+      = axgl->model_service()->load_model("bunny.glb");
+    for (auto& components = entity->components();
+         const auto& mesh : resources.meshes)
       components.add(mesh);
   }
 
@@ -24,6 +26,7 @@ public:
     load_model(axgl_, this);
     set_pivot({0.0f, 0.5f, 0.0f});
 
-    add_child(axgl_->entity_service()->create_entity_t<DebugAxesIndicatorEntity>());
+    add_child(
+      axgl_->entity_service()->create_entity_t<DebugAxesIndicatorEntity>());
   }
 };

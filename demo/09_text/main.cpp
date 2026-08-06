@@ -44,21 +44,24 @@ public:
     // camera entity
     {
       const auto camera_entity = entity_service->create_entity();
-      const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+      const auto camera_comp
+        = entity_service->create_component_t<axgl::impl::component::Camera>();
       camera_entity->add_component(camera_comp);
       realm->entities().add(camera_entity);
       camera_entity->transform().position.z = -2;
       camera_entity->transform().update_matrix();
 
       // camera input
-      camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
+      camera_service->set_camera_mode(
+        axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
       camera_service->set_camera_entity(camera_entity);
     }
 
     // light entity
     {
       const auto light_entity = entity_service->create_entity();
-      const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
+      const auto light_comp
+        = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
       light_entity->add_component(light_comp);
       realm->entities().add(light_entity);
@@ -66,15 +69,18 @@ public:
 
     // load fonts
     text_service->load_font("arial", demo_text_res::get("font/arial.ttf"), 0);
-    text_service->load_font("noto-tc", demo_text_res::get("font/noto-tc.ttf"), 0);
+    text_service->load_font(
+      "noto-tc", demo_text_res::get("font/noto-tc.ttf"), 0);
 
     // text entity
     {
       // texture
       const auto texture = text_service->create_texture({
         .value = reinterpret_cast<const char*>(
-          u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
-          u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長屋齋梶地寺大急平町地區大村》。"),
+          u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
+          u8"!@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
+          u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長"
+          u8"屋齋梶地寺大急平町地區大村》。"),
         .fonts = {"arial", "noto-tc"},
         .font_color = {1.0f, 0.5f, 0.2f, 1.0f},
         .font_size = 48.0f,
@@ -83,13 +89,15 @@ public:
       const auto material = renderer_service->create_material("2d");
       material->add_texture(axgl::Material::TextureType::kDiffuse, texture);
       // mesh
-      const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+      const auto mesh
+        = entity_service->create_component_t<axgl::component::Mesh>();
       axgl::util::init_quad(*mesh);
       mesh->set_material(material);
       // entity
       const auto text_entity = entity_service->create_entity();
       text_entity->add_component(mesh);
-      text_entity->set_scale(glm::vec3(texture->get_width(), texture->get_height(), 1.0f) * 0.01f);
+      text_entity->set_scale(
+        glm::vec3(texture->get_width(), texture->get_height(), 1.0f) * 0.01f);
       realm->entities().add(text_entity);
     }
   }

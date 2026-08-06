@@ -24,10 +24,12 @@ public:
   std::string username;
   std::shared_ptr<ui::Chat> chat_ui;
 
-  explicit Client(const std::shared_ptr<asio::io_context>& io_context, std::string user) :
+  explicit Client(
+    const std::shared_ptr<asio::io_context>& io_context, std::string user) :
     net::TcpClient(io_context),
     username(std::move(user)),
-    chat_ui(std::make_shared<ui::Chat>([&](const std::string& m) { on_input(m); }))
+    chat_ui(
+      std::make_shared<ui::Chat>([&](const std::string& m) { on_input(m); }))
   {
   }
 
@@ -53,7 +55,9 @@ public:
   void on_receive(const net::data_ptr_t& buffer) override
   {
     if (const auto* message = read_message(buffer))
-      chat_ui->add_message(std::format("[{}] {}", message->sender()->str(), message->content()->str()));
+      chat_ui->add_message(
+        std::format(
+          "[{}] {}", message->sender()->str(), message->content()->str()));
   }
 
 private:
@@ -71,9 +75,12 @@ private:
 int main(int argc, char** argv)
 {
   args::ArgumentParser parser("Net demo chatroom client.");
-  args::ValueFlag<std::string> user_arg(parser, "user", "Username.", {'u', "user"}, "anon");
-  args::ValueFlag<std::string> host_arg(parser, "host", "Server host.", {'h', "host"}, "127.0.0.1");
-  args::ValueFlag<std::uint16_t> port_arg(parser, "port", "Server port.", {'p', "port"}, 10000);
+  args::ValueFlag<std::string> user_arg(
+    parser, "user", "Username.", {'u', "user"}, "anon");
+  args::ValueFlag<std::string> host_arg(
+    parser, "host", "Server host.", {'h', "host"}, "127.0.0.1");
+  args::ValueFlag<std::uint16_t> port_arg(
+    parser, "port", "Server port.", {'p', "port"}, 10000);
   try
   {
     parser.ParseCLI(argc, argv);
@@ -86,7 +93,8 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(900, 600, ("Chatroom - " + user).c_str(), nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(
+      900, 600, ("Chatroom - " + user).c_str(), nullptr, nullptr);
     if (!window)
     {
       glfwTerminate();
@@ -123,7 +131,8 @@ int main(int argc, char** argv)
       }
     });
 
-    client.chat_ui->add_message(std::format("Connecting to {}:{} as {}", host, port, user));
+    client.chat_ui->add_message(
+      std::format("Connecting to {}:{} as {}", host, port, user));
     client.connect(host, port);
 
     while (!glfwWindowShouldClose(window))
@@ -139,7 +148,9 @@ int main(int argc, char** argv)
       ImGui::SetNextWindowPos(viewport->WorkPos);
       ImGui::SetNextWindowSize(viewport->WorkSize);
       ImGui::Begin(
-        "Chatroom", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+        "Chatroom", nullptr,
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+          | ImGuiWindowFlags_NoCollapse);
       client.chat_ui->render(client.connected());
       ImGui::End();
 

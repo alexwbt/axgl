@@ -14,7 +14,8 @@
 namespace axgl::impl::opengl
 {
 
-class TextService : virtual public axgl::TextService, public axgl::impl::ServiceBase
+class TextService : virtual public axgl::TextService,
+                    public axgl::impl::ServiceBase
 {
   ::opengl::TextRenderer text_renderer_;
 
@@ -23,12 +24,19 @@ class TextService : virtual public axgl::TextService, public axgl::impl::Service
 public:
   void initialize() override { renderer_service_ = axgl_->renderer_service(); }
 
-  [[nodiscard]] bool has_font(const std::string& name) const { return text_renderer_.has_font(name); }
+  [[nodiscard]] bool has_font(const std::string& name) const
+  {
+    return text_renderer_.has_font(name);
+  }
 
-  void load_font(const std::string& name, const std::span<const std::uint8_t> data, const int index) override
+  void load_font(
+    const std::string& name,
+    const std::span<const std::uint8_t> data,
+    const int index) override
   {
 #ifdef AXGL_DEBUG
-    if (text_renderer_.has_font(name)) throw std::runtime_error("Font already exists: " + name);
+    if (text_renderer_.has_font(name))
+      throw std::runtime_error("Font already exists: " + name);
 #endif
     text_renderer_.load_font(name, data, index);
   }
@@ -36,12 +44,14 @@ public:
   void unload_font(const std::string& name) override
   {
 #ifdef AXGL_DEBUG
-    if (!text_renderer_.has_font(name)) throw std::runtime_error("Font does not exist: " + name);
+    if (!text_renderer_.has_font(name))
+      throw std::runtime_error("Font does not exist: " + name);
 #endif
     text_renderer_.unload_font(name);
   }
 
-  [[nodiscard]] axgl::ptr_t<axgl::Texture> create_texture(const Options& options) const override
+  [[nodiscard]] axgl::ptr_t<axgl::Texture> create_texture(
+    const Options& options) const override
   {
     ::opengl::Text text;
     text_renderer_.render_text(
@@ -52,10 +62,13 @@ public:
         .vertical = options.vertical,
       });
 
-    const auto texture = std::dynamic_pointer_cast<axgl::impl::opengl::Texture>(renderer_service_->create_texture());
+    const auto texture = std::dynamic_pointer_cast<axgl::impl::opengl::Texture>(
+      renderer_service_->create_texture());
 #ifdef AXGL_DEBUG
     if (!texture)
-      throw std::runtime_error("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::TextService");
+      throw std::runtime_error(
+        "axgl::impl::opengl::Texture is required to use "
+        "axgl::impl::opengl::TextService");
 #endif
     auto texture_ptr = axgl::create_ptr<::opengl::Texture>();
     *texture_ptr = std::move(text.texture);

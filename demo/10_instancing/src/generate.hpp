@@ -8,7 +8,8 @@
 
 #include "box.hpp"
 
-inline axgl::ptr_t<axgl::Texture> create_texture(const axgl::Axgl& axgl, const std::string& res)
+inline axgl::ptr_t<axgl::Texture> create_texture(
+  const axgl::Axgl& axgl, const std::string& res)
 {
   // texture
   const auto texture = axgl.renderer_service()->create_texture();
@@ -29,8 +30,12 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
   const auto renderer_service = axgl.renderer_service();
   // material
   const auto material = renderer_service->create_material(material_type);
-  if (diffuse_texture) material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse_texture);
-  if (specular_texture) material->add_texture(axgl::Material::TextureType::kSpecular, specular_texture);
+  if (diffuse_texture)
+    material->add_texture(
+      axgl::Material::TextureType::kDiffuse, diffuse_texture);
+  if (specular_texture)
+    material->add_texture(
+      axgl::Material::TextureType::kSpecular, specular_texture);
   if (no_cull) material->set_cull_mode(axgl::Material::CullMode::kNone);
   material->set_alpha_discard(alpha_discard);
   // mesh
@@ -43,7 +48,8 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
 inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl)
 {
   static const auto texture = create_texture(axgl, "grass.png");
-  static const auto mesh = create_mesh(axgl, "2d", axgl::util::init_quad, texture, nullptr, 0.5f, true);
+  static const auto mesh = create_mesh(
+    axgl, "2d", axgl::util::init_quad, texture, nullptr, 0.5f, true);
 
   // grass entity
   const auto grass = axgl.entity_service()->create_entity();
@@ -60,7 +66,8 @@ inline axgl::ptr_t<axgl::Entity> create_box(const axgl::Axgl& axgl)
 
   static const auto diffuse = create_texture(axgl, "container/diffuse.png");
   static const auto specular = create_texture(axgl, "container/specular.png");
-  static const auto mesh = create_mesh(axgl, "3d", axgl::util::init_cube, diffuse, specular);
+  static const auto mesh
+    = create_mesh(axgl, "3d", axgl::util::init_cube, diffuse, specular);
 
   // box entity
   const auto box = axgl.entity_service()->create_entity_t<Box>();
@@ -73,7 +80,8 @@ inline axgl::ptr_t<axgl::Entity> create_box(const axgl::Axgl& axgl)
 inline std::vector<axgl::ptr_t<axgl::Entity>> generate_entities(
   const axgl::Axgl& axgl,
   const axgl::ptr_t<axgl::Realm>& realm,
-  const std::function<axgl::ptr_t<axgl::Entity>(const axgl::Axgl&)>& create_entity,
+  const std::function<axgl::ptr_t<axgl::Entity>(const axgl::Axgl&)>&
+    create_entity,
   const int count,
   const float area,
   const float y,

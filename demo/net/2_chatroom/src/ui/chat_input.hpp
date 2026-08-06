@@ -16,7 +16,10 @@ class ChatInput
   bool enabled_ = true;
 
 public:
-  explicit ChatInput(std::function<void(const std::string&)> on_enter) : on_enter_(std::move(on_enter)) { }
+  explicit ChatInput(std::function<void(const std::string&)> on_enter) :
+    on_enter_(std::move(on_enter))
+  {
+  }
 
   void set_enabled(bool enabled) { enabled_ = enabled; }
 
@@ -25,7 +28,11 @@ public:
     if (!enabled_) ImGui::BeginDisabled();
 
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 64.0f);
-    if (ImGui::InputText("##chat_input", &input_value_, ImGuiInputTextFlags_EnterReturnsTrue)) { submit(); }
+    if (ImGui::InputText(
+          "##chat_input", &input_value_, ImGuiInputTextFlags_EnterReturnsTrue))
+    {
+      submit();
+    }
     ImGui::SameLine();
     if (ImGui::Button("Send", ImVec2(64.0f, 0))) { submit(); }
 

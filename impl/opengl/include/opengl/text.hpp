@@ -59,7 +59,8 @@ class Character final
     if (bitmap.width > 0 && bitmap.rows > 0)
     {
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      texture.load_texture(0, GL_RED, size.x, size.y, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.buffer);
+      texture.load_texture(
+        0, GL_RED, size.x, size.y, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.buffer);
       texture.set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       texture.set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -82,12 +83,16 @@ class Font final
 public:
   Font(FT_Library library, const std::string& path, const int index)
   {
-    if (FT_New_Face(library, path.c_str(), index, &face_)) throw std::runtime_error("Failed to load fontface: " + path);
+    if (FT_New_Face(library, path.c_str(), index, &face_))
+      throw std::runtime_error("Failed to load fontface: " + path);
   }
 
-  Font(FT_Library library, const std::span<const uint8_t> buffer, const int index)
+  Font(
+    FT_Library library, const std::span<const uint8_t> buffer, const int index)
   {
-    if (FT_New_Memory_Face(library, buffer.data(), util::narrow<FT_Long>(buffer.size()), index, &face_))
+    if (FT_New_Memory_Face(
+          library, buffer.data(), util::narrow<FT_Long>(buffer.size()), index,
+          &face_))
       throw std::runtime_error("Failed to load font face from memory.");
   }
 
@@ -116,7 +121,8 @@ public:
     if (face_) FT_Done_Face(face_);
   }
 
-  void load_char(Character& character, uint32_t code, const TextOptions& options) const
+  void load_char(
+    Character& character, uint32_t code, const TextOptions& options) const
   {
     FT_Set_Pixel_Sizes(face_, 0, options.size);
     if (FT_Load_Char(face_, code, FT_LOAD_RENDER))
@@ -127,7 +133,10 @@ public:
     character.load(face_, options.vertical);
   }
 
-  [[nodiscard]] bool has_char(uint32_t code) const { return FT_Get_Char_Index(face_, code) > 0; }
+  [[nodiscard]] bool has_char(uint32_t code) const
+  {
+    return FT_Get_Char_Index(face_, code) > 0;
+  }
 };
 
 class TextRenderer final
@@ -138,7 +147,8 @@ class TextRenderer final
 public:
   TextRenderer()
   {
-    if (FT_Init_FreeType(&library_)) throw std::runtime_error("Failed to initialize freetype library.");
+    if (FT_Init_FreeType(&library_))
+      throw std::runtime_error("Failed to initialize freetype library.");
   }
   TextRenderer(const TextRenderer&) = delete;
   TextRenderer& operator=(const TextRenderer&) = delete;
@@ -169,13 +179,15 @@ public:
     if (library_) FT_Done_FreeType(library_);
   }
 
-  void load_font(const std::string& name, const std::string& path, int index = 0)
+  void load_font(
+    const std::string& name, const std::string& path, int index = 0)
   {
     auto font = std::make_unique<Font>(library_, path, index);
     fonts_[name] = std::move(font);
   }
 
-  void load_font(const std::string& name, std::span<const uint8_t> buffer, int index = 0)
+  void load_font(
+    const std::string& name, std::span<const uint8_t> buffer, int index = 0)
   {
     auto font = std::make_unique<Font>(library_, buffer, index);
     fonts_[name] = std::move(font);
@@ -183,9 +195,13 @@ public:
 
   void unload_font(const std::string& name) { fonts_.erase(name); }
 
-  [[nodiscard]] bool has_font(const std::string& name) const { return fonts_.contains(name); }
+  [[nodiscard]] bool has_font(const std::string& name) const
+  {
+    return fonts_.contains(name);
+  }
 
-  [[nodiscard]] int get_renderable_font(const std::vector<std::string>& font, std::uint32_t c) const
+  [[nodiscard]] int get_renderable_font(
+    const std::vector<std::string>& font, std::uint32_t c) const
   {
     const int size = util::clamp_cast<int>(font.size());
     for (int i = 0; i < size; ++i)
@@ -194,7 +210,10 @@ public:
   }
 
   void render_text(
-    Text& target, const std::string& value, const std::vector<std::string>& font, const TextOptions& options) const
+    Text& target,
+    const std::string& value,
+    const std::vector<std::string>& font,
+    const TextOptions& options) const
   {
     std::unordered_map<std::uint32_t, Character> chars;
 
@@ -232,7 +251,8 @@ public:
     height -= min_offset.y;
 
     target.size = glm::ivec2(width, height);
-    target.texture.load_texture(0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    target.texture.load_texture(
+      0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     target.texture.set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     target.texture.set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     target.texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -241,7 +261,8 @@ public:
     const Framebuffer framebuffer;
     framebuffer.attach_texture(GL_COLOR_ATTACHMENT0, target.texture);
     framebuffer.set_draw_buffers({GL_COLOR_ATTACHMENT0});
-    framebuffer.check_status_complete("opengl::TextRenderer::render_text -> framebuffer");
+    framebuffer.check_status_complete(
+      "opengl::TextRenderer::render_text -> framebuffer");
     framebuffer.use();
     glViewport(0, 0, width, height);
 
@@ -255,7 +276,8 @@ public:
     shader.set_vec4("text_color", options.color);
 
     glm::vec3 advance(0.0f);
-    glm::mat4 projection = glm::ortho(static_cast<float>(width), 0.0f, static_cast<float>(height), 0.0f);
+    glm::mat4 projection = glm::ortho(
+      static_cast<float>(width), 0.0f, static_cast<float>(height), 0.0f);
     auto& quad = StaticVAOs::instance().quad();
 
     for (auto it = value.begin(), end = value.end(); it != end;)
@@ -268,7 +290,8 @@ public:
         chars[c].texture.use(GL_TEXTURE0);
         glm::vec3 scale(chars[c].size, 1.0f);
         glm::vec3 offset(chars[c].offset - min_offset, 0.0f);
-        auto model = glm::translate(glm::mat4(1.0f), advance + offset) * glm::scale(scale);
+        auto model = glm::translate(glm::mat4(1.0f), advance + offset)
+          * glm::scale(scale);
         shader.set_mat4("projection_view_model", projection * model);
 
         quad.draw();

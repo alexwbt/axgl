@@ -12,12 +12,18 @@ protected:
   asio::ip::tcp::acceptor acceptor_;
 
 public:
-  TcpServer(const std::shared_ptr<asio::io_context>& io_context, const asio::ip::port_type& port) :
-    Server(io_context, port), acceptor_(*io_context, {asio::ip::tcp::v4(), port})
+  TcpServer(
+    const std::shared_ptr<asio::io_context>& io_context,
+    const asio::ip::port_type& port) :
+    Server(io_context, port),
+    acceptor_(*io_context, {asio::ip::tcp::v4(), port})
   {
   }
 
-  void start() override { asio::co_spawn(*io_context_, accept_connections(), asio::detached); }
+  void start() override
+  {
+    asio::co_spawn(*io_context_, accept_connections(), asio::detached);
+  }
 
   void stop() override
   {

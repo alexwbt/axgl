@@ -11,7 +11,8 @@
 namespace axgl::impl::gui
 {
 
-class PageBase : virtual public axgl::gui::Page, public axgl::impl::ContextHolder
+class PageBase : virtual public axgl::gui::Page,
+                 public axgl::impl::ContextHolder
 {
 protected:
   std::uint32_t width_ = 0;
@@ -36,7 +37,10 @@ public:
     height_ = height;
   }
   void set_scale(float scale) override { scale_ = scale; }
-  void set_should_render(bool should_render) override { should_render_ = should_render; }
+  void set_should_render(bool should_render) override
+  {
+    should_render_ = should_render;
+  }
 
   void init() override
   {
@@ -58,8 +62,8 @@ public:
   void update() override
   {
     const auto& gui_service = axgl_->gui_service();
-    const bool normal_cursor_mode
-      = axgl_->input_service()->get_cursor_mode() == axgl::InputService::CursorMode::kNormal;
+    const bool normal_cursor_mode = axgl_->input_service()->get_cursor_mode()
+      == axgl::InputService::CursorMode::kNormal;
     if (cursor_pointer_ && normal_cursor_mode)
     {
       using_cursor_ = true;
@@ -81,8 +85,8 @@ public:
     }
 
     if (
-      normal_cursor_mode && scale_input_ && scroll_pointer_ && scale_input_->tick > 0
-      && scroll_pointer_->delta.y != 0.0f)
+      normal_cursor_mode && scale_input_ && scroll_pointer_
+      && scale_input_->tick > 0 && scroll_pointer_->delta.y != 0.0f)
     {
       should_render_ = true;
       scale_ += scroll_pointer_->delta.y * 0.1f;
@@ -103,30 +107,68 @@ public:
   void render() override { should_render_ = false; }
 
   [[nodiscard]] bool should_render() const override { return should_render_; }
-  [[nodiscard]] glm::ivec2 get_size() const override { return {width_, height_}; }
-  [[nodiscard]] axgl::Container<axgl::gui::Element>& elements() override { return elements_; }
+  [[nodiscard]] glm::ivec2 get_size() const override
+  {
+    return {width_, height_};
+  }
+  [[nodiscard]] axgl::Container<axgl::gui::Element>& elements() override
+  {
+    return elements_;
+  }
 
   void set_cursor(axgl::gui::Cursor cursor) override { cursor_ = cursor; }
   [[nodiscard]] axgl::gui::Cursor get_cursor() override { return cursor_; }
 
-  void set_cursor_pointer(axgl::ptr_t<axgl::Pointer> cursor) override { cursor_pointer_ = std::move(cursor); }
-  void set_scroll_pointer(axgl::ptr_t<axgl::Pointer> scroll) override { scroll_pointer_ = std::move(scroll); }
-  void set_scale_input(axgl::ptr_t<axgl::Input> scale) override { scale_input_ = std::move(scale); }
-  void set_activate_input(axgl::ptr_t<axgl::Input> activate) override { activate_input_ = std::move(activate); }
+  void set_cursor_pointer(axgl::ptr_t<axgl::Pointer> cursor) override
+  {
+    cursor_pointer_ = std::move(cursor);
+  }
+  void set_scroll_pointer(axgl::ptr_t<axgl::Pointer> scroll) override
+  {
+    scroll_pointer_ = std::move(scroll);
+  }
+  void set_scale_input(axgl::ptr_t<axgl::Input> scale) override
+  {
+    scale_input_ = std::move(scale);
+  }
+  void set_activate_input(axgl::ptr_t<axgl::Input> activate) override
+  {
+    activate_input_ = std::move(activate);
+  }
   void set_focus_switch_input(axgl::ptr_t<axgl::Input> focus_switch) override
   {
     focus_switch_input_ = std::move(focus_switch);
   }
-  void set_focus_activate_input(axgl::ptr_t<axgl::Input> focus_activate) override
+  void set_focus_activate_input(
+    axgl::ptr_t<axgl::Input> focus_activate) override
   {
     focus_activate_input_ = std::move(focus_activate);
   }
-  [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_cursor_pointer() const override { return cursor_pointer_; }
-  [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_scroll_pointer() const override { return scroll_pointer_; }
-  [[nodiscard]] axgl::ptr_t<axgl::Input> get_scale_input() const override { return scale_input_; }
-  [[nodiscard]] axgl::ptr_t<axgl::Input> get_activate_input() const override { return activate_input_; }
-  [[nodiscard]] axgl::ptr_t<axgl::Input> get_focus_switch_input() const override { return focus_switch_input_; }
-  [[nodiscard]] axgl::ptr_t<axgl::Input> get_focus_activate_input() const override { return focus_activate_input_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_cursor_pointer() const override
+  {
+    return cursor_pointer_;
+  }
+  [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_scroll_pointer() const override
+  {
+    return scroll_pointer_;
+  }
+  [[nodiscard]] axgl::ptr_t<axgl::Input> get_scale_input() const override
+  {
+    return scale_input_;
+  }
+  [[nodiscard]] axgl::ptr_t<axgl::Input> get_activate_input() const override
+  {
+    return activate_input_;
+  }
+  [[nodiscard]] axgl::ptr_t<axgl::Input> get_focus_switch_input() const override
+  {
+    return focus_switch_input_;
+  }
+  [[nodiscard]] axgl::ptr_t<axgl::Input> get_focus_activate_input()
+    const override
+  {
+    return focus_activate_input_;
+  }
 };
 
 } // namespace axgl::impl::gui

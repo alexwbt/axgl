@@ -17,10 +17,14 @@ protected:
     const auto specular = renderer_service->create_texture();
     const auto normal = renderer_service->create_texture();
     const auto height = renderer_service->create_texture();
-    diffuse->load_texture(resource_service->get_resource("material/concrete/diffuse.png"));
-    specular->load_texture(resource_service->get_resource("material/concrete/specular.png"));
-    normal->load_texture(resource_service->get_resource("material/concrete/normal.png"));
-    height->load_texture(resource_service->get_resource("material/concrete/height.png"));
+    diffuse->load_texture(
+      resource_service->get_resource("material/concrete/diffuse.png"));
+    specular->load_texture(
+      resource_service->get_resource("material/concrete/specular.png"));
+    normal->load_texture(
+      resource_service->get_resource("material/concrete/normal.png"));
+    height->load_texture(
+      resource_service->get_resource("material/concrete/height.png"));
     // material
     const auto material = renderer_service->create_material("3d");
     material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse);

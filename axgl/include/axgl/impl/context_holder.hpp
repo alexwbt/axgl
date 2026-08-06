@@ -14,7 +14,9 @@ protected:
   const axgl::Axgl* axgl_ = nullptr;
   const axgl::Context* context_ = nullptr;
 
-  template <typename T, typename = std::enable_if_t<std::is_base_of_v<axgl::ContextHolder, T>>>
+  template <
+    typename T,
+    typename = std::enable_if_t<std::is_base_of_v<axgl::ContextHolder, T>>>
   axgl::ptr_t<T> with_context(axgl::ptr_t<T> holder)
   {
     holder->set_context(context_);

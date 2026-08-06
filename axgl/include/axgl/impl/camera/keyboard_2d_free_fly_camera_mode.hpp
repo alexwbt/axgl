@@ -51,7 +51,8 @@ public:
     input_service->add_input(right_);
   }
 
-  void unbind_inputs(const axgl::ptr_t<axgl::InputService> input_service) override
+  void unbind_inputs(
+    const axgl::ptr_t<axgl::InputService> input_service) override
   {
     input_service->remove_input(up_->id);
     input_service->remove_input(down_->id);
@@ -62,9 +63,12 @@ public:
   void update(axgl::Camera& camera) override
   {
     if (up_->tick > 0) camera.position += glm::vec3(0, 1, 0) * movement_speed_;
-    if (down_->tick > 0) camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
-    if (left_->tick > 0) camera.position -= glm::vec3(1, 0, 0) * movement_speed_;
-    if (right_->tick > 0) camera.position += glm::vec3(1, 0, 0) * movement_speed_;
+    if (down_->tick > 0)
+      camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
+    if (left_->tick > 0)
+      camera.position -= glm::vec3(1, 0, 0) * movement_speed_;
+    if (right_->tick > 0)
+      camera.position += glm::vec3(1, 0, 0) * movement_speed_;
 
     camera.update();
   }

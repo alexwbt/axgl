@@ -87,11 +87,16 @@ public:
   {
     material_ = std::dynamic_pointer_cast<impl::opengl::Material>(material);
 #ifdef AXGL_DEBUG
-    if (!material_) throw std::runtime_error("The provided material is not a valid opengl material.");
+    if (!material_)
+      throw std::runtime_error(
+        "The provided material is not a valid opengl material.");
 #endif
   }
 
-  [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override { return material_; }
+  [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override
+  {
+    return material_;
+  }
 
   void calculate_tbn() override
   {
@@ -128,7 +133,9 @@ public:
       const auto edge2 = vertices_[i2] - vertices_[i0];
       const auto delta_uv1 = uv_[i1] - uv_[i0];
       const auto delta_uv2 = uv_[i2] - uv_[i0];
-      if (const float det = delta_uv1.x * delta_uv2.y - delta_uv2.x * delta_uv1.y; std::fabs(det) > 1e-6f)
+      if (const float det
+          = delta_uv1.x * delta_uv2.y - delta_uv2.x * delta_uv1.y;
+          std::fabs(det) > 1e-6f)
       {
         float r = 1.0f / det;
         const auto tangent = (edge1 * delta_uv2.y - edge2 * delta_uv1.y) * r;
@@ -145,13 +152,14 @@ public:
     //
     // Handedness preservation (the w sign below) is critical for correct
     // normal mapping. A mesh's UV layout can have inconsistent winding across
-    // faces (e.g. init_cube's 6 faces: some are right-handed, some left-handed).
-    // The raw bitangent computed above encodes that handedness via the sign of
-    // dot(cross(n, t), b). If we unconditionally set b = cross(n, t) we force
-    // every face to right-handed, which flips the V axis of the tangent space
-    // on originally left-handed faces. The result: those faces' normal maps are
-    // mirrored on V, so bumps become dents and the lighting appears to "shift"
-    // as the object rotates and different faces come into view.
+    // faces (e.g. init_cube's 6 faces: some are right-handed, some
+    // left-handed). The raw bitangent computed above encodes that handedness
+    // via the sign of dot(cross(n, t), b). If we unconditionally set b =
+    // cross(n, t) we force every face to right-handed, which flips the V axis
+    // of the tangent space on originally left-handed faces. The result: those
+    // faces' normal maps are mirrored on V, so bumps become dents and the
+    // lighting appears to "shift" as the object rotates and different faces
+    // come into view.
     //
     // Instead we capture the original handedness sign (w) from the raw
     // bitangent and apply it to the reconstructed, orthonormal bitangent so
@@ -177,11 +185,13 @@ public:
     instanced_models_.emplace_back(transform_matrix);
   }
 
-  void submit_render_function(axgl::impl::opengl::renderer::PipelineContext& context) override
+  void submit_render_function(
+    axgl::impl::opengl::renderer::PipelineContext& context) override
   {
     if (!material_)
     {
-      AXGL_LOG_DEBUG("Material not assigned to mesh({}), skip rendering.", get_id());
+      AXGL_LOG_DEBUG(
+        "Material not assigned to mesh({}), skip rendering.", get_id());
       return;
     }
 
@@ -192,36 +202,55 @@ public:
     {
       constexpr size_t vec4_size = sizeof(glm::vec4);
       std::array attributes{
-        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(0 * vec4_size)},
-        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(1 * vec4_size)},
-        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(2 * vec4_size)},
-        ::opengl::VertexAttribute{4, GL_FLOAT, GL_FALSE, 4 * vec4_size, reinterpret_cast<void*>(3 * vec4_size)},
+        ::opengl::VertexAttribute{
+          4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
+          reinterpret_cast<void*>(0 * vec4_size)},
+        ::opengl::VertexAttribute{
+          4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
+          reinterpret_cast<void*>(1 * vec4_size)},
+        ::opengl::VertexAttribute{
+          4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
+          reinterpret_cast<void*>(2 * vec4_size)},
+        ::opengl::VertexAttribute{
+          4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
+          reinterpret_cast<void*>(3 * vec4_size)},
       };
       instanced_models_buffer_id_ = vao_->create_vertex_buffer<glm::mat4>(
-        instanced_models_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kModels), 1);
+        instanced_models_, attributes,
+        material_->get_attribute_offset(axgl::impl::opengl::Material::kModels),
+        1);
     }
-    else vao_->update_buffer_data<glm::mat4>(instanced_models_buffer_id_, instanced_models_);
+    else
+      vao_->update_buffer_data<glm::mat4>(
+        instanced_models_buffer_id_, instanced_models_);
 
-    const auto instance_count = util::clamp_cast<GLsizei>(instanced_models_.size());
+    const auto instance_count
+      = util::clamp_cast<GLsizei>(instanced_models_.size());
     instanced_models_.clear();
 
-    const auto render_function = [this, instance_count](const axgl::impl::opengl::renderer::RenderContext& c)
+    const auto render_function
+      = [this,
+         instance_count](const axgl::impl::opengl::renderer::RenderContext& c)
     {
       material_->use(c);
       vao_->draw_instanced(instance_count);
     };
-    if (material_->get_enable_blend()) context.blend_pass.emplace_back(std::move(render_function));
+    if (material_->get_enable_blend())
+      context.blend_pass.emplace_back(std::move(render_function));
     else
     {
       context.opaque_pass.emplace_back(std::move(render_function));
 
       if (material_->get_enable_shadow())
-        context.shadow_pass.emplace_back([this, instance_count](const axgl::impl::opengl::renderer::LightContext& c)
+        context.shadow_pass.emplace_back(
+          [this,
+           instance_count](const axgl::impl::opengl::renderer::LightContext& c)
         {
           // glEnable(GL_CULL_FACE);
           // glFrontFace(GL_CW);
           // glCullFace(GL_FRONT);
-          auto& depth_only_shader = ::opengl::StaticShaders::instance().depth_only();
+          auto& depth_only_shader
+            = ::opengl::StaticShaders::instance().depth_only();
           depth_only_shader.use_program();
           depth_only_shader.set_mat4("projection_view", c.light_pv);
           vao_->draw_instanced(instance_count);
@@ -229,7 +258,10 @@ public:
     }
   }
 
-  [[nodiscard]] std::uint64_t get_id() const override { return ComponentBase::get_id(); }
+  [[nodiscard]] std::uint64_t get_id() const override
+  {
+    return ComponentBase::get_id();
+  }
 
 private:
   void create_vao()
@@ -238,43 +270,60 @@ private:
 
     if (!vertices_.empty())
     {
-      std::array attributes{::opengl::VertexAttribute{3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+      std::array attributes{::opengl::VertexAttribute{
+        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
       vao_->create_vertex_buffer<glm::vec3>(
-        vertices_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kVertices));
+        vertices_, attributes,
+        material_->get_attribute_offset(
+          axgl::impl::opengl::Material::kVertices));
     }
     else if (!vertices_2d_.empty())
     {
-      std::array attributes{::opengl::VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}};
+      std::array attributes{::opengl::VertexAttribute{
+        2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}};
       vao_->create_vertex_buffer<glm::vec2>(
-        vertices_2d_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kVertices));
+        vertices_2d_, attributes,
+        material_->get_attribute_offset(
+          axgl::impl::opengl::Material::kVertices));
     }
 
     if (!normals_.empty())
     {
-      std::array attributes{::opengl::VertexAttribute{3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+      std::array attributes{::opengl::VertexAttribute{
+        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
       vao_->create_vertex_buffer<glm::vec3>(
-        normals_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kNormals));
+        normals_, attributes,
+        material_->get_attribute_offset(
+          axgl::impl::opengl::Material::kNormals));
     }
 
     if (!tangents_.empty())
     {
-      std::array attributes{::opengl::VertexAttribute{3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+      std::array attributes{::opengl::VertexAttribute{
+        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
       vao_->create_vertex_buffer<glm::vec3>(
-        tangents_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kTangents));
+        tangents_, attributes,
+        material_->get_attribute_offset(
+          axgl::impl::opengl::Material::kTangents));
     }
 
     if (!bitangents_.empty())
     {
-      std::array attributes{::opengl::VertexAttribute{3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+      std::array attributes{::opengl::VertexAttribute{
+        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
       vao_->create_vertex_buffer<glm::vec3>(
-        bitangents_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kBitangents));
+        bitangents_, attributes,
+        material_->get_attribute_offset(
+          axgl::impl::opengl::Material::kBitangents));
     }
 
     if (!uv_.empty())
     {
-      std::array attributes{::opengl::VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}};
+      std::array attributes{::opengl::VertexAttribute{
+        2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}};
       vao_->create_vertex_buffer<glm::vec2>(
-        uv_, attributes, material_->get_attribute_offset(axgl::impl::opengl::Material::kUV));
+        uv_, attributes,
+        material_->get_attribute_offset(axgl::impl::opengl::Material::kUV));
     }
 
     if (!indices_.empty()) vao_->create_element_buffer(indices_);

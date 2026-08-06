@@ -41,21 +41,24 @@ public:
     // camera entity
     {
       const auto camera_entity = entity_service->create_entity();
-      const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+      const auto camera_comp
+        = entity_service->create_component_t<axgl::impl::component::Camera>();
       camera_entity->add_component(camera_comp);
       realm->entities().add(camera_entity);
       camera_entity->transform().position.z = -2;
       camera_entity->transform().update_matrix();
 
       // camera input
-      camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
+      camera_service->set_camera_mode(
+        axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
       camera_service->set_camera_entity(camera_entity);
     }
 
     // light entity
     {
       const auto light_entity = entity_service->create_entity();
-      const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
+      const auto light_comp
+        = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
       light_entity->add_component(light_comp);
       realm->entities().add(light_entity);
@@ -68,7 +71,8 @@ public:
       material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
       // cube mesh
-      const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+      const auto mesh
+        = entity_service->create_component_t<axgl::component::Mesh>();
       axgl::util::init_cube(*mesh);
       mesh->set_material(material);
 

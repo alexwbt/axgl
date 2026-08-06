@@ -9,7 +9,8 @@
 
 class DebugAxesIndicatorEntity : public axgl::impl::EntityBase
 {
-  static axgl::ptr_t<axgl::Component> create_axis_mesh(const axgl::Axgl* axgl, const glm::vec3& axis)
+  static axgl::ptr_t<axgl::Component> create_axis_mesh(
+    const axgl::Axgl* axgl, const glm::vec3& axis)
   {
     const auto& entity_service = axgl->entity_service();
     const auto& renderer_service = axgl->renderer_service();
@@ -18,7 +19,8 @@ class DebugAxesIndicatorEntity : public axgl::impl::EntityBase
     material->set_color(glm::vec4(axis, 1.0f));
     material->set_enable_depth_test(false);
     material->set_enable_shadow(false);
-    const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+    const auto mesh
+      = entity_service->create_component_t<axgl::component::Mesh>();
     mesh->set_vertices(std::vector{{0.0f, 0.0f, 0.0f}, axis});
     mesh->set_material(std::move(material));
     return mesh;

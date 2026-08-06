@@ -15,8 +15,10 @@ protected:
     // textures
     const auto diffuse = renderer_service->create_texture();
     const auto specular = renderer_service->create_texture();
-    diffuse->load_texture(resource_service->get_resource("material/box/diffuse.png"));
-    specular->load_texture(resource_service->get_resource("material/box/specular.png"));
+    diffuse->load_texture(
+      resource_service->get_resource("material/box/diffuse.png"));
+    specular->load_texture(
+      resource_service->get_resource("material/box/specular.png"));
     // material
     const auto material = renderer_service->create_material("3d");
     material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse);

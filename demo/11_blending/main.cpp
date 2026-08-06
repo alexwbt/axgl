@@ -6,7 +6,11 @@
 #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
 #include <axgl/util/mesh.hpp>
 
-auto create_cube(const axgl::Axgl& axgl, const glm::vec3& position, const glm::vec4& color, const bool blend)
+auto create_cube(
+  const axgl::Axgl& axgl,
+  const glm::vec3& position,
+  const glm::vec4& color,
+  const bool blend)
 {
   const auto entity_service = axgl.entity_service();
   const auto renderer_service = axgl.renderer_service();
@@ -64,30 +68,37 @@ public:
     // camera entity
     {
       const auto camera_entity = entity_service->create_entity();
-      const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+      const auto camera_comp
+        = entity_service->create_component_t<axgl::impl::component::Camera>();
       camera_entity->add_component(camera_comp);
       realm->entities().add(camera_entity);
       camera_entity->transform().position.z = -2;
 
       // camera input
-      camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
+      camera_service->set_camera_mode(
+        axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
       camera_service->set_camera_entity(camera_entity);
     }
 
     // light entity
     {
       const auto light_entity = entity_service->create_entity();
-      const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
+      const auto light_comp
+        = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
       light_entity->add_component(light_comp);
       realm->entities().add(light_entity);
     }
 
     // entities
-    realm->entities().add(create_cube(*axgl_, {0.3f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.5f}, true));
-    realm->entities().add(create_cube(*axgl_, {0.0f, 0.3f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.5f}, true));
-    realm->entities().add(create_cube(*axgl_, {0.0f, 0.0f, 0.3f}, {0.0f, 0.0f, 1.0f, 0.5f}, true));
-    realm->entities().add(create_cube(*axgl_, {0.0f, 0.0f, 1.5f}, {1.0f, 0.5f, 0.2f, 1.0f}, false));
+    realm->entities().add(
+      create_cube(*axgl_, {0.3f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.5f}, true));
+    realm->entities().add(
+      create_cube(*axgl_, {0.0f, 0.3f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.5f}, true));
+    realm->entities().add(
+      create_cube(*axgl_, {0.0f, 0.0f, 0.3f}, {0.0f, 0.0f, 1.0f, 0.5f}, true));
+    realm->entities().add(
+      create_cube(*axgl_, {0.0f, 0.0f, 1.5f}, {1.0f, 0.5f, 0.2f, 1.0f}, false));
   }
 };
 

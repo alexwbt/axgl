@@ -19,7 +19,8 @@ protected:
 
   [[nodiscard]] virtual axgl::ptr_t<axgl::component::Mesh> create_mesh() const
   {
-    const auto mesh = axgl_->entity_service()->create_component_t<axgl::component::Mesh>();
+    const auto mesh
+      = axgl_->entity_service()->create_component_t<axgl::component::Mesh>();
     mesh->set_material(create_material());
     axgl::util::init_cube(*mesh);
     return mesh;

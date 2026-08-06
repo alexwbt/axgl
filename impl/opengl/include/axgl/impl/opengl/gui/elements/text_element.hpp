@@ -10,7 +10,8 @@
 namespace axgl::impl::gui::opengl
 {
 
-class TextElement : virtual public axgl::gui::TextElement, public axgl::impl::opengl::gui::Element
+class TextElement : virtual public axgl::gui::TextElement,
+                    public axgl::impl::opengl::gui::Element
 {
   std::string text_;
   float text_scale_ = 1.0f;
@@ -37,16 +38,19 @@ public:
       if (!text_.empty())
       {
         const auto& text_service = context.axgl->text_service();
-        text_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(text_service->create_texture({
-          .value = text_,
-          .fonts = computed_style_->get_fonts(),
-          .font_color = computed_style_->get_font_color(),
-          .font_size = computed_style_->get_font_size() * text_scale_,
-          .vertical = false,
-        }));
+        text_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(
+          text_service->create_texture({
+            .value = text_,
+            .fonts = computed_style_->get_fonts(),
+            .font_color = computed_style_->get_font_color(),
+            .font_size = computed_style_->get_font_size() * text_scale_,
+            .vertical = false,
+          }));
 #ifdef AXGL_DEBUG
         if (!text_texture_)
-          AXGL_LOG_WARN("axgl::impl::opengl::Texture is required to use axgl::impl::opengl::gui::Element");
+          AXGL_LOG_WARN(
+            "axgl::impl::opengl::Texture is required to use "
+            "axgl::impl::opengl::gui::Element");
 #endif
       }
       else text_texture_ = nullptr;
@@ -61,7 +65,8 @@ public:
     {
       const auto& opacity = computed_style_->get_opacity();
       const auto& font_color = computed_style_->get_font_color();
-      const auto size = glm::vec3(text_texture_->get_width(), text_texture_->get_height(), 1.0f);
+      const auto size = glm::vec3(
+        text_texture_->get_width(), text_texture_->get_height(), 1.0f);
       const auto content_model                                        //
         = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
         * glm::scale(size);                                           //
@@ -72,7 +77,8 @@ public:
       content_shader.set_bool("use_texture", true);
       content_shader.set_vec4("color", font_color);
       content_shader.set_float("opacity", opacity);
-      content_shader.set_mat4("projection_view_model", context.projection * content_model);
+      content_shader.set_mat4(
+        "projection_view_model", context.projection * content_model);
       ::opengl::StaticVAOs::instance().quad().draw();
     }
   }

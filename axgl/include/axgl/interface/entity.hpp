@@ -8,7 +8,8 @@
 namespace axgl
 {
 
-class Entity : virtual public axgl::Component, virtual public axgl::ContextHolder
+class Entity : virtual public axgl::Component,
+               virtual public axgl::ContextHolder
 {
 public:
   virtual void tick() { }
@@ -28,9 +29,18 @@ public:
   [[nodiscard]] virtual axgl::Container<axgl::Component>& components() = 0;
 
   void parent_tick([[maybe_unused]] axgl::Entity* parent) override { tick(); }
-  void parent_update([[maybe_unused]] axgl::Entity* parent) override { update(); }
-  void on_parent_create([[maybe_unused]] axgl::Entity* parent) override { on_create(); }
-  void on_parent_remove([[maybe_unused]] axgl::Entity* parent) override { on_remove(); }
+  void parent_update([[maybe_unused]] axgl::Entity* parent) override
+  {
+    update();
+  }
+  void on_parent_create([[maybe_unused]] axgl::Entity* parent) override
+  {
+    on_create();
+  }
+  void on_parent_remove([[maybe_unused]] axgl::Entity* parent) override
+  {
+    on_remove();
+  }
 
   void set_position(glm::vec3 position)
   {
@@ -56,13 +66,23 @@ public:
     transform().update_matrix();
   }
 
-  void add_child(const axgl::ptr_t<axgl::Entity>& child) { children().add(child); }
+  void add_child(const axgl::ptr_t<axgl::Entity>& child)
+  {
+    children().add(child);
+  }
 
-  void add_children(const std::span<const axgl::ptr_t<axgl::Entity>>& children) { this->children().add_all(children); }
+  void add_children(const std::span<const axgl::ptr_t<axgl::Entity>>& children)
+  {
+    this->children().add_all(children);
+  }
 
-  void add_component(const axgl::ptr_t<axgl::Component>& component) { components().add(component); }
+  void add_component(const axgl::ptr_t<axgl::Component>& component)
+  {
+    components().add(component);
+  }
 
-  void add_components(const std::span<const axgl::ptr_t<axgl::Component>>& components)
+  void add_components(
+    const std::span<const axgl::ptr_t<axgl::Component>>& components)
   {
     this->components().add_all(components);
   }

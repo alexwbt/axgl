@@ -49,15 +49,21 @@ int main()
     material->add_texture(axgl::Material::TextureType::kDiffuse, texture);
 
     // square mesh
-    const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
-    mesh_comp->set_vertices(std::vector<glm::vec2>{{0.5f, 0.5f}, {0.5f, -0.5f}, {-0.5f, -0.5f}, {-0.5f, 0.5f}});
-    mesh_comp->set_uv(std::vector<glm::vec2>{{1.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 1.0f}});
+    const auto mesh_comp
+      = entity_service->create_component_t<axgl::component::Mesh>();
+    mesh_comp->set_vertices(
+      std::vector<glm::vec2>{
+        {0.5f, 0.5f}, {0.5f, -0.5f}, {-0.5f, -0.5f}, {-0.5f, 0.5f}});
+    mesh_comp->set_uv(
+      std::vector<glm::vec2>{
+        {1.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 1.0f}});
     mesh_comp->set_indices(std::vector<uint32_t>{0, 1, 2, 0, 2, 3});
     mesh_comp->set_material(material);
     square_entity->add_component(mesh_comp);
 
     // camera
-    const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+    const auto camera_comp
+      = entity_service->create_component_t<axgl::impl::component::Camera>();
     camera_comp->camera.orthographic = true;
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;

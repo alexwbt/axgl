@@ -43,13 +43,16 @@ int main()
     material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
     // triangle mesh
-    const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
-    mesh_comp->set_vertices(std::vector<glm::vec2>{{0.8f, -0.5f}, {-0.8f, -0.5f}, {0.0f, 0.5f}});
+    const auto mesh_comp
+      = entity_service->create_component_t<axgl::component::Mesh>();
+    mesh_comp->set_vertices(
+      std::vector<glm::vec2>{{0.8f, -0.5f}, {-0.8f, -0.5f}, {0.0f, 0.5f}});
     mesh_comp->set_material(material);
     entity->add_component(mesh_comp);
 
     // camera
-    const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+    const auto camera_comp
+      = entity_service->create_component_t<axgl::impl::component::Camera>();
     camera_comp->camera.orthographic = true;
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;

@@ -40,7 +40,8 @@ public:
     // camera entity
     {
       const auto camera_entity = entity_service->create_entity();
-      const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+      const auto camera_comp
+        = entity_service->create_component_t<axgl::impl::component::Camera>();
       camera_entity->add_component(camera_comp);
       realm->entities().add(camera_entity);
       camera_entity->transform().position.z = -2;
@@ -51,7 +52,8 @@ public:
     // light entity
     {
       const auto light_entity = entity_service->create_entity();
-      const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
+      const auto light_comp
+        = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
       light_entity->add_component(light_comp);
       realm->entities().add(light_entity);
@@ -65,7 +67,8 @@ public:
       material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
       // cube mesh
-      const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
+      const auto mesh_comp
+        = entity_service->create_component_t<axgl::component::Mesh>();
       axgl::util::init_cube(*mesh_comp);
       mesh_comp->set_material(material);
       cube_entity_->add_component(mesh_comp);

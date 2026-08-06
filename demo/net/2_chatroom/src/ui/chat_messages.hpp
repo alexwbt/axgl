@@ -34,9 +34,12 @@ public:
   {
     std::lock_guard lock(mutex_);
 
-    ImGui::BeginChild("##chat_messages", size, ImGuiChildFlags_Border, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::BeginChild(
+      "##chat_messages", size, ImGuiChildFlags_Border,
+      ImGuiWindowFlags_HorizontalScrollbar);
 
-    const bool scrolled_to_bottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 8.0f;
+    const bool scrolled_to_bottom
+      = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 8.0f;
     if (scrolled_to_bottom) auto_scroll_ = true;
 
     ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);

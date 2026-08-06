@@ -65,7 +65,8 @@ public:
 
   void use() const { glBindRenderbuffer(target_, id_); }
 
-  void init_renderbuffer(const GLenum internal_format, const GLsizei width, const GLsizei height)
+  void init_renderbuffer(
+    const GLenum internal_format, const GLsizei width, const GLsizei height)
   {
     if (initialized())
     {
@@ -81,7 +82,10 @@ public:
   }
 
   void init_multisample_renderbuffer(
-    const GLsizei samples, const GLenum internal_format, const GLsizei width, const GLsizei height)
+    const GLsizei samples,
+    const GLenum internal_format,
+    const GLsizei width,
+    const GLsizei height)
   {
     if (initialized())
     {
@@ -93,7 +97,8 @@ public:
     height_ = height;
 
     use();
-    glRenderbufferStorageMultisample(target_, samples, internal_format, width, height);
+    glRenderbufferStorageMultisample(
+      target_, samples, internal_format, width, height);
   }
 };
 

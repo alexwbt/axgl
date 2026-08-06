@@ -24,7 +24,10 @@ public:
   void initialize() override { }
 
   [[nodiscard]] std::uint64_t ticks() override { return ticks_; }
-  [[nodiscard]] axgl::impl::EntityContainer& entities() override { return entities_; }
+  [[nodiscard]] axgl::impl::EntityContainer& entities() override
+  {
+    return entities_;
+  }
 
   void set_context(const axgl::Context* context) override
   {

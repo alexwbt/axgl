@@ -12,15 +12,20 @@ namespace axgl::impl::opengl
 
 class Mesh2dMaterial : public Material
 {
-  ::opengl::ShaderProgram& shader_ = ::opengl::StaticShaders::instance().mesh_2d();
+  ::opengl::ShaderProgram& shader_
+    = ::opengl::StaticShaders::instance().mesh_2d();
   axgl::ptr_t<impl::opengl::Texture> texture_;
 
 public:
-  void add_texture(axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture) override
+  void add_texture(
+    axgl::Material::TextureType type,
+    axgl::ptr_t<axgl::Texture> texture) override
   {
     texture_ = std::dynamic_pointer_cast<Texture>(texture);
 #ifdef AXGL_DEBUG
-    if (!texture_) throw std::runtime_error("The provided texture is not a valid opengl texture.");
+    if (!texture_)
+      throw std::runtime_error(
+        "The provided texture is not a valid opengl texture.");
 #endif
   }
 
@@ -44,7 +49,8 @@ public:
     else { shader_.set_bool("use_texture", false); }
   }
 
-  [[nodiscard]] int get_attribute_offset(const Attribute attribute) const override
+  [[nodiscard]] int get_attribute_offset(
+    const Attribute attribute) const override
   {
     switch (attribute)
     {

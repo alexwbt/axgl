@@ -9,14 +9,24 @@
 namespace axgl::impl::gui
 {
 
-class ElementContainer : virtual public axgl::Container<axgl::gui::Element>, public axgl::impl::ContextHolder
+class ElementContainer : virtual public axgl::Container<axgl::gui::Element>,
+                         public axgl::impl::ContextHolder
 {
   std::vector<axgl::ptr_t<axgl::gui::Element>> children_;
 
 public:
-  void add(axgl::ptr_t<axgl::gui::Element> element) override { children_.push_back(std::move(element)); }
-  void remove(const axgl::ptr_t<axgl::gui::Element>& element) override { std::erase(children_, element); }
-  [[nodiscard]] std::span<const ptr_t<axgl::gui::Element>> get() const override { return children_; }
+  void add(axgl::ptr_t<axgl::gui::Element> element) override
+  {
+    children_.push_back(std::move(element));
+  }
+  void remove(const axgl::ptr_t<axgl::gui::Element>& element) override
+  {
+    std::erase(children_, element);
+  }
+  [[nodiscard]] std::span<const ptr_t<axgl::gui::Element>> get() const override
+  {
+    return children_;
+  }
   [[nodiscard]] std::uint64_t size() const override { return children_.size(); }
   [[nodiscard]] bool empty() const override { return children_.empty(); }
 };

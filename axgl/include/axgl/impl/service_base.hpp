@@ -7,7 +7,8 @@
 namespace axgl::impl
 {
 
-class ServiceBase : virtual public axgl::Service, public axgl::impl::ContextHolder
+class ServiceBase : virtual public axgl::Service,
+                    public axgl::impl::ContextHolder
 {
 };
 

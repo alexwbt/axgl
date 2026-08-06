@@ -45,8 +45,10 @@ public:
     for (std::size_t i = 1; i < kCascadeCount; ++i)
     {
       const float p = static_cast<float>(i) / static_cast<float>(kCascadeCount);
-      const float log_split = camera_near * std::pow(effective_far / camera_near, p);
-      const float linear_split = camera_near + (effective_far - camera_near) * p;
+      const float log_split
+        = camera_near * std::pow(effective_far / camera_near, p);
+      const float linear_split
+        = camera_near + (effective_far - camera_near) * p;
       split_distances[i] = lambda * log_split + (1.0f - lambda) * linear_split;
     }
 
@@ -85,8 +87,10 @@ public:
       // the corners above unproject to camera_far, not effective_far. using
       // effective_far here was the resolution-killer bug: a 0.05 ratio landed
       // corners at 5% of 1000 = 50 units instead of ~0.5 units.
-      const float near_ratio = (near_dist - camera_near) / (camera_far - camera_near);
-      const float far_ratio = (far_dist - camera_near) / (camera_far - camera_near);
+      const float near_ratio
+        = (near_dist - camera_near) / (camera_far - camera_near);
+      const float far_ratio
+        = (far_dist - camera_near) / (camera_far - camera_near);
       for (std::size_t i = 0; i < 4; ++i)
       {
         const glm::vec3 near_c = frustum_corners[i];
@@ -104,11 +108,12 @@ public:
         center += glm::vec3(v);
       center /= static_cast<float>(corners.size());
 
-      // light.direction points from the light toward the scene, so the eye is at
-      // center - light_dir (looking back toward center). center + light_dir
+      // light.direction points from the light toward the scene, so the eye is
+      // at center - light_dir (looking back toward center). center + light_dir
       // would place the light on the wrong side looking up through the floor.
       const glm::vec3 light_dir = glm::normalize(light.direction);
-      const glm::mat4 light_view = glm::lookAt(center - light_dir, center, glm::vec3(0.0f, 1.0f, 0.0f));
+      const glm::mat4 light_view
+        = glm::lookAt(center - light_dir, center, glm::vec3(0.0f, 1.0f, 0.0f));
 
       float min_x = std::numeric_limits<float>::max();
       float max_x = std::numeric_limits<float>::lowest();
@@ -134,7 +139,8 @@ public:
       min_z -= z_padding;
       max_z += z_padding;
 
-      const glm::mat4 light_proj = glm::ortho(min_x, max_x, min_y, max_y, min_z, max_z);
+      const glm::mat4 light_proj
+        = glm::ortho(min_x, max_x, min_y, max_y, min_z, max_z);
       cascades[c].light_pv = light_proj * light_view;
     }
 

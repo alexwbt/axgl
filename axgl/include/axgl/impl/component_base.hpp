@@ -7,7 +7,8 @@
 namespace axgl::impl
 {
 
-class ComponentBase : virtual public axgl::Component, public axgl::impl::ContextHolder
+class ComponentBase : virtual public axgl::Component,
+                      public axgl::impl::ContextHolder
 {
   static std::uint64_t next_id()
   {

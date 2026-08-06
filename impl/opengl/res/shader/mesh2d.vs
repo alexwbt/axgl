@@ -12,7 +12,8 @@ out vec2 vert_uv;
 
 void main()
 {
-  mat4 mvp = use_instancing ? projection_view * instance_model : projection_view_model;
+  mat4 mvp
+    = use_instancing ? projection_view * instance_model : projection_view_model;
   gl_Position = mvp * vec4(position, 0.0, 1.0);
   gl_Position.x = -gl_Position.x;
 

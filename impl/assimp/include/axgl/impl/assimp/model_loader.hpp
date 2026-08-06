@@ -52,9 +52,12 @@ class ModelLoader
   {
     Assimp::Importer importer;
     const auto& data = resource_service_->get_resource(resource_key_);
-    const auto* ai_scene = importer.ReadFileFromMemory(data.data(), data.size(), aiProcess_CalcTangentSpace);
+    const auto* ai_scene = importer.ReadFileFromMemory(
+      data.data(), data.size(), aiProcess_CalcTangentSpace);
 #ifdef AXGL_DEBUG
-    if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ai_scene->mRootNode)
+    if (
+      !ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
+      || !ai_scene->mRootNode)
     {
       AXGL_LOG_ERROR("Failed to load model: {}", importer.GetErrorString());
       throw std::runtime_error(importer.GetErrorString());
@@ -67,7 +70,8 @@ class ModelLoader
       {
         embedded_textures_[i] = renderer_service_->create_texture();
         embedded_textures_[i]->load_texture(
-          {reinterpret_cast<uint8_t*>(ai_scene->mTextures[i]->pcData), ai_scene->mTextures[i]->mWidth});
+          {reinterpret_cast<uint8_t*>(ai_scene->mTextures[i]->pcData),
+           ai_scene->mTextures[i]->mWidth});
 
         resources_.textures.push_back(embedded_textures_[i]);
       }
@@ -88,7 +92,8 @@ class ModelLoader
       process_node(ai_node->mChildren[i], ai_scene);
   }
 
-  axgl::ptr_t<axgl::component::Mesh> load_mesh(const aiMesh* ai_mesh, const aiScene* ai_scene)
+  axgl::ptr_t<axgl::component::Mesh> load_mesh(
+    const aiMesh* ai_mesh, const aiScene* ai_scene)
   {
     auto mesh = entity_service_->create_component_t<axgl::component::Mesh>();
     resources_.meshes.push_back(mesh);
@@ -96,7 +101,9 @@ class ModelLoader
     std::vector<glm::vec3> vertices;
     vertices.reserve(ai_mesh->mNumVertices);
     for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
-      vertices.emplace_back(ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z);
+      vertices.emplace_back(
+        ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y,
+        ai_mesh->mVertices[i].z);
     mesh->set_vertices(vertices);
 
     if (ai_mesh->HasNormals())
@@ -104,7 +111,9 @@ class ModelLoader
       std::vector<glm::vec3> normals;
       normals.reserve(ai_mesh->mNumVertices);
       for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
-        normals.emplace_back(ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z);
+        normals.emplace_back(
+          ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y,
+          ai_mesh->mNormals[i].z);
       mesh->set_normals(normals);
     }
 
@@ -116,8 +125,12 @@ class ModelLoader
       bitangents.reserve(ai_mesh->mNumVertices);
       for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
       {
-        tangents.emplace_back(ai_mesh->mTangents[i].x, ai_mesh->mTangents[i].y, ai_mesh->mTangents[i].z);
-        bitangents.emplace_back(ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y, ai_mesh->mBitangents[i].z);
+        tangents.emplace_back(
+          ai_mesh->mTangents[i].x, ai_mesh->mTangents[i].y,
+          ai_mesh->mTangents[i].z);
+        bitangents.emplace_back(
+          ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y,
+          ai_mesh->mBitangents[i].z);
       }
       mesh->set_tangents(tangents);
       mesh->set_bitangents(bitangents);
@@ -128,7 +141,8 @@ class ModelLoader
       std::vector<glm::vec2> uv;
       uv.reserve(ai_mesh->mNumVertices);
       for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
-        uv.emplace_back(ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y);
+        uv.emplace_back(
+          ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y);
       mesh->set_uv(uv);
     }
 
@@ -142,7 +156,8 @@ class ModelLoader
     }
 
     const auto material = renderer_service_->create_material(material_type_);
-    const aiMaterial* ai_material = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
+    const aiMaterial* ai_material
+      = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
     for (int i = aiTextureType_DIFFUSE; i < aiTextureType_UNKNOWN; ++i)
     {
       const auto ai_texture_type = static_cast<aiTextureType>(i);
@@ -172,9 +187,11 @@ class ModelLoader
 
       if (*texture_path.C_Str() == '*')
       {
-        const auto index = util::narrow<std::size_t>(std::stoul(texture_path.C_Str() + 1));
+        const auto index
+          = util::narrow<std::size_t>(std::stoul(texture_path.C_Str() + 1));
 #ifdef AXGL_DEBUG
-        if (index > embedded_textures_.size()) throw std::runtime_error("Invalid texture path.");
+        if (index > embedded_textures_.size())
+          throw std::runtime_error("Invalid texture path.");
 #endif
         material->add_texture(texture_type, embedded_textures_[index]);
       }
@@ -194,7 +211,8 @@ class ModelLoader
     }
   }
 
-  static axgl::Material::TextureType map_texture_type(const aiTextureType ai_texture_type)
+  static axgl::Material::TextureType map_texture_type(
+    const aiTextureType ai_texture_type)
   {
     using enum axgl::Material::TextureType;
     switch (ai_texture_type)

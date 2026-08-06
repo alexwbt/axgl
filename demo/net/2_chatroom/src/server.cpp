@@ -16,12 +16,16 @@ public:
     return std::make_shared<net::LengthPrefixedTcpSocket>(std::move(socket));
   }
 
-  void on_connect(const uint32_t session_id, const std::shared_ptr<net::Session>&) override
+  void on_connect(
+    const uint32_t session_id, const std::shared_ptr<net::Session>&) override
   {
     SPDLOG_INFO("new connection (id: {})", session_id);
   }
 
-  void on_disconnect(const uint32_t session_id) override { SPDLOG_INFO("client disconnected (id: {})", session_id); }
+  void on_disconnect(const uint32_t session_id) override
+  {
+    SPDLOG_INFO("client disconnected (id: {})", session_id);
+  }
 
   void on_receive(uint32_t session_id, const net::data_ptr_t& buffer) override
   {
@@ -44,7 +48,8 @@ public:
 int main(int argc, char** argv)
 {
   args::ArgumentParser parser("Net demo chatroom server.");
-  args::ValueFlag<std::uint16_t> port_arg(parser, "port", "Optional port.", {'p', "port"}, 10000);
+  args::ValueFlag<std::uint16_t> port_arg(
+    parser, "port", "Optional port.", {'p', "port"}, 10000);
   try
   {
     parser.ParseCLI(argc, argv);

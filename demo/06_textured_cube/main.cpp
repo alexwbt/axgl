@@ -42,7 +42,8 @@ public:
     // camera entity
     {
       const auto camera_entity = entity_service->create_entity();
-      const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+      const auto camera_comp
+        = entity_service->create_component_t<axgl::impl::component::Camera>();
       camera_entity->add_component(camera_comp);
       realm->entities().add(camera_entity);
       camera_entity->transform().position.z = -2;
@@ -53,7 +54,8 @@ public:
     // light entity
     {
       const auto light_entity = entity_service->create_entity();
-      const auto light_comp = entity_service->create_component_t<axgl::impl::component::Light>();
+      const auto light_comp
+        = entity_service->create_component_t<axgl::impl::component::Light>();
       light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
       light_entity->add_component(light_comp);
       realm->entities().add(light_entity);
@@ -64,18 +66,23 @@ public:
       cube_entity_ = entity_service->create_entity();
       // diffuse texture
       const auto diffuse_texture = renderer_service->create_texture();
-      diffuse_texture->load_texture(demo_textured_cube_res::get("container/diffuse.png"));
+      diffuse_texture->load_texture(
+        demo_textured_cube_res::get("container/diffuse.png"));
       // specular texture
       const auto specular_texture = renderer_service->create_texture();
-      specular_texture->load_texture(demo_textured_cube_res::get("container/specular.png"));
+      specular_texture->load_texture(
+        demo_textured_cube_res::get("container/specular.png"));
 
       // material
       const auto material = renderer_service->create_material("3d");
-      material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse_texture);
-      material->add_texture(axgl::Material::TextureType::kSpecular, specular_texture);
+      material->add_texture(
+        axgl::Material::TextureType::kDiffuse, diffuse_texture);
+      material->add_texture(
+        axgl::Material::TextureType::kSpecular, specular_texture);
 
       // square mesh
-      const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
+      const auto mesh
+        = entity_service->create_component_t<axgl::component::Mesh>();
       axgl::util::init_cube(*mesh);
       mesh->set_material(material);
       cube_entity_->add_component(mesh);

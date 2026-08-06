@@ -6,7 +6,7 @@ BasedOnStyle: LLVM
 #
 # Column / line length
 #
-ColumnLimit: 120
+ColumnLimit: 80
 InsertNewlineAtEOF: true
 
 #

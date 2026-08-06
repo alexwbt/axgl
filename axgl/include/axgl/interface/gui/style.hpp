@@ -2,29 +2,29 @@
 
 #include <axgl/common.hpp>
 
-#define __AXGL_GUI_STYLE_PROPERTY(type, name, init)                                                                    \
-private:                                                                                                               \
-  type name##_ init;                                                                                                   \
-  bool using_##name##_ = false;                                                                                        \
-                                                                                                                       \
-public:                                                                                                                \
-  type get_##name() const                                                                                              \
-  {                                                                                                                    \
-    return name##_;                                                                                                    \
-  }                                                                                                                    \
-  Style* set_##name(const type&(name))                                                                                 \
-  {                                                                                                                    \
-    name##_ = name;                                                                                                    \
-    using_##name##_ = true;                                                                                            \
-    modified_ = true;                                                                                                  \
-    return this;                                                                                                       \
-  };                                                                                                                   \
-  bool using_##name() const                                                                                            \
-  {                                                                                                                    \
-    return using_##name##_;                                                                                            \
+#define __AXGL_GUI_STYLE_PROPERTY(type, name, init)                            \
+private:                                                                       \
+  type name##_ init;                                                           \
+  bool using_##name##_ = false;                                                \
+                                                                               \
+public:                                                                        \
+  type get_##name() const                                                      \
+  {                                                                            \
+    return name##_;                                                            \
+  }                                                                            \
+  Style* set_##name(const type&(name))                                         \
+  {                                                                            \
+    name##_ = name;                                                            \
+    using_##name##_ = true;                                                    \
+    modified_ = true;                                                          \
+    return this;                                                               \
+  };                                                                           \
+  bool using_##name() const                                                    \
+  {                                                                            \
+    return using_##name##_;                                                    \
   }
 
-#define __AXGL_GUI_STYLE_APPLY_TO(name)                                                                                \
+#define __AXGL_GUI_STYLE_APPLY_TO(name)                                        \
   if (using_##name##_) target.name##_ = name##_
 
 namespace axgl::gui

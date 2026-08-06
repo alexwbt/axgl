@@ -28,11 +28,13 @@ public:
     const auto& input_manager = axgl_->get_service_t<InputManager>();
 
     // camera
-    camera_ = entity_service->create_component_t<axgl::impl::component::Camera>();
+    camera_
+      = entity_service->create_component_t<axgl::impl::component::Camera>();
     add_component(camera_);
 
     // flashlight
-    flashlight_ = entity_service->create_component_t<axgl::impl::component::Light>();
+    flashlight_
+      = entity_service->create_component_t<axgl::impl::component::Light>();
     flashlight_->light = axgl::Light::spotlight();
     flashlight_->set_disabled(true);
     add_component(flashlight_);
@@ -62,6 +64,7 @@ public:
       flashlight_dir += (front - flashlight_dir) * 0.3f;
     }
     // toggle flashlight
-    if (flashlight_input_ && flashlight_input_->tick == 1) flashlight_->set_disabled(!flashlight_->is_disabled());
+    if (flashlight_input_ && flashlight_input_->tick == 1)
+      flashlight_->set_disabled(!flashlight_->is_disabled());
   }
 };

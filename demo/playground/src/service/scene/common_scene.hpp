@@ -32,7 +32,8 @@ public:
     camera_entity_ = entity_service->create_entity_t<CameraEntity>();
     camera_entity_->transform().position.y = 2.0f;
     camera_entity_->transform().update_matrix();
-    camera_service->set_camera_mode(axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
+    camera_service->set_camera_mode(
+      axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
     camera_service->set_camera_entity(camera_entity_);
 
     entities_.add(floor_entity_);
@@ -43,7 +44,8 @@ protected:
   auto add_light(const axgl::Light& light)
   {
     const auto light_entity = entity_service_->create_entity();
-    const auto light_comp = entity_service_->create_component_t<axgl::impl::component::Light>();
+    const auto light_comp
+      = entity_service_->create_component_t<axgl::impl::component::Light>();
     light_comp->light = light;
     light_entity->add_component(light_comp);
     light_entity->set_position(light.position);

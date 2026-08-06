@@ -53,14 +53,23 @@ public:
   [[nodiscard]] std::uint64_t ticks() const override { return ticks_; }
 
   void set_name(const std::string& name) override { name_ = name; }
-  void mark_remove(const bool should_remove) override { should_remove_ = should_remove; }
+  void mark_remove(const bool should_remove) override
+  {
+    should_remove_ = should_remove;
+  }
 
   [[nodiscard]] std::string get_name() const override { return name_; }
   [[nodiscard]] bool should_remove() const override { return should_remove_; }
 
   [[nodiscard]] axgl::Transform& transform() override { return transform_; }
-  [[nodiscard]] axgl::impl::ComponentContainer& components() override { return components_; }
-  [[nodiscard]] axgl::impl::EntityContainer& children() override { return children_; }
+  [[nodiscard]] axgl::impl::ComponentContainer& components() override
+  {
+    return components_;
+  }
+  [[nodiscard]] axgl::impl::EntityContainer& children() override
+  {
+    return children_;
+  }
 };
 
 } // namespace axgl::impl

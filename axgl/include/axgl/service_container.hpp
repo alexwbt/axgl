@@ -21,16 +21,25 @@ class ServiceContainer
 public:
   virtual ~ServiceContainer() = default;
 
-  [[nodiscard]] auto services() const { return service_map_ | std::views::values; }
+  [[nodiscard]] auto services() const
+  {
+    return service_map_ | std::views::values;
+  }
 
-  [[nodiscard]] virtual bool has_service(const std::string& type_id) const { return service_map_.contains(type_id); }
+  [[nodiscard]] virtual bool has_service(const std::string& type_id) const
+  {
+    return service_map_.contains(type_id);
+  }
 
-  virtual void register_service(const std::string& type_id, const axgl::ptr_t<Service>& service)
+  virtual void register_service(
+    const std::string& type_id, const axgl::ptr_t<Service>& service)
   {
 #ifdef AXGL_DEBUG
     if (has_service(type_id))
       throw std::runtime_error(
-        std::format("Trying to register service but service with id '{}' already exists.", type_id));
+        std::format(
+          "Trying to register service but service with id '{}' already exists.",
+          type_id));
 #endif
     service_map_.emplace(type_id, service);
   }
@@ -40,7 +49,9 @@ public:
 #ifdef AXGL_DEBUG
     if (!has_service(type_id))
       throw std::runtime_error(
-        std::format("Trying to remove service but service with id '{}' does not exist.", type_id));
+        std::format(
+          "Trying to remove service but service with id '{}' does not exist.",
+          type_id));
 #endif
     service_map_.erase(type_id);
   }
@@ -58,23 +69,30 @@ public:
   {
     if (!has_service(type_id)) return false;
 
-    const auto& service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(type_id));
+    const auto& service
+      = std::dynamic_pointer_cast<ServiceType>(service_map_.at(type_id));
     return service != nullptr;
   }
 
   template <typename ServiceType>
-  [[nodiscard]] axgl::ptr_t<ServiceType> get_service(const std::string& type_id) const
+  [[nodiscard]] axgl::ptr_t<ServiceType> get_service(
+    const std::string& type_id) const
   {
 #ifdef AXGL_DEBUG
     if (!has_service(type_id))
-      throw std::runtime_error(std::format("Service with id '{}' is required, but does not exist.", type_id));
+      throw std::runtime_error(
+        std::format(
+          "Service with id '{}' is required, but does not exist.", type_id));
 #endif
 
-    auto service = std::dynamic_pointer_cast<ServiceType>(service_map_.at(type_id));
+    auto service
+      = std::dynamic_pointer_cast<ServiceType>(service_map_.at(type_id));
 #ifdef AXGL_DEBUG
     if (!service)
       throw std::runtime_error(
-        std::format("Service type '{}' is required, but is not supported.", typeid(ServiceType).name()));
+        std::format(
+          "Service type '{}' is required, but is not supported.",
+          typeid(ServiceType).name()));
 #endif
 
     return service;
@@ -136,7 +154,8 @@ public:
 
   [[nodiscard]] virtual bool running() const
   {
-    return std::ranges::any_of(services(), [&](const auto& service) { return service->keep_alive(); });
+    return std::ranges::any_of(
+      services(), [&](const auto& service) { return service->keep_alive(); });
   }
 
   virtual void exec(const std::string& command) const

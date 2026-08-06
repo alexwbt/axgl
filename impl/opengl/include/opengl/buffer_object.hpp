@@ -14,7 +14,10 @@ class BufferObject final
   std::size_t size_ = 0;
 
 public:
-  explicit BufferObject(const GLenum target) : target_(target) { glGenBuffers(1, &id_); }
+  explicit BufferObject(const GLenum target) : target_(target)
+  {
+    glGenBuffers(1, &id_);
+  }
   BufferObject(const BufferObject&) = delete;
   BufferObject& operator=(const BufferObject&) = delete;
   BufferObject(BufferObject&& other) noexcept

@@ -28,7 +28,8 @@ inline std::vector<std::string> split_string(const std::string& s, char delim)
 // trim from start (in place)
 inline void ltrim(std::string& value)
 {
-  const auto char_is_space = [](const unsigned char ch) { return !std::isspace(ch); };
+  const auto char_is_space
+    = [](const unsigned char ch) { return !std::isspace(ch); };
   value.erase(value.begin(), std::ranges::find_if(value, char_is_space));
 }
 
@@ -36,7 +37,13 @@ inline void ltrim(std::string& value)
 inline void rtrim(std::string& value)
 {
   value.erase(
-    std::find_if(value.rbegin(), value.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), value.end());
+    std::find_if(
+      value.rbegin(), value.rend(),
+      [](unsigned char ch)
+  {
+    return !std::isspace(ch);
+  }).base(),
+    value.end());
 }
 
 // trim from both ends (in place)
@@ -67,9 +74,12 @@ inline std::string trim_copy(std::string value)
   return value;
 }
 
-constexpr std::size_t hash_string(const char* str, const std::size_t hash = 5381)
+constexpr std::size_t hash_string(
+  const char* str, const std::size_t hash = 5381)
 {
-  return (*str == '\0') ? hash : hash_string(str + 1, (hash * 33) ^ static_cast<std::size_t>(*str));
+  return (*str == '\0')
+    ? hash
+    : hash_string(str + 1, (hash * 33) ^ static_cast<std::size_t>(*str));
 }
 
 constexpr std::size_t hash_string(const std::string& value)
@@ -77,7 +87,8 @@ constexpr std::size_t hash_string(const std::string& value)
   return hash_string(value.c_str());
 }
 
-inline void string_to_vec3(const std::string& value, float& x, float& y, float& z)
+inline void string_to_vec3(
+  const std::string& value, float& x, float& y, float& z)
 {
   std::istringstream iss(value);
   if (char comma; !(iss >> x >> comma >> y >> comma >> z))

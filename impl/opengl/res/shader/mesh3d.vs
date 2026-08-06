@@ -1,19 +1,21 @@
 #version 410 core
 /**
- * mesh3d.vs - Vertex shader for 3D mesh rendering (Blinn-Phong + normal/height mapping).
+ * mesh3d.vs - Vertex shader for 3D mesh rendering (Blinn-Phong + normal/height
+ * mapping).
  *
  * Outputs world-space position, normal, and a tangent->world TBN matrix to the
  * fragment shader. Lighting and parallax are computed in world space in the FS;
  * the TBN matrix is only used to transform normal-map samples (tangent->world)
- * and to derive the tangent-space view direction for parallax occlusion mapping.
+ * and to derive the tangent-space view direction for parallax occlusion
+ * mapping.
  *
  * Inputs:
  *   location 0: position       - vertex position (object space)
  *   location 1: normal         - vertex normal (object space)
  *   location 2: tangent        - vertex tangent (object space)
- *   location 3: bitangent     - vertex bitangent (object space, used for handedness)
- *   location 4: uv            - texture coordinates
- *   location 5: model         - per-instance model matrix (instanced rendering)
+ *   location 3: bitangent     - vertex bitangent (object space, used for
+ * handedness) location 4: uv            - texture coordinates location 5: model
+ * - per-instance model matrix (instanced rendering)
  *
  * Uniforms:
  *   camera_pos          - world-space camera position
@@ -32,7 +34,8 @@
  *   uv                  - scaled/offset texture coordinates
  *   tbn                 - tangent->world matrix (columns: t, b, n); identity if
  *                        no normal/height texture
- *   light_space_position[N] - clip-space position in each cascade's light frustum
+ *   light_space_position[N] - clip-space position in each cascade's light
+ * frustum
  *
  * Note: gl_Position.x is negated to match the engine's handedness convention.
  */
@@ -85,7 +88,8 @@ void main()
     // output the world-space position transformed by each cascade's light PV
     // so the FS can pick the matching one without re-transforming.
     for (int i = 0; i < cascade_count; ++i)
-      vso.light_space_position[i] = cascade_light_pv[i] * vec4(vso.position, 1.0);
+      vso.light_space_position[i]
+        = cascade_light_pv[i] * vec4(vso.position, 1.0);
   }
 
   // Build a tangent->world TBN matrix when normal or height mapping is active.

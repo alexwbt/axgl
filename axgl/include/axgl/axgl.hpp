@@ -25,10 +25,10 @@
 namespace axgl
 {
 
-#define __AXGL_DECLARE_SERVICE_GETTER(service_type, service_getter_name)                                               \
-  ptr_t<service_type> service_getter_name##_service() const                                                            \
-  {                                                                                                                    \
-    return get_service<service_type>(service_type::kTypeId.data());                                                    \
+#define __AXGL_DECLARE_SERVICE_GETTER(service_type, service_getter_name)       \
+  ptr_t<service_type> service_getter_name##_service() const                    \
+  {                                                                            \
+    return get_service<service_type>(service_type::kTypeId.data());            \
   }
 
 class Axgl final : public ServiceContainer
@@ -71,7 +71,8 @@ public:
     CPPTRACE_CATCH(const std::exception& e)
     {
       AXGL_LOG_ERROR(
-        "Exception thrown duration termination: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
+        "Exception thrown duration termination: {}\n{}", e.what(),
+        cpptrace::from_current_exception().to_string(true));
     }
 #endif
   }
@@ -99,7 +100,8 @@ public:
         AXGL_PROFILE_SCOPE("Main Loop");
 
         const auto now = high_resolution_clock::now();
-        const auto delta_time = static_cast<double>(duration_cast<nanoseconds>(now - start_time).count());
+        const auto delta_time = static_cast<double>(
+          duration_cast<nanoseconds>(now - start_time).count());
         delta_tick += delta_time / kTimeStep;
         start_time = now;
 #ifdef AXGL_DEBUG
@@ -144,7 +146,9 @@ public:
     }
     CPPTRACE_CATCH(const std::exception& e)
     {
-      AXGL_LOG_ERROR("Exception thrown: {}\n{}", e.what(), cpptrace::from_current_exception().to_string(true));
+      AXGL_LOG_ERROR(
+        "Exception thrown: {}\n{}", e.what(),
+        cpptrace::from_current_exception().to_string(true));
     }
 #endif
   }

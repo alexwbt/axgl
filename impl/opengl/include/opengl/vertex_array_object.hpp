@@ -95,7 +95,9 @@ public:
       case GL_SHORT:
       case GL_UNSIGNED_SHORT:
       case GL_INT:
-      case GL_UNSIGNED_INT: glVertexAttribIPointer(index, size, type, stride, pointer); break;
+      case GL_UNSIGNED_INT:
+        glVertexAttribIPointer(index, size, type, stride, pointer);
+        break;
       case GL_HALF_FLOAT:
       case GL_FLOAT:
       case GL_FIXED:
@@ -105,8 +107,8 @@ public:
         glVertexAttribPointer(index, size, type, normalized, stride, pointer);
         break;
         // case GL_DOUBLE:
-        //   glVertexAttribLPointer(index, attr.size, attr.type, attr.normalized, attr.stride, attr.pointer);
-        //   break;
+        //   glVertexAttribLPointer(index, attr.size, attr.type,
+        //   attr.normalized, attr.stride, attr.pointer); break;
       default:;
       }
       if (divisor > 0) glVertexAttribDivisor(index, divisor);
@@ -142,7 +144,8 @@ public:
   }
 
   template <typename DataType>
-  void update_buffer_data(const GLuint buffer_id, const std::span<const DataType>& data)
+  void update_buffer_data(
+    const GLuint buffer_id, const std::span<const DataType>& data)
   {
     for (const auto& buffer : buffer_objects_)
     {
@@ -159,16 +162,24 @@ public:
   void draw() const
   {
     bind();
-    if (element_size_ > 0) glDrawElements(mode_, util::clamp_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr);
-    else if (vertex_size_ > 0) glDrawArrays(mode_, 0, util::clamp_cast<GLint>(vertex_size_));
+    if (element_size_ > 0)
+      glDrawElements(
+        mode_, util::clamp_cast<GLsizei>(element_size_), GL_UNSIGNED_INT,
+        nullptr);
+    else if (vertex_size_ > 0)
+      glDrawArrays(mode_, 0, util::clamp_cast<GLint>(vertex_size_));
   }
 
   void draw_instanced(const GLsizei count) const
   {
     bind();
     if (element_size_ > 0)
-      glDrawElementsInstanced(mode_, util::clamp_cast<GLsizei>(element_size_), GL_UNSIGNED_INT, nullptr, count);
-    else if (vertex_size_ > 0) glDrawArraysInstanced(mode_, 0, util::clamp_cast<GLint>(vertex_size_), count);
+      glDrawElementsInstanced(
+        mode_, util::clamp_cast<GLsizei>(element_size_), GL_UNSIGNED_INT,
+        nullptr, count);
+    else if (vertex_size_ > 0)
+      glDrawArraysInstanced(
+        mode_, 0, util::clamp_cast<GLint>(vertex_size_), count);
   }
 
 private:

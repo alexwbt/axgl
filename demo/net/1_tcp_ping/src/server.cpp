@@ -15,7 +15,9 @@ public:
     return std::make_shared<net::LengthPrefixedTcpSocket>(std::move(socket));
   }
 
-  void on_connect(const uint32_t, const std::shared_ptr<net::Session>&) override { }
+  void on_connect(const uint32_t, const std::shared_ptr<net::Session>&) override
+  {
+  }
 
   void on_disconnect(const uint32_t) override { }
 

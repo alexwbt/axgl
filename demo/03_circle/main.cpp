@@ -6,7 +6,9 @@
   #include <axgl/impl/opengl.hpp>
 #endif
 
-static void circle_mesh(const std::shared_ptr<axgl::component::Mesh>& mesh, const std::uint32_t vert_count)
+static void circle_mesh(
+  const std::shared_ptr<axgl::component::Mesh>& mesh,
+  const std::uint32_t vert_count)
 {
   std::vector<glm::vec2> vertices;
   std::vector<std::uint32_t> indices;
@@ -14,7 +16,8 @@ static void circle_mesh(const std::shared_ptr<axgl::component::Mesh>& mesh, cons
   vertices.reserve(vert_count + 1);
   indices.reserve(vert_count * 3);
 
-  const float delta = static_cast<float>(2 * std::numbers::pi) / static_cast<float>(vert_count);
+  const float delta
+    = static_cast<float>(2 * std::numbers::pi) / static_cast<float>(vert_count);
   for (std::uint32_t i = 0; i < vert_count; ++i)
   {
     const auto r = static_cast<float>(i) * delta;
@@ -68,13 +71,15 @@ int main()
     material->set_color({1.0f, 0.5f, 0.2f, 1.0f});
 
     // circle mesh
-    const auto mesh_comp = entity_service->create_component_t<axgl::component::Mesh>();
+    const auto mesh_comp
+      = entity_service->create_component_t<axgl::component::Mesh>();
     circle_mesh(mesh_comp, 50);
     mesh_comp->set_material(material);
     entity->add_component(mesh_comp);
 
     // camera
-    const auto camera_comp = entity_service->create_component_t<axgl::impl::component::Camera>();
+    const auto camera_comp
+      = entity_service->create_component_t<axgl::impl::component::Camera>();
     camera_comp->camera.orthographic = true;
     camera_comp->camera.near_clip = -1;
     camera_comp->camera.far_clip = 1;

@@ -28,11 +28,16 @@ public:
 
   void initialize() override
   {
-    rotate_sun_ = axgl::create_ptr<axgl::Input>("Rotate Sun", axgl::Input::Source::kKeyR);
-    flashlight_ = axgl::create_ptr<axgl::Input>("Toggle Flashlight", axgl::Input::Source::kKeyF);
-    shadow_ = axgl::create_ptr<axgl::Input>("Toggle Shadow", axgl::Input::Source::kKeyF4);
-    debug_ = axgl::create_ptr<axgl::Input>("Toggle Debug Mode", axgl::Input::Source::kKeyF3);
-    msaa_ = axgl::create_ptr<axgl::Input>("Toggle MSAA", axgl::Input::Source::kKeyF2);
+    rotate_sun_
+      = axgl::create_ptr<axgl::Input>("Rotate Sun", axgl::Input::Source::kKeyR);
+    flashlight_ = axgl::create_ptr<axgl::Input>(
+      "Toggle Flashlight", axgl::Input::Source::kKeyF);
+    shadow_ = axgl::create_ptr<axgl::Input>(
+      "Toggle Shadow", axgl::Input::Source::kKeyF4);
+    debug_ = axgl::create_ptr<axgl::Input>(
+      "Toggle Debug Mode", axgl::Input::Source::kKeyF3);
+    msaa_ = axgl::create_ptr<axgl::Input>(
+      "Toggle MSAA", axgl::Input::Source::kKeyF2);
   }
 
   void on_start() override

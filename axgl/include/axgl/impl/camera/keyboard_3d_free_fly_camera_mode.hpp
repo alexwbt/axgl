@@ -50,7 +50,8 @@ public:
   {
   }
 
-  explicit Keyboard3DFreeFlyCameraMode(float movement_speed = 0.2f, float view_sensitivity = 0.2f) :
+  explicit Keyboard3DFreeFlyCameraMode(
+    float movement_speed = 0.2f, float view_sensitivity = 0.2f) :
     Keyboard3DFreeFlyCameraMode(
       axgl::create_ptr<Pointer>("View Movement", Pointer::Source::kMouseMove),
       axgl::create_ptr<Input>("Move Forward", Input::Source::kKeyW),
@@ -59,7 +60,8 @@ public:
       axgl::create_ptr<Input>("Move Down", Input::Source::kKeyLeftShift),
       axgl::create_ptr<Input>("Move Left", Input::Source::kKeyA),
       axgl::create_ptr<Input>("Move Right", Input::Source::kKeyD),
-      axgl::create_ptr<Input>("Toggle Camera Control", Input::Source::kKeyEscape),
+      axgl::create_ptr<Input>(
+        "Toggle Camera Control", Input::Source::kKeyEscape),
       movement_speed,
       view_sensitivity)
   {
@@ -100,22 +102,30 @@ public:
       controlling_ = !controlling_;
 
       input_service_->set_cursor_mode(
-        controlling_ ? InputService::CursorMode::kLocked : InputService::CursorMode::kNormal);
+        controlling_ ? InputService::CursorMode::kLocked
+                     : InputService::CursorMode::kNormal);
     }
 
     if (!controlling_) return;
 
-    if (pointer_->tick > 1 && pointer_->delta.x != 0.0f) camera.yaw += pointer_->delta.x * view_sensitivity_;
+    if (pointer_->tick > 1 && pointer_->delta.x != 0.0f)
+      camera.yaw += pointer_->delta.x * view_sensitivity_;
 
     if (pointer_->tick > 1 && pointer_->delta.y != 0.0f)
-      camera.pitch = std::min(std::max(camera.pitch + (pointer_->delta.y * view_sensitivity_), 1.0f), 179.0f);
+      camera.pitch = std::min(
+        std::max(camera.pitch + (pointer_->delta.y * view_sensitivity_), 1.0f),
+        179.0f);
 
     if (forward_->tick > 0) camera.position += camera.front() * movement_speed_;
-    if (backward_->tick > 0) camera.position -= camera.front() * movement_speed_;
+    if (backward_->tick > 0)
+      camera.position -= camera.front() * movement_speed_;
     if (up_->tick > 0) camera.position += glm::vec3(0, 1, 0) * movement_speed_;
-    if (down_->tick > 0) camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
-    if (right_->tick > 0) camera.position += camera.horizontal_right() * movement_speed_;
-    if (left_->tick > 0) camera.position -= camera.horizontal_right() * movement_speed_;
+    if (down_->tick > 0)
+      camera.position -= glm::vec3(0, 1, 0) * movement_speed_;
+    if (right_->tick > 0)
+      camera.position += camera.horizontal_right() * movement_speed_;
+    if (left_->tick > 0)
+      camera.position -= camera.horizontal_right() * movement_speed_;
 
     camera.update();
   }
