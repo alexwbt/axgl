@@ -77,3 +77,22 @@ if [ $NO_BUILD -eq 0 ]; then
     cmake --build --preset $PRESET | log
   fi
 fi
+
+#
+# Post-process compile_commands.json so compile_proxy stubs point at their
+# real .hpp headers (clangd/clang-tidy benefit). Only meaningful for the
+# debug preset, where add_compile_proxy() actually emits proxy entries.
+# Skipped on --target builds (database may be incomplete).
+#
+if [ $NO_BUILD -eq 0 ] && [ -z "$TARGET" ] && [ "$PRESET" = "debug" ]; then
+  BUILD_DIR="$ROOT_DIR/_build/Debug"
+  CC_JSON="$BUILD_DIR/compile_commands.json"
+  if [ -f "$CC_JSON" ] && [ -x "$ROOT_DIR/_bin/compile_proxy.exe" ]; then
+    log
+    log "#"
+    log "# Post-processing compile_commands.json"
+    log "#"
+
+    "$ROOT_DIR/_bin/compile_proxy.exe" "$BUILD_DIR" | log
+  fi
+fi

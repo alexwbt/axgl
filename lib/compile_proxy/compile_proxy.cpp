@@ -1,7 +1,8 @@
 #include <filesystem>
-#include <regex>
+#include <ranges>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 
 #include <args.hxx>
 #include <simdjson.h>
@@ -14,45 +15,62 @@
 #define FILE_FIELD "file"
 #define OUTPUT_FIELD "output"
 
-static bool is_proxy_file(const std::string_view& filepath)
+namespace fs = std::filesystem;
+
+static std::string_view get_include_path(const std::string& file_content)
 {
-  return filepath.ends_with(".cpp")
-    && filepath.find("/compile_proxy/") != std::string_view::npos;
+  const auto include = file_content.find("#include");
+  if (include == std::string::npos) return {};
+
+  const auto begin = file_content.find('<', include);
+  if (begin == std::string::npos) return {};
+
+  const auto end = file_content.find('>', begin);
+  if (end == std::string::npos) return {};
+
+  return {file_content.data() + begin + 1, end - begin - 1};
 }
 
 static void resolve_header_file(
   std::string& file, const std::string_view& command)
 {
-  namespace fs = std::filesystem;
-  using iterator = std::regex_iterator<std::string_view::const_iterator>;
-
   // read cpp
-  static std::regex include_pattern(R"(#include\s*<([^>]+)>)");
   const auto file_content = util::read_text_file(file);
-  std::smatch match;
-  const bool matched = std::regex_search(
-    file_content.begin(), file_content.end(), match, include_pattern);
-  if (!matched) return;
+  const auto include_path = get_include_path(file_content);
+  if (include_path.empty()) return;
 
   // find header path
-  static std::regex flags_pattern(R"((?:^|\s)-I\s*(\S+))");
-  auto includes_begin = iterator(command.begin(), command.end(), flags_pattern);
-  auto includes_end = iterator();
-  for (auto i = includes_begin; i != includes_end; ++i)
+  // only handles glued include flags
+  for (auto&& item : command | std::views::split(' '))
   {
-    const auto header_file = fs::path((*i)[1].str()) / match[1].str();
+    if (std::ranges::empty(item)) continue;
+
+    std::string_view view(&*item.begin(), std::ranges::distance(item));
+    if (!view.starts_with("-I")) continue;
+
+    // use header_file if it exists
+    std::string_view include_dir(view.data() + 2, view.size() - 2);
+    const auto header_file = fs::path(include_dir) / include_path;
     if (fs::exists(header_file))
     {
       file = header_file.lexically_normal().generic_string();
       return;
     }
   }
+
+  SPDLOG_WARN("Failed to find header file of \"{}\"", file);
+}
+
+static bool is_proxy_file(const std::string_view& filepath)
+{
+  return filepath.ends_with(".cpp")
+    && filepath.find("/compile_proxy/") != std::string_view::npos
+    && !filepath.ends_with("compile_proxy.cpp");
 }
 
 static int fix_compile_proxy(const std::string& directory)
 {
   using namespace simdjson;
-  namespace fs = std::filesystem;
 
   static constexpr std::string_view kFilename = "compile_commands.json";
   const auto filepath = (fs::path(directory) / kFilename).string();
