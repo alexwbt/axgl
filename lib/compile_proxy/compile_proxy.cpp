@@ -31,8 +31,7 @@ static std::string_view get_include_path(const std::string& file_content)
   return {file_content.data() + begin + 1, end - begin - 1};
 }
 
-static void resolve_header_file(
-  std::string& file, const std::string_view& command)
+static void resolve_header_file(std::string& file, const std::string& command)
 {
   // read cpp
   const auto file_content = util::read_text_file(file);
@@ -61,7 +60,7 @@ static void resolve_header_file(
   SPDLOG_WARN("Failed to find header file of \"{}\"", file);
 }
 
-static bool is_proxy_file(const std::string_view& filepath)
+static bool is_proxy_file(const std::string& filepath)
 {
   return filepath.ends_with(".cpp")
     && filepath.find("/compile_proxy/") != std::string_view::npos
@@ -94,7 +93,7 @@ static int fix_compile_proxy(const std::string& directory)
     std::string_view output = entry[OUTPUT_FIELD];
 
     // process
-    if (is_proxy_file(file)) resolve_header_file(file, command);
+    if (is_proxy_file(file)) resolve_header_file(file, command.data());
 
     // write
     if (!first) builder.append_comma();
@@ -116,7 +115,7 @@ static int fix_compile_proxy(const std::string& directory)
   // write to file
   builder.append_raw("\n");
   builder.end_array();
-  util::write_text_file(filepath, builder.view());
+  util::write_text_file(filepath, builder.view()->data());
 
   return 0;
 }
