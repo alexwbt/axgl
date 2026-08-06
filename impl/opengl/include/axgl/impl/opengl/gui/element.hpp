@@ -36,7 +36,10 @@ protected:
       = util::clamp_cast<GLsizei>(scissor_rect_.w - scissor_rect_.y);
 
     if (scissor_width <= 0 || scissor_height <= 0) return;
+
     glScissor(scissor_x, scissor_y, scissor_width, scissor_height);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     const auto& color = computed_style_->get_color();
     const auto& opacity = computed_style_->get_opacity();

@@ -63,6 +63,10 @@ public:
 
     if (text_texture_)
     {
+      // text texture is premultiplied (see opengl::TextRenderer::render_text)
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
       const auto& opacity = computed_style_->get_opacity();
       const auto& font_color = computed_style_->get_font_color();
       const auto size = glm::vec3(
