@@ -152,7 +152,7 @@ int main(const int argc, char** argv)
   }
   catch (const args::Error& e)
   {
-    SPDLOG_ERROR(e.what());
+    SPDLOG_ERROR("{}", e.what());
     return 1;
   }
 

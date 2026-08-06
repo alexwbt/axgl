@@ -40,17 +40,17 @@ static void resolve_header_file(std::string& file, const std::string& command)
 
   // find header path
   // only handles glued include flags
-  for (auto&& item : command | std::views::split(' '))
+  for (auto&& subrange : command | std::views::split(' '))
   {
-    if (std::ranges::empty(item)) continue;
+    const auto length = std::ranges::distance(subrange);
+    if (length <= 2) continue;
 
-    std::string_view view(&*item.begin(), std::ranges::distance(item));
+    std::string_view view(&*subrange.begin(), length);
     if (!view.starts_with("-I")) continue;
 
-    // use header_file if it exists
-    std::string_view include_dir(view.data() + 2, view.size() - 2);
+    std::string_view include_dir = view.substr(2);
     const auto header_file = fs::path(include_dir) / include_path;
-    if (fs::exists(header_file))
+    if (fs::is_regular_file(header_file))
     {
       file = header_file.lexically_normal().generic_string();
       return;
@@ -147,7 +147,7 @@ int main(const int argc, char** argv)
   }
   catch (const std::exception& e)
   {
-    SPDLOG_ERROR(e.what());
+    SPDLOG_ERROR("{}", e.what());
     return 1;
   }
 }
