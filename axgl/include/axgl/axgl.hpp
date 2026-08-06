@@ -52,10 +52,9 @@ public:
     }
     CPPTRACE_CATCH(const std::exception& e)
     {
-      // AXGL_LOG_ERROR(
-      //   "Exception thrown duration initialization: {}\n{}", e.what(),
-      //   cpptrace::from_current_exception().to_string(true));
-      AXGL_LOG_DEBUG("Hello world");
+      AXGL_LOG_ERROR(
+        "Exception thrown duration initialization: {}\n{}", e.what(),
+        cpptrace::from_current_exception().to_string(true));
     }
 #endif
   }
