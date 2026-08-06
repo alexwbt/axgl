@@ -39,6 +39,10 @@ LOG_DIR="$ROOT_DIR/_log"
 LOG_FILE="$LOG_DIR/build.log"
 ARCHIVE_LOG_FILE="$LOG_DIR/$(date +"%Y-%m-%d_%H-%M-%S")_${PRESET}${TARGET:+_$TARGET}.log"
 
+if [ -n "${CMAKE_BUILD_PARALLEL_LEVEL}" ]; then
+  echo "CMAKE_BUILD_PARALLEL_LEVEL: ${CMAKE_BUILD_PARALLEL_LEVEL}"
+fi
+
 log() {
   if [ -t 0 ]; then
     echo "$*" | tee -a "$LOG_FILE" | tee -a "$ARCHIVE_LOG_FILE"

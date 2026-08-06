@@ -101,3 +101,4 @@ vso
 ReSharper
 CppNonInlineFunctionDefinitionInHeaderFile
 cpp
+CMAKE

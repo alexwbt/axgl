@@ -2,6 +2,8 @@ ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 PRESET ?= debug
 TARGET ?= demo_playground
+PARALLEL ?= 4
+export CMAKE_BUILD_PARALLEL_LEVEL := $(PARALLEL)
 
 CMAKE ?= cmake
 CLEAN := $(ROOT)/_scripts/clean.sh
