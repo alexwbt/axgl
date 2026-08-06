@@ -7,7 +7,7 @@
 #include <axgl/impl/opengl/gui/element.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
-namespace axgl::impl::gui::opengl
+namespace axgl::impl::opengl::gui
 {
 
 class TextElement : virtual public axgl::gui::TextElement,
@@ -84,4 +84,4 @@ public:
   }
 };
 
-} // namespace axgl::impl::gui::opengl
+} // namespace axgl::impl::opengl::gui

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <unordered_map>
 
 #include <axgl/common.hpp>
@@ -15,6 +16,9 @@ namespace axgl::impl::opengl
 class GuiService : virtual public axgl::GuiService,
                    public axgl::impl::ServiceBase
 {
+  using FactoryFunction = std::function<axgl::ptr_t<axgl::gui::Element>()>;
+
+  std::unordered_map<std::string, FactoryFunction> element_factories_;
   std::unordered_map<std::string, axgl::ptr_t<axgl::gui::Style>> styles_;
 
   bool initialized_ = false;
@@ -29,6 +33,23 @@ public:
   axgl::ptr_t<axgl::gui::Element> create_element() override
   {
     return axgl::create_ptr<axgl::impl::opengl::gui::Element>();
+  }
+
+  axgl::ptr_t<axgl::gui::Element> create_element(
+    const std::string& type) override
+  {
+#ifdef AXGL_DEBUG
+    if (!element_factories_.contains(type))
+      throw std::runtime_error(
+        std::format("Element factory for '{}' not registered.", type));
+#endif
+    return element_factories_.at(type)();
+  }
+
+  void register_element_factory(
+    const std::string& type, FactoryFunction element_factory) override
+  {
+    element_factories_.emplace(type, element_factory);
   }
 
   axgl::ptr_t<axgl::gui::Style> create_style(const std::string& name) override
@@ -92,3 +113,4 @@ public:
 };
 
 } // namespace axgl::impl::opengl
+

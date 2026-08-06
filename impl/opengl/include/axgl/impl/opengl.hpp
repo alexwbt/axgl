@@ -2,7 +2,7 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/components/mesh.hpp>
-#include <axgl/impl/opengl/services/gui_element_service.hpp>
+#include <axgl/impl/opengl/gui/elements/text_element.hpp>
 #include <axgl/impl/opengl/services/gui_service.hpp>
 #include <axgl/impl/opengl/services/renderer_service.hpp>
 #include <axgl/impl/opengl/services/text_service.hpp>
@@ -15,11 +15,10 @@ inline void configure_opengl(Axgl& axgl)
   axgl.register_service_t<impl::opengl::RendererService>();
   axgl.register_service_t<impl::opengl::TextService>();
   axgl.register_service_t<impl::opengl::GuiService>();
-  axgl.register_service_t<impl::opengl::GuiElementService>();
 
   axgl.entity_service()->register_component_t<impl::opengl::component::Mesh>();
 
-  // axgl.gui_element_service()->register_elemtn
+  axgl.gui_service()->register_element_t<impl::opengl::gui::TextElement>();
 }
 
 } // namespace axgl

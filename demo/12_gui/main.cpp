@@ -54,23 +54,24 @@ int main()
   gui_service->create_style("box:active")->set_opacity(0.6f);
 
   {
-    const auto element1 = gui_service->create_element();
+    const auto element1
+      = gui_service->create_element_t<axgl::impl::opengl::gui::TextElement>();
     page->elements().add(element1);
     element1->set_style({"box"})->set_color({0.39f, 0.58f, 0.93f, 1.0f});
-    // element1->set_content("Hello world");
-    {
-      const auto element2 = gui_service->create_element();
-      element1->children().add(element2);
-      element2->set_style({"box"})->set_color({1.0f, 0.5f, 0.3f, 1.0f});
-      {
-        const auto element3 = gui_service->create_element();
-        element2->children().add(element3);
-        element3->set_style({"box"})
-          ->set_position({-20.0f, 10.0f})
-          ->set_size({300.0f, 10.0f})
-          ->set_color({0.0f, 0.5f, 0.3f, 1.0f});
-      }
-    }
+    element1->set_text("Hello World");
+    // {
+    //   const auto element2 = gui_service->create_element();
+    //   element1->children().add(element2);
+    //   element2->set_style({"box"})->set_color({1.0f, 0.5f, 0.3f, 1.0f});
+    //   {
+    //     const auto element3 = gui_service->create_element();
+    //     element2->children().add(element3);
+    //     element3->set_style({"box"})
+    //       ->set_position({-20.0f, 10.0f})
+    //       ->set_size({300.0f, 10.0f})
+    //       ->set_color({0.0f, 0.5f, 0.3f, 1.0f});
+    //   }
+    // }
   }
 
   axgl.run();
