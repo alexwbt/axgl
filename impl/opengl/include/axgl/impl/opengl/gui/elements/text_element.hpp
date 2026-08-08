@@ -35,15 +35,18 @@ public:
       modified_text_ = false;
       text_scale_ = context.scale;
 
-      if (!text_.empty())
+      const auto fonts = computed_style_->get_fonts();
+      const auto font_color = computed_style_->get_font_color();
+      const auto font_size = computed_style_->get_font_size() * text_scale_;
+      if (!text_.empty() && !fonts.empty() && font_size > 0.01f)
       {
         const auto& text_service = context.axgl->text_service();
         text_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(
           text_service->create_texture({
             .value = text_,
-            .fonts = computed_style_->get_fonts(),
-            .font_color = computed_style_->get_font_color(),
-            .font_size = computed_style_->get_font_size() * text_scale_,
+            .fonts = fonts,
+            .font_color = font_color,
+            .font_size = font_size,
             .vertical = false,
           }));
 #ifdef AXGL_DEBUG

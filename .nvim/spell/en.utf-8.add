@@ -124,3 +124,5 @@ clangd
 exe
 cmake
 config
+arial
+TextRenderer
