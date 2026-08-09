@@ -80,6 +80,7 @@ public:
         this,                       //
         nullptr,                    //
         scale_,                     //
+        font_scale_,                //
         projection                  //
       };
       for (const auto& child : elements_.get())

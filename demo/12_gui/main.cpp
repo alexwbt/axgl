@@ -1,7 +1,6 @@
-#include "axgl/interface/gui/elements/text_element.hpp"
-#include "setup.hpp"
-
 #include <demo_gui/res.hpp>
+
+#include "setup.hpp"
 
 int main()
 {
@@ -54,24 +53,28 @@ int main()
   // gui_service->create_style("box:hover")->set_opacity(0.8f);
   // gui_service->create_style("box:active")->set_opacity(0.6f);
 
-  {
-    using namespace axgl::gui;
+  using namespace axgl::gui;
 
-    gui_service->create_style("h1")
-      ->set_display(Display::kBlock)
-      ->set_font_size(48.0f)
-      ->set_font_weight(900);
-    {
-      const auto e = gui_service->create_element_t<TextElement>();
-      e->set_text("Hello World");
-      e->set_style({"h1"});
-      page->elements().add(e);
-    }
-    {
-      const auto e = gui_service->create_element_t<TextElement>();
-      e->set_text("This is a axgl gui demo.");
-      e->set_style({"p"});
-    }
+  gui_service->create_style("h1")
+    ->set_display(Display::kBlock)
+    ->set_font_size(32.0f)
+    ->set_font_weight(700)
+    ->set_margin({10.0f, 10.0f, 0.0f, 0.0f});
+
+  gui_service->create_style("p")
+    ->set_display(Display::kBlock)
+    ->set_margin({10.0f, 10.0f, 0.0f, 0.0f});
+
+  {
+    const auto e = gui_service->create_element_t<TextElement>();
+    e->set_text("Hello World");
+    e->set_style({"h1"});
+    page->elements().add(e);
+  }
+  {
+    const auto e = gui_service->create_element_t<TextElement>();
+    e->set_text("This is a axgl gui demo.");
+    e->set_style({"p"});
   }
 
   axgl.run();

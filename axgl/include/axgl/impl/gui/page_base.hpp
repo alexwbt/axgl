@@ -20,6 +20,7 @@ protected:
   axgl::impl::gui::ElementContainer elements_;
 
   float scale_ = 1.0f;
+  float font_scale_ = 1.0f;
   bool should_render_ = false;
   bool using_cursor_ = false;
   axgl::gui::Cursor cursor_ = axgl::gui::Cursor::kNormal;
@@ -51,6 +52,7 @@ public:
       this,              //
       nullptr,           //
       scale_,            //
+      font_scale_,       //
       glm::mat4(1.0f),   //
     };
     for (const auto& element : elements_.get())
@@ -78,6 +80,7 @@ public:
         this,              //
         nullptr,           //
         scale_,            //
+        font_scale_,       //
         glm::mat4(1.0f),   //
       };
       for (const auto& element : elements_.get())
@@ -98,6 +101,7 @@ public:
       this,              //
       nullptr,           //
       scale_,            //
+      font_scale_,       //
       glm::mat4(1.0f),   //
     };
     for (const auto& element : elements_.get())

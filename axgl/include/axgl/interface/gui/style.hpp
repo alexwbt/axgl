@@ -82,6 +82,10 @@ public:
     __AXGL_GUI_STYLE_APPLY_TO(font_size);
     __AXGL_GUI_STYLE_APPLY_TO(line_height);
     __AXGL_GUI_STYLE_APPLY_TO(text_align);
+    // layout
+    __AXGL_GUI_STYLE_APPLY_TO(display);
+    __AXGL_GUI_STYLE_APPLY_TO(margin);
+    __AXGL_GUI_STYLE_APPLY_TO(padding);
     if (mark_updated) target.modified_ = true;
   }
 
@@ -91,9 +95,10 @@ public:
   __AXGL_GUI_STYLE_PROPERTY(float, opacity, = 1.0f)
   __AXGL_GUI_STYLE_PROPERTY(Cursor, cursor, = Cursor::kNormal)
   // content
-  __AXGL_GUI_STYLE_PROPERTY(std::vector<std::string>, fonts, );
+  __AXGL_GUI_STYLE_PROPERTY(std::vector<std::string>, fonts, )
   __AXGL_GUI_STYLE_PROPERTY(glm::vec4, font_color, {1.0f})
   __AXGL_GUI_STYLE_PROPERTY(float, font_size, = 16.0f)
+  __AXGL_GUI_STYLE_PROPERTY(int, font_weight, = 400)
   __AXGL_GUI_STYLE_PROPERTY(float, line_height, = 1.5f)
   __AXGL_GUI_STYLE_PROPERTY(TextAlign, text_align, = TextAlign::kCenter)
   // layout
