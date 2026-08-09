@@ -33,10 +33,10 @@ namespace axgl::gui
 enum class Display
 {
   kBlock,
-  kInline,
-  kInlineBlock,
-  kFlex,
-  kGrid,
+  // kInline,
+  // kInlineBlock,
+  // kFlex,
+  // kGrid,
 };
 
 enum class Cursor
