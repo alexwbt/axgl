@@ -21,6 +21,7 @@ public:
   [[nodiscard]] virtual bool is_focused() const = 0;
   [[nodiscard]] virtual bool is_hovering() const = 0;
   [[nodiscard]] virtual bool is_activated() const = 0;
+  [[nodiscard]] virtual glm::vec2 get_intrinsic_size() const = 0;
 
   [[nodiscard]] virtual axgl::gui::Style* style() const = 0;
   [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& children() = 0;

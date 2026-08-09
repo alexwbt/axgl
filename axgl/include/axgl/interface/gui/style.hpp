@@ -33,7 +33,7 @@ namespace axgl::gui
 enum class Display
 {
   kBlock,
-  // kInline,
+  kInline,
   // kInlineBlock,
   // kFlex,
   // kGrid,
