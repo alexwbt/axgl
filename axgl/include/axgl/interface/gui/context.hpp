@@ -20,6 +20,7 @@ struct Context : axgl::Context
   axgl::gui::Page* page;
   axgl::gui::Element* parent;
   float scale = 1.0f;
+  float font_scale = 1.0f;
   const glm::mat4& projection;
 };
 

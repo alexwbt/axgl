@@ -30,10 +30,11 @@ public:
   {
     axgl::impl::opengl::gui::Element::update(context);
 
-    if (modified_text_ || text_scale_ != context.scale)
+    const auto text_scale = context.scale * context.font_scale;
+    if (modified_text_ || text_scale_ != text_scale)
     {
       modified_text_ = false;
-      text_scale_ = context.scale;
+      text_scale_ = text_scale;
 
       const auto fonts = computed_style_->get_fonts();
       const auto font_color = computed_style_->get_font_color();

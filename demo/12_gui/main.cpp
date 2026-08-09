@@ -1,3 +1,4 @@
+#include "axgl/interface/gui/elements/text_element.hpp"
 #include "setup.hpp"
 
 #include <demo_gui/res.hpp>
@@ -44,20 +45,34 @@ int main()
   page->set_focus_activate_input(focus_activate_input);
   gui_service->set_main_ui(page);
 
-  gui_service->create_style("box")
-    ->set_cursor(axgl::gui::Cursor::kPointer)
-    ->set_position({10.0f, 10.0f})
-    ->set_size({300.0f, 300.0f})
-    ->set_font_size(48.0f)
-    ->set_fonts({"arial", "noto-tc"});
-  gui_service->create_style("box:hover")->set_opacity(0.8f);
-  gui_service->create_style("box:active")->set_opacity(0.6f);
+  // gui_service->create_style("box")
+  //   ->set_cursor(axgl::gui::Cursor::kPointer)
+  //   ->set_position({10.0f, 10.0f})
+  //   ->set_size({300.0f, 300.0f})
+  //   ->set_font_size(48.0f)
+  //   ->set_fonts({"arial", "noto-tc"});
+  // gui_service->create_style("box:hover")->set_opacity(0.8f);
+  // gui_service->create_style("box:active")->set_opacity(0.6f);
 
-  const auto text_element
-    = gui_service->create_element_t<axgl::impl::opengl::gui::TextElement>();
-  page->elements().add(text_element);
-  text_element->set_style({"box"})->set_color({0.39f, 0.58f, 0.93f, 1.0f});
-  text_element->set_text("Hello World");
+  {
+    using namespace axgl::gui;
+
+    gui_service->create_style("h1")
+      ->set_display(Display::kBlock)
+      ->set_font_size(48.0f)
+      ->set_font_weight(900);
+    {
+      const auto e = gui_service->create_element_t<TextElement>();
+      e->set_text("Hello World");
+      e->set_style({"h1"});
+      page->elements().add(e);
+    }
+    {
+      const auto e = gui_service->create_element_t<TextElement>();
+      e->set_text("This is a axgl gui demo.");
+      e->set_style({"p"});
+    }
+  }
 
   axgl.run();
   axgl.terminate();
