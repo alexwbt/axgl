@@ -15,19 +15,13 @@ public:
     return std::make_shared<net::LengthPrefixedTcpSocket>(std::move(socket));
   }
 
-  void on_connect(
-    const uint32_t,
-    const std::shared_ptr<net::Session>&
-  ) override
+  void on_connect(const uint32_t, const std::shared_ptr<net::Session>&) override
   {
   }
 
   void on_disconnect(const uint32_t) override { }
 
-  void on_receive(
-    uint32_t,
-    const net::data_ptr_t& buffer
-  ) override
+  void on_receive(uint32_t, const net::data_ptr_t& buffer) override
   {
     print_message(*buffer);
     send_to_all(build_message("shut up."));

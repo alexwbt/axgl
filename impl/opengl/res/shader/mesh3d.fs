@@ -249,10 +249,7 @@ float calc_shadow()
  * light-to-surface direction. Applies shadowing from the first light's
  * shadow map.
  */
-vec3 calc_sun_light(
-  Context ctx,
-  SunLight light
-)
+vec3 calc_sun_light(Context ctx, SunLight light)
 {
   // Diffuse
   vec3 light_dir = normalize(-light.direction);
@@ -281,10 +278,7 @@ vec3 calc_sun_light(
  * Spot light contribution with distance attenuation and a soft cone cutoff.
  * light.direction points from the light toward the scene.
  */
-vec3 calc_spot_light(
-  Context ctx,
-  SpotLight light
-)
+vec3 calc_spot_light(Context ctx, SpotLight light)
 {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);
@@ -318,10 +312,7 @@ vec3 calc_spot_light(
 /**
  * Point light contribution with distance attenuation (no cutoff cone).
  */
-vec3 calc_point_light(
-  Context ctx,
-  PointLight light
-)
+vec3 calc_point_light(Context ctx, PointLight light)
 {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);

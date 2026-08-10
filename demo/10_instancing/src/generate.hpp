@@ -9,8 +9,7 @@
 #include "box.hpp"
 
 inline axgl::ptr_t<axgl::Texture> create_texture(
-  const axgl::Axgl& axgl,
-  const std::string& res
+  const axgl::Axgl& axgl, const std::string& res
 )
 {
   // texture

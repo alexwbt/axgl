@@ -234,10 +234,7 @@ protected:
   }
 
 private:
-  void set_using_style(
-    const GuiService* gui_context,
-    const std::string& name
-  )
+  void set_using_style(const GuiService* gui_context, const std::string& name)
   {
     if (const auto& style_ptr = gui_context->get_style(name))
       using_styles_.emplace_back(style_ptr);

@@ -124,17 +124,13 @@ public:
     glBindTexture(target_, id_);
   }
 
-  void set_parameter(
-    const GLenum param,
-    const GLint value
-  ) const
+  void set_parameter(const GLenum param, const GLint value) const
   {
     glTexParameteri(target_, param, value);
   }
 
   void set_parameter(
-    const GLenum param,
-    const std::span<const GLfloat>& value
+    const GLenum param, const std::span<const GLfloat>& value
   ) const
   {
     glTexParameterfv(target_, param, &value[0]);
@@ -212,11 +208,7 @@ public:
     );
   }
 
-  void load_cubemap_texture(
-    const std::array<
-      std::span<const uint8_t>,
-      6>& data
-  )
+  void load_cubemap_texture(const std::array<std::span<const uint8_t>, 6>& data)
   {
     if (initialized())
     {

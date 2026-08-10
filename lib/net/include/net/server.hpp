@@ -26,8 +26,7 @@ public:
     std::shared_ptr<asio::io_context> io_context,
     const asio::ip::port_type& port
   ) :
-    io_context_(std::move(io_context)),
-    port_(port)
+    io_context_(std::move(io_context)), port_(port)
   {
   }
 
@@ -48,10 +47,7 @@ public:
     }
   }
 
-  virtual void send(
-    const uint32_t session_id,
-    const data_ptr_t& buffer
-  )
+  virtual void send(const uint32_t session_id, const data_ptr_t& buffer)
   {
     if (sessions_.contains(session_id)) sessions_.at(session_id)->send(buffer);
   }
@@ -68,18 +64,8 @@ public:
   }
 
   virtual void on_disconnect(uint32_t) { }
-  virtual void on_receive(
-    uint32_t,
-    const data_ptr_t&
-  )
-  {
-  }
-  virtual void on_connect(
-    uint32_t,
-    const std::shared_ptr<Session>&
-  )
-  {
-  }
+  virtual void on_receive(uint32_t, const data_ptr_t&) { }
+  virtual void on_connect(uint32_t, const std::shared_ptr<Session>&) { }
 
   virtual void start() = 0;
   virtual void stop() = 0;

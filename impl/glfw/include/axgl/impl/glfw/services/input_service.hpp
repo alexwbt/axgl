@@ -170,8 +170,7 @@ class InputService : virtual public axgl::InputService,
   }
 
   static bool get_glfw_input(
-    const axgl::Input::Source source,
-    const axgl::ptr_t<::glfw::Window>& window
+    const axgl::Input::Source source, const axgl::ptr_t<::glfw::Window>& window
   )
   {
     if (const auto keycode = to_glfw_keycode(source);

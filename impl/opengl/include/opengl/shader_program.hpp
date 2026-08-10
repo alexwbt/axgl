@@ -17,23 +17,13 @@ public:
     GLenum type;
     std::string_view source_code;
 
-    Shader(
-      const GLenum type,
-      const std::string& data
-    ) :
-      type(type),
-      source_code(data)
+    Shader(const GLenum type, const std::string& data) :
+      type(type), source_code(data)
     {
     }
-    Shader(
-      const GLenum type,
-      const std::span<const uint8_t>& data
-    ) :
+    Shader(const GLenum type, const std::span<const uint8_t>& data) :
       type(type),
-      source_code(
-        reinterpret_cast<const char*>(data.data()),
-        data.size()
-      )
+      source_code(reinterpret_cast<const char*>(data.data()), data.size())
     {
     }
   };
@@ -96,61 +86,36 @@ public:
     if (program_id_ > 0) glDeleteProgram(program_id_);
   }
 
-  void set_int(
-    const std::string& name,
-    const int value
-  )
+  void set_int(const std::string& name, const int value)
   {
     glUniform1i(get_uniform_location(name), value);
   }
-  void set_bool(
-    const std::string& name,
-    const bool value
-  )
+  void set_bool(const std::string& name, const bool value)
   {
     glUniform1i(get_uniform_location(name), static_cast<GLint>(value));
   }
-  void set_float(
-    const std::string& name,
-    const float value
-  )
+  void set_float(const std::string& name, const float value)
   {
     glUniform1f(get_uniform_location(name), value);
   }
-  void set_vec2(
-    const std::string& name,
-    const glm::vec2& value
-  )
+  void set_vec2(const std::string& name, const glm::vec2& value)
   {
     glUniform2fv(get_uniform_location(name), 1, &value[0]);
   }
-  void set_vec3(
-    const std::string& name,
-    const glm::vec3& value
-  )
+  void set_vec3(const std::string& name, const glm::vec3& value)
   {
     glUniform3fv(get_uniform_location(name), 1, &value[0]);
   }
-  void set_vec4(
-    const std::string& name,
-    const glm::vec4& value
-  )
+  void set_vec4(const std::string& name, const glm::vec4& value)
   {
     glUniform4fv(get_uniform_location(name), 1, &value[0]);
   }
-  void set_vec2(
-    const std::string& name,
-    const float x,
-    const float y
-  )
+  void set_vec2(const std::string& name, const float x, const float y)
   {
     glUniform2f(get_uniform_location(name), x, y);
   }
   void set_vec3(
-    const std::string& name,
-    const float x,
-    const float y,
-    const float z
+    const std::string& name, const float x, const float y, const float z
   )
   {
     glUniform3f(get_uniform_location(name), x, y, z);
@@ -165,31 +130,20 @@ public:
   {
     glUniform4f(get_uniform_location(name), x, y, z, w);
   }
-  void set_mat2(
-    const std::string& name,
-    const glm::mat2& mat
-  )
+  void set_mat2(const std::string& name, const glm::mat2& mat)
   {
     glUniformMatrix2fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]);
   }
-  void set_mat3(
-    const std::string& name,
-    const glm::mat3& mat
-  )
+  void set_mat3(const std::string& name, const glm::mat3& mat)
   {
     glUniformMatrix3fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]);
   }
-  void set_mat4(
-    const std::string& name,
-    const glm::mat4& mat
-  )
+  void set_mat4(const std::string& name, const glm::mat4& mat)
   {
     glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]);
   }
   void set_mat4_array(
-    const std::string& name,
-    const GLsizei count,
-    const glm::mat4* mats
+    const std::string& name, const GLsizei count, const glm::mat4* mats
   )
   {
     glUniformMatrix4fv(
@@ -197,9 +151,7 @@ public:
     );
   }
   void set_float_array(
-    const std::string& name,
-    const GLsizei count,
-    const GLfloat* values
+    const std::string& name, const GLsizei count, const GLfloat* values
   )
   {
     glUniform1fv(get_uniform_location(name), count, values);

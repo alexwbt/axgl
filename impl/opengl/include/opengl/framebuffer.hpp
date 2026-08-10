@@ -47,8 +47,7 @@ public:
   void use_write() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_); }
 
   void attach_texture(
-    const GLenum attachment,
-    const ::opengl::Texture& texture
+    const GLenum attachment, const ::opengl::Texture& texture
   ) const
   {
     use();
@@ -58,9 +57,7 @@ public:
   }
 
   void attach_texture_layer(
-    const GLenum attachment,
-    const ::opengl::Texture& texture,
-    const GLint layer
+    const GLenum attachment, const ::opengl::Texture& texture, const GLint layer
   ) const
   {
     use();
@@ -70,8 +67,7 @@ public:
   }
 
   void attach_renderbuffer(
-    const GLenum attachment,
-    const ::opengl::Renderbuffer& renderbuffer
+    const GLenum attachment, const ::opengl::Renderbuffer& renderbuffer
   ) const
   {
     use();

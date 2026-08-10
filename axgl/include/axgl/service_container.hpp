@@ -32,8 +32,7 @@ public:
   }
 
   virtual void register_service(
-    const std::string& type_id,
-    const axgl::ptr_t<Service>& service
+    const std::string& type_id, const axgl::ptr_t<Service>& service
   )
   {
 #ifdef AXGL_DEBUG

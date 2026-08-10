@@ -66,9 +66,7 @@ public:
   void use() const { glBindRenderbuffer(target_, id_); }
 
   void init_renderbuffer(
-    const GLenum internal_format,
-    const GLsizei width,
-    const GLsizei height
+    const GLenum internal_format, const GLsizei width, const GLsizei height
   )
   {
     if (initialized())

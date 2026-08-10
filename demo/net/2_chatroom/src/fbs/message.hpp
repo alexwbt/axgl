@@ -6,8 +6,7 @@
 #include <net/tcp/socket.hpp>
 
 inline net::data_ptr_t build_message(
-  const std::string& sender,
-  const std::string& content
+  const std::string& sender, const std::string& content
 )
 {
   flatbuffers::FlatBufferBuilder builder;

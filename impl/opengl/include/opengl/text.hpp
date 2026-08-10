@@ -49,10 +49,7 @@ class Character final
   glm::ivec2 offset{0};
   glm::ivec2 advance{0};
 
-  void load(
-    FT_Face face,
-    [[maybe_unused]] bool vertical
-  )
+  void load(FT_Face face, [[maybe_unused]] bool vertical)
   {
     const auto& glyph = face->glyph;
     const auto& bitmap = glyph->bitmap;
@@ -85,20 +82,14 @@ class Font final
   FT_Face face_;
 
 public:
-  Font(
-    FT_Library library,
-    const std::string& path,
-    const int index
-  )
+  Font(FT_Library library, const std::string& path, const int index)
   {
     if (FT_New_Face(library, path.c_str(), index, &face_))
       throw std::runtime_error("Failed to load fontface: " + path);
   }
 
   Font(
-    FT_Library library,
-    const std::span<const uint8_t> buffer,
-    const int index
+    FT_Library library, const std::span<const uint8_t> buffer, const int index
   )
   {
     if (FT_New_Memory_Face(
@@ -134,9 +125,7 @@ public:
   }
 
   void load_char(
-    Character& character,
-    uint32_t code,
-    const TextOptions& options
+    Character& character, uint32_t code, const TextOptions& options
   ) const
   {
     FT_Set_Pixel_Sizes(face_, 0, options.size);
@@ -195,9 +184,7 @@ public:
   }
 
   void load_font(
-    const std::string& name,
-    const std::string& path,
-    int index = 0
+    const std::string& name, const std::string& path, int index = 0
   )
   {
     auto font = std::make_unique<Font>(library_, path, index);
@@ -205,9 +192,7 @@ public:
   }
 
   void load_font(
-    const std::string& name,
-    std::span<const uint8_t> buffer,
-    int index = 0
+    const std::string& name, std::span<const uint8_t> buffer, int index = 0
   )
   {
     auto font = std::make_unique<Font>(library_, buffer, index);
@@ -222,8 +207,7 @@ public:
   }
 
   [[nodiscard]] int get_renderable_font(
-    const std::vector<std::string>& font,
-    std::uint32_t c
+    const std::vector<std::string>& font, std::uint32_t c
   ) const
   {
     const int size = util::clamp_cast<int>(font.size());

@@ -23,16 +23,14 @@ class EntityService : virtual public axgl::EntityService,
 
 public:
   void register_entity_factory(
-    const std::string& type,
-    std::function<ptr_t<axgl::Entity>()> entity_factory
+    const std::string& type, std::function<ptr_t<axgl::Entity>()> entity_factory
   ) override
   {
     entity_factories_.emplace(type, entity_factory);
   }
 
   void register_component_factory(
-    const std::string& type,
-    std::function<ptr_t<Component>()> component_factory
+    const std::string& type, std::function<ptr_t<Component>()> component_factory
   ) override
   {
     component_factories_.emplace(type, component_factory);

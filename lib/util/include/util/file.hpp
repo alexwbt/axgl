@@ -40,10 +40,7 @@ inline std::vector<uint8_t> read_file(const std::string& path)
   return buffer;
 }
 
-inline void write_text_file(
-  const std::string& path,
-  const std::string& content
-)
+inline void write_text_file(const std::string& path, const std::string& content)
 {
   std::ofstream file(path);
   if (!file.is_open()) throw std::runtime_error("Could not open file: " + path);

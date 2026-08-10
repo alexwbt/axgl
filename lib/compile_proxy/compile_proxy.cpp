@@ -31,10 +31,7 @@ static std::string_view get_include_path(const std::string& file_content)
   return {file_content.data() + begin + 1, end - begin - 1};
 }
 
-static void resolve_header_file(
-  std::string& file,
-  std::string_view command
-)
+static void resolve_header_file(std::string& file, std::string_view command)
 {
   // read cpp
   const auto file_content = util::read_text_file(file);
@@ -123,10 +120,7 @@ static int fix_compile_proxy(const std::string& directory)
   return 0;
 }
 
-int main(
-  const int argc,
-  char** argv
-)
+int main(const int argc, char** argv)
 {
   args::ArgumentParser parser(
     "Compilation database compile proxy post processing."

@@ -31,8 +31,7 @@ public:
   }
 
   void register_realm_factory(
-    const std::string& type,
-    std::function<ptr_t<axgl::Realm>()> realm_factory
+    const std::string& type, std::function<ptr_t<axgl::Realm>()> realm_factory
   ) override
   {
     realm_factories_.emplace(type, realm_factory);

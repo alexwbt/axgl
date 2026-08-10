@@ -146,8 +146,7 @@ public:
 
   template <typename DataType>
   void update_buffer_data(
-    const GLuint buffer_id,
-    const std::span<const DataType>& data
+    const GLuint buffer_id, const std::span<const DataType>& data
   )
   {
     for (const auto& buffer : buffer_objects_)

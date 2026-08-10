@@ -33,10 +33,7 @@ protected:
   axgl::ptr_t<axgl::Input> focus_activate_input_;
 
 public:
-  void set_size(
-    std::uint32_t width,
-    std::uint32_t height
-  ) override
+  void set_size(std::uint32_t width, std::uint32_t height) override
   {
     width_ = width;
     height_ = height;

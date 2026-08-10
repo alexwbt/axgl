@@ -28,10 +28,7 @@ class Mesh3dMaterial : public Material
   float specular_ = 1.0f;
 
 public:
-  void set_property(
-    const std::string& key,
-    const std::string& value
-  ) override
+  void set_property(const std::string& key, const std::string& value) override
   {
     if (key == "shininess") shininess_ = std::stof(value);
     else if (key == "specular") specular_ = std::stof(value);

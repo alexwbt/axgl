@@ -18,17 +18,14 @@ class ResourceService : virtual public axgl::ResourceService,
 
 public:
   void load_resource(
-    const std::string& key,
-    const std::span<const std::uint8_t> data
+    const std::string& key, const std::span<const std::uint8_t> data
   ) override
   {
     resources_[key] = data;
   }
 
   void load_resources(
-    std::unordered_map<
-      std::string,
-      std::span<const std::uint8_t>> data
+    std::unordered_map<std::string, std::span<const std::uint8_t>> data
   ) override
   {
     resources_.insert(data.begin(), data.end());

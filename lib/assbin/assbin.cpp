@@ -103,10 +103,7 @@ static void list_export_formats()
   }
 }
 
-int main(
-  int argc,
-  char** argv
-)
+int main(int argc, char** argv)
 {
   args::ArgumentParser parser("Convert a 3d model with Assimp.");
   args::HelpFlag help(parser, "help", "Display the help menu.", {'h', "help"});

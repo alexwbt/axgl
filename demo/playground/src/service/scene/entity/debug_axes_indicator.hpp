@@ -10,8 +10,7 @@
 class DebugAxesIndicatorEntity : public axgl::impl::EntityBase
 {
   static axgl::ptr_t<axgl::Component> create_axis_mesh(
-    const axgl::Axgl* axgl,
-    const glm::vec3& axis
+    const axgl::Axgl* axgl, const glm::vec3& axis
   )
   {
     const auto& entity_service = axgl->entity_service();

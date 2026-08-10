@@ -21,8 +21,7 @@ public:
 
 private:
   static axgl::ptr_t<axgl::component::Mesh> create_mesh(
-    const axgl::Axgl* axgl,
-    float size
+    const axgl::Axgl* axgl, float size
   )
   {
     const auto& entity_service = axgl->entity_service();

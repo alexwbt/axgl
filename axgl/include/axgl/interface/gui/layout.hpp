@@ -14,8 +14,7 @@ public:
 
   // apply layout from root to leaf
   virtual void apply(
-    glm::ivec2 size,
-    axgl::Container<axgl::gui::Element>& element
+    glm::ivec2 size, axgl::Container<axgl::gui::Element>& element
   ) const
     = 0;
 };

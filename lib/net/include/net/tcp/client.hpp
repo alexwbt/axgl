@@ -12,8 +12,7 @@ public:
   using Client::Client;
 
   void connect(
-    const std::string& host,
-    const asio::ip::port_type& port
+    const std::string& host, const asio::ip::port_type& port
   ) override
   {
     asio::co_spawn(

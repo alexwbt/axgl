@@ -69,10 +69,7 @@ public:
   [[nodiscard]] bool is_modified() const { return modified_; }
   void reset_modified() { modified_ = false; }
 
-  void apply_to(
-    Style& target,
-    bool mark_updated = true
-  ) const
+  void apply_to(Style& target, bool mark_updated = true) const
   {
     __AXGL_GUI_STYLE_APPLY_TO(position);
     __AXGL_GUI_STYLE_APPLY_TO(size);
@@ -92,77 +89,22 @@ public:
     if (mark_updated) target.modified_ = true;
   }
 
-  __AXGL_GUI_STYLE_PROPERTY(
-    glm::vec2,
-    position,
-    {0.0f}
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    glm::vec2,
-    size,
-    {0.0f}
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    glm::vec4,
-    color,
-    {0.0f}
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    float,
-    opacity,
-    = 1.0f
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    Cursor,
-    cursor,
-    = Cursor::kNormal
-  )
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec2, position, {0.0f})
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec2, size, {0.0f})
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, color, {0.0f})
+  __AXGL_GUI_STYLE_PROPERTY(float, opacity, = 1.0f)
+  __AXGL_GUI_STYLE_PROPERTY(Cursor, cursor, = Cursor::kNormal)
   // content
-  __AXGL_GUI_STYLE_PROPERTY(
-    std::vector<std::string>,
-    fonts,
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    glm::vec4,
-    font_color,
-    {1.0f}
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    float,
-    font_size,
-    = 16.0f
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    int,
-    font_weight,
-    = 400
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    float,
-    line_height,
-    = 1.5f
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    TextAlign,
-    text_align,
-    = TextAlign::kCenter
-  )
+  __AXGL_GUI_STYLE_PROPERTY(std::vector<std::string>, fonts, )
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, font_color, {1.0f})
+  __AXGL_GUI_STYLE_PROPERTY(float, font_size, = 16.0f)
+  __AXGL_GUI_STYLE_PROPERTY(int, font_weight, = 400)
+  __AXGL_GUI_STYLE_PROPERTY(float, line_height, = 1.5f)
+  __AXGL_GUI_STYLE_PROPERTY(TextAlign, text_align, = TextAlign::kCenter)
   // layout
-  __AXGL_GUI_STYLE_PROPERTY(
-    Display,
-    display,
-    = Display::kBlock
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    glm::vec4,
-    margin,
-    {0.0f}
-  )
-  __AXGL_GUI_STYLE_PROPERTY(
-    glm::vec4,
-    padding,
-    {0.0f}
-  )
+  __AXGL_GUI_STYLE_PROPERTY(Display, display, = Display::kBlock)
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, margin, {0.0f})
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, padding, {0.0f})
 };
 
 } // namespace axgl::gui

@@ -22,9 +22,7 @@ public:
   };
 
   virtual void load_font(
-    const std::string& name,
-    std::span<const std::uint8_t> data,
-    int index
+    const std::string& name, std::span<const std::uint8_t> data, int index
   ) = 0;
   virtual void unload_font(const std::string& name) = 0;
 

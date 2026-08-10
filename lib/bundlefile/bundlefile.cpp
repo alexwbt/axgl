@@ -41,8 +41,7 @@ static std::vector<File> read_directory(const std::string& source)
 }
 
 static int write_files(
-  const std::vector<File>& files,
-  const std::string& target
+  const std::vector<File>& files, const std::string& target
 )
 {
   flatbuffers::FlatBufferBuilder builder;
@@ -84,10 +83,7 @@ static int write_files(
   return 0;
 }
 
-static int bundle_files(
-  const std::string& source,
-  const std::string& target
-)
+static int bundle_files(const std::string& source, const std::string& target)
 {
   if (!std::filesystem::is_directory(source))
   {
@@ -104,10 +100,7 @@ static int bundle_files(
   return write_files(files, target);
 }
 
-int main(
-  int argc,
-  char** argv
-)
+int main(int argc, char** argv)
 {
   args::ArgumentParser parser(
     "Bundles all files in a directory into a binary file."

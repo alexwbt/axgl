@@ -155,25 +155,13 @@ public:
   std::uint64_t tick;
   std::vector<axgl::Input::Source> sources;
 
-  Input(
-    std::string name,
-    const std::vector<axgl::Input::Source>& sources
-  ) :
-    id(next_id()),
-    name(std::move(name)),
-    tick(0),
-    sources(sources)
+  Input(std::string name, const std::vector<axgl::Input::Source>& sources) :
+    id(next_id()), name(std::move(name)), tick(0), sources(sources)
   {
   }
 
-  Input(
-    const std::string& name,
-    axgl::Input::Source source
-  ) :
-    Input(
-      name,
-      std::vector{source}
-    )
+  Input(const std::string& name, axgl::Input::Source source) :
+    Input(name, std::vector{source})
   {
   }
 };

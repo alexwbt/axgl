@@ -104,9 +104,7 @@ static void write_files(
 }
 
 static int embed_files(
-  const std::string& source,
-  const std::string& target,
-  const std::string& ns
+  const std::string& source, const std::string& target, const std::string& ns
 )
 {
   if (!std::filesystem::is_directory(source))
@@ -126,10 +124,7 @@ static int embed_files(
   return 0;
 }
 
-int main(
-  const int argc,
-  char** argv
-)
+int main(const int argc, char** argv)
 {
   args::ArgumentParser parser(
     "Embeds all files in a directory into a cpp file."

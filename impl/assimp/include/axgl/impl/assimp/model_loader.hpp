@@ -81,10 +81,7 @@ class ModelLoader
     process_node(ai_scene->mRootNode, ai_scene);
   }
 
-  void process_node(
-    const aiNode* ai_node,
-    const aiScene* ai_scene
-  )
+  void process_node(const aiNode* ai_node, const aiScene* ai_scene)
   {
     for (unsigned int i = 0; i < ai_node->mNumMeshes; ++i)
     {
@@ -98,8 +95,7 @@ class ModelLoader
   }
 
   axgl::ptr_t<axgl::component::Mesh> load_mesh(
-    const aiMesh* ai_mesh,
-    const aiScene* ai_scene
+    const aiMesh* ai_mesh, const aiScene* ai_scene
   )
   {
     auto mesh = entity_service_->create_component_t<axgl::component::Mesh>();

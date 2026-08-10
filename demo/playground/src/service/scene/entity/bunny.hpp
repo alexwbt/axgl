@@ -7,10 +7,7 @@
 
 class BunnyEntity : public axgl::impl::EntityBase
 {
-  static void load_model(
-    const axgl::Axgl* axgl,
-    BunnyEntity* entity
-  )
+  static void load_model(const axgl::Axgl* axgl, BunnyEntity* entity)
   {
     static const auto resources
       = axgl->model_service()->load_model("bunny.glb");

@@ -476,9 +476,8 @@ private:
   // TODO: reimplement without recursion
   void gather_render_components(
     impl::opengl::renderer::RenderContext& render_context,
-    std::unordered_map<
-      std::uint64_t,
-      impl::opengl::renderer::RenderComponent*>& render_components,
+    std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*>&
+      render_components,
     const axgl::Container<axgl::Entity>& entities,
     const glm::mat4* base_transform_matrix = nullptr
   )

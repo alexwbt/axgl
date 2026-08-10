@@ -24,19 +24,13 @@ public:
     if (!window_->is_destroyed()) window_->set_title(title);
   }
 
-  void set_position(
-    const std::uint32_t x,
-    const std::uint32_t y
-  ) override
+  void set_position(const std::uint32_t x, const std::uint32_t y) override
   {
     if (!window_->is_destroyed())
       window_->set_position(util::clamp_cast<int>(x), util::clamp_cast<int>(y));
   }
 
-  void set_size(
-    const std::uint32_t width,
-    const std::uint32_t height
-  ) override
+  void set_size(const std::uint32_t width, const std::uint32_t height) override
   {
     if (!window_->is_destroyed())
       window_->set_size(

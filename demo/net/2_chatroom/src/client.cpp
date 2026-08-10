@@ -25,8 +25,7 @@ public:
   std::shared_ptr<ui::Chat> chat_ui;
 
   explicit Client(
-    const std::shared_ptr<asio::io_context>& io_context,
-    std::string user
+    const std::shared_ptr<asio::io_context>& io_context, std::string user
   ) :
     net::TcpClient(io_context),
     username(std::move(user)),
@@ -77,10 +76,7 @@ private:
   }
 };
 
-int main(
-  int argc,
-  char** argv
-)
+int main(int argc, char** argv)
 {
   args::ArgumentParser parser("Net demo chatroom client.");
   args::ValueFlag<std::string> user_arg(

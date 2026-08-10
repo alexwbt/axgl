@@ -10,8 +10,7 @@ class BlockLayout : virtual public axgl::gui::Layout
 {
 public:
   void apply(
-    glm::ivec2 size,
-    axgl::Container<axgl::gui::Element>& elements
+    glm::ivec2 size, axgl::Container<axgl::gui::Element>& elements
   ) const override
   {
     using namespace axgl::gui;

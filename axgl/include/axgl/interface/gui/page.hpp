@@ -22,10 +22,7 @@ class Element;
 class Page : virtual public axgl::ContextHolder
 {
 public:
-  virtual void set_size(
-    std::uint32_t width,
-    std::uint32_t height
-  ) = 0;
+  virtual void set_size(std::uint32_t width, std::uint32_t height) = 0;
   virtual void set_scale(float scale) = 0;
   virtual void set_should_render(bool should_render) = 0;
   virtual void init() = 0;

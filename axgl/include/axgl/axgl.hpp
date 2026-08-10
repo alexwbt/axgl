@@ -156,46 +156,16 @@ public:
 #endif
   }
 
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::WindowService,
-    window
-  )
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::RendererService,
-    renderer
-  )
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::ResourceService,
-    resource
-  )
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::RealmService,
-    realm
-  )
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::EntityService,
-    entity
-  )
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::InputService,
-    input
-  )
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::ModelService,
-    model
-  )
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::CameraService,
-    camera
-  )
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::TextService,
-    text
-  )
-  __AXGL_DECLARE_SERVICE_GETTER(
-    axgl::GuiService,
-    gui
-  )
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::WindowService, window)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::RendererService, renderer)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::ResourceService, resource)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::RealmService, realm)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::EntityService, entity)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::InputService, input)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::ModelService, model)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::CameraService, camera)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::TextService, text)
+  __AXGL_DECLARE_SERVICE_GETTER(axgl::GuiService, gui)
 };
 
 } // namespace axgl

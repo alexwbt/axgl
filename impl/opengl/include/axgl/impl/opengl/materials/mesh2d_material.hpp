@@ -18,8 +18,7 @@ class Mesh2dMaterial : public Material
 
 public:
   void add_texture(
-    axgl::Material::TextureType type,
-    axgl::ptr_t<axgl::Texture> texture
+    axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture
   ) override
   {
     texture_ = std::dynamic_pointer_cast<Texture>(texture);

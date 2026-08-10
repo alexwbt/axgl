@@ -50,10 +50,7 @@ public:
   }
 
   template <typename DataType>
-  void set_data(
-    const std::span<const DataType>& data,
-    const GLenum usage
-  )
+  void set_data(const std::span<const DataType>& data, const GLenum usage)
   {
     bind();
     size_ = data.size();

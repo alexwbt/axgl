@@ -49,8 +49,7 @@ public:
   }
 
   void register_element_factory(
-    const std::string& type,
-    FactoryFunction element_factory
+    const std::string& type, FactoryFunction element_factory
   ) override
   {
     element_factories_.emplace(type, element_factory);

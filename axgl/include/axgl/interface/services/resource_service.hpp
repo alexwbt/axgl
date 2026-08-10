@@ -14,13 +14,10 @@ public:
   static constexpr std::string_view kTypeId = "service::resource";
 
   virtual void load_resource(
-    const std::string& key,
-    std::span<const std::uint8_t> data
+    const std::string& key, std::span<const std::uint8_t> data
   ) = 0;
   virtual void load_resources(
-    std::unordered_map<
-      std::string,
-      std::span<const std::uint8_t>> data
+    std::unordered_map<std::string, std::span<const std::uint8_t>> data
   ) = 0;
   virtual void unload_resource(const std::string& key) = 0;
 
