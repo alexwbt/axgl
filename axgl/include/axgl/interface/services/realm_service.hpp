@@ -14,8 +14,8 @@ public:
 
   virtual void register_realm_factory(
     const std::string& type_id,
-    std::function<axgl::ptr_t<axgl::Realm>()> realm_factory)
-    = 0;
+    std::function<axgl::ptr_t<axgl::Realm>()> realm_factory
+  ) = 0;
   virtual axgl::ptr_t<axgl::Realm> create_realm() = 0;
   virtual axgl::ptr_t<axgl::Realm> create_realm(const std::string& type_id) = 0;
 
@@ -26,7 +26,8 @@ public:
   void register_realm_t()
   {
     register_realm_factory(
-      RealmType::kTypeId.data(), [] { return axgl::create_ptr<RealmType>(); });
+      RealmType::kTypeId.data(), [] { return axgl::create_ptr<RealmType>(); }
+    );
   }
 
   template <typename RealmType>
@@ -38,7 +39,9 @@ public:
     if (!realm)
       throw std::runtime_error(
         std::format(
-          "Failed to create realm: {} ({})", type, typeid(RealmType).name()));
+          "Failed to create realm: {} ({})", type, typeid(RealmType).name()
+        )
+      );
 #endif
     return realm;
   }

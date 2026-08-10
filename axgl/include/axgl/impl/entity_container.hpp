@@ -42,7 +42,8 @@ public:
     if (!new_entities_.empty())
     {
       entities_.insert(
-        entities_.end(), new_entities_.begin(), new_entities_.end());
+        entities_.end(), new_entities_.begin(), new_entities_.end()
+      );
       new_entities_.clear();
     }
 
@@ -61,7 +62,8 @@ public:
         const auto should_remove = entity->should_remove();
         if (should_remove) entity->on_remove();
         return should_remove;
-      });
+      }
+      );
     }
   }
 
@@ -82,22 +84,25 @@ public:
   [[nodiscard]] auto get_by_id(std::uint64_t id) const
   {
     const auto it = std::ranges::find_if(
-      entities_, [id](const auto& e) { return e->get_id() == id; });
+      entities_, [id](const auto& e) { return e->get_id() == id; }
+    );
     return it != entities_.end() ? *it : nullptr;
   }
 
   void add(axgl::ptr_t<axgl::Entity> entity) override
   {
 #ifdef AXGL_DEBUG
-    if (
-      std::ranges::any_of(
-        entities_, [&entity](const auto& e) { return e == entity; })
-      || std::ranges::any_of(
-        new_entities_, [&entity](const auto& e) { return e == entity; }))
+    if (std::ranges::any_of(
+          entities_, [&entity](const auto& e) { return e == entity; }
+        )
+        || std::ranges::any_of(
+          new_entities_, [&entity](const auto& e) { return e == entity; }
+        ))
     {
       AXGL_LOG_DEBUG(
         "Entity(id: {}, name: {}) already exists.", entity->get_id(),
-        entity->get_name());
+        entity->get_name()
+      );
       return;
     }
 #endif
@@ -116,7 +121,8 @@ public:
       }
     }
     std::erase_if(
-      new_entities_, [&entity](const auto& e) { return e == entity; });
+      new_entities_, [&entity](const auto& e) { return e == entity; }
+    );
   }
 
   [[nodiscard]] std::span<const axgl::ptr_t<axgl::Entity>> get() const override

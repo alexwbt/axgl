@@ -28,8 +28,8 @@ protected:
   void render_base(const axgl::gui::Context& context)
   {
     const auto scissor_x = util::clamp_cast<GLint>(scissor_rect_.x);
-    const auto scissor_y
-      = context.page->get_size().y - util::clamp_cast<GLint>(scissor_rect_.w);
+    const auto scissor_y = util::clamp_cast<GLint>(context.page->get_height())
+      - util::clamp_cast<GLint>(scissor_rect_.w);
     const auto scissor_width
       = util::clamp_cast<GLsizei>(scissor_rect_.z - scissor_rect_.x);
     const auto scissor_height

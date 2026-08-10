@@ -53,7 +53,8 @@ public:
     {
       AXGL_LOG_ERROR(
         "Exception thrown duration initialization: {}\n{}", e.what(),
-        cpptrace::from_current_exception().to_string(true));
+        cpptrace::from_current_exception().to_string(true)
+      );
     }
 #endif
   }
@@ -71,7 +72,8 @@ public:
     {
       AXGL_LOG_ERROR(
         "Exception thrown duration termination: {}\n{}", e.what(),
-        cpptrace::from_current_exception().to_string(true));
+        cpptrace::from_current_exception().to_string(true)
+      );
     }
 #endif
   }
@@ -100,7 +102,8 @@ public:
 
         const auto now = high_resolution_clock::now();
         const auto delta_time = static_cast<double>(
-          duration_cast<nanoseconds>(now - start_time).count());
+          duration_cast<nanoseconds>(now - start_time).count()
+        );
         delta_tick += delta_time / kTimeStep;
         start_time = now;
 #ifdef AXGL_DEBUG
@@ -147,21 +150,52 @@ public:
     {
       AXGL_LOG_ERROR(
         "Exception thrown: {}\n{}", e.what(),
-        cpptrace::from_current_exception().to_string(true));
+        cpptrace::from_current_exception().to_string(true)
+      );
     }
 #endif
   }
 
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::WindowService, window)
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::RendererService, renderer)
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::ResourceService, resource)
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::RealmService, realm)
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::EntityService, entity)
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::InputService, input)
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::ModelService, model)
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::CameraService, camera)
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::TextService, text)
-  __AXGL_DECLARE_SERVICE_GETTER(axgl::GuiService, gui)
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::WindowService,
+    window
+  )
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::RendererService,
+    renderer
+  )
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::ResourceService,
+    resource
+  )
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::RealmService,
+    realm
+  )
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::EntityService,
+    entity
+  )
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::InputService,
+    input
+  )
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::ModelService,
+    model
+  )
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::CameraService,
+    camera
+  )
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::TextService,
+    text
+  )
+  __AXGL_DECLARE_SERVICE_GETTER(
+    axgl::GuiService,
+    gui
+  )
 };
 
 } // namespace axgl

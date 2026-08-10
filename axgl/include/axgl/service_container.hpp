@@ -32,14 +32,18 @@ public:
   }
 
   virtual void register_service(
-    const std::string& type_id, const axgl::ptr_t<Service>& service)
+    const std::string& type_id,
+    const axgl::ptr_t<Service>& service
+  )
   {
 #ifdef AXGL_DEBUG
     if (has_service(type_id))
       throw std::runtime_error(
         std::format(
           "Trying to register service but service with id '{}' already exists.",
-          type_id));
+          type_id
+        )
+      );
 #endif
     service_map_.emplace(type_id, service);
   }
@@ -51,7 +55,9 @@ public:
       throw std::runtime_error(
         std::format(
           "Trying to remove service but service with id '{}' does not exist.",
-          type_id));
+          type_id
+        )
+      );
 #endif
     service_map_.erase(type_id);
   }
@@ -76,13 +82,16 @@ public:
 
   template <typename ServiceType>
   [[nodiscard]] axgl::ptr_t<ServiceType> get_service(
-    const std::string& type_id) const
+    const std::string& type_id
+  ) const
   {
 #ifdef AXGL_DEBUG
     if (!has_service(type_id))
       throw std::runtime_error(
         std::format(
-          "Service with id '{}' is required, but does not exist.", type_id));
+          "Service with id '{}' is required, but does not exist.", type_id
+        )
+      );
 #endif
 
     auto service
@@ -92,7 +101,9 @@ public:
       throw std::runtime_error(
         std::format(
           "Service type '{}' is required, but is not supported.",
-          typeid(ServiceType).name()));
+          typeid(ServiceType).name()
+        )
+      );
 #endif
 
     return service;
@@ -155,7 +166,8 @@ public:
   [[nodiscard]] virtual bool running() const
   {
     return std::ranges::any_of(
-      services(), [&](const auto& service) { return service->keep_alive(); });
+      services(), [&](const auto& service) { return service->keep_alive(); }
+    );
   }
 
   virtual void exec(const std::string& command) const

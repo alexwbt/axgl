@@ -24,14 +24,21 @@ struct EventListener
   virtual void on_mouse_down([[maybe_unused]] int button) { }
   virtual void on_mouse_up([[maybe_unused]] int button) { }
   virtual void on_mouse_move(
-    [[maybe_unused]] double x, [[maybe_unused]] double y)
+    [[maybe_unused]] double x,
+    [[maybe_unused]] double y
+  )
   {
   }
-  virtual void on_scroll([[maybe_unused]] double x, [[maybe_unused]] double y)
+  virtual void on_scroll(
+    [[maybe_unused]] double x,
+    [[maybe_unused]] double y
+  )
   {
   }
   virtual void on_resize(
-    [[maybe_unused]] int width, [[maybe_unused]] int height)
+    [[maybe_unused]] int width,
+    [[maybe_unused]] int height
+  )
   {
   }
 };
@@ -46,7 +53,10 @@ class Window final
 
 public:
   static axgl::ptr_t<Window> create(
-    const int width, const int height, const std::string& title)
+    const int width,
+    const int height,
+    const std::string& title
+  )
   {
     glfwDefaultWindowHints();
 
@@ -89,12 +99,18 @@ public:
     terminated_ = true;
   }
 
-  static void set_hint(int hint, int value)
+  static void set_hint(
+    int hint,
+    int value
+  )
   {
     window_hints_.emplace(hint, value);
   }
 
-  static void set_hint(int hint, const std::string& value)
+  static void set_hint(
+    int hint,
+    const std::string& value
+  )
   {
     string_window_hints_.emplace(hint, value);
   }
@@ -108,7 +124,8 @@ public:
   static bool should_close_all()
   {
     return std::ranges::all_of(
-      windows_ | std::views::keys, glfwWindowShouldClose);
+      windows_ | std::views::keys, glfwWindowShouldClose
+    );
   }
 
   static void update_all()
@@ -128,7 +145,10 @@ public:
   }
 
 private:
-  static void glfw_error_callback(int error, const char* description)
+  static void glfw_error_callback(
+    int error,
+    const char* description
+  )
   {
     AXGL_LOG_ERROR("GLFW Error {}: {}", error, description);
   }
@@ -138,7 +158,8 @@ private:
     int key,
     [[maybe_unused]] int scancode,
     int action,
-    [[maybe_unused]] int mods)
+    [[maybe_unused]] int mods
+  )
   {
     const auto listener = get_window_event_listener(glfw_window);
     if (!listener) return;
@@ -151,13 +172,21 @@ private:
     }
   }
 
-  static void cursor_pos_callback(GLFWwindow* glfw_window, double x, double y)
+  static void cursor_pos_callback(
+    GLFWwindow* glfw_window,
+    double x,
+    double y
+  )
   {
     if (const auto listener = get_window_event_listener(glfw_window))
       listener->on_mouse_move(x, y);
   }
 
-  static void scroll_callback(GLFWwindow* glfw_window, double x, double y)
+  static void scroll_callback(
+    GLFWwindow* glfw_window,
+    double x,
+    double y
+  )
   {
     const auto window = get_window(glfw_window);
     window->scroll_x_ += x;
@@ -168,7 +197,11 @@ private:
   }
 
   static void mouse_button_callback(
-    GLFWwindow* glfw_window, int button, int action, [[maybe_unused]] int mods)
+    GLFWwindow* glfw_window,
+    int button,
+    int action,
+    [[maybe_unused]] int mods
+  )
   {
     const auto listener = get_window_event_listener(glfw_window);
     if (!listener) return;
@@ -182,7 +215,10 @@ private:
   }
 
   static void frame_buffer_size_callback(
-    GLFWwindow* glfw_window, int width, int height)
+    GLFWwindow* glfw_window,
+    int width,
+    int height
+  )
   {
     if (const auto listener = get_window_event_listener(glfw_window))
       listener->on_resize(width, height);
@@ -197,13 +233,15 @@ private:
     catch ([[maybe_unused]] const std::out_of_range& e)
     {
       AXGL_LOG_DEBUG(
-        "Tried to get GLFW window that does not exists. ({})", e.what());
+        "Tried to get GLFW window that does not exists. ({})", e.what()
+      );
       return nullptr;
     }
   }
 
   static axgl::ptr_t<EventListener> get_window_event_listener(
-    GLFWwindow* glfw_window)
+    GLFWwindow* glfw_window
+  )
   {
     const auto window = get_window(glfw_window);
     return window ? window->event_listener_ : nullptr;
@@ -216,7 +254,11 @@ private:
   double scroll_y_ = 0.0;
   bool destroyed_ = false;
 
-  Window(int width, int height, const std::string& title) noexcept
+  Window(
+    int width,
+    int height,
+    const std::string& title
+  ) noexcept
   {
     if (!initialized_ || terminated_)
     {
@@ -246,15 +288,24 @@ public:
   {
     glfwSetWindowTitle(glfw_window_, title.c_str());
   }
-  void set_size(int width, int height) const
+  void set_size(
+    int width,
+    int height
+  ) const
   {
     glfwSetWindowSize(glfw_window_, width, height);
   }
-  void set_position(int x, int y) const
+  void set_position(
+    int x,
+    int y
+  ) const
   {
     glfwSetWindowPos(glfw_window_, x, y);
   }
-  void set_input_mode(int mode, int value) const
+  void set_input_mode(
+    int mode,
+    int value
+  ) const
   {
     glfwSetInputMode(glfw_window_, mode, value);
   }

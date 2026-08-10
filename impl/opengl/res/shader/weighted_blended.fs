@@ -9,7 +9,10 @@ out vec4 frag_color;
 const float EPSILON = 0.00001f;
 
 // calculate floating point numbers equality accurately
-bool approximate_equal(float a, float b)
+bool approximate_equal(
+  float a,
+  float b
+)
 {
   return abs(a - b) <= (abs(a) < abs(b) ? abs(b) : abs(a)) * EPSILON;
 }

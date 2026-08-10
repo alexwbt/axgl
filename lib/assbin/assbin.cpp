@@ -50,15 +50,19 @@
     fmt::format(                                                               \
       fmt::fg(                                                                 \
         ((flag) & aiProcess_##option) ? fmt::terminal_color::green             \
-                                      : fmt::terminal_color::red),             \
-      ((flag) & aiProcess_##option) ? "enabled" : "disabled"));                \
+                                      : fmt::terminal_color::red               \
+      ),                                                                       \
+      ((flag) & aiProcess_##option) ? "enabled" : "disabled"                   \
+    )                                                                          \
+  );                                                                           \
   if (option) (flag) |= aiProcess_##option;
 
 static int convert(
   const std::string& input,
   const std::string& output,
   const std::string& format,
-  unsigned int flag)
+  unsigned int flag
+)
 {
   Assimp::Importer importer;
   const auto* scene = importer.ReadFile(input, flag);
@@ -73,7 +77,8 @@ static int convert(
       exporter.Export(scene, format, output) != AI_SUCCESS)
   {
     SPDLOG_ERROR(
-      "Failed to export to format '{}': {}", format, exporter.GetErrorString());
+      "Failed to export to format '{}': {}", format, exporter.GetErrorString()
+    );
     return 1;
   }
 
@@ -93,25 +98,33 @@ static void list_export_formats()
     const auto* desc = exporter.GetExportFormatDescription(i);
     SPDLOG_INFO(
       "{:<10} | {:<50} | {:<10}", desc->id, desc->description,
-      desc->fileExtension);
+      desc->fileExtension
+    );
   }
 }
 
-int main(int argc, char** argv)
+int main(
+  int argc,
+  char** argv
+)
 {
   args::ArgumentParser parser("Convert a 3d model with Assimp.");
   args::HelpFlag help(parser, "help", "Display the help menu.", {'h', "help"});
 
   args::Positional<std::string> source(
-    parser, "source", "The source model file.");
+    parser, "source", "The source model file."
+  );
   args::Positional<std::string> target(
-    parser, "target", "The output model file.");
+    parser, "target", "The output model file."
+  );
 
   args::ValueFlag<std::string> format(
-    parser, "format", "The output format.", {'f', "format"}, "glb2");
+    parser, "format", "The output format.", {'f', "format"}, "glb2"
+  );
   args::Flag list_formats(
     parser, "list-formats", "List all supported export formats and exit.",
-    {"list-formats"});
+    {"list-formats"}
+  );
 
   DEFINE_ASSIMP_OPTION(PresetTargetRealtime, parser);
   FOR_EACH_OPTIONS(DEFINE_ASSIMP_OPTION, parser);

@@ -89,7 +89,8 @@ public:
 #ifdef AXGL_DEBUG
     if (!material_)
       throw std::runtime_error(
-        "The provided material is not a valid opengl material.");
+        "The provided material is not a valid opengl material."
+      );
 #endif
   }
 
@@ -186,12 +187,14 @@ public:
   }
 
   void submit_render_function(
-    axgl::impl::opengl::renderer::PipelineContext& context) override
+    axgl::impl::opengl::renderer::PipelineContext& context
+  ) override
   {
     if (!material_)
     {
       AXGL_LOG_DEBUG(
-        "Material not assigned to mesh({}), skip rendering.", get_id());
+        "Material not assigned to mesh({}), skip rendering.", get_id()
+      );
       return;
     }
 
@@ -204,25 +207,31 @@ public:
       std::array attributes{
         ::opengl::VertexAttribute{
           4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
-          reinterpret_cast<void*>(0 * vec4_size)},
+          reinterpret_cast<void*>(0 * vec4_size)
+        },
         ::opengl::VertexAttribute{
           4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
-          reinterpret_cast<void*>(1 * vec4_size)},
+          reinterpret_cast<void*>(1 * vec4_size)
+        },
         ::opengl::VertexAttribute{
           4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
-          reinterpret_cast<void*>(2 * vec4_size)},
+          reinterpret_cast<void*>(2 * vec4_size)
+        },
         ::opengl::VertexAttribute{
           4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
-          reinterpret_cast<void*>(3 * vec4_size)},
+          reinterpret_cast<void*>(3 * vec4_size)
+        },
       };
       instanced_models_buffer_id_ = vao_->create_vertex_buffer<glm::mat4>(
         instanced_models_, attributes,
         material_->get_attribute_offset(axgl::impl::opengl::Material::kModels),
-        1);
+        1
+      );
     }
     else
       vao_->update_buffer_data<glm::mat4>(
-        instanced_models_buffer_id_, instanced_models_);
+        instanced_models_buffer_id_, instanced_models_
+      );
 
     const auto instance_count
       = util::clamp_cast<GLsizei>(instanced_models_.size());
@@ -254,7 +263,8 @@ public:
           depth_only_shader.use_program();
           depth_only_shader.set_mat4("projection_view", c.light_pv);
           vao_->draw_instanced(instance_count);
-        });
+        }
+        );
     }
   }
 
@@ -271,59 +281,68 @@ private:
     if (!vertices_.empty())
     {
       std::array attributes{::opengl::VertexAttribute{
-        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr
+      }};
       vao_->create_vertex_buffer<glm::vec3>(
         vertices_, attributes,
-        material_->get_attribute_offset(
-          axgl::impl::opengl::Material::kVertices));
+        material_->get_attribute_offset(axgl::impl::opengl::Material::kVertices)
+      );
     }
     else if (!vertices_2d_.empty())
     {
       std::array attributes{::opengl::VertexAttribute{
-        2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}};
+        2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr
+      }};
       vao_->create_vertex_buffer<glm::vec2>(
         vertices_2d_, attributes,
-        material_->get_attribute_offset(
-          axgl::impl::opengl::Material::kVertices));
+        material_->get_attribute_offset(axgl::impl::opengl::Material::kVertices)
+      );
     }
 
     if (!normals_.empty())
     {
       std::array attributes{::opengl::VertexAttribute{
-        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr
+      }};
       vao_->create_vertex_buffer<glm::vec3>(
         normals_, attributes,
-        material_->get_attribute_offset(
-          axgl::impl::opengl::Material::kNormals));
+        material_->get_attribute_offset(axgl::impl::opengl::Material::kNormals)
+      );
     }
 
     if (!tangents_.empty())
     {
       std::array attributes{::opengl::VertexAttribute{
-        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr
+      }};
       vao_->create_vertex_buffer<glm::vec3>(
         tangents_, attributes,
-        material_->get_attribute_offset(
-          axgl::impl::opengl::Material::kTangents));
+        material_->get_attribute_offset(axgl::impl::opengl::Material::kTangents)
+      );
     }
 
     if (!bitangents_.empty())
     {
       std::array attributes{::opengl::VertexAttribute{
-        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr}};
+        3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr
+      }};
       vao_->create_vertex_buffer<glm::vec3>(
         bitangents_, attributes,
         material_->get_attribute_offset(
-          axgl::impl::opengl::Material::kBitangents));
+          axgl::impl::opengl::Material::kBitangents
+        )
+      );
     }
 
     if (!uv_.empty())
     {
       std::array attributes{::opengl::VertexAttribute{
-        2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}};
+        2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr
+      }};
       vao_->create_vertex_buffer<glm::vec2>(
         uv_, attributes,
-        material_->get_attribute_offset(axgl::impl::opengl::Material::kUV));
+        material_->get_attribute_offset(axgl::impl::opengl::Material::kUV)
+      );
     }
 
     if (!indices_.empty()) vao_->create_element_buffer(indices_);

@@ -22,8 +22,8 @@ public:
   };
 
   virtual axgl::ModelService::ModelResources load_model(
-    const std::string& resource_key)
-    = 0;
+    const std::string& resource_key
+  ) = 0;
 };
 
 } // namespace axgl

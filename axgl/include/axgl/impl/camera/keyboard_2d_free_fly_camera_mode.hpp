@@ -24,7 +24,8 @@ public:
     axgl::ptr_t<axgl::Input> down,
     axgl::ptr_t<axgl::Input> left,
     axgl::ptr_t<axgl::Input> right,
-    float movement_speed) :
+    float movement_speed
+  ) :
     up_(std::move(up)),
     down_(std::move(down)),
     left_(std::move(left)),
@@ -35,11 +36,24 @@ public:
 
   explicit Keyboard2DFreeFlyCameraMode(float movement_speed = 2.0f) :
     Keyboard2DFreeFlyCameraMode(
-      axgl::create_ptr<axgl::Input>("Move Up", axgl::Input::Source::kKeyW),
-      axgl::create_ptr<axgl::Input>("Move Down", axgl::Input::Source::kKeyS),
-      axgl::create_ptr<axgl::Input>("Move Left", axgl::Input::Source::kKeyA),
-      axgl::create_ptr<axgl::Input>("Move Right", axgl::Input::Source::kKeyD),
-      movement_speed)
+      axgl::create_ptr<axgl::Input>(
+        "Move Up",
+        axgl::Input::Source::kKeyW
+      ),
+      axgl::create_ptr<axgl::Input>(
+        "Move Down",
+        axgl::Input::Source::kKeyS
+      ),
+      axgl::create_ptr<axgl::Input>(
+        "Move Left",
+        axgl::Input::Source::kKeyA
+      ),
+      axgl::create_ptr<axgl::Input>(
+        "Move Right",
+        axgl::Input::Source::kKeyD
+      ),
+      movement_speed
+    )
   {
   }
 
@@ -52,7 +66,8 @@ public:
   }
 
   void unbind_inputs(
-    const axgl::ptr_t<axgl::InputService> input_service) override
+    const axgl::ptr_t<axgl::InputService> input_service
+  ) override
   {
     input_service->remove_input(up_->id);
     input_service->remove_input(down_->id);

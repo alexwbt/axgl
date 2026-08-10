@@ -24,14 +24,16 @@ class EntityService : virtual public axgl::EntityService,
 public:
   void register_entity_factory(
     const std::string& type,
-    std::function<ptr_t<axgl::Entity>()> entity_factory) override
+    std::function<ptr_t<axgl::Entity>()> entity_factory
+  ) override
   {
     entity_factories_.emplace(type, entity_factory);
   }
 
   void register_component_factory(
     const std::string& type,
-    std::function<ptr_t<Component>()> component_factory) override
+    std::function<ptr_t<Component>()> component_factory
+  ) override
   {
     component_factories_.emplace(type, component_factory);
   }
@@ -46,7 +48,8 @@ public:
 #ifdef AXGL_DEBUG
     if (!entity_factories_.contains(type))
       throw std::runtime_error(
-        std::format("Entity factory for '{}' not registered.", type));
+        std::format("Entity factory for '{}' not registered.", type)
+      );
 #endif
     return with_context(entity_factories_.at(type)());
   }
@@ -56,7 +59,8 @@ public:
 #ifdef AXGL_DEBUG
     if (!component_factories_.contains(type))
       throw std::runtime_error(
-        std::format("Component factory for '{}' not registered.", type));
+        std::format("Component factory for '{}' not registered.", type)
+      );
 #endif
     return with_context(component_factories_.at(type)());
   }

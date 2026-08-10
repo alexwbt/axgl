@@ -23,13 +23,17 @@ public:
     float split_far = 0.0f;
   };
 
-  static std::array<Cascade, kCascadeCount> compute_cascades(
+  static std::array<
+    Cascade,
+    kCascadeCount>
+  compute_cascades(
     const axgl::Light& light,
     const glm::mat4& camera_inverse_pv,
     const float camera_near,
     const float camera_far,
     const float shadow_far,
-    const float lambda = 0.5f)
+    const float lambda = 0.5f
+  )
   {
     std::array<Cascade, kCascadeCount> cascades;
 

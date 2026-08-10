@@ -7,6 +7,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/gui/element_container.hpp>
+#include <axgl/impl/gui/layouts/block_layout.hpp>
 
 namespace axgl::impl::gui
 {
@@ -32,7 +33,10 @@ protected:
   axgl::ptr_t<axgl::Input> focus_activate_input_;
 
 public:
-  void set_size(std::uint32_t width, std::uint32_t height) override
+  void set_size(
+    std::uint32_t width,
+    std::uint32_t height
+  ) override
   {
     width_ = width;
     height_ = height;
@@ -87,14 +91,18 @@ public:
         if (element->is_hovering()) element->on_pointer_exit(current_context);
     }
 
-    if (
-      normal_cursor_mode && scale_input_ && scroll_pointer_
-      && scale_input_->tick > 0 && scroll_pointer_->delta.y != 0.0f)
+    if (normal_cursor_mode && scale_input_ && scroll_pointer_
+        && scale_input_->tick > 0 && scroll_pointer_->delta.y != 0.0f)
     {
       should_render_ = true;
       scale_ += scroll_pointer_->delta.y * 0.1f;
       if (scale_ <= 0.1f) scale_ = 0.1f;
     }
+
+    // for now
+    BlockLayout layout;
+    layout.apply({width_, height_}, elements_);
+
     const axgl::gui::Context current_context{
       *context_,         //
       gui_service.get(), //
@@ -111,10 +119,8 @@ public:
   void render() override { should_render_ = false; }
 
   [[nodiscard]] bool should_render() const override { return should_render_; }
-  [[nodiscard]] glm::ivec2 get_size() const override
-  {
-    return {width_, height_};
-  }
+  [[nodiscard]] std::uint32_t get_width() const override { return width_; }
+  [[nodiscard]] std::uint32_t get_height() const override { return height_; }
   [[nodiscard]] axgl::Container<axgl::gui::Element>& elements() override
   {
     return elements_;
@@ -144,7 +150,8 @@ public:
     focus_switch_input_ = std::move(focus_switch);
   }
   void set_focus_activate_input(
-    axgl::ptr_t<axgl::Input> focus_activate) override
+    axgl::ptr_t<axgl::Input> focus_activate
+  ) override
   {
     focus_activate_input_ = std::move(focus_activate);
   }
@@ -168,8 +175,8 @@ public:
   {
     return focus_switch_input_;
   }
-  [[nodiscard]] axgl::ptr_t<axgl::Input> get_focus_activate_input()
-    const override
+  [[nodiscard]] axgl::ptr_t<axgl::Input>
+  get_focus_activate_input() const override
   {
     return focus_activate_input_;
   }

@@ -13,17 +13,23 @@ int main()
 
   // input
   const auto cursor_pointer = axgl::create_ptr<axgl::Pointer>(
-    "Cursor", axgl::Pointer::Source::kMouseMove);
+    "Cursor", axgl::Pointer::Source::kMouseMove
+  );
   const auto scroll_pointer = axgl::create_ptr<axgl::Pointer>(
-    "GUI Scroll", axgl::Pointer::Source::kScroll);
+    "GUI Scroll", axgl::Pointer::Source::kScroll
+  );
   const auto scale_input = axgl::create_ptr<axgl::Input>(
-    "GUI Scale", axgl::Input::Source::kKeyLeftControl);
+    "GUI Scale", axgl::Input::Source::kKeyLeftControl
+  );
   const auto activate_input = axgl::create_ptr<axgl::Input>(
-    "GUI Activate", axgl::Input::Source::kMouseButton1);
+    "GUI Activate", axgl::Input::Source::kMouseButton1
+  );
   const auto focus_switch_input = axgl::create_ptr<axgl::Input>(
-    "GUI Focus Next", axgl::Input::Source::kKeyTab);
+    "GUI Focus Next", axgl::Input::Source::kKeyTab
+  );
   const auto focus_activate_input = axgl::create_ptr<axgl::Input>(
-    "GUI Focus Next", axgl::Input::Source::kKeyEnter);
+    "GUI Focus Next", axgl::Input::Source::kKeyEnter
+  );
   input_service->add_pointer(cursor_pointer);
   input_service->add_pointer(scroll_pointer);
   input_service->add_input(scale_input);
@@ -55,6 +61,8 @@ int main()
 
   using namespace axgl::gui;
 
+  gui_service->create_style("text")->set_fonts({"arial", "noto-tc"});
+
   gui_service->create_style("h1")
     ->set_display(Display::kBlock)
     ->set_font_size(32.0f)
@@ -68,13 +76,14 @@ int main()
   {
     const auto e = gui_service->create_element_t<TextElement>();
     e->set_text("Hello World");
-    e->set_style({"h1"});
+    e->set_style({"text", "h1"});
     page->elements().add(e);
   }
   {
     const auto e = gui_service->create_element_t<TextElement>();
     e->set_text("This is a axgl gui demo.");
-    e->set_style({"p"});
+    e->set_style({"text", "p"});
+    page->elements().add(e);
   }
 
   axgl.run();

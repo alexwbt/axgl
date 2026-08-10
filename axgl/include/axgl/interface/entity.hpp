@@ -82,7 +82,8 @@ public:
   }
 
   void add_components(
-    const std::span<const axgl::ptr_t<axgl::Component>>& components)
+    const std::span<const axgl::ptr_t<axgl::Component>>& components
+  )
   {
     this->components().add_all(components);
   }

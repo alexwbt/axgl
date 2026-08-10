@@ -37,7 +37,8 @@ private:
                         glm::vec2{1, 0}, glm::vec2{0, 1}, glm::vec2{1, 1}};
     std::array attributes{
       VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr},
-      VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}};
+      VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}
+    };
     quad_ = std::make_unique<VertexArrayObject>();
     quad_->create_vertex_buffer<glm::vec2>(vertices, attributes, 0);
   }

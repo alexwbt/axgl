@@ -49,7 +49,10 @@ class Character final
   glm::ivec2 offset{0};
   glm::ivec2 advance{0};
 
-  void load(FT_Face face, [[maybe_unused]] bool vertical)
+  void load(
+    FT_Face face,
+    [[maybe_unused]] bool vertical
+  )
   {
     const auto& glyph = face->glyph;
     const auto& bitmap = glyph->bitmap;
@@ -60,7 +63,8 @@ class Character final
     {
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
       texture.load_texture(
-        0, GL_RED, size.x, size.y, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.buffer);
+        0, GL_RED, size.x, size.y, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.buffer
+      );
       texture.set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       texture.set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -81,18 +85,26 @@ class Font final
   FT_Face face_;
 
 public:
-  Font(FT_Library library, const std::string& path, const int index)
+  Font(
+    FT_Library library,
+    const std::string& path,
+    const int index
+  )
   {
     if (FT_New_Face(library, path.c_str(), index, &face_))
       throw std::runtime_error("Failed to load fontface: " + path);
   }
 
   Font(
-    FT_Library library, const std::span<const uint8_t> buffer, const int index)
+    FT_Library library,
+    const std::span<const uint8_t> buffer,
+    const int index
+  )
   {
     if (FT_New_Memory_Face(
           library, buffer.data(), util::narrow<FT_Long>(buffer.size()), index,
-          &face_))
+          &face_
+        ))
       throw std::runtime_error("Failed to load font face from memory.");
   }
 
@@ -122,7 +134,10 @@ public:
   }
 
   void load_char(
-    Character& character, uint32_t code, const TextOptions& options) const
+    Character& character,
+    uint32_t code,
+    const TextOptions& options
+  ) const
   {
     FT_Set_Pixel_Sizes(face_, 0, options.size);
     if (FT_Load_Char(face_, code, FT_LOAD_RENDER))
@@ -180,14 +195,20 @@ public:
   }
 
   void load_font(
-    const std::string& name, const std::string& path, int index = 0)
+    const std::string& name,
+    const std::string& path,
+    int index = 0
+  )
   {
     auto font = std::make_unique<Font>(library_, path, index);
     fonts_[name] = std::move(font);
   }
 
   void load_font(
-    const std::string& name, std::span<const uint8_t> buffer, int index = 0)
+    const std::string& name,
+    std::span<const uint8_t> buffer,
+    int index = 0
+  )
   {
     auto font = std::make_unique<Font>(library_, buffer, index);
     fonts_[name] = std::move(font);
@@ -201,7 +222,9 @@ public:
   }
 
   [[nodiscard]] int get_renderable_font(
-    const std::vector<std::string>& font, std::uint32_t c) const
+    const std::vector<std::string>& font,
+    std::uint32_t c
+  ) const
   {
     const int size = util::clamp_cast<int>(font.size());
     for (int i = 0; i < size; ++i)
@@ -213,7 +236,8 @@ public:
     Text& target,
     const std::string& value,
     const std::vector<std::string>& font,
-    const TextOptions& options) const
+    const TextOptions& options
+  ) const
   {
     std::unordered_map<std::uint32_t, Character> chars;
 
@@ -252,7 +276,8 @@ public:
 
     target.size = glm::ivec2(width, height);
     target.texture.load_texture(
-      0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+      0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr
+    );
     target.texture.set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     target.texture.set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     target.texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -262,7 +287,8 @@ public:
     framebuffer.attach_texture(GL_COLOR_ATTACHMENT0, target.texture);
     framebuffer.set_draw_buffers({GL_COLOR_ATTACHMENT0});
     framebuffer.check_status_complete(
-      "opengl::TextRenderer::render_text -> framebuffer");
+      "opengl::TextRenderer::render_text -> framebuffer"
+    );
     framebuffer.use();
     glViewport(0, 0, width, height);
 
@@ -277,7 +303,8 @@ public:
 
     glm::vec3 advance(0.0f);
     glm::mat4 projection = glm::ortho(
-      static_cast<float>(width), 0.0f, static_cast<float>(height), 0.0f);
+      static_cast<float>(width), 0.0f, static_cast<float>(height), 0.0f
+    );
     auto& quad = StaticVAOs::instance().quad();
 
     for (auto it = value.begin(), end = value.end(); it != end;)

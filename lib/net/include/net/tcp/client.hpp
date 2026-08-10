@@ -12,7 +12,9 @@ public:
   using Client::Client;
 
   void connect(
-    const std::string& host, const asio::ip::port_type& port) override
+    const std::string& host,
+    const asio::ip::port_type& port
+  ) override
   {
     asio::co_spawn(
       *io_context_, [this, host, port]() -> asio::awaitable<void>
@@ -29,7 +31,8 @@ public:
       asio::ip::tcp::socket asio_socket(*io_context_);
       co_await asio::async_connect(
         asio_socket, resolver.resolve(endpoint),
-        asio::redirect_error(asio::use_awaitable, ec));
+        asio::redirect_error(asio::use_awaitable, ec)
+      );
       if (ec)
       {
         connection_failed(ec);
@@ -39,7 +42,8 @@ public:
       auto socket = new_socket(std::move(asio_socket));
       session_ = Session::create(0, std::move(socket));
       on_connect();
-    }, asio::detached);
+    }, asio::detached
+    );
   }
 
   virtual std::shared_ptr<Socket> new_socket(asio::ip::tcp::socket socket) = 0;

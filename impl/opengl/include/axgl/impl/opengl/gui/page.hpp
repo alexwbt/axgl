@@ -31,14 +31,16 @@ public:
       if (!texture_)
         throw std::runtime_error(
           "axgl::impl::opengl::Texture is required to use "
-          "axgl::impl::opengl::gui::Page");
+          "axgl::impl::opengl::gui::Page"
+        );
 #endif
 
       const auto opengl_texture = texture_->get_texture();
       opengl_texture->load_texture(
         0, GL_RGBA, util::clamp_cast<GLsizei>(width_),
         util::clamp_cast<GLsizei>(height_), 0, GL_RGBA, GL_UNSIGNED_BYTE,
-        nullptr);
+        nullptr
+      );
       opengl_texture->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       opengl_texture->set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       opengl_texture->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -47,9 +49,11 @@ public:
       framebuffer_ = std::make_unique<::opengl::Framebuffer>();
       framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *opengl_texture);
       framebuffer_->set_draw_buffers(
-        {GL_COLOR_ATTACHMENT0, GL_STENCIL_ATTACHMENT});
+        {GL_COLOR_ATTACHMENT0, GL_STENCIL_ATTACHMENT}
+      );
       framebuffer_->check_status_complete(
-        "axgl::impl::gui::Page::init -> framebuffer_");
+        "axgl::impl::gui::Page::init -> framebuffer_"
+      );
     }
   }
 
@@ -73,7 +77,8 @@ public:
       glScissor(0, 0, width, height);
 
       const glm::mat4 projection = glm::ortho(
-        static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f);
+        static_cast<float>(width_), 0.0f, static_cast<float>(height_), 0.0f
+      );
       const axgl::gui::Context current_context{
         *context_,                  //
         axgl_->gui_service().get(), //

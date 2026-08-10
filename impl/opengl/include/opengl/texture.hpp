@@ -23,7 +23,8 @@ public:
     int nrChannels;
     stbi_ptr = stbi_load_from_memory(
       data.data(), util::narrow<int>(data.size()), &width, &height, &nrChannels,
-      0);
+      0
+    );
 
     switch (nrChannels)
     {
@@ -116,19 +117,25 @@ public:
       const auto trace = cpptrace::generate_trace();
       AXGL_LOG_WARN(
         "Texture is used with invalid size: width {}, height {}\n{}", width_,
-        height_, trace.to_string());
+        height_, trace.to_string()
+      );
     }
 #endif
     glBindTexture(target_, id_);
   }
 
-  void set_parameter(const GLenum param, const GLint value) const
+  void set_parameter(
+    const GLenum param,
+    const GLint value
+  ) const
   {
     glTexParameteri(target_, param, value);
   }
 
   void set_parameter(
-    const GLenum param, const std::span<const GLfloat>& value) const
+    const GLenum param,
+    const std::span<const GLfloat>& value
+  ) const
   {
     glTexParameterfv(target_, param, &value[0]);
   }
@@ -143,7 +150,8 @@ public:
     const GLint border,
     const GLenum format,
     const GLenum type,
-    const void* pixels)
+    const void* pixels
+  )
   {
     if (initialized())
     {
@@ -157,7 +165,8 @@ public:
     use();
     glTexImage2D(
       target_, level, internal_format, width, height, border, format, type,
-      pixels);
+      pixels
+    );
   }
 
   void load_texture_array(
@@ -169,7 +178,8 @@ public:
     const GLint border,
     const GLenum format,
     const GLenum type,
-    const void* pixels)
+    const void* pixels
+  )
   {
     if (initialized())
     {
@@ -183,7 +193,8 @@ public:
     use();
     glTexImage3D(
       GL_TEXTURE_2D_ARRAY, level, internal_format, width, height, depth, border,
-      format, type, pixels);
+      format, type, pixels
+    );
   }
 
   void load_image_texture(const std::span<const uint8_t> data)
@@ -197,10 +208,15 @@ public:
 
     load_texture(
       0, static_cast<GLint>(texture.format), texture.width, texture.height, 0,
-      texture.format, GL_UNSIGNED_BYTE, texture.stbi_ptr);
+      texture.format, GL_UNSIGNED_BYTE, texture.stbi_ptr
+    );
   }
 
-  void load_cubemap_texture(const std::array<std::span<const uint8_t>, 6>& data)
+  void load_cubemap_texture(
+    const std::array<
+      std::span<const uint8_t>,
+      6>& data
+  )
   {
     if (initialized())
     {
@@ -249,7 +265,8 @@ public:
     const GLenum internal_format,
     const GLsizei width,
     const GLsizei height,
-    const GLboolean fixed_sample_locations)
+    const GLboolean fixed_sample_locations
+  )
   {
     if (initialized())
     {
@@ -263,7 +280,8 @@ public:
     use();
     glTexImage2DMultisample(
       target_, sample_size, internal_format, width, height,
-      fixed_sample_locations);
+      fixed_sample_locations
+    );
   }
 
   // void init_texture_array()

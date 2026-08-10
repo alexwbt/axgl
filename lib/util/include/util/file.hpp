@@ -34,12 +34,16 @@ inline std::vector<uint8_t> read_file(const std::string& path)
   std::vector<uint8_t> buffer(size);
   file.read(
     reinterpret_cast<char*>(buffer.data()),
-    util::clamp_cast<std::streamsize>(size));
+    util::clamp_cast<std::streamsize>(size)
+  );
 
   return buffer;
 }
 
-inline void write_text_file(const std::string& path, const std::string& content)
+inline void write_text_file(
+  const std::string& path,
+  const std::string& content
+)
 {
   std::ofstream file(path);
   if (!file.is_open()) throw std::runtime_error("Could not open file: " + path);

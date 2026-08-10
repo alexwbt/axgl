@@ -10,7 +10,11 @@ namespace util
 {
 
 template <typename result_t>
-void split_string(const std::string& s, const char delim, result_t result)
+void split_string(
+  const std::string& s,
+  const char delim,
+  result_t result
+)
 {
   std::istringstream iss(s);
   std::string item;
@@ -18,7 +22,10 @@ void split_string(const std::string& s, const char delim, result_t result)
     *result++ = item;
 }
 
-inline std::vector<std::string> split_string(const std::string& s, char delim)
+inline std::vector<std::string> split_string(
+  const std::string& s,
+  char delim
+)
 {
   std::vector<std::string> tokens;
   split_string(s, delim, std::back_inserter(tokens));
@@ -39,11 +46,10 @@ inline void rtrim(std::string& value)
   value.erase(
     std::find_if(
       value.rbegin(), value.rend(),
-      [](unsigned char ch)
-  {
-    return !std::isspace(ch);
-  }).base(),
-    value.end());
+      [](unsigned char ch) { return !std::isspace(ch); }
+    ).base(),
+    value.end()
+  );
 }
 
 // trim from both ends (in place)
@@ -75,7 +81,9 @@ inline std::string trim_copy(std::string value)
 }
 
 constexpr std::size_t hash_string(
-  const char* str, const std::size_t hash = 5381)
+  const char* str,
+  const std::size_t hash = 5381
+)
 {
   return (*str == '\0')
     ? hash
@@ -88,7 +96,11 @@ constexpr std::size_t hash_string(const std::string& value)
 }
 
 inline void string_to_vec3(
-  const std::string& value, float& x, float& y, float& z)
+  const std::string& value,
+  float& x,
+  float& y,
+  float& z
+)
 {
   std::istringstream iss(value);
   if (char comma; !(iss >> x >> comma >> y >> comma >> z))

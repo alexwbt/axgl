@@ -21,7 +21,9 @@ public:
 
 private:
   static axgl::ptr_t<axgl::component::Mesh> create_mesh(
-    const axgl::Axgl* axgl, float size)
+    const axgl::Axgl* axgl,
+    float size
+  )
   {
     const auto& entity_service = axgl->entity_service();
     const auto& renderer_service = axgl->renderer_service();
@@ -31,19 +33,25 @@ private:
     auto diffuse = renderer_service->create_texture();
     auto specular = renderer_service->create_texture();
     normal->load_texture(
-      resource_service->get_resource("material/wood/normal.png"));
+      resource_service->get_resource("material/wood/normal.png")
+    );
     diffuse->load_texture(
-      resource_service->get_resource("material/wood/diffuse.png"));
+      resource_service->get_resource("material/wood/diffuse.png")
+    );
     specular->load_texture(
-      resource_service->get_resource("material/wood/specular.png"));
+      resource_service->get_resource("material/wood/specular.png")
+    );
     // material
     auto material = renderer_service->create_material("3d");
     material->add_texture(
-      axgl::Material::TextureType::kNormal, std::move(normal));
+      axgl::Material::TextureType::kNormal, std::move(normal)
+    );
     material->add_texture(
-      axgl::Material::TextureType::kDiffuse, std::move(diffuse));
+      axgl::Material::TextureType::kDiffuse, std::move(diffuse)
+    );
     material->add_texture(
-      axgl::Material::TextureType::kSpecular, std::move(specular));
+      axgl::Material::TextureType::kSpecular, std::move(specular)
+    );
     material->set_tiling(glm::vec2(size) / 3.0f);
     material->set_enable_shadow(false);
     // material->set_color({0.392f, 0.584f, 0.929f, 1.0f});

@@ -51,34 +51,41 @@ private:
     mesh_2d_
       = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
-        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs")}});
+        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs")}
+      });
     blinn_phong_
       = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs")},
-        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs")}});
+        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.fs")}
+      });
     text_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
-      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs")}});
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs")}
+    });
     screen_
       = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/screen.vs")},
-        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/screen.fs")}});
+        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/screen.fs")}
+      });
     weighted_blended_
       = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/screen.vs")},
         {GL_FRAGMENT_SHADER,
-         axgl_opengl_impl_res::get("shader/weighted_blended.fs")}});
+         axgl_opengl_impl_res::get("shader/weighted_blended.fs")}
+      });
     gui_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/gui.vs")},
-      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/gui.fs")}});
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/gui.fs")}
+    });
     color_ = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
       {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh3d.vs")},
-      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/color.fs")}});
+      {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/color.fs")}
+    });
     depth_only_
       = std::make_unique<ShaderProgram>(std::vector<ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/depth_only.vs")},
-        {GL_FRAGMENT_SHADER,
-         axgl_opengl_impl_res::get("shader/depth_only.fs")}});
+        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/depth_only.fs")}
+      });
   }
 };
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/numcast.hpp"
 #include <axgl/common.hpp>
 #include <axgl/interface/gui/elements/text_element.hpp>
 
@@ -30,6 +31,7 @@ public:
   {
     axgl::impl::opengl::gui::Element::update(context);
 
+    // FIXME: updating styles (fonts, color, size) does not trigger rerender.
     const auto text_scale = context.scale * context.font_scale;
     if (modified_text_ || text_scale_ != text_scale)
     {
@@ -49,15 +51,24 @@ public:
             .font_color = font_color,
             .font_size = font_size,
             .vertical = false,
-          }));
+          })
+        );
 #ifdef AXGL_DEBUG
         if (!text_texture_)
           AXGL_LOG_WARN(
             "axgl::impl::opengl::Texture is required to use "
-            "axgl::impl::opengl::gui::Element");
+            "axgl::impl::opengl::gui::Element"
+          );
 #endif
+        intrinsic_size_.x = util::clamp_cast<float>(text_texture_->get_width());
+        intrinsic_size_.y
+          = util::clamp_cast<float>(text_texture_->get_height());
       }
-      else text_texture_ = nullptr;
+      else
+      {
+        text_texture_ = nullptr;
+        intrinsic_size_ = {0.0f, 0.0f};
+      }
     }
   }
 
@@ -74,7 +85,8 @@ public:
       const auto& opacity = computed_style_->get_opacity();
       const auto& font_color = computed_style_->get_font_color();
       const auto size = glm::vec3(
-        text_texture_->get_width(), text_texture_->get_height(), 1.0f);
+        text_texture_->get_width(), text_texture_->get_height(), 1.0f
+      );
       const auto content_model                                        //
         = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
         * glm::scale(size);                                           //
@@ -86,7 +98,8 @@ public:
       content_shader.set_vec4("color", font_color);
       content_shader.set_float("opacity", opacity);
       content_shader.set_mat4(
-        "projection_view_model", context.projection * content_model);
+        "projection_view_model", context.projection * content_model
+      );
       ::opengl::StaticVAOs::instance().quad().draw();
     }
   }

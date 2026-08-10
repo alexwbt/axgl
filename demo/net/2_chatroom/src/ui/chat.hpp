@@ -33,8 +33,8 @@ public:
   {
     input_.set_enabled(connected);
     messages_.render(ImVec2(
-      0,
-      -ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().ItemSpacing.y));
+      0, -ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().ItemSpacing.y
+    ));
     ImGui::Spacing();
     input_.render();
   }

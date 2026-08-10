@@ -51,11 +51,14 @@ public:
   virtual void set_offset(glm::vec2 offset) = 0;
   virtual void set_depth_scale(float depth_scale) = 0;
   virtual void set_normal_scale(float normal_scale) = 0;
-  virtual void set_property(const std::string& key, const std::string& value)
-    = 0;
+  virtual void set_property(
+    const std::string& key,
+    const std::string& value
+  ) = 0;
   virtual void add_texture(
-    axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture)
-    = 0;
+    axgl::Material::TextureType type,
+    axgl::ptr_t<axgl::Texture> texture
+  ) = 0;
 
   [[nodiscard]] virtual glm::vec4 get_color() const = 0;
   [[nodiscard]] virtual float get_line_width() const = 0;
@@ -72,7 +75,8 @@ public:
   [[nodiscard]] virtual std::string get_property(const std::string& key) const
     = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Texture> get_texture(
-    axgl::Material::TextureType type) const
+    axgl::Material::TextureType type
+  ) const
     = 0;
 };
 

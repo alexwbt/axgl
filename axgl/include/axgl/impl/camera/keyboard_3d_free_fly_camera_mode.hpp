@@ -36,7 +36,8 @@ public:
     axgl::ptr_t<Input> right,
     axgl::ptr_t<Input> escape,
     float movement_speed,
-    float view_sensitivity) :
+    float view_sensitivity
+  ) :
     pointer_(std::move(pointer)),
     forward_(std::move(forward)),
     backward_(std::move(backward)),
@@ -51,19 +52,45 @@ public:
   }
 
   explicit Keyboard3DFreeFlyCameraMode(
-    float movement_speed = 0.2f, float view_sensitivity = 0.2f) :
+    float movement_speed = 0.2f,
+    float view_sensitivity = 0.2f
+  ) :
     Keyboard3DFreeFlyCameraMode(
-      axgl::create_ptr<Pointer>("View Movement", Pointer::Source::kMouseMove),
-      axgl::create_ptr<Input>("Move Forward", Input::Source::kKeyW),
-      axgl::create_ptr<Input>("Move Backward", Input::Source::kKeyS),
-      axgl::create_ptr<Input>("Move Up", Input::Source::kKeySpace),
-      axgl::create_ptr<Input>("Move Down", Input::Source::kKeyLeftShift),
-      axgl::create_ptr<Input>("Move Left", Input::Source::kKeyA),
-      axgl::create_ptr<Input>("Move Right", Input::Source::kKeyD),
+      axgl::create_ptr<Pointer>(
+        "View Movement",
+        Pointer::Source::kMouseMove
+      ),
       axgl::create_ptr<Input>(
-        "Toggle Camera Control", Input::Source::kKeyEscape),
+        "Move Forward",
+        Input::Source::kKeyW
+      ),
+      axgl::create_ptr<Input>(
+        "Move Backward",
+        Input::Source::kKeyS
+      ),
+      axgl::create_ptr<Input>(
+        "Move Up",
+        Input::Source::kKeySpace
+      ),
+      axgl::create_ptr<Input>(
+        "Move Down",
+        Input::Source::kKeyLeftShift
+      ),
+      axgl::create_ptr<Input>(
+        "Move Left",
+        Input::Source::kKeyA
+      ),
+      axgl::create_ptr<Input>(
+        "Move Right",
+        Input::Source::kKeyD
+      ),
+      axgl::create_ptr<Input>(
+        "Toggle Camera Control",
+        Input::Source::kKeyEscape
+      ),
       movement_speed,
-      view_sensitivity)
+      view_sensitivity
+    )
   {
   }
 
@@ -103,7 +130,8 @@ public:
 
       input_service_->set_cursor_mode(
         controlling_ ? InputService::CursorMode::kLocked
-                     : InputService::CursorMode::kNormal);
+                     : InputService::CursorMode::kNormal
+      );
     }
 
     if (!controlling_) return;
@@ -114,7 +142,8 @@ public:
     if (pointer_->tick > 1 && pointer_->delta.y != 0.0f)
       camera.pitch = std::min(
         std::max(camera.pitch + (pointer_->delta.y * view_sensitivity_), 1.0f),
-        179.0f);
+        179.0f
+      );
 
     if (forward_->tick > 0) camera.position += camera.front() * movement_speed_;
     if (backward_->tick > 0)

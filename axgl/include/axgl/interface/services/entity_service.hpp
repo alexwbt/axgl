@@ -17,26 +17,26 @@ public:
 
   virtual void register_entity_factory(
     const std::string& type_id,
-    std::function<axgl::ptr_t<axgl::Entity>()> entity_factory)
-    = 0;
+    std::function<axgl::ptr_t<axgl::Entity>()> entity_factory
+  ) = 0;
   virtual void register_component_factory(
     const std::string& type_id,
-    std::function<axgl::ptr_t<axgl::Component>()> component_factory)
-    = 0;
+    std::function<axgl::ptr_t<axgl::Component>()> component_factory
+  ) = 0;
 
   virtual axgl::ptr_t<axgl::Entity> create_entity() = 0;
   virtual axgl::ptr_t<axgl::Entity> create_entity(const std::string& type_id)
     = 0;
   virtual axgl::ptr_t<axgl::Component> create_component(
-    const std::string& type_id)
-    = 0;
+    const std::string& type_id
+  ) = 0;
 
   template <typename EntityType>
   void register_entity_t()
   {
     register_entity_factory(
-      EntityType::kTypeId.data(),
-      [] { return axgl::create_ptr<EntityType>(); });
+      EntityType::kTypeId.data(), [] { return axgl::create_ptr<EntityType>(); }
+    );
   }
 
   template <typename ComponentType>
@@ -44,7 +44,8 @@ public:
   {
     register_component_factory(
       ComponentType::kTypeId.data(),
-      [] { return axgl::create_ptr<ComponentType>(); });
+      [] { return axgl::create_ptr<ComponentType>(); }
+    );
   }
 
   template <typename EntityType>
@@ -56,7 +57,9 @@ public:
     if (!entity)
       throw std::runtime_error(
         std::format(
-          "Failed to create entity: {} ({})", type, typeid(EntityType).name()));
+          "Failed to create entity: {} ({})", type, typeid(EntityType).name()
+        )
+      );
 #endif
     return entity;
   }
@@ -71,7 +74,9 @@ public:
       throw std::runtime_error(
         std::format(
           "Failed to create component: {} ({})", type,
-          typeid(ComponentType).name()));
+          typeid(ComponentType).name()
+        )
+      );
 #endif
     return component;
   }

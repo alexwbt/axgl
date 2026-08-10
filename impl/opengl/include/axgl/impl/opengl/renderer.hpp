@@ -96,9 +96,8 @@ public:
     if (enable_msaa_ && !msaa_framebuffer_) setup_msaa_framebuffer(viewport_i);
     if (enable_blend_ && !blend_framebuffer_)
       setup_blend_framebuffer(viewport_i);
-    if (
-      enable_shadow_
-      && (!shadow_texture_ || shadow_map_size_ != shadow_texture_->get_width()))
+    if (enable_shadow_
+        && (!shadow_texture_ || shadow_map_size_ != shadow_texture_->get_width()))
       setup_shadow_framebuffer();
 
     // render realm
@@ -129,12 +128,14 @@ public:
       {
         AXGL_PROFILE_SCOPE("Renderer Gather Instances");
         gather_render_components(
-          render_context, render_components, realm->entities());
+          render_context, render_components, realm->entities()
+        );
         AXGL_PLOT("Renderer Entity Count", render_context.entity_count);
         AXGL_PLOT("Renderer Component Count", render_context.component_count);
         AXGL_PLOT(
           "Renderer Light Count",
-          static_cast<std::int64_t>(render_context.lights.size()));
+          static_cast<std::int64_t>(render_context.lights.size())
+        );
       }
       impl::opengl::renderer::PipelineContext pipeline_context;
       {
@@ -168,32 +169,35 @@ private:
   {
     screen_texture_ = std::make_unique<::opengl::Texture>();
     screen_texture_->load_texture(
-      0, GL_RGBA16F, viewport.x, viewport.y, 0, GL_RGBA, GL_HALF_FLOAT,
-      nullptr);
+      0, GL_RGBA16F, viewport.x, viewport.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr
+    );
     screen_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     screen_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     depth_texture_ = std::make_unique<::opengl::Texture>();
     depth_texture_->load_texture(
       0, GL_DEPTH_COMPONENT24, viewport.x, viewport.y, 0, GL_DEPTH_COMPONENT,
-      GL_FLOAT, nullptr);
+      GL_FLOAT, nullptr
+    );
     screen_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
     screen_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *screen_texture_);
     screen_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
     screen_framebuffer_->check_status_complete(
-      "axgl::impl::opengl::Renderer -> screen_framebuffer_");
+      "axgl::impl::opengl::Renderer -> screen_framebuffer_"
+    );
   }
 
   void setup_blend_framebuffer(const glm::ivec2& viewport)
   {
     accum_texture_ = std::make_unique<::opengl::Texture>();
     accum_texture_->load_texture(
-      0, GL_RGBA16F, viewport.x, viewport.y, 0, GL_RGBA, GL_HALF_FLOAT,
-      nullptr);
+      0, GL_RGBA16F, viewport.x, viewport.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr
+    );
     accum_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     accum_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     reveal_texture_ = std::make_unique<::opengl::Texture>();
     reveal_texture_->load_texture(
-      0, GL_R8, viewport.x, viewport.y, 0, GL_RED, GL_FLOAT, nullptr);
+      0, GL_R8, viewport.x, viewport.y, 0, GL_RED, GL_FLOAT, nullptr
+    );
     reveal_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     reveal_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     blend_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
@@ -201,27 +205,33 @@ private:
     blend_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT1, *reveal_texture_);
     blend_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
     blend_framebuffer_->set_draw_buffers(
-      {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1});
+      {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1}
+    );
     blend_framebuffer_->check_status_complete(
-      "axgl::impl::opengl::Renderer -> blend_framebuffer_");
+      "axgl::impl::opengl::Renderer -> blend_framebuffer_"
+    );
   }
 
   void setup_msaa_framebuffer(const glm::ivec2& viewport)
   {
     msaa_texture_ = std::make_unique<::opengl::Texture>();
     msaa_texture_->init_multisample_texture(
-      msaa_sample_count_, GL_RGBA16F, viewport.x, viewport.y, GL_TRUE);
+      msaa_sample_count_, GL_RGBA16F, viewport.x, viewport.y, GL_TRUE
+    );
     msaa_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     msaa_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     msaa_depth_stencil_ = std::make_unique<::opengl::Renderbuffer>();
     msaa_depth_stencil_->init_multisample_renderbuffer(
-      msaa_sample_count_, GL_DEPTH24_STENCIL8, viewport.x, viewport.y);
+      msaa_sample_count_, GL_DEPTH24_STENCIL8, viewport.x, viewport.y
+    );
     msaa_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
     msaa_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *msaa_texture_);
     msaa_framebuffer_->attach_renderbuffer(
-      GL_DEPTH_STENCIL_ATTACHMENT, *msaa_depth_stencil_);
+      GL_DEPTH_STENCIL_ATTACHMENT, *msaa_depth_stencil_
+    );
     msaa_framebuffer_->check_status_complete(
-      "axgl::impl::opengl::Renderer -> msaa_framebuffer_");
+      "axgl::impl::opengl::Renderer -> msaa_framebuffer_"
+    );
   }
 
   void setup_shadow_framebuffer()
@@ -231,20 +241,23 @@ private:
     shadow_texture_ = std::make_unique<::opengl::Texture>();
     shadow_texture_->load_texture_array(
       0, GL_DEPTH_COMPONENT, shadow_map_size_, shadow_map_size_,
-      shadow_map_cascade_levels_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+      shadow_map_cascade_levels_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr
+    );
     shadow_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     shadow_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     shadow_texture_->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     shadow_texture_->set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     shadow_texture_->set_parameter(
-      GL_TEXTURE_BORDER_COLOR, std::array{1.0f, 1.0f, 1.0f, 1.0f});
+      GL_TEXTURE_BORDER_COLOR, std::array{1.0f, 1.0f, 1.0f, 1.0f}
+    );
     shadow_texture_->set_parameter(GL_TEXTURE_COMPARE_MODE, GL_NONE);
     shadow_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
   }
 
   void render_shadow_pass(
     impl::opengl::renderer::RenderContext& render_context,
-    const impl::opengl::renderer::PipelineContext& pipeline_context)
+    const impl::opengl::renderer::PipelineContext& pipeline_context
+  )
   {
     if (render_context.lights.empty()) return;
 
@@ -253,9 +266,8 @@ private:
     impl::opengl::renderer::LightContext* sun_light_context = nullptr;
     for (auto& lc : render_context.lights)
     {
-      if (
-        lc.light && lc.light->type == axgl::Light::Type::kSun
-        && lc.light->casts_shadows)
+      if (lc.light && lc.light->type == axgl::Light::Type::kSun
+          && lc.light->casts_shadows)
       {
         sun_light_context = &lc;
         break;
@@ -265,7 +277,8 @@ private:
 
     sun_light_context->cascades = CascadedShadowMap::compute_cascades(
       *sun_light_context->light, render_context.inverse_projection_view_matrix,
-      render_context.camera_near, render_context.camera_far, shadow_distance_);
+      render_context.camera_near, render_context.camera_far, shadow_distance_
+    );
 
     glViewport(0, 0, shadow_map_size_, shadow_map_size_);
     glEnable(GL_DEPTH_TEST);
@@ -280,9 +293,11 @@ private:
     {
       shadow_framebuffer_->use();
       shadow_framebuffer_->attach_texture_layer(
-        GL_DEPTH_ATTACHMENT, *shadow_texture_, c);
+        GL_DEPTH_ATTACHMENT, *shadow_texture_, c
+      );
       shadow_framebuffer_->check_status_complete(
-        "axgl::impl::opengl::Renderer -> shadow_framebuffer_");
+        "axgl::impl::opengl::Renderer -> shadow_framebuffer_"
+      );
       glClearDepth(1.0);
       glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -297,7 +312,8 @@ private:
   void render_opaque_pass(
     const impl::opengl::renderer::RenderContext& render_context,
     const impl::opengl::renderer::PipelineContext& pipeline_context,
-    const glm::ivec2& viewport_i)
+    const glm::ivec2& viewport_i
+  )
   {
     glViewport(0, 0, viewport_i.x, viewport_i.y);
     glDisable(GL_BLEND);
@@ -332,7 +348,8 @@ private:
 
   void render_transparent_pass(
     const impl::opengl::renderer::RenderContext& render_context,
-    const impl::opengl::renderer::PipelineContext& pipeline_context)
+    const impl::opengl::renderer::PipelineContext& pipeline_context
+  )
   {
     if (!enable_blend_ || pipeline_context.blend_pass.empty()) return;
 
@@ -424,7 +441,8 @@ private:
     if (!gui_texture)
       throw std::runtime_error(
         "axgl::impl::opengl::Texture is required to use "
-        "axgl::impl::opengl::Renderer");
+        "axgl::impl::opengl::Renderer"
+      );
 #endif
     screen_framebuffer_->use();
     glDisable(GL_DEPTH_TEST);
@@ -458,10 +476,12 @@ private:
   // TODO: reimplement without recursion
   void gather_render_components(
     impl::opengl::renderer::RenderContext& render_context,
-    std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*>&
-      render_components,
+    std::unordered_map<
+      std::uint64_t,
+      impl::opengl::renderer::RenderComponent*>& render_components,
     const axgl::Container<axgl::Entity>& entities,
-    const glm::mat4* base_transform_matrix = nullptr)
+    const glm::mat4* base_transform_matrix = nullptr
+  )
   {
     for (const auto& entity : entities.get())
     {
@@ -478,19 +498,18 @@ private:
         if (component->is_disabled() || component->is_hidden()) continue;
         ++render_context.component_count;
 
-        if (
-          auto* render_comp
-          = dynamic_cast<impl::opengl::renderer::RenderComponent*>(
-            component.get()))
+        if (auto* render_comp
+            = dynamic_cast<impl::opengl::renderer::RenderComponent*>(
+              component.get()
+            ))
         {
           render_comp->gather_instances(model_matrix);
 
           const auto id = render_comp->get_id();
           render_components[id] = render_comp;
         }
-        else if (
-          const auto* light_comp
-          = dynamic_cast<axgl::impl::component::Light*>(component.get()))
+        else if (const auto* light_comp
+                 = dynamic_cast<axgl::impl::component::Light*>(component.get()))
         {
           impl::opengl::renderer::LightContext light_context;
           light_context.light = &light_comp->light;
@@ -498,9 +517,8 @@ private:
           // sun lights get per-cascade PVs computed in render_shadow_pass;
           // point/spot keep the single-matrix fallback from
           // Light::get_pv_matrix.
-          if (
-            enable_shadow_ && light_context.light->casts_shadows
-            && light_context.light->type != axgl::Light::Type::kSun)
+          if (enable_shadow_ && light_context.light->casts_shadows
+              && light_context.light->type != axgl::Light::Type::kSun)
             light_context.light_pv = light_context.light->get_pv_matrix();
 
           render_context.lights.emplace_back(light_context);
@@ -512,7 +530,8 @@ private:
           ? *base_transform_matrix * transform.pivot_matrix
           : transform.pivot_matrix;
         gather_render_components(
-          render_context, render_components, entity->children(), &pivot_matrix);
+          render_context, render_components, entity->children(), &pivot_matrix
+        );
       }
     }
   }
@@ -528,7 +547,8 @@ public:
 #ifdef AXGL_DEBUG
       throw std::runtime_error(
         "The provided window is not a valid GlfwWindow instance. "
-        "GlfwWindow is required for OpenglRenderer.");
+        "GlfwWindow is required for OpenglRenderer."
+      );
 #else
       return;
 #endif
@@ -536,9 +556,10 @@ public:
     window_->use();
 
     // initialize glad
-    if (
-      !initialized_glad_
-      && !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+    if (!initialized_glad_
+        && !gladLoadGLLoader(
+          reinterpret_cast<GLADloadproc>(glfwGetProcAddress)
+        ))
       AXGL_LOG_ERROR("Failed to initialize GLAD.");
     initialized_glad_ = true;
 

@@ -75,7 +75,7 @@ AllowShortCaseExpressionOnASingleLine: true
 #
 # Alignment
 #
-AlignAfterOpenBracket: AlwaysBreak
+AlignAfterOpenBracket: BlockIndent
 AlignOperands: DontAlign
 AlignTrailingComments:
   Kind: Always
@@ -84,7 +84,7 @@ AlignTrailingComments:
 #
 # Parameter / argument packing
 #
-BinPackParameters: OnePerLine
+BinPackParameters: AlwaysOnePerLine
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowAllArgumentsOnNextLine: true
 

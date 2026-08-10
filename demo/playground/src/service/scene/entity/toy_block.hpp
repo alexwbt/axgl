@@ -18,11 +18,14 @@ protected:
     const auto normal = renderer_service->create_texture();
     const auto height = renderer_service->create_texture();
     diffuse->load_texture(
-      resource_service->get_resource("material/toy/diffuse.png"));
+      resource_service->get_resource("material/toy/diffuse.png")
+    );
     normal->load_texture(
-      resource_service->get_resource("material/toy/normal.png"));
+      resource_service->get_resource("material/toy/normal.png")
+    );
     height->load_texture(
-      resource_service->get_resource("material/toy/height.png"));
+      resource_service->get_resource("material/toy/height.png")
+    );
     // material
     const auto material = renderer_service->create_material("3d");
     material->add_texture(axgl::Material::TextureType::kDiffuse, diffuse);

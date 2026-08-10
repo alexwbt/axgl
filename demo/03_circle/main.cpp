@@ -8,7 +8,8 @@
 
 static void circle_mesh(
   const std::shared_ptr<axgl::component::Mesh>& mesh,
-  const std::uint32_t vert_count)
+  const std::uint32_t vert_count
+)
 {
   std::vector<glm::vec2> vertices;
   std::vector<std::uint32_t> indices;

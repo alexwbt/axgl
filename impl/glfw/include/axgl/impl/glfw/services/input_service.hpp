@@ -170,7 +170,9 @@ class InputService : virtual public axgl::InputService,
   }
 
   static bool get_glfw_input(
-    const axgl::Input::Source source, const axgl::ptr_t<::glfw::Window>& window)
+    const axgl::Input::Source source,
+    const axgl::ptr_t<::glfw::Window>& window
+  )
   {
     if (const auto keycode = to_glfw_keycode(source);
         keycode != -1 && window->key_down(keycode))
@@ -189,7 +191,8 @@ public:
     if (!window_)
       throw std::runtime_error(
         "The provided window is not a valid GlfwWindow instance. "
-        "GlfwWindow is required for GlfwInputService.");
+        "GlfwWindow is required for GlfwInputService."
+      );
 #endif
   }
 
@@ -238,11 +241,13 @@ public:
   void remove_pointer(std::uint64_t id) override
   {
     std::erase_if(
-      pointers_, [id](const auto& pointer) { return pointer->id == id; });
+      pointers_, [id](const auto& pointer) { return pointer->id == id; }
+    );
   }
 
   [[nodiscard]] std::vector<axgl::ptr_t<axgl::Input>> get_input_by_source(
-    axgl::Input::Source source) override
+    axgl::Input::Source source
+  ) override
   {
     const auto contains = [&source](const auto& e)
     {
@@ -254,7 +259,8 @@ public:
   }
 
   [[nodiscard]] std::vector<axgl::ptr_t<axgl::Pointer>> get_pointer_by_source(
-    axgl::Pointer::Source source) override
+    axgl::Pointer::Source source
+  ) override
   {
     const auto is_source
       = [&source](const auto& e) { return e->source == source; };
@@ -270,9 +276,9 @@ public:
     for (const auto& input : inputs_)
     {
       const auto active = std::ranges::any_of(
-        input->sources,                            //
-        [&window](const auto& source)
-      { return get_glfw_input(source, window); }); //
+        input->sources, //
+        [&window](const auto& source) { return get_glfw_input(source, window); }
+      );                //
       if (active) input->tick++;
       else input->tick = 0;
     }

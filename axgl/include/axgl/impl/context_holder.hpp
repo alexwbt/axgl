@@ -16,7 +16,9 @@ protected:
 
   template <
     typename T,
-    typename = std::enable_if_t<std::is_base_of_v<axgl::ContextHolder, T>>>
+    typename = std::enable_if_t<std::is_base_of_v<
+      axgl::ContextHolder,
+      T>>>
   axgl::ptr_t<T> with_context(axgl::ptr_t<T> holder)
   {
     holder->set_context(context_);

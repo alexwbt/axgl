@@ -23,8 +23,13 @@ class Session final
   std::queue<data_ptr_t> output_queue_;
   asio::steady_timer output_signal_;
 
-  Session(const std::uint32_t id, std::shared_ptr<Socket> socket) :
-    id_(id), socket_(std::move(socket)), output_signal_(socket_->get_executor())
+  Session(
+    const std::uint32_t id,
+    std::shared_ptr<Socket> socket
+  ) :
+    id_(id),
+    socket_(std::move(socket)),
+    output_signal_(socket_->get_executor())
   {
     output_signal_.expires_at(std::chrono::steady_clock::time_point::max());
   }
@@ -46,7 +51,8 @@ class Session final
 
         asio::error_code ec;
         co_await output_signal_.async_wait(
-          asio::redirect_error(asio::use_awaitable, ec));
+          asio::redirect_error(asio::use_awaitable, ec)
+        );
       }
     }
     catch (const std::exception&)
@@ -66,7 +72,8 @@ class Session final
 
         std::lock_guard lock(input_queue_mutex_);
         input_queue_.push(
-          std::make_shared<std::vector<uint8_t>>(std::move(buffer)));
+          std::make_shared<std::vector<uint8_t>>(std::move(buffer))
+        );
       }
     }
     catch (const std::exception&)
@@ -77,17 +84,21 @@ class Session final
 
 public:
   static std::shared_ptr<Session> create(
-    const std::uint32_t id, std::shared_ptr<Socket> socket)
+    const std::uint32_t id,
+    std::shared_ptr<Socket> socket
+  )
   {
     const std::shared_ptr<Session> session(new Session(id, std::move(socket)));
     // start read loop
     asio::co_spawn(
       session->socket_->get_executor(), [session]() -> asio::awaitable<void>
-    { return session->read_buffers(); }, asio::detached);
+    { return session->read_buffers(); }, asio::detached
+    );
     // start write loop
     asio::co_spawn(
       session->socket_->get_executor(), [session]() -> asio::awaitable<void>
-    { return session->write_buffers(); }, asio::detached);
+    { return session->write_buffers(); }, asio::detached
+    );
 
     return session;
   }

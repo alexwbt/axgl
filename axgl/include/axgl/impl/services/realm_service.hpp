@@ -32,7 +32,8 @@ public:
 
   void register_realm_factory(
     const std::string& type,
-    std::function<ptr_t<axgl::Realm>()> realm_factory) override
+    std::function<ptr_t<axgl::Realm>()> realm_factory
+  ) override
   {
     realm_factories_.emplace(type, realm_factory);
   }
@@ -47,7 +48,8 @@ public:
 #ifdef AXGL_DEBUG
     if (!realm_factories_.contains(type))
       throw std::runtime_error(
-        std::format("Realm factory for '{}' not registered.", type));
+        std::format("Realm factory for '{}' not registered.", type)
+      );
 #endif
     return with_context(realm_factories_.at(type)());
   }

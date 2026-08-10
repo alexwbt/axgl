@@ -32,7 +32,8 @@ public:
   void load_font(
     const std::string& name,
     const std::span<const std::uint8_t> data,
-    const int index) override
+    const int index
+  ) override
   {
 #ifdef AXGL_DEBUG
     if (text_renderer_.has_font(name))
@@ -51,7 +52,8 @@ public:
   }
 
   [[nodiscard]] axgl::ptr_t<axgl::Texture> create_texture(
-    const Options& options) const override
+    const Options& options
+  ) const override
   {
     ::opengl::Text text;
     text_renderer_.render_text(
@@ -60,15 +62,18 @@ public:
         .size = util::clamp_cast<std::uint32_t>(options.font_size),
         .color = options.font_color,
         .vertical = options.vertical,
-      });
+      }
+    );
 
     const auto texture = std::dynamic_pointer_cast<axgl::impl::opengl::Texture>(
-      renderer_service_->create_texture());
+      renderer_service_->create_texture()
+    );
 #ifdef AXGL_DEBUG
     if (!texture)
       throw std::runtime_error(
         "axgl::impl::opengl::Texture is required to use "
-        "axgl::impl::opengl::TextService");
+        "axgl::impl::opengl::TextService"
+      );
 #endif
     auto texture_ptr = axgl::create_ptr<::opengl::Texture>();
     *texture_ptr = std::move(text.texture);

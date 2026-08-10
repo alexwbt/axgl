@@ -29,7 +29,8 @@ public:
 
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 64.0f);
     if (ImGui::InputText(
-          "##chat_input", &input_value_, ImGuiInputTextFlags_EnterReturnsTrue))
+          "##chat_input", &input_value_, ImGuiInputTextFlags_EnterReturnsTrue
+        ))
     {
       submit();
     }

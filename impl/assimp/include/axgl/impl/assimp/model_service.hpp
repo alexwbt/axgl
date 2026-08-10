@@ -20,7 +20,8 @@ public:
     const auto& resource_service = axgl_->resource_service();
 
     ModelLoader loader(
-      entity_service, renderer_service, resource_service, resource_key, "3d");
+      entity_service, renderer_service, resource_service, resource_key, "3d"
+    );
     return loader.resources_;
   }
 };

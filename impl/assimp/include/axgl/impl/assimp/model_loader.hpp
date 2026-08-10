@@ -43,7 +43,8 @@ class ModelLoader
     axgl::ptr_t<axgl::RendererService> renderer_service,
     axgl::ptr_t<axgl::ResourceService> resource_service,
     std::string resource_key,
-    std::string material_type) :
+    std::string material_type
+  ) :
     entity_service_(std::move(entity_service)),
     renderer_service_(std::move(renderer_service)),
     resource_service_(std::move(resource_service)),
@@ -53,11 +54,11 @@ class ModelLoader
     Assimp::Importer importer;
     const auto& data = resource_service_->get_resource(resource_key_);
     const auto* ai_scene = importer.ReadFileFromMemory(
-      data.data(), data.size(), aiProcess_CalcTangentSpace);
+      data.data(), data.size(), aiProcess_CalcTangentSpace
+    );
 #ifdef AXGL_DEBUG
-    if (
-      !ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
-      || !ai_scene->mRootNode)
+    if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
+        || !ai_scene->mRootNode)
     {
       AXGL_LOG_ERROR("Failed to load model: {}", importer.GetErrorString());
       throw std::runtime_error(importer.GetErrorString());
@@ -71,7 +72,8 @@ class ModelLoader
         embedded_textures_[i] = renderer_service_->create_texture();
         embedded_textures_[i]->load_texture(
           {reinterpret_cast<uint8_t*>(ai_scene->mTextures[i]->pcData),
-           ai_scene->mTextures[i]->mWidth});
+           ai_scene->mTextures[i]->mWidth}
+        );
 
         resources_.textures.push_back(embedded_textures_[i]);
       }
@@ -79,7 +81,10 @@ class ModelLoader
     process_node(ai_scene->mRootNode, ai_scene);
   }
 
-  void process_node(const aiNode* ai_node, const aiScene* ai_scene)
+  void process_node(
+    const aiNode* ai_node,
+    const aiScene* ai_scene
+  )
   {
     for (unsigned int i = 0; i < ai_node->mNumMeshes; ++i)
     {
@@ -93,7 +98,9 @@ class ModelLoader
   }
 
   axgl::ptr_t<axgl::component::Mesh> load_mesh(
-    const aiMesh* ai_mesh, const aiScene* ai_scene)
+    const aiMesh* ai_mesh,
+    const aiScene* ai_scene
+  )
   {
     auto mesh = entity_service_->create_component_t<axgl::component::Mesh>();
     resources_.meshes.push_back(mesh);
@@ -103,7 +110,8 @@ class ModelLoader
     for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
       vertices.emplace_back(
         ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y,
-        ai_mesh->mVertices[i].z);
+        ai_mesh->mVertices[i].z
+      );
     mesh->set_vertices(vertices);
 
     if (ai_mesh->HasNormals())
@@ -112,8 +120,8 @@ class ModelLoader
       normals.reserve(ai_mesh->mNumVertices);
       for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
         normals.emplace_back(
-          ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y,
-          ai_mesh->mNormals[i].z);
+          ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z
+        );
       mesh->set_normals(normals);
     }
 
@@ -127,10 +135,12 @@ class ModelLoader
       {
         tangents.emplace_back(
           ai_mesh->mTangents[i].x, ai_mesh->mTangents[i].y,
-          ai_mesh->mTangents[i].z);
+          ai_mesh->mTangents[i].z
+        );
         bitangents.emplace_back(
           ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y,
-          ai_mesh->mBitangents[i].z);
+          ai_mesh->mBitangents[i].z
+        );
       }
       mesh->set_tangents(tangents);
       mesh->set_bitangents(bitangents);
@@ -142,7 +152,8 @@ class ModelLoader
       uv.reserve(ai_mesh->mNumVertices);
       for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
         uv.emplace_back(
-          ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y);
+          ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y
+        );
       mesh->set_uv(uv);
     }
 
@@ -177,7 +188,8 @@ class ModelLoader
     const aiMaterial* ai_material,
     const aiTextureType ai_texture_type,
     const axgl::ptr_t<axgl::Material>& material,
-    const axgl::Material::TextureType texture_type)
+    const axgl::Material::TextureType texture_type
+  )
   {
     const unsigned int count = ai_material->GetTextureCount(ai_texture_type);
     for (unsigned int i = 0; i < count; ++i)
@@ -212,7 +224,8 @@ class ModelLoader
   }
 
   static axgl::Material::TextureType map_texture_type(
-    const aiTextureType ai_texture_type)
+    const aiTextureType ai_texture_type
+  )
   {
     using enum axgl::Material::TextureType;
     switch (ai_texture_type)

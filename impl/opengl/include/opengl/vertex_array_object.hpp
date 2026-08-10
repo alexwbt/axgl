@@ -78,7 +78,8 @@ public:
     const std::span<const VertexType>& data,
     const std::span<const VertexAttribute>& attributes,
     const int attributes_offset,
-    const GLuint divisor = 0)
+    const GLuint divisor = 0
+  )
   {
     bind();
     auto buffer = std::make_unique<BufferObject>(GL_ARRAY_BUFFER);
@@ -145,7 +146,9 @@ public:
 
   template <typename DataType>
   void update_buffer_data(
-    const GLuint buffer_id, const std::span<const DataType>& data)
+    const GLuint buffer_id,
+    const std::span<const DataType>& data
+  )
   {
     for (const auto& buffer : buffer_objects_)
     {
@@ -165,7 +168,8 @@ public:
     if (element_size_ > 0)
       glDrawElements(
         mode_, util::clamp_cast<GLsizei>(element_size_), GL_UNSIGNED_INT,
-        nullptr);
+        nullptr
+      );
     else if (vertex_size_ > 0)
       glDrawArrays(mode_, 0, util::clamp_cast<GLint>(vertex_size_));
   }
@@ -176,10 +180,12 @@ public:
     if (element_size_ > 0)
       glDrawElementsInstanced(
         mode_, util::clamp_cast<GLsizei>(element_size_), GL_UNSIGNED_INT,
-        nullptr, count);
+        nullptr, count
+      );
     else if (vertex_size_ > 0)
       glDrawArraysInstanced(
-        mode_, 0, util::clamp_cast<GLint>(vertex_size_), count);
+        mode_, 0, util::clamp_cast<GLint>(vertex_size_), count
+      );
   }
 
 private:

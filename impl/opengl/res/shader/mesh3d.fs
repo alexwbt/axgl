@@ -232,7 +232,8 @@ float calc_shadow()
       float pcf_depth
         = texture(
             shadow_maps,
-            vec3(projection_coords.xy + vec2(x, y) * texel_size, cascade_index))
+            vec3(projection_coords.xy + vec2(x, y) * texel_size, cascade_index)
+        )
             .r;
       shadow += projection_coords.z - bias > pcf_depth ? 1.0 : 0.0;
     }
@@ -248,7 +249,10 @@ float calc_shadow()
  * light-to-surface direction. Applies shadowing from the first light's
  * shadow map.
  */
-vec3 calc_sun_light(Context ctx, SunLight light)
+vec3 calc_sun_light(
+  Context ctx,
+  SunLight light
+)
 {
   // Diffuse
   vec3 light_dir = normalize(-light.direction);
@@ -277,7 +281,10 @@ vec3 calc_sun_light(Context ctx, SunLight light)
  * Spot light contribution with distance attenuation and a soft cone cutoff.
  * light.direction points from the light toward the scene.
  */
-vec3 calc_spot_light(Context ctx, SpotLight light)
+vec3 calc_spot_light(
+  Context ctx,
+  SpotLight light
+)
 {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);
@@ -311,7 +318,10 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
 /**
  * Point light contribution with distance attenuation (no cutoff cone).
  */
-vec3 calc_point_light(Context ctx, PointLight light)
+vec3 calc_point_light(
+  Context ctx,
+  PointLight light
+)
 {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);
@@ -387,7 +397,8 @@ void main()
   float weight = transparent ? clamp(
                                  pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0)
                                    * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0),
-                                 1e-2, 3e3)
+                                 1e-2, 3e3
+                               )
                              : 1.0f;
   // pre-multiply color by alpha so the composite recovers the weighted average
   frag_color = vec4(result * mesh_color.a, mesh_color.a) * weight;

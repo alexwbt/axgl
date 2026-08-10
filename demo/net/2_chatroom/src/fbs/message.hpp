@@ -6,7 +6,9 @@
 #include <net/tcp/socket.hpp>
 
 inline net::data_ptr_t build_message(
-  const std::string& sender, const std::string& content)
+  const std::string& sender,
+  const std::string& content
+)
 {
   flatbuffers::FlatBufferBuilder builder;
 
@@ -22,7 +24,8 @@ inline net::data_ptr_t build_message(
 
   auto buffer = builder.Release();
   return std::make_shared<net::data_t>(
-    buffer.data(), buffer.data() + buffer.size());
+    buffer.data(), buffer.data() + buffer.size()
+  );
 }
 
 inline const fbs::chatroom::Message* read_message(const net::data_ptr_t& buffer)
@@ -32,7 +35,8 @@ inline const fbs::chatroom::Message* read_message(const net::data_ptr_t& buffer)
 
   const std::string identifier(
     flatbuffers::GetBufferIdentifier(data.data(), false),
-    flatbuffers::FlatBufferBuilder::kFileIdentifierLength);
+    flatbuffers::FlatBufferBuilder::kFileIdentifierLength
+  );
 
   if (identifier != fbs::chatroom::MessageIdentifier()) return nullptr;
   if (auto verifier = flatbuffers::Verifier(data.data(), data.size());

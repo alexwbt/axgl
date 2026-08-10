@@ -36,7 +36,8 @@ public:
 
     ImGui::BeginChild(
       "##chat_messages", size, ImGuiChildFlags_Border,
-      ImGuiWindowFlags_HorizontalScrollbar);
+      ImGuiWindowFlags_HorizontalScrollbar
+    );
 
     const bool scrolled_to_bottom
       = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 8.0f;

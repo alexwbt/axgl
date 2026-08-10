@@ -53,7 +53,8 @@ public:
 
       // camera input
       camera_service->set_camera_mode(
-        axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>());
+        axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>()
+      );
       camera_service->set_camera_entity(camera_entity);
     }
 
@@ -70,7 +71,8 @@ public:
     // load fonts
     text_service->load_font("arial", demo_text_res::get("font/arial.ttf"), 0);
     text_service->load_font(
-      "noto-tc", demo_text_res::get("font/noto-tc.ttf"), 0);
+      "noto-tc", demo_text_res::get("font/noto-tc.ttf"), 0
+    );
 
     // text entity
     {
@@ -80,7 +82,8 @@ public:
           u8"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
           u8"!@#$%^&*()[]{}<>,.`~-_+=\\/|?'\":;"
           u8"蒙沙新書章節論；附【優價】電影放映。學校商店：千手藝伎百科全書《長"
-          u8"屋齋梶地寺大急平町地區大村》。"),
+          u8"屋齋梶地寺大急平町地區大村》。"
+        ),
         .fonts = {"arial", "noto-tc"},
         .font_color = {1.0f, 0.5f, 0.2f, 1.0f},
         .font_size = 48.0f,
@@ -97,7 +100,8 @@ public:
       const auto text_entity = entity_service->create_entity();
       text_entity->add_component(mesh);
       text_entity->set_scale(
-        glm::vec3(texture->get_width(), texture->get_height(), 1.0f) * 0.01f);
+        glm::vec3(texture->get_width(), texture->get_height(), 1.0f) * 0.01f
+      );
       realm->entities().add(text_entity);
     }
   }

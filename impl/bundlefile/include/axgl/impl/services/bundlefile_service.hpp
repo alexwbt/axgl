@@ -37,7 +37,8 @@ public:
     for (const auto bundle = bundles_[path]->get_bundle();
          const auto& file : *bundle->files())
       resource_service_->load_resource(
-        file->key()->str(), ::flatbuffers::make_span(file->data()));
+        file->key()->str(), ::flatbuffers::make_span(file->data())
+      );
   }
 
   void unload_bundlefile(const std::string& path)

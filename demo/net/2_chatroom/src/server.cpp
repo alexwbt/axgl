@@ -17,7 +17,9 @@ public:
   }
 
   void on_connect(
-    const uint32_t session_id, const std::shared_ptr<net::Session>&) override
+    const uint32_t session_id,
+    const std::shared_ptr<net::Session>&
+  ) override
   {
     SPDLOG_INFO("new connection (id: {})", session_id);
   }
@@ -27,7 +29,10 @@ public:
     SPDLOG_INFO("client disconnected (id: {})", session_id);
   }
 
-  void on_receive(uint32_t session_id, const net::data_ptr_t& buffer) override
+  void on_receive(
+    uint32_t session_id,
+    const net::data_ptr_t& buffer
+  ) override
   {
     const auto* message = read_message(buffer);
 
@@ -45,11 +50,15 @@ public:
   }
 };
 
-int main(int argc, char** argv)
+int main(
+  int argc,
+  char** argv
+)
 {
   args::ArgumentParser parser("Net demo chatroom server.");
   args::ValueFlag<std::uint16_t> port_arg(
-    parser, "port", "Optional port.", {'p', "port"}, 10000);
+    parser, "port", "Optional port.", {'p', "port"}, 10000
+  );
   try
   {
     parser.ParseCLI(argc, argv);

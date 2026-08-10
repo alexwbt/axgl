@@ -48,7 +48,8 @@ static std::vector<File> read_directory(const std::string& source)
 static void write_files(
   const std::vector<File>& files,
   const std::string& target,
-  const std::string& ns)
+  const std::string& ns
+)
 {
   std::ofstream header_output_stream(target + ".hpp");
   header_output_stream << "#pragma once" << std::endl;
@@ -84,8 +85,8 @@ static void write_files(
     input_stream.read(reinterpret_cast<char*>(buffer.data()), size);
 
     output_stream << std::format(
-      "constexpr std::array<uint8_t, {}> d{} = {{", buffer.size(),
-      file.key_hash);
+      "constexpr std::array<uint8_t, {}> d{} = {{", buffer.size(), file.key_hash
+    );
     for (int b : buffer)
       output_stream << b << ",";
     output_stream << "};" << std::endl;
@@ -103,7 +104,10 @@ static void write_files(
 }
 
 static int embed_files(
-  const std::string& source, const std::string& target, const std::string& ns)
+  const std::string& source,
+  const std::string& target,
+  const std::string& ns
+)
 {
   if (!std::filesystem::is_directory(source))
   {
@@ -122,19 +126,25 @@ static int embed_files(
   return 0;
 }
 
-int main(const int argc, char** argv)
+int main(
+  const int argc,
+  char** argv
+)
 {
   args::ArgumentParser parser(
-    "Embeds all files in a directory into a cpp file.");
+    "Embeds all files in a directory into a cpp file."
+  );
   args::HelpFlag help(parser, "help", "Display the help menu.", {'h', "help"});
 
   args::Positional<std::string> source(
-    parser, "source", "The source directory to embed.",
-    args::Options::Required);
+    parser, "source", "The source directory to embed.", args::Options::Required
+  );
   args::Positional<std::string> target(
-    parser, "target", "The output cpp file.", args::Options::Required);
+    parser, "target", "The output cpp file.", args::Options::Required
+  );
   args::ValueFlag<std::string> ns(
-    parser, "namespace", "Optional namespace.", {'n', "namespace"});
+    parser, "namespace", "Optional namespace.", {'n', "namespace"}
+  );
 
   try
   {

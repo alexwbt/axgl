@@ -75,13 +75,15 @@ public:
   }
   void set_property(
     [[maybe_unused]] const std::string& key,
-    [[maybe_unused]] const std::string& value) override
+    [[maybe_unused]] const std::string& value
+  ) override
   {
     AXGL_LOG_DEBUG("Properties are not supported.");
   }
   void add_texture(
     [[maybe_unused]] const axgl::Material::TextureType type,
-    [[maybe_unused]] const axgl::ptr_t<axgl::Texture> texture) override
+    [[maybe_unused]] const axgl::ptr_t<axgl::Texture> texture
+  ) override
   {
     AXGL_LOG_DEBUG("Textures are not supported.");
   }
@@ -116,12 +118,14 @@ public:
     return normal_scale_;
   }
   [[nodiscard]] std::string get_property(
-    [[maybe_unused]] const std::string& key) const override
+    [[maybe_unused]] const std::string& key
+  ) const override
   {
     return {};
   }
   [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture(
-    [[maybe_unused]] axgl::Material::TextureType type) const override
+    [[maybe_unused]] axgl::Material::TextureType type
+  ) const override
   {
     return nullptr;
   }
@@ -142,7 +146,8 @@ public:
   }
 
   virtual void use(
-    [[maybe_unused]] const impl::opengl::renderer::RenderContext& context)
+    [[maybe_unused]] const impl::opengl::renderer::RenderContext& context
+  )
   {
     if (enable_depth_test_)
     {
@@ -172,7 +177,8 @@ public:
   }
 
   [[nodiscard]] virtual int get_attribute_offset(
-    const Attribute attribute) const
+    const Attribute attribute
+  ) const
   {
     switch (attribute)
     {

@@ -36,18 +36,22 @@ public:
   }
 
   axgl::ptr_t<axgl::gui::Element> create_element(
-    const std::string& type) override
+    const std::string& type
+  ) override
   {
 #ifdef AXGL_DEBUG
     if (!element_factories_.contains(type))
       throw std::runtime_error(
-        std::format("Element factory for '{}' not registered.", type));
+        std::format("Element factory for '{}' not registered.", type)
+      );
 #endif
     return element_factories_.at(type)();
   }
 
   void register_element_factory(
-    const std::string& type, FactoryFunction element_factory) override
+    const std::string& type,
+    FactoryFunction element_factory
+  ) override
   {
     element_factories_.emplace(type, element_factory);
   }
@@ -57,7 +61,8 @@ public:
 #ifdef AXGL_DEBUG
     if (styles_.contains(name))
       AXGL_LOG_WARN(
-        "GuiService: style \"{0}\" already exists, overriding style.", name);
+        "GuiService: style \"{0}\" already exists, overriding style.", name
+      );
 #endif
     auto style = axgl::create_ptr<axgl::gui::Style>();
     styles_[name] = style;
@@ -65,13 +70,18 @@ public:
   }
 
   axgl::ptr_t<axgl::gui::Style> get_style(
-    const std::string& name) const override
+    const std::string& name
+  ) const override
   {
     const auto it = styles_.find(name);
     if (it == styles_.end())
     {
 #ifdef AXGL_DEBUG
-      AXGL_LOG_WARN("GuiService: required style \"{}\" does not exist.", name);
+      if (!name.ends_with(":hover") && !name.ends_with(":active")
+          && !name.ends_with(":focus"))
+        AXGL_LOG_WARN(
+          "GuiService: required style \"{}\" does not exist.", name
+        );
 #endif
       return nullptr;
     }

@@ -67,18 +67,22 @@ public:
       // diffuse texture
       const auto diffuse_texture = renderer_service->create_texture();
       diffuse_texture->load_texture(
-        demo_textured_cube_res::get("container/diffuse.png"));
+        demo_textured_cube_res::get("container/diffuse.png")
+      );
       // specular texture
       const auto specular_texture = renderer_service->create_texture();
       specular_texture->load_texture(
-        demo_textured_cube_res::get("container/specular.png"));
+        demo_textured_cube_res::get("container/specular.png")
+      );
 
       // material
       const auto material = renderer_service->create_material("3d");
       material->add_texture(
-        axgl::Material::TextureType::kDiffuse, diffuse_texture);
+        axgl::Material::TextureType::kDiffuse, diffuse_texture
+      );
       material->add_texture(
-        axgl::Material::TextureType::kSpecular, specular_texture);
+        axgl::Material::TextureType::kSpecular, specular_texture
+      );
 
       // square mesh
       const auto mesh

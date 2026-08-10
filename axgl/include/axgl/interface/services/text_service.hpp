@@ -22,12 +22,15 @@ public:
   };
 
   virtual void load_font(
-    const std::string& name, std::span<const std::uint8_t> data, int index)
-    = 0;
+    const std::string& name,
+    std::span<const std::uint8_t> data,
+    int index
+  ) = 0;
   virtual void unload_font(const std::string& name) = 0;
 
   [[nodiscard]] virtual axgl::ptr_t<axgl::Texture> create_texture(
-    const Options& options) const
+    const Options& options
+  ) const
     = 0;
 };
 

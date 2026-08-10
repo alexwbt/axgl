@@ -40,6 +40,7 @@ protected:
   glm::vec2 size_{0.0f};
   glm::vec4 rect_{0.0f};
   glm::vec4 scissor_rect_{0.0f};
+  glm::vec2 intrinsic_size_{0.0f};
 
 public:
   [[nodiscard]] std::uint64_t get_id() const override { return id_; }
@@ -49,6 +50,14 @@ public:
   [[nodiscard]] glm::vec4 get_visible_rect() const override
   {
     return scissor_rect_;
+  }
+  [[nodiscard]] glm::vec2 get_intrinsic_size() const override
+  {
+    return intrinsic_size_;
+  }
+  [[nodiscard]] const axgl::gui::Style& get_computed_style() const override
+  {
+    return *computed_style_;
   }
   [[nodiscard]] bool is_focusable() const override { return focusable_; }
   [[nodiscard]] bool is_focused() const override { return focused_; }
@@ -72,8 +81,8 @@ public:
 
   void update(const axgl::gui::Context& context) override
   {
-    size_ = computed_style_->get_size() * context.scale;
-    position_ = computed_style_->get_position() * context.scale;
+    // size_ = computed_style_->get_size() * context.scale;
+    // position_ = computed_style_->get_position() * context.scale;
     if (context.parent) position_ += context.parent->get_position();
     scissor_rect_ = rect_ = {position_, position_ + size_};
     if (context.parent)
@@ -210,10 +219,10 @@ protected:
         if (focused_) set_using_style(context.gui_service, style + ":focus");
       }
     }
-    if (
-      update_styles_ || element_style_->is_modified() //
-      || std::ranges::any_of(
-        using_styles_, [](const auto& s) { return s->is_modified(); }))
+    if (update_styles_ || element_style_->is_modified() //
+        || std::ranges::any_of(
+          using_styles_, [](const auto& s) { return s->is_modified(); }
+        ))
     {
       computed_style_ = std::make_unique<axgl::gui::Style>();
       for (const auto& style : using_styles_)
@@ -225,7 +234,10 @@ protected:
   }
 
 private:
-  void set_using_style(const GuiService* gui_context, const std::string& name)
+  void set_using_style(
+    const GuiService* gui_context,
+    const std::string& name
+  )
   {
     if (const auto& style_ptr = gui_context->get_style(name))
       using_styles_.emplace_back(style_ptr);

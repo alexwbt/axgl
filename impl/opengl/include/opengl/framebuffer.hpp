@@ -47,30 +47,38 @@ public:
   void use_write() const { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_); }
 
   void attach_texture(
-    const GLenum attachment, const ::opengl::Texture& texture) const
+    const GLenum attachment,
+    const ::opengl::Texture& texture
+  ) const
   {
     use();
     glFramebufferTexture2D(
-      GL_FRAMEBUFFER, attachment, texture.get_target(), texture.get_id(), 0);
+      GL_FRAMEBUFFER, attachment, texture.get_target(), texture.get_id(), 0
+    );
   }
 
   void attach_texture_layer(
     const GLenum attachment,
     const ::opengl::Texture& texture,
-    const GLint layer) const
+    const GLint layer
+  ) const
   {
     use();
     glFramebufferTextureLayer(
-      GL_FRAMEBUFFER, attachment, texture.get_id(), 0, layer);
+      GL_FRAMEBUFFER, attachment, texture.get_id(), 0, layer
+    );
   }
 
   void attach_renderbuffer(
-    const GLenum attachment, const ::opengl::Renderbuffer& renderbuffer) const
+    const GLenum attachment,
+    const ::opengl::Renderbuffer& renderbuffer
+  ) const
   {
     use();
     glFramebufferRenderbuffer(
       GL_FRAMEBUFFER, attachment, renderbuffer.get_target(),
-      renderbuffer.get_id());
+      renderbuffer.get_id()
+    );
   }
 
   void set_draw_buffers(const std::vector<GLenum>& attachments) const
@@ -83,7 +91,8 @@ public:
   {
     if (const auto status = get_status(); status != GL_FRAMEBUFFER_COMPLETE)
       AXGL_LOG_ERROR(
-        "Framebuffer({}) status is incomplete. (status: {})", name, status);
+        "Framebuffer({}) status is incomplete. (status: {})", name, status
+      );
   }
 
   [[nodiscard]] GLenum get_status() const

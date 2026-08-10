@@ -53,8 +53,12 @@ public:
 
   static axgl::Light sunlight(
     const glm::vec3& direction = glm::vec3(0.0f),
-    const axgl::Light::Color& color
-    = axgl::Light::Color{glm::vec3(0.2f), glm::vec3(1.0f), glm::vec3(1.0f)})
+    const axgl::Light::Color& color = axgl::Light::Color{
+      glm::vec3(0.2f),
+      glm::vec3(1.0f),
+      glm::vec3(1.0f)
+    }
+  )
   {
     axgl::Light light(axgl::Light::Type::kSun);
     light.direction = direction;
@@ -67,7 +71,8 @@ public:
     const axgl::Light::Strength& strength
     = axgl::Light::Strength{1.0f, 0.09f, 0.032f},
     const axgl::Light::Color& color
-    = axgl::Light::Color{glm::vec3(0.02f), glm::vec3(1.0f), glm::vec3(1.0f)})
+    = axgl::Light::Color{glm::vec3(0.02f), glm::vec3(1.0f), glm::vec3(1.0f)}
+  )
   {
     axgl::Light light(axgl::Light::Type::kPoint);
     light.position = position;
@@ -84,7 +89,8 @@ public:
     const axgl::Light::Strength& strength
     = axgl::Light::Strength{1.0f, 0.09f, 0.032f},
     const axgl::Light::Color& color
-    = axgl::Light::Color{glm::vec3(0.02f), glm::vec3(1.0f), glm::vec3(1.0f)})
+    = axgl::Light::Color{glm::vec3(0.02f), glm::vec3(1.0f), glm::vec3(1.0f)}
+  )
   {
     axgl::Light light(axgl::Light::Type::kSpot);
     light.position = position;

@@ -47,12 +47,14 @@ public:
     // read size
     co_await asio::async_read(
       socket_, asio::dynamic_buffer(buffer, kLengthPrefixSize),
-      asio::use_awaitable);
+      asio::use_awaitable
+    );
     const auto size = ntohl(*reinterpret_cast<std::uint32_t*>(buffer.data()));
     // read all of size
     co_await asio::async_read(
       socket_, asio::dynamic_buffer(buffer, kLengthPrefixSize + size),
-      asio::use_awaitable);
+      asio::use_awaitable
+    );
   }
 
   void close() override { socket_.close(); }
