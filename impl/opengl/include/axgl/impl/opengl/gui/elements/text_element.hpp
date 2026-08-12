@@ -1,6 +1,5 @@
 #pragma once
 
-#include "util/numcast.hpp"
 #include <axgl/common.hpp>
 #include <axgl/interface/gui/elements/text_element.hpp>
 
@@ -31,9 +30,9 @@ public:
   {
     axgl::impl::opengl::gui::Element::update(context);
 
-    // FIXME: updating styles (fonts, color, size) does not trigger rerender.
     const auto text_scale = context.scale * context.font_scale;
-    if (modified_text_ || text_scale_ != text_scale)
+    if (computed_style_->is_modified() || modified_text_
+        || text_scale_ != text_scale)
     {
       modified_text_ = false;
       text_scale_ = text_scale;

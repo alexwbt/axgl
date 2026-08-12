@@ -69,7 +69,7 @@ public:
   [[nodiscard]] bool is_modified() const { return modified_; }
   void reset_modified() { modified_ = false; }
 
-  void apply_to(Style& target, bool mark_updated = true) const
+  void apply_to(Style& target) const
   {
     __AXGL_GUI_STYLE_APPLY_TO(position);
     __AXGL_GUI_STYLE_APPLY_TO(size);
@@ -86,7 +86,6 @@ public:
     __AXGL_GUI_STYLE_APPLY_TO(display);
     __AXGL_GUI_STYLE_APPLY_TO(margin);
     __AXGL_GUI_STYLE_APPLY_TO(padding);
-    if (mark_updated) target.modified_ = true;
   }
 
   __AXGL_GUI_STYLE_PROPERTY(glm::vec2, position, {0.0f})

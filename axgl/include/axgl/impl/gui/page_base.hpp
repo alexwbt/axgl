@@ -65,6 +65,16 @@ public:
   void update() override
   {
     const auto& gui_service = axgl_->gui_service();
+    const axgl::gui::Context current_context{
+      *context_,         //
+      gui_service.get(), //
+      this,              //
+      nullptr,           //
+      scale_,            //
+      font_scale_,       //
+      glm::mat4(1.0f),   //
+    };
+
     const bool normal_cursor_mode = axgl_->input_service()->get_cursor_mode()
       == axgl::InputService::CursorMode::kNormal;
     if (cursor_pointer_ && normal_cursor_mode)
@@ -75,15 +85,6 @@ public:
     else if (using_cursor_)
     {
       using_cursor_ = false;
-      const axgl::gui::Context current_context{
-        *context_,         //
-        gui_service.get(), //
-        this,              //
-        nullptr,           //
-        scale_,            //
-        font_scale_,       //
-        glm::mat4(1.0f),   //
-      };
       for (const auto& element : elements_.get())
         if (element->is_hovering()) element->on_pointer_exit(current_context);
     }
@@ -96,21 +97,12 @@ public:
       if (scale_ <= 0.1f) scale_ = 0.1f;
     }
 
+    for (const auto& element : elements_.get())
+      element->update(current_context);
+
     // for now
     BlockLayout layout;
     layout.apply({width_, height_}, elements_);
-
-    const axgl::gui::Context current_context{
-      *context_,         //
-      gui_service.get(), //
-      this,              //
-      nullptr,           //
-      scale_,            //
-      font_scale_,       //
-      glm::mat4(1.0f),   //
-    };
-    for (const auto& element : elements_.get())
-      element->update(current_context);
   }
 
   void render() override { should_render_ = false; }
