@@ -86,9 +86,9 @@ public:
       const auto size = glm::vec3(
         text_texture_->get_width(), text_texture_->get_height(), 1.0f
       );
-      const auto content_model                                        //
-        = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
-        * glm::scale(size);                                           //
+      const auto content_model
+        = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f))
+        * glm::scale(size);
       auto& content_shader = ::opengl::StaticShaders::instance().gui();
       content_shader.use_program();
       text_texture_->use(GL_TEXTURE0);
