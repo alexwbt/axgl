@@ -50,15 +50,6 @@ int main()
   page->set_focus_activate_input(focus_activate_input);
   gui_service->set_main_ui(page);
 
-  // gui_service->create_style("box")
-  //   ->set_cursor(axgl::gui::Cursor::kPointer)
-  //   ->set_position({10.0f, 10.0f})
-  //   ->set_size({300.0f, 300.0f})
-  //   ->set_font_size(48.0f)
-  //   ->set_fonts({"arial", "noto-tc"});
-  // gui_service->create_style("box:hover")->set_opacity(0.8f);
-  // gui_service->create_style("box:active")->set_opacity(0.6f);
-
   using namespace axgl::gui;
 
   gui_service->create_style("text")->set_fonts({"arial", "noto-tc"});

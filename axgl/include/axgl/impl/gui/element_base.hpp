@@ -96,12 +96,11 @@ public:
 
     const auto& active_input = context.page->get_activate_input();
     const auto& pointer = context.page->get_cursor_pointer();
-    const bool pointer_in_rect = pointer       //
-      && pointer->position.x > scissor_rect_.x //
-      && pointer->position.y > scissor_rect_.y //
-      && pointer->position.x < scissor_rect_.z //
-      && pointer->position.y < scissor_rect_.w //
-      ;
+    const bool pointer_in_rect = pointer
+      && pointer->position.x > scissor_rect_.x
+      && pointer->position.y > scissor_rect_.y
+      && pointer->position.x < scissor_rect_.z
+      && pointer->position.y < scissor_rect_.w;
 
     if (!hovering_ && pointer_in_rect) on_pointer_enter(context);
     if (hovering_ && !pointer_in_rect) on_pointer_exit(context);

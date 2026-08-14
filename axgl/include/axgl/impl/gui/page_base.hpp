@@ -48,13 +48,8 @@ public:
   {
     const auto& gui_service = axgl_->gui_service();
     const axgl::gui::Context current_context{
-      *context_,         //
-      gui_service.get(), //
-      this,              //
-      nullptr,           //
-      scale_,            //
-      font_scale_,       //
-      glm::mat4(1.0f),   //
+      *context_,   gui_service.get(), this, nullptr, scale_,
+      font_scale_, glm::mat4(1.0f),
     };
     for (const auto& element : elements_.get())
       element->init(current_context);
@@ -65,30 +60,19 @@ public:
   void update() override
   {
     const auto& gui_service = axgl_->gui_service();
-    const axgl::gui::Context current_context{
-      *context_,         //
-      gui_service.get(), //
-      this,              //
-      nullptr,           //
-      scale_,            //
-      font_scale_,       //
-      glm::mat4(1.0f),   //
-    };
 
     const bool normal_cursor_mode = axgl_->input_service()->get_cursor_mode()
       == axgl::InputService::CursorMode::kNormal;
+
+    // update using_cursor_ and cursor_
     if (cursor_pointer_ && normal_cursor_mode)
     {
       using_cursor_ = true;
       cursor_ = axgl::gui::Cursor::kNormal;
     }
-    else if (using_cursor_)
-    {
-      using_cursor_ = false;
-      for (const auto& element : elements_.get())
-        if (element->is_hovering()) element->on_pointer_exit(current_context);
-    }
+    else using_cursor_ = false;
 
+    // update scale_
     if (normal_cursor_mode && scale_input_ && scroll_pointer_
         && scale_input_->tick > 0 && scroll_pointer_->delta.y != 0.0f)
     {
@@ -97,10 +81,15 @@ public:
       if (scale_ <= 0.1f) scale_ = 0.1f;
     }
 
+    // update elements
+    const axgl::gui::Context current_context{
+      *context_,   gui_service.get(), this, nullptr, scale_,
+      font_scale_, glm::mat4(1.0f),
+    };
     for (const auto& element : elements_.get())
       element->update(current_context);
 
-    // for now
+    // apply layout
     BlockLayout layout;
     layout.apply({width_, height_}, elements_);
   }
@@ -146,7 +135,7 @@ public:
   }
   [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_cursor_pointer() const override
   {
-    return cursor_pointer_;
+    return using_cursor_ ? cursor_pointer_ : nullptr;
   }
   [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_scroll_pointer() const override
   {

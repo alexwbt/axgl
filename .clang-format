@@ -25,7 +25,7 @@ PPIndentWidth: 2
 ObjCBlockIndentWidth: 2
 BracedInitializerIndentWidth: 2
 ConstructorInitializerIndentWidth: 2
-LambdaBodyIndentation: OuterScope
+LambdaBodyIndentation: Signature
 NamespaceIndentation: None
 CompactNamespaces: false
 IndentCaseLabels: false

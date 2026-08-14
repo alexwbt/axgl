@@ -275,9 +275,9 @@ public:
     for (const auto& input : inputs_)
     {
       const auto active = std::ranges::any_of(
-        input->sources, //
+        input->sources,
         [&window](const auto& source) { return get_glfw_input(source, window); }
-      );                //
+      );
       if (active) input->tick++;
       else input->tick = 0;
     }
