@@ -6,4 +6,3 @@ _build/
 
 .env
 .DS_Store
-.nvim/spell/*.spl
