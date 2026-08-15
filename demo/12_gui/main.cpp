@@ -8,6 +8,8 @@
 int main()
 {
   axgl::Axgl axgl;
+  axgl.initialize();
+
   setup(axgl);
 
   const auto& gui_service = axgl.gui_service();
@@ -77,7 +79,7 @@ int main()
   {
     const auto e = gui_service->create_element_t<TextElement>();
     e->set_text("This is a axgl gui demo.");
-    e->set_style({"text", "p"});
+    e->set_style({"text", "p"})->set_color(kBlue);
     page->elements().add(e);
   }
 

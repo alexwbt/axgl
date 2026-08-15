@@ -5,8 +5,6 @@
   #include <axgl/impl/glfw.hpp>
   #include <axgl/impl/opengl.hpp>
 #endif
-// #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
-// #include <axgl/common/mesh.hpp>
 
 inline void setup(axgl::Axgl& axgl)
 {
@@ -16,15 +14,9 @@ inline void setup(axgl::Axgl& axgl)
   axgl::configure_opengl(axgl);
 #endif
 
-  axgl.initialize();
-
   const auto& window_service = axgl.window_service();
   const auto& input_service = axgl.input_service();
   const auto& renderer_service = axgl.renderer_service();
-  // const auto& realm_service = axgl.realm_service();
-  // const auto& entity_service = axgl.entity_service();
-  // const auto& camera_service = axgl.camera_service();
-  // const auto& resource_service = axgl.resource_service();
 
   // window
   const auto window = window_service->create_window();
