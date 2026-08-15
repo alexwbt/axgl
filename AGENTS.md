@@ -6,10 +6,10 @@ demos).
 
 ## Setup (do this first, or builds fail silently)
 
-- Submodules: `git submodule update --init --recursive`. All third-party deps
-  live under `_external/` (glm, glfw, spdlog, assimp, asio, flatbuffers, tracy,
-  freetype, args, cpptrace, utfcpp, stb, imgui). They are built as part
-  of the CMake tree, not fetched.
+- Submodules: `git submodule update --init --recursive` (or `make setup`).
+  All third-party deps live under `_external/` (glm, glfw, spdlog, assimp,
+  asio, flatbuffers, tracy, freetype, args, cpptrace, utfcpp, stb, imgui,
+  simdjson). They are built as part of the CMake tree, not fetched.
 - Git LFS is required. `core.hooksPath` is set to `.githooks`; the hooks abort
   checkout/commit/merge/push if `git-lfs` is missing. LFS tracks `*.png`,
   `*.ttf`, `*.assbin` (see `.gitattributes`). Without LFS, demo assets in
@@ -17,13 +17,21 @@ demos).
 
 ## Build
 
-- Use the wrapper: `_scripts/build.sh [debug|release] [--target <target>] [--no-config]`
-  (logs to `_log/build.log` plus a timestamped archive in `_log/`). `--no-config`
-  skips the configure step. The default preset is `debug`. Use `--target <target>`
-  (e.g. `--target demo_blending`) to build only that target; `--no-config` can
-  appear in any position. Preset may be given as a positional arg (`debug`);
-  flags can appear in any position. When testing a change, build the `debug`
-  preset only (it is the default).
+- Use the wrapper: `_scripts/build.sh [debug|release] [--target <target>]
+  [--no-config] [--no-build]` (logs to `_log/build.log` plus a timestamped
+  archive in `_log/`). The default preset is `debug`. `--no-config` skips
+  configure; `--no-build` skips the build step (configure only). `--target
+  <name>` builds a single target (e.g. `--target demo_blending`). Preset is a
+  positional arg; flags can appear in any position. When testing a change,
+  build the `debug` preset only (it is the default).
+- The `Makefile` wraps the same scripts: `make` (= `make debug`), `make
+  release`, `make target TARGET=<name>`, `make run [TARGET=<name>]`, `make
+  demo_<name>` (e.g. `make demo_window`), `make clean`, `make format`, `make
+  tidy`. Default TARGET is `demo_playground`; parallelism via `PARALLEL=N`.
+- After a full debug build, `build.sh` runs the `compile_proxy` tool (see
+  "compile_proxy" below) to post-process `compile_commands.json` so clangd /
+  clang-tidy get real entries for header-only TUs. This is skipped for
+  `--target` builds (database may be incomplete).
 - Check `_log/build.log` for errors/output instead of relying on stdout, which
   may be empty, truncated, or intermixed with runtime output. Use the Read
   tool (or Grep) on `_log/build.log`, not `tail`/`cat` via Bash.
@@ -31,22 +39,27 @@ demos).
   `CMAKE_EXPORT_COMPILE_COMMANDS` is ON, so `compile_commands.json` lands in
   `_build/Debug` — this is what `.clangd` and clang-tidy (`-p _build/Debug`)
   read. If you wipe `_build/`, clangd/clang-tidy break until you reconfigure.
-- Clean: `_scripts/clean.sh` (removes `_build/` and `_bin/`).
+- Clean: `_scripts/clean.sh` (or `make clean`) — removes `_build/` and `_bin/`.
 - Debug preset defines `AXGL_DEBUG` and `TRACY_ENABLE=ON`; release turns both
   off. See "Debug/profiling instrumentation" below — these flags change
   behavior, not just optimization.
 
 ## Format / lint
 
-- Style is clang-format **Allman braces, 2-space, 120 col, pointers left**
+- Style is clang-format **Allman braces, 2-space, 80 col, pointers left**
   (`.clang-format`). Match this exactly; do not reflow to LLVM defaults.
+- `clang-format` major version **20** is required (enforced by
+  `_scripts/format.sh`; override with `CLANG_FORMAT_SKIP_VERSION_CHECK=1`).
+  The `.env` file sets `CLANG_FORMAT=/c/msys64/usr/bin/clang-format`.
 - `pre-commit` hook (in `.githooks`) auto-runs `clang-format -i` on staged
-  `.cpp/.hpp` under `axgl/`, `demo/`, `impl/`, `lib/` and re-stages them. If
-  you commit from a shell that doesn't run hooks, run `_scripts/format.sh`
-  first.
-- `_scripts/format.sh` also runs `clang-tidy -fix -fix-errors` (pass
-  `--no-tidy` to skip) across the same four trees, then clang-format. It
-  requires a configured `_build/Debug` for the compile database.
+  `.cpp/.hpp/.fs/.vs` under `axgl/`, `demo/`, `impl/`, `lib/` and re-stages
+  them. If you commit from a shell that doesn't run hooks, run
+  `_scripts/format.sh` first.
+- `_scripts/format.sh` (or `make tidy`) also runs `clang-tidy -fix
+  -fix-errors` (pass `--no-tidy`, or use `make format`, to skip) across the
+  same four trees, then clang-format. It requires a configured
+  `_build/Debug` for the compile database. Use `--files <f1> <f2> ...` to
+  format only listed files (no tidy).
 - clang-tidy checks are pinned in `.clang-tidy` (large bugprone/modernize/
   performance/readability set). Don't disable checks ad hoc; edit the file.
 
@@ -63,20 +76,23 @@ demo runs. Don't invent test commands or claim coverage.
   registers the default services. Services are split into
   `axgl/include/axgl/interface/` (abstract) and `axgl/include/axgl/impl/`
   (default implementations). `axgl/CMakeLists.txt` links `util`, `glm`,
-  `spdlog`, `cpptrace`, `Tracy::TracyClient` as INTERFACE deps — include these
-  via `axgl`, not directly from `_external/`.
+  `spdlog`, `cpptrace::cpptrace`, `Tracy::TracyClient` as INTERFACE deps —
+  include these via `axgl`, not directly from `_external/`.
 - `lib/` — internal support libraries: `net` (asio wrapper, INTERFACE),
-  `glad`, `util`, `assbin`, `embedfile`, `bundlefile`. `net` is standalone
-  (no `axgl` dependency) and used by the net demos.
+  `glad`, `util`, `assbin`, `embedfile`, `bundlefile`, `compile_proxy`. `net`
+  is standalone (no `axgl` dependency) and used by the net demos.
 - `impl/` — platform/backend implementations, built as libraries:
-  `axgl_glfw_impl` (INTERFACE), `axgl_opengl_impl` (static, embeds its `res/`),
-  `axgl_assimp_impl`, `axgl_bundlefile_impl`. **Demos link an `impl` target,
-  not `axgl` directly** — the impl transitively pulls in `axgl`.
+  `axgl_glfw_impl` (INTERFACE), `axgl_opengl_impl` (static, embeds its
+  `res/`), `axgl_assimp_impl`, `axgl_bundlefile_impl`. **Demos link an `impl`
+  target, not `axgl` directly** — the impl transitively pulls in `axgl`.
 - `demo/` — executables. `demo/CMakeLists.txt` auto-discovers subdirectories
-  with a `CMakeLists.txt`, so each numbered demo (`01_window` ... `12_gui`) and
-  `demo/net/*` is its own target. `demo/playground` is the scratch app.
-  Net demos (`demo/net/1_tcp_ping`, `demo/net/2_chatroom`) link `net` and, on
-  MinGW/Windows, need `ws2_32 mswsock`.
+  with a `CMakeLists.txt`, so each numbered demo (`01_window` ... `12_gui`)
+  and `demo/net/*` is its own target. `demo/playground` is the scratch app.
+  Target names: `demo_<shortname>` (e.g. `demo_window`, `demo_blending`,
+  `demo_playground`); net demos are `demo_net_tcp_ping_client`,
+  `demo_net_tcp_ping_server`, `demo_net_chatroom_server`,
+  `demo_net_chatroom_client`. Net demos link `net` and, on MinGW/Windows,
+  need `ws2_32 mswsock`.
 
 ## Codegen / resource pipeline (easy to miss)
 
@@ -97,9 +113,23 @@ build is required after editing inputs or the generated code goes stale.
   `demo/net/2_chatroom` (`fbs/`). When you add a `.fbs`, rerun configure so the
   glob + custom command regenerate.
 
-The `flatc`, `embedfile`, `bundlefile` tools are built from source as part of
-the normal build (see `lib/bundlefile`, `lib/embedfile`, `_external/flatbuffer`)
-and placed in `_bin/`. Don't expect them on `PATH`.
+The `flatc`, `embedfile`, `bundlefile`, `compile_proxy` tools are built from
+source as part of the normal build and placed in `_bin/`. Don't expect them
+on `PATH`.
+
+## compile_proxy (header-only clangd support)
+
+`_cmake/compile_proxy.cmake` defines `add_compile_proxy(target
+include_directory)`. It generates a stub `.cpp` per `.hpp` under
+`include_directory` (each just `#include`s the header) and compiles them into
+a static library, so `compile_commands.json` has an entry per header — without
+this, clangd/clang-tidy have no compile commands for header-only libraries
+like `axgl`. Only active in `Debug` builds. Used by `axgl`, `demo/playground`,
+and `demo/net/2_chatroom` (for generated flatbuffer headers).
+
+After building, `_scripts/build.sh` runs the `compile_proxy` tool
+(`lib/compile_proxy`) to rewrite the stub entries' `file` field to point at
+the real header, so editors jump to the header instead of the stub.
 
 ## Debug / profiling instrumentation (changes semantics)
 
@@ -107,7 +137,9 @@ and placed in `_bin/`. Don't expect them on `PATH`.
 `AXGL_DEBUG && TRACY_ENABLE` (i.e. the debug preset) it:
 
 - Defines `AXGL_PROFILE_SCOPE`, `AXGL_PLOT`, `AXGL_ALLOC`, `AXGL_FREE` as real
-  Tracy macros; otherwise they expand to nothing.
+  Tracy macros; otherwise they expand to nothing. (`AXGL_PROFILE_SCOPE` is
+  guarded by `AXGL_DEBUG` alone, but Tracy macros are no-ops without
+  `TRACY_ENABLE`, so both must be on for real profiling.)
 - **Globally overrides `operator new` / `delete` / array forms** to route
   allocations through `TracyAlloc`/`TracyFree`. These are non-inline
   definitions in a header guarded by the combo flag — keep an eye on ODR
@@ -124,7 +156,8 @@ raw spdlog/Tracy calls so release builds stay zero-cost.
 
 - Pointer type alias `axgl::ptr_t<T>` = `std::shared_ptr<T>`; use
   `axgl::create_ptr<T>(...)` and `axgl::ptr_cast<T1>(p)` (dynamic) instead of
-  raw `make_shared` / `dynamic_pointer_cast`.
+  raw `make_shared` / `dynamic_pointer_cast`. There is also `axgl::ref_t<T>`
+  = `std::weak_ptr<T>`.
 - No comments in code unless explicitly requested; existing files are largely
   comment-free by convention.
 - `.clangd` removes all `-W*` flags from the compile database and re-adds
