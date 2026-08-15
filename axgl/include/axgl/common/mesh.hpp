@@ -5,7 +5,7 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
 
-namespace axgl::util
+namespace axgl::mesh
 {
 
 inline void init_quad(axgl::component::Mesh& mesh)
@@ -97,4 +97,4 @@ inline void init_cube(axgl::component::Mesh& mesh)
   mesh.calculate_tbn();
 }
 
-} // namespace axgl::util
+} // namespace axgl::mesh

@@ -48,17 +48,19 @@ int main()
     Server server(io_context, 10000);
     server.start();
 
-    std::thread thread([&]
-    {
-      try
+    std::thread thread(
+      [&]
       {
-        io_context->run();
+        try
+        {
+          io_context->run();
+        }
+        catch (const std::exception& e)
+        {
+          std::cerr << e.what() << std::endl;
+        }
       }
-      catch (const std::exception& e)
-      {
-        std::cerr << e.what() << std::endl;
-      }
-    });
+    );
 
     while (server.running())
       server.update();

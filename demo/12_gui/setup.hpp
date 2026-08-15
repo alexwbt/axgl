@@ -6,7 +6,7 @@
   #include <axgl/impl/opengl.hpp>
 #endif
 // #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
-// #include <axgl/util/mesh.hpp>
+// #include <axgl/common/mesh.hpp>
 
 inline void setup(axgl::Axgl& axgl)
 {

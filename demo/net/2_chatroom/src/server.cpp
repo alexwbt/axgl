@@ -65,17 +65,19 @@ int main(int argc, char** argv)
 
     SPDLOG_INFO("Server is running on port: {}", port);
 
-    std::thread thread([&]
-    {
-      try
+    std::thread thread(
+      [&]
       {
-        io_context->run();
+        try
+        {
+          io_context->run();
+        }
+        catch (const std::exception& e)
+        {
+          SPDLOG_ERROR("{}", e.what());
+        }
       }
-      catch (const std::exception& e)
-      {
-        SPDLOG_ERROR("{}", e.what());
-      }
-    });
+    );
 
     while (server.running())
       server.update();

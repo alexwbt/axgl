@@ -1,3 +1,6 @@
+
+#include <axgl/common/color.hpp>
+
 #include <demo_gui/res.hpp>
 
 #include "setup.hpp"
@@ -51,6 +54,7 @@ int main()
   gui_service->set_main_ui(page);
 
   using namespace axgl::gui;
+  using namespace axgl::colors;
 
   gui_service->create_style("text")->set_fonts({"arial", "noto-tc"});
 
@@ -67,7 +71,7 @@ int main()
   {
     const auto e = gui_service->create_element_t<TextElement>();
     e->set_text("Hello World");
-    e->set_style({"text", "h1"});
+    e->set_style({"text", "h1"})->set_color(kRed);
     page->elements().add(e);
   }
   {

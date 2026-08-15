@@ -57,12 +57,13 @@ public:
         }
 
       std::erase_if(
-        entities_, [&](const auto& entity)
-      {
-        const auto should_remove = entity->should_remove();
-        if (should_remove) entity->on_remove();
-        return should_remove;
-      }
+        entities_,
+        [&](const auto& entity)
+        {
+          const auto should_remove = entity->should_remove();
+          if (should_remove) entity->on_remove();
+          return should_remove;
+        }
       );
     }
   }

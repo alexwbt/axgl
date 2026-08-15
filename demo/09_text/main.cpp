@@ -3,8 +3,8 @@
   #include <axgl/impl/glfw.hpp>
   #include <axgl/impl/opengl.hpp>
 #endif
+#include <axgl/common/mesh.hpp>
 #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
-#include <axgl/util/mesh.hpp>
 
 #include <demo_text/res.hpp>
 
@@ -94,7 +94,7 @@ public:
       // mesh
       const auto mesh
         = entity_service->create_component_t<axgl::component::Mesh>();
-      axgl::util::init_quad(*mesh);
+      axgl::mesh::init_quad(*mesh);
       mesh->set_material(material);
       // entity
       const auto text_entity = entity_service->create_entity();

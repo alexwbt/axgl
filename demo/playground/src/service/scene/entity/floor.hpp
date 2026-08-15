@@ -5,8 +5,8 @@
 #include <axgl/interface/texture.hpp>
 
 #include <axgl/axgl.hpp>
+#include <axgl/common/mesh.hpp>
 #include <axgl/impl/entity_base.hpp>
-#include <axgl/util/mesh.hpp>
 
 class FloorEntity : public axgl::impl::EntityBase
 {
@@ -59,7 +59,7 @@ private:
     // mesh
     const auto mesh
       = entity_service->create_component_t<axgl::component::Mesh>();
-    axgl::util::init_plain(*mesh);
+    axgl::mesh::init_plain(*mesh);
     mesh->set_material(std::move(material));
     return mesh;
   }

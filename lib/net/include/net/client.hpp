@@ -30,7 +30,7 @@ public:
     if (!session_) return;
 
     session_->handle_input([this](const data_ptr_t& buffer)
-    { on_receive(buffer); });
+                           { on_receive(buffer); });
 
     if (!session_->connected())
     {

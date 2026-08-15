@@ -3,7 +3,7 @@
   #include <axgl/impl/glfw.hpp>
   #include <axgl/impl/opengl.hpp>
 #endif
-#include <axgl/util/mesh.hpp>
+#include <axgl/common/mesh.hpp>
 
 class Application final : public axgl::impl::ServiceBase
 {
@@ -69,7 +69,7 @@ public:
       // cube mesh
       const auto mesh_comp
         = entity_service->create_component_t<axgl::component::Mesh>();
-      axgl::util::init_cube(*mesh_comp);
+      axgl::mesh::init_cube(*mesh_comp);
       mesh_comp->set_material(material);
       cube_entity_->add_component(mesh_comp);
       realm->entities().add(cube_entity_);

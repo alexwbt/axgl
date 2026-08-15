@@ -37,17 +37,19 @@ int main()
     const auto io_context = std::make_shared<asio::io_context>();
     Client client(io_context);
 
-    std::thread thread([&]
-    {
-      try
+    std::thread thread(
+      [&]
       {
-        io_context->run();
+        try
+        {
+          io_context->run();
+        }
+        catch (const std::exception& e)
+        {
+          std::cerr << e.what() << std::endl;
+        }
       }
-      catch (const std::exception& e)
-      {
-        std::cerr << e.what() << std::endl;
-      }
-    });
+    );
 
     client.connect("127.0.0.1", 10000);
 

@@ -3,7 +3,7 @@
   #include <axgl/impl/glfw.hpp>
   #include <axgl/impl/opengl.hpp>
 #endif
-#include <axgl/util/mesh.hpp>
+#include <axgl/common/mesh.hpp>
 
 #include <demo_textured_cube/res.hpp>
 
@@ -87,7 +87,7 @@ public:
       // square mesh
       const auto mesh
         = entity_service->create_component_t<axgl::component::Mesh>();
-      axgl::util::init_cube(*mesh);
+      axgl::mesh::init_cube(*mesh);
       mesh->set_material(material);
       cube_entity_->add_component(mesh);
       realm->entities().add(cube_entity_);

@@ -81,18 +81,7 @@ public:
 
   void update(const axgl::gui::Context& context) override
   {
-    // size_ = computed_style_->get_size() * context.scale;
-    // position_ = computed_style_->get_position() * context.scale;
-    if (context.parent) position_ += context.parent->get_position();
-    scissor_rect_ = rect_ = {position_, position_ + size_};
-    if (context.parent)
-    {
-      const auto parent_rect = context.parent->get_rect();
-      scissor_rect_.x = std::max(scissor_rect_.x, parent_rect.x);
-      scissor_rect_.y = std::max(scissor_rect_.y, parent_rect.y);
-      scissor_rect_.z = std::min(scissor_rect_.z, parent_rect.z);
-      scissor_rect_.w = std::min(scissor_rect_.w, parent_rect.w);
-    }
+    update_scissor_rect(context);
 
     const auto& active_input = context.page->get_activate_input();
     const auto& pointer = context.page->get_cursor_pointer();
@@ -109,8 +98,12 @@ public:
     if (activated_ && active_input->tick == 0) on_deactivate(context);
     if (hovering_) context.page->set_cursor(computed_style_->get_cursor());
 
+    update_scissor_rect(context);
+
     update_styles(context);
     update_children(context);
+
+    update_scissor_rect(context);
   }
 
   void on_pointer_enter(const axgl::gui::Context& context) override
@@ -220,7 +213,7 @@ protected:
         if (focused_) set_using_style(context.gui_service, style + ":focus");
       }
     }
-    if (update_styles_ || element_style_->is_modified() //
+    if (update_styles_ || element_style_->is_modified()
         || std::ranges::any_of(
           using_styles_, [](const auto& s) { return s->is_modified(); }
         ))
@@ -230,6 +223,20 @@ protected:
         style->apply_to(*computed_style_);
       element_style_->apply_to(*computed_style_);
       update_styles_ = false;
+    }
+  }
+
+  void update_scissor_rect(const axgl::gui::Context& context)
+  {
+    if (context.parent) position_ += context.parent->get_position();
+    scissor_rect_ = rect_ = {position_, position_ + size_};
+    if (context.parent)
+    {
+      const auto parent_rect = context.parent->get_rect();
+      scissor_rect_.x = std::max(scissor_rect_.x, parent_rect.x);
+      scissor_rect_.y = std::max(scissor_rect_.y, parent_rect.y);
+      scissor_rect_.z = std::min(scissor_rect_.z, parent_rect.z);
+      scissor_rect_.w = std::min(scissor_rect_.w, parent_rect.w);
     }
   }
 

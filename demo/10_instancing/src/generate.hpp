@@ -4,7 +4,7 @@
 #include <random>
 
 #include <axgl/axgl.hpp>
-#include <axgl/util/mesh.hpp>
+#include <axgl/common/mesh.hpp>
 
 #include "box.hpp"
 
@@ -53,7 +53,7 @@ inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl)
 {
   static const auto texture = create_texture(axgl, "grass.png");
   static const auto mesh = create_mesh(
-    axgl, "2d", axgl::util::init_quad, texture, nullptr, 0.5f, true
+    axgl, "2d", axgl::mesh::init_quad, texture, nullptr, 0.5f, true
   );
 
   // grass entity
@@ -72,7 +72,7 @@ inline axgl::ptr_t<axgl::Entity> create_box(const axgl::Axgl& axgl)
   static const auto diffuse = create_texture(axgl, "container/diffuse.png");
   static const auto specular = create_texture(axgl, "container/specular.png");
   static const auto mesh
-    = create_mesh(axgl, "3d", axgl::util::init_cube, diffuse, specular);
+    = create_mesh(axgl, "3d", axgl::mesh::init_cube, diffuse, specular);
 
   // box entity
   const auto box = axgl.entity_service()->create_entity_t<Box>();

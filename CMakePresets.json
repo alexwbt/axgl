@@ -10,9 +10,10 @@
       "name": "debug",
       "binaryDir": "_build/Debug",
       "cacheVariables": {
+        "AXGL_DEBUG": "ON",
         "CMAKE_BUILD_TYPE": "Debug",
         "TRACY_ENABLE": "ON",
-        "AXGL_DEBUG": "ON",
+        "TRACY_ON_DEMAND": "ON",
         "FLATBUFFERS_BUILD_TESTS": "OFF",
         "CPPTRACE_BUILD_TESTING": "OFF",
         "ARGS_BUILD_UNITTESTS": "OFF",

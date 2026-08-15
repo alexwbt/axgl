@@ -37,7 +37,7 @@ protected:
 
     if (scissor_width <= 0 || scissor_height <= 0) return;
 
-    glScissor(scissor_x, scissor_y, scissor_width, scissor_height);
+    // glScissor(scissor_x, scissor_y, scissor_width, scissor_height);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

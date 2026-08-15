@@ -127,17 +127,19 @@ int main(int argc, char** argv)
     const auto io_context = std::make_shared<asio::io_context>();
     Client client(io_context, user);
 
-    std::thread io_thread([&]
-    {
-      try
+    std::thread io_thread(
+      [&]
       {
-        io_context->run();
+        try
+        {
+          io_context->run();
+        }
+        catch (const std::exception& e)
+        {
+          client.chat_ui->add_message(std::format("Error: {}", e.what()));
+        }
       }
-      catch (const std::exception& e)
-      {
-        client.chat_ui->add_message(std::format("Error: {}", e.what()));
-      }
-    });
+    );
 
     client.chat_ui->add_message(
       std::format("Connecting to {}:{} as {}", host, port, user)

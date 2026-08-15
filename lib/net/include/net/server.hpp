@@ -35,7 +35,7 @@ public:
     for (auto it = sessions_.begin(); it != sessions_.end();)
     {
       it->second->handle_input([this, &it](const data_ptr_t& buffer)
-      { on_receive(it->first, buffer); });
+                               { on_receive(it->first, buffer); });
 
       if (!it->second->connected())
       {

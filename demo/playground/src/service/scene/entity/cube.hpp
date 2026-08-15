@@ -1,8 +1,8 @@
 #pragma once
 
 #include <axgl/axgl.hpp>
+#include <axgl/common/mesh.hpp>
 #include <axgl/impl/entity_base.hpp>
-#include <axgl/util/mesh.hpp>
 
 class CubeEntity : public axgl::impl::EntityBase
 {
@@ -22,7 +22,7 @@ protected:
     const auto mesh
       = axgl_->entity_service()->create_component_t<axgl::component::Mesh>();
     mesh->set_material(create_material());
-    axgl::util::init_cube(*mesh);
+    axgl::mesh::init_cube(*mesh);
     return mesh;
   }
 
