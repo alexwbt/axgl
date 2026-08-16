@@ -33,7 +33,7 @@ demo_%:
 	$(BUILD) $(PRESET) --target $@
 
 run:
-	@BIN="$(ROOT)/_bin/$(TARGET).exe"; \
+	@BIN="$(ROOT)/_bin/$(TARGET)"; \
 	[ -f "$$BIN" ] || BIN="$(ROOT)/_bin/$(TARGET)"; \
 	[ -f "$$BIN" ] || { echo "error: $(TARGET) not built" >&2; exit 1; }; \
 	echo "== running $$BIN"; \
