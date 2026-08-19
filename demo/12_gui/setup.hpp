@@ -14,6 +14,8 @@ inline void setup(axgl::Axgl& axgl)
   axgl::configure_opengl(axgl);
 #endif
 
+  axgl.initialize();
+
   const auto& window_service = axgl.window_service();
   const auto& input_service = axgl.input_service();
   const auto& renderer_service = axgl.renderer_service();

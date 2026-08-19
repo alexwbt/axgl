@@ -1,15 +1,11 @@
-
-#include <axgl/common/color.hpp>
-
+#include "setup.hpp"
 #include <demo_gui/res.hpp>
 
-#include "setup.hpp"
+#include <axgl/common/color.hpp>
 
 int main()
 {
   axgl::Axgl axgl;
-  axgl.initialize();
-
   setup(axgl);
 
   const auto& gui_service = axgl.gui_service();
