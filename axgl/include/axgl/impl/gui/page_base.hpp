@@ -51,6 +51,11 @@ public:
       *context_,   gui_service.get(), this, nullptr, scale_,
       font_scale_, glm::mat4(1.0f),
     };
+
+    // apply layout
+    BlockLayout layout;
+    layout.apply(current_context, elements_);
+
     for (const auto& element : elements_.get())
       element->init(current_context);
 
@@ -81,17 +86,19 @@ public:
       if (scale_ <= 0.1f) scale_ = 0.1f;
     }
 
-    // update elements
+    // context
     const axgl::gui::Context current_context{
       *context_,   gui_service.get(), this, nullptr, scale_,
       font_scale_, glm::mat4(1.0f),
     };
+
+    // update elements
     for (const auto& element : elements_.get())
       element->update(current_context);
 
     // apply layout
     BlockLayout layout;
-    layout.apply({width_, height_}, elements_);
+    layout.apply(current_context, elements_);
   }
 
   void render() override { should_render_ = false; }

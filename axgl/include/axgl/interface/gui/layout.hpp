@@ -1,6 +1,7 @@
 #pragma once
 
 #include <axgl/interface/container.hpp>
+#include <axgl/interface/gui/context.hpp>
 
 namespace axgl::gui
 {
@@ -12,9 +13,9 @@ class Layout
 public:
   virtual ~Layout() = default;
 
-  // apply layout from root to leaf
   virtual void apply(
-    glm::ivec2 size, axgl::Container<axgl::gui::Element>& element
+    const axgl::gui::Context& context,
+    axgl::Container<axgl::gui::Element>& element
   ) const
     = 0;
 };

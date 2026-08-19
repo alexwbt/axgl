@@ -76,6 +76,7 @@ public:
   void init(const axgl::gui::Context& context) override
   {
     update_styles(context);
+    update_scissor_rect(context);
     init_children(context);
   }
 
@@ -98,12 +99,8 @@ public:
     if (activated_ && active_input->tick == 0) on_deactivate(context);
     if (hovering_) context.page->set_cursor(computed_style_->get_cursor());
 
-    update_scissor_rect(context);
-
     update_styles(context);
     update_children(context);
-
-    update_scissor_rect(context);
   }
 
   void on_pointer_enter(const axgl::gui::Context& context) override
@@ -181,22 +178,6 @@ protected:
       child->init(current_context);
   }
 
-  void update_children(const axgl::gui::Context& context)
-  {
-    axgl::gui::Context current_context = context;
-    current_context.parent = this;
-    for (const auto& child : children_.get())
-      child->update(current_context);
-  }
-
-  void render_children(const axgl::gui::Context& context)
-  {
-    axgl::gui::Context current_context = context;
-    current_context.parent = this;
-    for (const auto& child : children_.get())
-      child->render(current_context);
-  }
-
   void update_styles(const axgl::gui::Context& context)
   {
     element_style_->reset_modified();
@@ -224,6 +205,22 @@ protected:
       element_style_->apply_to(*computed_style_);
       update_styles_ = false;
     }
+  }
+
+  void update_children(const axgl::gui::Context& context)
+  {
+    axgl::gui::Context current_context = context;
+    current_context.parent = this;
+    for (const auto& child : children_.get())
+      child->update(current_context);
+  }
+
+  void render_children(const axgl::gui::Context& context)
+  {
+    axgl::gui::Context current_context = context;
+    current_context.parent = this;
+    for (const auto& child : children_.get())
+      child->render(current_context);
   }
 
   void update_scissor_rect(const axgl::gui::Context& context)
