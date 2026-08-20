@@ -124,8 +124,12 @@ include_directory)`. It generates a stub `.cpp` per `.hpp` under
 `include_directory` (each just `#include`s the header) and compiles them into
 a static library, so `compile_commands.json` has an entry per header — without
 this, clangd/clang-tidy have no compile commands for header-only libraries
-like `axgl`. Only active in `Debug` builds. Used by `axgl`, `demo/playground`,
-and `demo/net/2_chatroom` (for generated flatbuffer headers).
+like `axgl`. Only active in `Debug` builds (`CMAKE_BUILD_TYPE STREQUAL
+"Debug"`). Used widely across the tree: `axgl`, every `impl/*` target, `net`,
+`util`, `bundlefile_lib`, `demo_playground`, and `demo_net_chatroom_fbs` (for
+generated flatbuffer headers). Because most public libs here are
+header-only INTERFACE targets, nearly every header gets a compile command
+this way.
 
 After building, `_scripts/build.sh` runs the `compile_proxy` tool
 (`lib/compile_proxy`) to rewrite the stub entries' `file` field to point at
