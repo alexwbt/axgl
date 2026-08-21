@@ -67,12 +67,22 @@ public:
       // diffuse texture
       const auto diffuse_texture = renderer_service->create_texture();
       diffuse_texture->load_texture(
-        demo_textured_cube_res::get("container/diffuse.png")
+        demo_textured_cube_res::get("concrete/diffuse.png")
       );
       // specular texture
       const auto specular_texture = renderer_service->create_texture();
       specular_texture->load_texture(
-        demo_textured_cube_res::get("container/specular.png")
+        demo_textured_cube_res::get("concrete/specular.png")
+      );
+      // normal texture
+      const auto normal_texture = renderer_service->create_texture();
+      normal_texture->load_texture(
+        demo_textured_cube_res::get("concrete/normal.png")
+      );
+      // height texture
+      const auto height_texture = renderer_service->create_texture();
+      height_texture->load_texture(
+        demo_textured_cube_res::get("concrete/height.png")
       );
 
       // material
@@ -83,6 +93,14 @@ public:
       material->add_texture(
         axgl::Material::TextureType::kSpecular, specular_texture
       );
+      material->add_texture(
+        axgl::Material::TextureType::kNormal, normal_texture
+      );
+      material->add_texture(
+        axgl::Material::TextureType::kHeight, height_texture
+      );
+      material->set_depth_scale(0.05f);
+      material->set_normal_scale(0.1f);
 
       // square mesh
       const auto mesh
@@ -97,7 +115,7 @@ public:
   void tick() override
   {
     auto& transform = cube_entity_->transform();
-    transform.rotation += glm::vec3(0.01f, 0.02f, 0.05f);
+    transform.rotation += glm::vec3(1.0f, 2.0f, 5.0f) * 0.0005f;
     transform.update_matrix();
   }
 };
