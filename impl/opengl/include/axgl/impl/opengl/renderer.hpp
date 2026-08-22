@@ -56,6 +56,7 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   // Shadow Map
   //
   bool enable_shadow_ = false;
+  bool enable_csm_debug_ = false;
   GLsizei shadow_map_cascade_levels_
     = static_cast<GLsizei>(CascadedShadowMap::kCascadeCount);
   GLsizei shadow_map_size_ = 1024;
@@ -120,6 +121,7 @@ public:
         = glm::inverse(camera->projection_view_matrix()),
         .camera_near = camera->near_clip,
         .camera_far = camera->far_clip,
+        .csm_debug_borders = enable_csm_debug_,
       };
 
       std::unordered_map<
@@ -622,6 +624,12 @@ public:
   {
     return shadow_distance_;
   }
+
+  void set_enable_csm_debug(bool enable_csm_debug)
+  {
+    enable_csm_debug_ = enable_csm_debug;
+  }
+  [[nodiscard]] bool get_enable_csm_debug() const { return enable_csm_debug_; }
 };
 
 } // namespace axgl::impl::opengl

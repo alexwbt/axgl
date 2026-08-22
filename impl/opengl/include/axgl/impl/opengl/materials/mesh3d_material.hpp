@@ -94,18 +94,19 @@ public:
     }
     const bool enable_shadow = shadow_light != nullptr;
     shader_.set_int("enable_shadow", enable_shadow);
+    shader_.set_int(
+      "csm_debug_borders", enable_shadow && context.csm_debug_borders
+    );
     if (enable_shadow)
     {
+      constexpr std::size_t kCascadeCount
+        = impl::opengl::CascadedShadowMap::kCascadeCount;
       // upload the per-cascade light PVs + split distances and bind the
       // sampler2DArray; the FS selects the cascade by fragment distance.
-      const auto cascade_count
-        = static_cast<GLsizei>(impl::opengl::CascadedShadowMap::kCascadeCount);
-      std::array<glm::mat4, impl::opengl::CascadedShadowMap::kCascadeCount>
-        cascade_pvs{};
-      std::array<float, impl::opengl::CascadedShadowMap::kCascadeCount>
-        cascade_far{};
-      for (std::size_t i = 0;
-           i < impl::opengl::CascadedShadowMap::kCascadeCount; ++i)
+      const auto cascade_count = static_cast<GLsizei>(kCascadeCount);
+      std::array<glm::mat4, kCascadeCount> cascade_pvs{};
+      std::array<float, kCascadeCount> cascade_far{};
+      for (std::size_t i = 0; i < kCascadeCount; ++i)
       {
         cascade_pvs[i] = shadow_light->cascades[i].light_pv;
         cascade_far[i] = shadow_light->cascades[i].split_far;

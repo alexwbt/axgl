@@ -25,6 +25,7 @@ codegen
 config
 const
 constexpr
+corners
 cpp
 cppnoninlinefunctiondefinitioninheaderfile
 cpptrace
@@ -91,8 +92,10 @@ msaa
 msvc
 mswsock
 multisample
+ndc
 noto
 ns
+nullptr
 odr
 oit
 opengl
@@ -142,6 +145,8 @@ txt
 ubyte
 uint8
 unittests
+unproject
+unprojected
 unrenderable
 utfcpp
 util

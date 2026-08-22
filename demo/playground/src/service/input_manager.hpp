@@ -5,6 +5,7 @@
 #include <axgl/interface/services/input_service.hpp>
 
 #include <axgl/axgl.hpp>
+#include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/service_base.hpp>
 
 class InputManager : public axgl::impl::ServiceBase
@@ -15,6 +16,7 @@ public:
 private:
   axgl::ptr_t<axgl::Input> rotate_sun_;
   axgl::ptr_t<axgl::Input> flashlight_;
+  axgl::ptr_t<axgl::Input> debug_csm_;
   axgl::ptr_t<axgl::Input> shadow_;
   axgl::ptr_t<axgl::Input> debug_;
   axgl::ptr_t<axgl::Input> msaa_;
@@ -22,6 +24,7 @@ private:
 public:
   [[nodiscard]] auto rotate_sun() const { return rotate_sun_; }
   [[nodiscard]] auto flashlight() const { return flashlight_; }
+  [[nodiscard]] auto debug_csm() const { return debug_csm_; }
   [[nodiscard]] auto shadow() const { return shadow_; }
   [[nodiscard]] auto debug() const { return debug_; }
   [[nodiscard]] auto msaa() const { return msaa_; }
@@ -32,6 +35,9 @@ public:
       = axgl::create_ptr<axgl::Input>("Rotate Sun", axgl::Input::Source::kKeyR);
     flashlight_ = axgl::create_ptr<axgl::Input>(
       "Toggle Flashlight", axgl::Input::Source::kKeyF
+    );
+    debug_csm_ = axgl::create_ptr<axgl::Input>(
+      "Toggle CSM Borders", axgl::Input::Source::kKeyF1
     );
     shadow_ = axgl::create_ptr<axgl::Input>(
       "Toggle Shadow", axgl::Input::Source::kKeyF4
@@ -49,6 +55,7 @@ public:
     const auto& input_service = axgl_->input_service();
     input_service->add_input(rotate_sun_);
     input_service->add_input(flashlight_);
+    input_service->add_input(debug_csm_);
     input_service->add_input(shadow_);
     input_service->add_input(debug_);
     input_service->add_input(msaa_);
@@ -61,10 +68,18 @@ public:
       const auto& renderer = axgl_->renderer_service()->get_active_renderer();
       renderer->set_enable_msaa(!renderer->get_enable_msaa());
     }
-    else if (shadow_->tick == 1)
+    if (shadow_->tick == 1)
     {
       const auto& renderer = axgl_->renderer_service()->get_active_renderer();
       renderer->set_enable_shadow(!renderer->get_enable_shadow());
+    }
+    if (debug_csm_->tick == 1)
+    {
+      const auto& renderer = axgl::ptr_cast<axgl::impl::opengl::Renderer>(
+        axgl_->renderer_service()->get_active_renderer()
+      );
+      if (renderer)
+        renderer->set_enable_csm_debug(!renderer->get_enable_csm_debug());
     }
   }
 };

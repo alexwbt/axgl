@@ -113,6 +113,7 @@ uniform int cascade_count;
 uniform mat4 cascade_light_pv[3];
 uniform float cascade_split_far[3];
 uniform sampler2DArray shadow_maps;
+uniform bool csm_debug_borders;
 
 in VertexShaderOutput
 {
@@ -187,17 +188,12 @@ vec2 calc_height_offset(Context ctx)
 }
 
 /**
- * Cascaded shadow factor via 3x3 percentage-closer filtering (PCF).
- * Selects the cascade whose split_far exceeds the fragment's distance from
- * the camera, then samples the corresponding layer of the shadow map array.
- * Returns 0.0 (fully lit) to 1.0 (fully shadowed).
+ * Selects the cascade index whose split range covers the fragment's distance
+ * from the camera. Nearer cascades have higher depth precision.
  */
-float calc_shadow()
+int select_cascade()
 {
-  // Select the first cascade whose far split covers this fragment's distance
-  // from the camera. Nearer cascades have higher depth precision.
   float frag_distance = length(vso.position - vso.camera_pos);
-
   int cascade_index = 0;
   for (int i = 0; i < cascade_count; ++i)
   {
@@ -208,6 +204,18 @@ float calc_shadow()
     }
     cascade_index = i;
   }
+  return cascade_index;
+}
+
+/**
+ * Cascaded shadow factor via 3x3 percentage-closer filtering (PCF).
+ * Selects the cascade whose split_far exceeds the fragment's distance from
+ * the camera, then samples the corresponding layer of the shadow map array.
+ * Returns 0.0 (fully lit) to 1.0 (fully shadowed).
+ */
+float calc_shadow()
+{
+  int cascade_index = select_cascade();
 
   // project into the selected cascade's light clip space and remap to [0,1]
   vec3 projection_coords = vso.light_space_position[cascade_index].xyz
@@ -381,6 +389,27 @@ void main()
     result += calc_spot_light(ctx, spot_lights[i]);
   for (int i = 0; i < point_lights_size; ++i)
     result += calc_point_light(ctx, point_lights[i]);
+
+  // Debug: draw borders at the edges of each cascade's ortho frustum box
+  // (light clip space [-1,1]^3) so nested frustum boundaries are visible as
+  // concentric outlines where they intersect scene geometry.
+  if (csm_debug_borders && enable_shadow)
+  {
+    vec3 cascade_colors[3]
+      = vec3[](vec3(1.0, 0.2, 0.2), vec3(0.2, 1.0, 0.2), vec3(0.2, 0.4, 1.0));
+
+    for (int i = 0; i < cascade_count; ++i)
+    {
+      vec3 proj
+        = vso.light_space_position[i].xyz / vso.light_space_position[i].w;
+      float min_edge
+        = min(min(1.0 - abs(proj.x), 1.0 - abs(proj.y)), 1.0 - abs(proj.z));
+      if (min_edge > 0.2) continue;
+
+      float border = 1.0 - smoothstep(0.0, 0.02, abs(min_edge));
+      result = mix(result, cascade_colors[i], border * 0.8);
+    }
+  }
 
   // Weighted blended order-independent transparency (OIT):
   // weight by alpha and depth so that transparent surfaces blend correctly

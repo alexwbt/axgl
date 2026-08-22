@@ -39,6 +39,7 @@ struct RenderContext
   float camera_near = 0.1f;
   float camera_far = 1000.0f;
   std::vector<LightContext> lights{};
+  bool csm_debug_borders = false;
   std::int64_t entity_count = 0;
   std::int64_t component_count = 0;
 };
