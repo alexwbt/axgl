@@ -8,10 +8,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace axgl::impl::opengl
+namespace axgl::impl::opengl::renderer
 {
 
-class CascadedShadowMap
+class Csm
 {
 public:
   static constexpr std::size_t kCascadeCount = 3;
@@ -149,4 +149,4 @@ public:
   }
 };
 
-} // namespace axgl::impl::opengl
+} // namespace axgl::impl::opengl::renderer

@@ -15,8 +15,6 @@ public:
   static constexpr std::string_view kTypeId = "realm::lighting";
 
 private:
-  axgl::ptr_t<axgl::impl::component::Light> sunlight_;
-
   void add_wall(
     const glm::vec3& position, const glm::vec3& scale, const glm::vec2& tiling
   )
@@ -66,13 +64,6 @@ public:
   void initialize() override
   {
     CommonScene::initialize();
-
-    sunlight_ = add_light(
-      axgl::Light::sunlight(
-        {0.2f, -1.0f, 1.2f},
-        axgl::Light::Color{glm::vec3(0.02f), glm::vec3(0.1f), glm::vec3(0.0f)}
-      )
-    );
 
     const float half_w = 2.5f;
     const float length = 20.0f;
