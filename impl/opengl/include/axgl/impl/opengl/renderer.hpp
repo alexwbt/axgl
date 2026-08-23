@@ -11,7 +11,6 @@
 #include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/glfw/window.hpp>
 #include <axgl/impl/opengl/renderer/blend.hpp>
-#include <axgl/impl/opengl/renderer/csm.hpp>
 #include <axgl/impl/opengl/renderer/hdr.hpp>
 #include <axgl/impl/opengl/renderer/msaa.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
@@ -185,7 +184,7 @@ private:
     }
     if (!sun_light_context) return;
 
-    sun_light_context->cascades = renderer::Csm::compute_cascades(
+    sun_light_context->cascades = renderer::ShadowMap::compute_cascades(
       *sun_light_context->light, render_context.inverse_projection_view_matrix,
       render_context.camera_near, render_context.camera_far,
       shadow.shadow_distance

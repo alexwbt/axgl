@@ -127,6 +127,9 @@ in VertexShaderOutput
 vso;
 
 layout(location = 0) out vec4 frag_color;
+// TODO: reveal is always written even when transparent == false, so every
+// draw needs a 2-attachment framebuffer even for opaque meshes. Consider a
+// separate opaque-only shader variant without the MRT output.
 layout(location = 1) out float reveal;
 
 /**

@@ -6,8 +6,8 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/material.hpp>
-#include <axgl/impl/opengl/renderer/csm.hpp>
 #include <axgl/impl/opengl/renderer/render_context.hpp>
+#include <axgl/impl/opengl/renderer/shadow_map.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/static_shaders.hpp>
@@ -100,7 +100,7 @@ public:
     if (enable_shadow)
     {
       constexpr std::size_t kCascadeCount
-        = impl::opengl::renderer::Csm::kCascadeCount;
+        = impl::opengl::renderer::ShadowMap::kCascadeCount;
       // upload the per-cascade light PVs + split distances and bind the
       // sampler2DArray; the FS selects the cascade by fragment distance.
       const auto cascade_count = static_cast<GLsizei>(kCascadeCount);
