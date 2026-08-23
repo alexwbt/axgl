@@ -5,6 +5,7 @@
 #include <axgl/impl/service_base.hpp>
 
 #include "scene/entity/transparent_cube.hpp"
+#include "scene/lighting_scene.hpp"
 #include "scene/testing_scene.hpp"
 
 #include "scene/component/spinning.hpp"
@@ -24,7 +25,10 @@ public:
   static constexpr std::string_view kTypeId = "service::playground";
 
 private:
+  std::size_t current_scene_ = 0;
   std::vector<axgl::ptr_t<axgl::Realm>> scenes_;
+
+  axgl::ptr_t<InputManager> inputs_;
 
 public:
   void initialize() override
@@ -45,15 +49,53 @@ public:
     entity_service->register_entity_t<TransparentCubeEntity>();
     // register scenes
     realm_service->register_realm_t<TestingScene>();
+    realm_service->register_realm_t<LightingScene>();
   }
 
   void on_start() override
   {
+    inputs_ = axgl_->get_service_t<InputManager>();
+
     const auto& realm_service = axgl_->realm_service();
     // create scenes
     scenes_.emplace_back(realm_service->create_realm_t<TestingScene>());
+    scenes_.emplace_back(realm_service->create_realm_t<LightingScene>());
 
     // set first scene as active realm
-    axgl_->realm_service()->set_active_realm(scenes_[0]);
+    axgl_->realm_service()->set_active_realm(scenes_[current_scene_]);
+  }
+
+  void update() override
+  {
+    // switch scenes
+    if (inputs_->switch_scene()->clicked())
+    {
+      current_scene_ = (current_scene_ + 1) % scenes_.size();
+      axgl_->realm_service()->set_active_realm(scenes_[current_scene_]);
+    }
+
+    // renderer inputs
+    const auto& renderer = axgl_->renderer_service()->get_active_renderer();
+    // msaa
+    if (inputs_->msaa()->clicked())
+      renderer->set_enable_msaa(!renderer->get_enable_msaa());
+    // shadow
+    if (inputs_->shadow()->clicked())
+      renderer->set_enable_shadow(!renderer->get_enable_shadow());
+    if (inputs_->debug_csm()->clicked())
+    {
+      const auto& gl_renderer = axgl::ptr_cast<axgl::impl::opengl::Renderer>(
+        axgl_->renderer_service()->get_active_renderer()
+      );
+      if (gl_renderer)
+        gl_renderer->set_enable_csm_debug(!gl_renderer->get_enable_csm_debug());
+    }
+    // hdr
+    if (inputs_->hdr()->clicked())
+      renderer->set_enable_hdr(!renderer->get_enable_hdr());
+    if (inputs_->exposure_up()->down())
+      renderer->set_exposure(renderer->get_exposure() + 0.01f);
+    if (inputs_->exposure_down()->down())
+      renderer->set_exposure(std::max(0.01f, renderer->get_exposure() - 0.01f));
   }
 };

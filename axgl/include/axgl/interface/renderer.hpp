@@ -29,6 +29,12 @@ public:
   [[nodiscard]] virtual bool get_enable_shadow() const = 0;
   [[nodiscard]] virtual std::uint32_t get_shadow_map_size() const = 0;
   [[nodiscard]] virtual float get_shadow_distance() const = 0;
+
+  // HDR
+  virtual void set_enable_hdr(bool enable_hdr) = 0;
+  virtual void set_exposure(float exposure) = 0;
+  [[nodiscard]] virtual bool get_enable_hdr() const = 0;
+  [[nodiscard]] virtual float get_exposure() const = 0;
 };
 
 } // namespace axgl

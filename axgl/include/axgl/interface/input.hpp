@@ -164,6 +164,10 @@ public:
     Input(name, std::vector{source})
   {
   }
+
+  [[nodiscard]] bool clicked() const { return tick == 1; }
+  [[nodiscard]] bool down() const { return tick > 0; }
+  [[nodiscard]] bool up() const { return tick == 0; }
 };
 
 } // namespace axgl

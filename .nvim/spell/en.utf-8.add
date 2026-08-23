@@ -29,6 +29,7 @@ corners
 cpp
 cppnoninlinefunctiondefinitioninheaderfile
 cpptrace
+csm
 cstdint
 cubemap
 daxgl
@@ -64,6 +65,7 @@ gltexstorage3d
 gui
 guiservice
 h1
+hdr
 hoc
 hpp
 hz

@@ -47,10 +47,6 @@ public:
     // sunlight
     sunlight_ = add_light(axgl::Light::sunlight({0.2f, -1.0f, 1.2f}));
 
-    // spotlight
-    // add_light(axgl::Light::spotlight({-0.5f, 2.0f, -2.5f}, {0.2f,
-    // -1.0f, 1.2f}));
-
     // spinning component
     axgl::ptr_t<axgl::Component> spinning_comp;
     {

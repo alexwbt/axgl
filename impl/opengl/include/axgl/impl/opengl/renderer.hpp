@@ -53,6 +53,14 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   static constexpr glm::vec4 one_filler_{1.0f};
 
   //
+  // HDR / tone mapping
+  //
+  bool enable_hdr_ = false;
+  float exposure_ = 1.0f;
+  std::unique_ptr<::opengl::Texture> hdr_texture_;
+  std::unique_ptr<::opengl::Framebuffer> hdr_framebuffer_;
+
+  //
   // Shadow Map
   //
   bool enable_shadow_ = false;
@@ -88,6 +96,7 @@ public:
       if (enable_msaa_ || msaa_framebuffer_) setup_msaa_framebuffer(viewport_i);
       if (enable_blend_ || blend_framebuffer_)
         setup_blend_framebuffer(viewport_i);
+      if (enable_hdr_ || hdr_framebuffer_) setup_hdr_framebuffer(viewport_i);
       if (gui)
       {
         gui->set_size(viewport_i.x, viewport_i.y);
@@ -97,6 +106,7 @@ public:
     if (enable_msaa_ && !msaa_framebuffer_) setup_msaa_framebuffer(viewport_i);
     if (enable_blend_ && !blend_framebuffer_)
       setup_blend_framebuffer(viewport_i);
+    if (enable_hdr_ && !hdr_framebuffer_) setup_hdr_framebuffer(viewport_i);
     if (enable_shadow_
         && (!shadow_texture_ || shadow_map_size_ != shadow_texture_->get_width()))
       setup_shadow_framebuffer();
@@ -161,6 +171,7 @@ public:
     }
 
     // render screen
+    if (enable_hdr_) render_tone_mapping_pass(viewport_i);
     render_gui(gui);
     render_to_screen();
     window_->swap_buffers();
@@ -211,6 +222,21 @@ private:
     );
     blend_framebuffer_->check_status_complete(
       "axgl::impl::opengl::Renderer -> blend_framebuffer_"
+    );
+  }
+
+  void setup_hdr_framebuffer(const glm::ivec2& viewport)
+  {
+    hdr_texture_ = std::make_unique<::opengl::Texture>();
+    hdr_texture_->load_texture(
+      0, GL_RGBA16F, viewport.x, viewport.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr
+    );
+    hdr_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    hdr_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    hdr_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
+    hdr_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *hdr_texture_);
+    hdr_framebuffer_->check_status_complete(
+      "axgl::impl::opengl::Renderer -> hdr_framebuffer_"
     );
   }
 
@@ -391,6 +417,24 @@ private:
     quad_vao.draw();
   }
 
+  void render_tone_mapping_pass(const glm::ivec2& viewport_i)
+  {
+    hdr_framebuffer_->use();
+    glViewport(0, 0, viewport_i.x, viewport_i.y);
+    glDisable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    screen_texture_->use(GL_TEXTURE0);
+    auto& screen_shader = ::opengl::StaticShaders::instance().screen();
+    screen_shader.use_program();
+    screen_shader.set_int("screen", 0);
+    screen_shader.set_bool("enable_hdr", true);
+    screen_shader.set_float("exposure", exposure_);
+    ::opengl::StaticVAOs::instance().quad().draw();
+    screen_shader.set_bool("enable_hdr", false);
+  }
+
   void render_gui(const axgl::ptr_t<axgl::gui::Page>& gui)
   {
     if (!gui) return;
@@ -446,7 +490,8 @@ private:
         "axgl::impl::opengl::Renderer"
       );
 #endif
-    screen_framebuffer_->use();
+    if (enable_hdr_) hdr_framebuffer_->use();
+    else screen_framebuffer_->use();
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -454,6 +499,7 @@ private:
     auto& screen_shader = ::opengl::StaticShaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
+    screen_shader.set_bool("enable_hdr", false);
     ::opengl::StaticVAOs::instance().quad().draw();
   }
 
@@ -463,16 +509,18 @@ private:
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
 
-    glEnable(GL_FRAMEBUFFER_SRGB);
+    if (!enable_hdr_) glEnable(GL_FRAMEBUFFER_SRGB);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    screen_texture_->use(GL_TEXTURE0);
+    if (enable_hdr_) hdr_texture_->use(GL_TEXTURE0);
+    else screen_texture_->use(GL_TEXTURE0);
     auto& screen_shader = ::opengl::StaticShaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
+    screen_shader.set_bool("enable_hdr", false);
     ::opengl::StaticVAOs::instance().quad().draw();
-    glDisable(GL_FRAMEBUFFER_SRGB);
+    if (!enable_hdr_) glDisable(GL_FRAMEBUFFER_SRGB);
   }
 
   // TODO: reimplement without recursion
@@ -625,11 +673,20 @@ public:
     return shadow_distance_;
   }
 
+  // CSM debug
   void set_enable_csm_debug(bool enable_csm_debug)
   {
     enable_csm_debug_ = enable_csm_debug;
   }
   [[nodiscard]] bool get_enable_csm_debug() const { return enable_csm_debug_; }
+
+  //
+  // HDR
+  //
+  void set_enable_hdr(bool enable_hdr) override { enable_hdr_ = enable_hdr; }
+  void set_exposure(float exposure) override { exposure_ = exposure; }
+  [[nodiscard]] bool get_enable_hdr() const override { return enable_hdr_; }
+  [[nodiscard]] float get_exposure() const override { return exposure_; }
 };
 
 } // namespace axgl::impl::opengl

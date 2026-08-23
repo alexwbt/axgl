@@ -29,9 +29,6 @@ config:
 target:
 	$(BUILD) $(PRESET) --target $(TARGET) --no-config
 
-demo_%:
-	$(BUILD) $(PRESET) --target $@
-
 run:
 	@BIN="$(ROOT)/_bin/$(TARGET)"; \
 	[ -f "$$BIN" ] || BIN="$(ROOT)/_bin/$(TARGET)"; \
