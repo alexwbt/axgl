@@ -128,6 +128,7 @@ sampler2darray
 shader
 shaderiv
 shaders
+simdjson
 skybox
 spdlog
 stb
