@@ -22,15 +22,6 @@ struct ShadowMap
   std::unique_ptr<::opengl::Texture> shadow_texture;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer;
 
-  // spot light shadows: one 2D depth texture per shadow-casting spot light.
-  // allocated lazily up to spot_shadow_capacity; indexed by spot_shadow_index
-  // on LightContext.
-  GLsizei spot_shadow_capacity = 0;
-  std::vector<std::unique_ptr<::opengl::Texture>> spot_shadow_textures;
-  std::unique_ptr<::opengl::Framebuffer> spot_shadow_framebuffer;
-
-  static constexpr GLsizei kMaxSpotShadows = 8;
-
   void setup()
   {
     // one 2D-array texture layer per cascade; the FBO attaches a single layer
@@ -57,41 +48,12 @@ struct ShadowMap
     shadow_texture.reset();
   }
 
-  void ensure()
+  void update()
   {
     if (enable_shadow
         && (!shadow_texture || shadow_map_size != shadow_texture->get_width()))
       setup();
     else if (!enable_shadow && shadow_texture) reset();
-  }
-
-  void ensure_spot_shadows(GLsizei count)
-  {
-    if (!enable_shadow) return;
-    if (count > kMaxSpotShadows) count = kMaxSpotShadows;
-    if (count <= spot_shadow_capacity) return;
-    spot_shadow_textures.clear();
-    spot_shadow_textures.reserve(count);
-    for (GLsizei i = 0; i < count; ++i)
-    {
-      auto tex = std::make_unique<::opengl::Texture>();
-      tex->load_texture(
-        0, GL_DEPTH_COMPONENT, shadow_map_size, shadow_map_size, 0,
-        GL_DEPTH_COMPONENT, GL_FLOAT, nullptr
-      );
-      tex->set_parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      tex->set_parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      tex->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-      tex->set_parameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-      tex->set_parameter(
-        GL_TEXTURE_BORDER_COLOR, std::array{1.0f, 1.0f, 1.0f, 1.0f}
-      );
-      tex->set_parameter(GL_TEXTURE_COMPARE_MODE, GL_NONE);
-      spot_shadow_textures.push_back(std::move(tex));
-    }
-    spot_shadow_capacity = count;
-    if (!spot_shadow_framebuffer)
-      spot_shadow_framebuffer = std::make_unique<::opengl::Framebuffer>();
   }
 };
 

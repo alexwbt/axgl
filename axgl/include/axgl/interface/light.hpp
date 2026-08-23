@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
 namespace axgl
@@ -41,15 +39,6 @@ public:
   bool casts_shadows = true;
 
   explicit Light(axgl::Light::Type type) : type(type) { }
-
-  [[nodiscard]] glm::mat4 get_pv_matrix() const
-  {
-    const auto view
-      = glm::lookAt(-direction, position, glm::vec3(0.0f, 1.0f, 0.0f));
-    const auto projection
-      = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f);
-    return projection * view;
-  }
 
   static axgl::Light sunlight(
     const glm::vec3& direction = glm::vec3(0.0f),

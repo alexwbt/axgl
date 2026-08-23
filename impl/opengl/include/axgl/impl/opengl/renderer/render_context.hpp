@@ -21,8 +21,6 @@ struct LightContext
   // must be nullptr-initialized: when shadows are off, gather never sets this
   // and the material reads `shadow_map != nullptr` to detect the shadow light.
   const ::opengl::Texture* shadow_map = nullptr;
-  // index into the spot shadow map pool; -1 when not a shadow-casting spot.
-  int spot_shadow_index = -1;
 };
 
 struct RenderContext

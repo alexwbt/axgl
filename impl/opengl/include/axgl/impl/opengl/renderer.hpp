@@ -446,13 +446,6 @@ private:
           impl::opengl::renderer::LightContext light_context;
           light_context.light = &light_comp->light;
 
-          // sun lights get per-cascade PVs computed in render_shadow_pass;
-          // point/spot keep the single-matrix fallback from
-          // Light::get_pv_matrix.
-          if (shadow.enable_shadow && light_context.light->casts_shadows
-              && light_context.light->type != axgl::Light::Type::kSun)
-            light_context.light_pv = light_context.light->get_pv_matrix();
-
           render_context.lights.emplace_back(light_context);
         }
       }
