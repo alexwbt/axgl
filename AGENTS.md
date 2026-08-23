@@ -27,7 +27,11 @@ demos).
 - The `Makefile` wraps the same scripts: `make` (= `make debug`), `make
   release`, `make target TARGET=<name>`, `make run [TARGET=<name>]`, `make
   demo_<name>` (e.g. `make demo_window`), `make clean`, `make format`, `make
-  tidy`. Default TARGET is `demo_playground`; parallelism via `PARALLEL=N`.
+  tidy`. Default TARGET is `demo_playground`; parallelism via `PARALLEL=N`
+  (exported as `CMAKE_BUILD_PARALLEL_LEVEL`).
+- `make run` does **not** build first — it just runs `_bin/<TARGET>` and
+  errors if it doesn't exist. Build (`make` / `make target TARGET=...`)
+  before `make run`.
 - After a full debug build, `build.sh` runs the `compile_proxy` tool (see
   "compile_proxy" below) to post-process `compile_commands.json` so clangd /
   clang-tidy get real entries for header-only TUs. This is skipped for
@@ -92,7 +96,8 @@ demo runs. Don't invent test commands or claim coverage.
   `demo_playground`); net demos are `demo_net_tcp_ping_client`,
   `demo_net_tcp_ping_server`, `demo_net_chatroom_server`,
   `demo_net_chatroom_client`. Net demos link `net` and, on MinGW/Windows,
-  need `ws2_32 mswsock`.
+  need `ws2_32 mswsock` (guarded by `WIN32 AND MINGW` in their
+  `CMakeLists.txt`).
 
 ## Codegen / resource pipeline (easy to miss)
 
@@ -141,9 +146,9 @@ the real header, so editors jump to the header instead of the stub.
 `AXGL_DEBUG && TRACY_ENABLE` (i.e. the debug preset) it:
 
 - Defines `AXGL_PROFILE_SCOPE`, `AXGL_PLOT`, `AXGL_ALLOC`, `AXGL_FREE` as real
-  Tracy macros; otherwise they expand to nothing. (`AXGL_PROFILE_SCOPE` is
-  guarded by `AXGL_DEBUG` alone, but Tracy macros are no-ops without
-  `TRACY_ENABLE`, so both must be on for real profiling.)
+  Tracy macros; otherwise they expand to nothing. (All four are guarded by
+  `AXGL_DEBUG` alone at the source level, but the underlying Tracy macros are
+  no-ops without `TRACY_ENABLE`, so both must be on for real profiling.)
 - **Globally overrides `operator new` / `delete` / array forms** to route
   allocations through `TracyAlloc`/`TracyFree`. These are non-inline
   definitions in a header guarded by the combo flag — keep an eye on ODR
