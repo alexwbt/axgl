@@ -1,8 +1,6 @@
 # AGENTS.md
 
-Notes for OpenCode sessions working in this repo. C++20 / CMake game-engine
-sandbox on Windows (MSVC toolchain by default; MinGW also supported for net
-demos).
+A C++ game development framework.
 
 ## Setup (do this first, or builds fail silently)
 
@@ -73,6 +71,8 @@ No `test/`, no CTest, no framework. "Verification" = the project builds and a
 demo runs. Don't invent test commands or claim coverage.
 
 ## Architecture
+
+See `README.md` for the architecture design philosophy.
 
 - `axgl/` — header-only INTERFACE library, namespace `axgl`. Core types:
   `Axgl` (`axgl.hpp`) is the engine entrypoint with `initialize()` / `run()` /
@@ -172,3 +172,4 @@ raw spdlog/Tracy calls so release builds stay zero-cost.
 - `.clangd` removes all `-W*` flags from the compile database and re-adds
   `-Wall -Wextra` — don't rely on per-target warning flags showing up in
   clangd diagnostics.
+- Use LF line endings in all files (enforced by `.gitattributes`).

@@ -18,7 +18,7 @@ public:
   virtual void render() { }
   virtual bool running() { return true; }
   virtual bool keep_alive() { return false; }
-  virtual void exec([[maybe_unused]] const std::vector<std::string>& args) { }
+  virtual void exec(const std::vector<std::string>&) { }
 };
 
 } // namespace axgl

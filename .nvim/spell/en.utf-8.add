@@ -9,6 +9,7 @@ assbin
 assimp
 axgl
 backend
+backends
 bitangent
 bitangents
 blinn
@@ -22,6 +23,7 @@ clangd
 clearcoat
 cmake
 codegen
+composability
 config
 const
 constexpr
@@ -81,6 +83,7 @@ ivec3
 json
 layercount
 lfs
+lifecycle
 lightcontext
 lightmap
 llvm
@@ -137,6 +140,7 @@ tbn
 tbn's
 tc
 tcp
+teardown
 texel
 textrenderer
 texturelod
