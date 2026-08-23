@@ -7,18 +7,19 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/renderer/render_context.hpp>
+#include <axgl/impl/opengl/renderer/shaders.hpp>
 #include <axgl/impl/opengl/renderer/shadow_map.hpp>
 #include <axgl/impl/opengl/texture.hpp>
-
-#include <opengl/static_shaders.hpp>
 
 namespace axgl::impl::opengl
 {
 
 class Mesh3dMaterial : public Material
 {
-  ::opengl::ShaderProgram& shader_
-    = ::opengl::StaticShaders::instance().blinn_phong();
+  ::opengl::ShaderProgram& shader_blend_
+    = renderer::Shaders::instance().mesh3d();
+  ::opengl::ShaderProgram& shader_opaque_
+    = renderer::Shaders::instance().mesh3d_opaque();
 
   axgl::ptr_t<impl::opengl::Texture> diffuse_texture_;
   axgl::ptr_t<impl::opengl::Texture> specular_texture_;
@@ -68,6 +69,7 @@ public:
   {
     Material::use(context);
 
+    auto& shader_ = enable_blend_ ? shader_blend_ : shader_opaque_;
     shader_.use_program();
     shader_.set_bool("transparent", enable_blend_);
     shader_.set_mat4("projection_view", context.projection_view_matrix);
@@ -100,7 +102,7 @@ public:
     if (enable_shadow)
     {
       constexpr std::size_t kCascadeCount
-        = impl::opengl::renderer::ShadowMap::kCascadeCount;
+        = impl::opengl::renderer::kCascadeCount;
       // upload the per-cascade light PVs + split distances and bind the
       // sampler2DArray; the FS selects the cascade by fragment distance.
       const auto cascade_count = static_cast<GLsizei>(kCascadeCount);
@@ -122,16 +124,17 @@ public:
       shadow_light->shadow_map->use(GL_TEXTURE5);
     }
 
-    use_lights(context.lights);
+    use_lights(shader_, context.lights);
 
-    use_texture(0, "diffuse", diffuse_texture_);
-    use_texture(1, "specular", specular_texture_);
-    use_texture(2, "normal", normal_texture_);
-    use_texture(3, "height", height_texture_);
+    use_texture(shader_, 0, "diffuse", diffuse_texture_);
+    use_texture(shader_, 1, "specular", specular_texture_);
+    use_texture(shader_, 2, "normal", normal_texture_);
+    use_texture(shader_, 3, "height", height_texture_);
   }
 
 private:
   void use_lights(
+    ::opengl::ShaderProgram& shader_,
     const std::span<const impl::opengl::renderer::LightContext>& lights
   ) const
   {
@@ -244,6 +247,7 @@ private:
   }
 
   void use_texture(
+    ::opengl::ShaderProgram& shader_,
     const int texture_unit,
     const std::string& name,
     const axgl::ptr_t<impl::opengl::Texture>& texture

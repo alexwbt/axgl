@@ -4,8 +4,6 @@
 
 #include <axgl/impl/opengl/renderer/render_component.hpp>
 
-#include <opengl/static_shaders.hpp>
-
 namespace axgl::impl::opengl
 {
 

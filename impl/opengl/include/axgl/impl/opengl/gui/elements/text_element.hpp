@@ -89,7 +89,7 @@ public:
       const auto content_model
         = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f))
         * glm::scale(size);
-      auto& content_shader = ::opengl::StaticShaders::instance().gui();
+      auto& content_shader = renderer::Shaders::instance().gui();
       content_shader.use_program();
       text_texture_->use(GL_TEXTURE0);
       content_shader.set_int("background_texture", 0);

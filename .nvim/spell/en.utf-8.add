@@ -61,6 +61,7 @@ glfrontface
 glfw
 glfwwindow
 glm
+glsl
 gltexstorage3d
 gui
 guiservice
@@ -83,6 +84,7 @@ lfs
 lightcontext
 lightmap
 llvm
+lod
 md
 mesg
 mesh3d
@@ -122,6 +124,7 @@ rgba8
 sampler2darray
 shader
 shaderiv
+shaders
 skybox
 spdlog
 stb
@@ -154,6 +157,7 @@ utfcpp
 util
 uv
 uvs
+vec
 vec3
 vso
 wextra

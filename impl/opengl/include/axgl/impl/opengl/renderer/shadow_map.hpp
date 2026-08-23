@@ -7,6 +7,8 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/light.hpp>
 
+#include <axgl/impl/opengl/renderer/constants.hpp>
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <opengl/framebuffer.hpp>
@@ -17,8 +19,6 @@ namespace axgl::impl::opengl::renderer
 
 struct ShadowMap
 {
-  static constexpr std::size_t kCascadeCount = 3;
-
   struct Cascade
   {
     glm::mat4 light_pv{0.0f};

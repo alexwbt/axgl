@@ -95,13 +95,13 @@ uniform sampler2D height_texture;
 uniform bool use_height_texture;
 
 uniform int sun_lights_size;
-uniform SunLight sun_lights[32];
+uniform SunLight sun_lights[LIGHT_COUNT];
 
 uniform int spot_lights_size;
-uniform SpotLight spot_lights[32];
+uniform SpotLight spot_lights[LIGHT_COUNT];
 
 uniform int point_lights_size;
-uniform PointLight point_lights[32];
+uniform PointLight point_lights[LIGHT_COUNT];
 
 uniform bool transparent;
 uniform float alpha_discard;
@@ -110,8 +110,8 @@ uniform float normal_scale;
 
 uniform bool enable_shadow;
 uniform int cascade_count;
-uniform mat4 cascade_light_pv[3];
-uniform float cascade_split_far[3];
+uniform mat4 cascade_light_pv[CASCADE_COUNT];
+uniform float cascade_split_far[CASCADE_COUNT];
 uniform sampler2DArray shadow_maps;
 uniform bool csm_debug_borders;
 
@@ -122,15 +122,14 @@ in VertexShaderOutput
   vec3 normal;
   vec2 uv;
   mat3 tbn;
-  vec4 light_space_position[3];
+  vec4 light_space_position[CASCADE_COUNT];
 }
 vso;
 
 layout(location = 0) out vec4 frag_color;
-// TODO: reveal is always written even when transparent == false, so every
-// draw needs a 2-attachment framebuffer even for opaque meshes. Consider a
-// separate opaque-only shader variant without the MRT output.
+#ifndef OPAQUE_PASS
 layout(location = 1) out float reveal;
+#endif
 
 /**
  * Parallax occlusion mapping: offsets texture coordinates based on the view
@@ -398,7 +397,7 @@ void main()
   // concentric outlines where they intersect scene geometry.
   if (csm_debug_borders && enable_shadow)
   {
-    vec3 cascade_colors[3]
+    vec3 cascade_colors[CASCADE_COUNT]
       = vec3[](vec3(1.0, 0.2, 0.2), vec3(0.2, 1.0, 0.2), vec3(0.2, 0.4, 1.0));
 
     for (int i = 0; i < cascade_count; ++i)
@@ -417,6 +416,7 @@ void main()
   // Weighted blended order-independent transparency (OIT):
   // weight by alpha and depth so that transparent surfaces blend correctly
   // without sorted draw order. Opaque passes use weight = 1.0.
+#ifndef OPAQUE_PASS
   float weight = transparent ? clamp(
                                  pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0)
                                    * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0),
@@ -426,4 +426,9 @@ void main()
   // pre-multiply color by alpha so the composite recovers the weighted average
   frag_color = vec4(result * mesh_color.a, mesh_color.a) * weight;
   reveal = mesh_color.a;
+#else
+  // opaque variant: no MRT reveal output, no OIT weighting. straight alpha
+  // pass-through (mesh_color.a is 1.0 for typical opaque materials).
+  frag_color = vec4(result, mesh_color.a);
+#endif
 }

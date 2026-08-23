@@ -14,12 +14,12 @@
 #include <axgl/impl/opengl/renderer/hdr.hpp>
 #include <axgl/impl/opengl/renderer/msaa.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
+#include <axgl/impl/opengl/renderer/shaders.hpp>
 #include <axgl/impl/opengl/renderer/shadow_map.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/framebuffer.hpp>
 #include <opengl/renderbuffer.hpp>
-#include <opengl/static_shaders.hpp>
 #include <opengl/static_vaos.hpp>
 
 namespace axgl::impl::opengl
@@ -289,7 +289,7 @@ private:
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto& blend_shader = ::opengl::StaticShaders::instance().weighted_blended();
+    auto& blend_shader = renderer::Shaders::instance().weighted_blended();
     const auto& quad_vao = ::opengl::StaticVAOs::instance().quad();
     blend.accum_texture->use(GL_TEXTURE0);
     blend.reveal_texture->use(GL_TEXTURE1);
@@ -308,7 +308,7 @@ private:
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     screen_texture_->use(GL_TEXTURE0);
-    auto& screen_shader = ::opengl::StaticShaders::instance().screen();
+    auto& screen_shader = renderer::Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     screen_shader.set_bool("enable_hdr", true);
@@ -378,7 +378,7 @@ private:
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     gui_texture->use(GL_TEXTURE0);
-    auto& screen_shader = ::opengl::StaticShaders::instance().screen();
+    auto& screen_shader = renderer::Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     screen_shader.set_bool("enable_hdr", false);
@@ -397,7 +397,7 @@ private:
     glClear(GL_COLOR_BUFFER_BIT);
     if (hdr.enabled) hdr.hdr_texture->use(GL_TEXTURE0);
     else screen_texture_->use(GL_TEXTURE0);
-    auto& screen_shader = ::opengl::StaticShaders::instance().screen();
+    auto& screen_shader = renderer::Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     screen_shader.set_bool("enable_hdr", false);

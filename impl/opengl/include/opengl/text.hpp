@@ -18,7 +18,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include <opengl/framebuffer.hpp>
-#include <opengl/static_shaders.hpp>
+#include <opengl/shader_program.hpp>
 #include <opengl/static_vaos.hpp>
 #include <opengl/texture.hpp>
 
@@ -220,7 +220,8 @@ public:
     Text& target,
     const std::string& value,
     const std::vector<std::string>& font,
-    const TextOptions& options
+    const TextOptions& options,
+    ShaderProgram& shader
   ) const
   {
     std::unordered_map<std::uint32_t, Character> chars;
@@ -279,7 +280,6 @@ public:
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto& shader = StaticShaders::instance().text();
     shader.use_program();
     shader.set_int("text_texture", 0);
     shader.set_bool("use_instancing", false);

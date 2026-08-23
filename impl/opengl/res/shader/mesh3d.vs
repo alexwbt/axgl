@@ -50,7 +50,7 @@ layout(location = 5) in mat4 model;
 uniform vec3 camera_pos;
 uniform mat4 projection_view;
 uniform int cascade_count;
-uniform mat4 cascade_light_pv[3];
+uniform mat4 cascade_light_pv[CASCADE_COUNT];
 uniform vec2 uv_scale;
 uniform vec2 uv_offset;
 uniform bool use_normal_texture;
@@ -64,7 +64,7 @@ out VertexShaderOutput
   vec3 normal;
   vec2 uv;
   mat3 tbn;
-  vec4 light_space_position[3];
+  vec4 light_space_position[CASCADE_COUNT];
 }
 vso;
 
