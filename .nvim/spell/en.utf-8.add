@@ -11,6 +11,7 @@ axgl
 backend
 backends
 bitangent
+bitangent's
 bitangents
 blinn
 blit
@@ -112,6 +113,7 @@ ou
 pcf
 perlin
 phong
+pos
 pragma
 premultiplied
 ptr

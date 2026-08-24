@@ -13,7 +13,7 @@
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
-#include <axgl/impl/opengl/renderer/shaders.hpp>
+#include <axgl/impl/opengl/shaders.hpp>
 
 #include <opengl/vertex_array_object.hpp>
 
@@ -258,8 +258,7 @@ public:
             // glEnable(GL_CULL_FACE);
             // glFrontFace(GL_CW);
             // glCullFace(GL_FRONT);
-            auto& depth_only_shader
-              = renderer::Shaders::instance().depth_only();
+            auto& depth_only_shader = Shaders::instance().depth_only();
             depth_only_shader.use_program();
             depth_only_shader.set_mat4("projection_view", c.light_pv);
             vao_->draw_instanced(instance_count);

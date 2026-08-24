@@ -1,5 +1,6 @@
 #pragma once
 
+#include <format>
 #include <memory>
 #include <string>
 #include <vector>
@@ -10,7 +11,7 @@
 #include <axgl/impl/opengl/renderer/shadow_map.hpp>
 #include <axgl_opengl_impl/res.hpp>
 
-namespace axgl::impl::opengl::renderer
+namespace axgl::impl::opengl
 {
 
 class Shaders
@@ -73,34 +74,29 @@ private:
     return out;
   }
 
-  // defines shared by all shaders that include mesh3d.vs or mesh3d.fs, so the
-  // light array and cascade array sizes stay in sync with the C++ constants.
-  static std::string mesh3d_defines()
-  {
-    return std::string("#define LIGHT_COUNT ") + std::to_string(kLightCount)
-      + "\n#define CASCADE_COUNT " + std::to_string(kCascadeCount) + "\n";
-  }
-
   Shaders()
   {
-    const std::string defines = mesh3d_defines();
-    const auto mesh3d_vs
-      = with_defines(axgl_opengl_impl_res::get("shader/mesh3d.vs"), defines);
-    const auto mesh3d_fs
-      = with_defines(axgl_opengl_impl_res::get("shader/mesh3d.fs"), defines);
-
     mesh2d_ = std::make_unique<::opengl::ShaderProgram>(
       std::vector<::opengl::ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
         {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs")}
       }
     );
-    mesh3d_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, mesh3d_vs}, {GL_FRAGMENT_SHADER, mesh3d_fs}
-      }
-    );
+    // mesh3d
     {
+      const std::string defines = std::format(
+        "#define LIGHT_COUNT {}\n#define CASCADE_COUNT {}\n",
+        renderer::kLightCount, renderer::kCascadeCount
+      );
+      const auto mesh3d_vs
+        = with_defines(axgl_opengl_impl_res::get("shader/mesh3d.vs"), defines);
+      const auto mesh3d_fs
+        = with_defines(axgl_opengl_impl_res::get("shader/mesh3d.fs"), defines);
+      mesh3d_ = std::make_unique<::opengl::ShaderProgram>(
+        std::vector<::opengl::ShaderProgram::Shader>{
+          {GL_VERTEX_SHADER, mesh3d_vs}, {GL_FRAGMENT_SHADER, mesh3d_fs}
+        }
+      );
       // opaque variant: same sources with OPAQUE_PASS defined, dropping the
       // MRT reveal output and OIT weighting so opaque draws only need a
       // single-attachment framebuffer.
@@ -141,7 +137,7 @@ private:
     );
     color_ = std::make_unique<::opengl::ShaderProgram>(
       std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, mesh3d_vs},
+        {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/color.vs")},
         {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/color.fs")}
       }
     );
@@ -154,4 +150,4 @@ private:
   }
 };
 
-} // namespace axgl::impl::opengl::renderer
+} // namespace axgl::impl::opengl

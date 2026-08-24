@@ -7,8 +7,8 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/renderer/render_context.hpp>
-#include <axgl/impl/opengl/renderer/shaders.hpp>
 #include <axgl/impl/opengl/renderer/shadow_map.hpp>
+#include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 namespace axgl::impl::opengl
@@ -16,10 +16,8 @@ namespace axgl::impl::opengl
 
 class Mesh3dMaterial : public Material
 {
-  ::opengl::ShaderProgram& shader_blend_
-    = renderer::Shaders::instance().mesh3d();
-  ::opengl::ShaderProgram& shader_opaque_
-    = renderer::Shaders::instance().mesh3d_opaque();
+  ::opengl::ShaderProgram& shader_blend_ = Shaders::instance().mesh3d();
+  ::opengl::ShaderProgram& shader_opaque_ = Shaders::instance().mesh3d_opaque();
 
   axgl::ptr_t<impl::opengl::Texture> diffuse_texture_;
   axgl::ptr_t<impl::opengl::Texture> specular_texture_;

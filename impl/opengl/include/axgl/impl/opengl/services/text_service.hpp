@@ -7,7 +7,7 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/components/mesh.hpp>
-#include <axgl/impl/opengl/renderer/shaders.hpp>
+#include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/service_base.hpp>
 
 #include <opengl/text.hpp>
@@ -64,7 +64,7 @@ public:
         .color = options.font_color,
         .vertical = options.vertical,
       },
-      renderer::Shaders::instance().text()
+      Shaders::instance().text()
     );
 
     const auto texture = std::dynamic_pointer_cast<axgl::impl::opengl::Texture>(

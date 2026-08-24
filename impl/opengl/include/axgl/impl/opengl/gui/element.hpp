@@ -7,7 +7,7 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/gui/element_base.hpp>
-#include <axgl/impl/opengl/renderer/shaders.hpp>
+#include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/static_vaos.hpp>
@@ -46,7 +46,7 @@ protected:
     const auto model                                                //
       = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
       * glm::scale(glm::vec3(size_.x, size_.y, 1.0f));              //
-    auto& shader = renderer::Shaders::instance().gui();
+    auto& shader = Shaders::instance().gui();
     shader.use_program();
     shader.set_bool("use_texture", false);
     shader.set_vec4("color", color);

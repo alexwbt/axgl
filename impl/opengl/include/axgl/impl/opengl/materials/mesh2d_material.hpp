@@ -5,7 +5,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/material.hpp>
 #include <axgl/impl/opengl/renderer/render_context.hpp>
-#include <axgl/impl/opengl/renderer/shaders.hpp>
+#include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 namespace axgl::impl::opengl
@@ -13,7 +13,7 @@ namespace axgl::impl::opengl
 
 class Mesh2dMaterial : public Material
 {
-  ::opengl::ShaderProgram& shader_ = renderer::Shaders::instance().mesh2d();
+  ::opengl::ShaderProgram& shader_ = Shaders::instance().mesh2d();
   axgl::ptr_t<impl::opengl::Texture> texture_;
 
 public:

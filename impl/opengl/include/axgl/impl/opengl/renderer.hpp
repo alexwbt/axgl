@@ -14,8 +14,9 @@
 #include <axgl/impl/opengl/renderer/hdr.hpp>
 #include <axgl/impl/opengl/renderer/msaa.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
-#include <axgl/impl/opengl/renderer/shaders.hpp>
+#include <axgl/impl/opengl/renderer/screen.hpp>
 #include <axgl/impl/opengl/renderer/shadow_map.hpp>
+#include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 #include <opengl/framebuffer.hpp>
@@ -32,13 +33,10 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
 
   glm::vec2 viewport_{0.0f};
 
-  std::unique_ptr<::opengl::Texture> screen_texture_;
-  std::unique_ptr<::opengl::Texture> depth_texture_;
-  std::unique_ptr<::opengl::Framebuffer> screen_framebuffer_;
-
-  renderer::Hdr hdr;
-  renderer::Msaa msaa;
+  renderer::HDR hdr;
+  renderer::MSAA msaa;
   renderer::Blend blend;
+  renderer::Screen screen;
   renderer::ShadowMap shadow;
 
 public:
@@ -59,9 +57,9 @@ public:
     if (viewport_ != viewport_f)
     {
       viewport_ = viewport_f;
-      setup_screen_framebuffer(viewport_i);
+      screen.setup(viewport_i);
       if (msaa.enabled) msaa.setup(viewport_i);
-      if (blend.enabled) blend.setup(viewport_i, *depth_texture_);
+      if (blend.enabled) blend.setup(viewport_i, *screen.depth_texture);
       if (hdr.enabled) hdr.setup(viewport_i);
       if (gui)
       {
@@ -70,7 +68,7 @@ public:
       }
     }
     msaa.update(viewport_i);
-    blend.update(viewport_i, *depth_texture_);
+    blend.update(viewport_i, *screen.depth_texture);
     hdr.update(viewport_i);
     shadow.update();
 
@@ -128,7 +126,7 @@ public:
     else
     {
       // only clear screen texture if no camera or realm exists
-      screen_framebuffer_->use();
+      screen.screen_framebuffer->use();
       glViewport(0, 0, viewport_i.x, viewport_i.y);
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
       glClear(GL_COLOR_BUFFER_BIT);
@@ -142,27 +140,6 @@ public:
   }
 
 private:
-  void setup_screen_framebuffer(const glm::ivec2& viewport)
-  {
-    screen_texture_ = std::make_unique<::opengl::Texture>();
-    screen_texture_->load_texture(
-      0, GL_RGBA16F, viewport.x, viewport.y, 0, GL_RGBA, GL_HALF_FLOAT, nullptr
-    );
-    screen_texture_->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    screen_texture_->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    depth_texture_ = std::make_unique<::opengl::Texture>();
-    depth_texture_->load_texture(
-      0, GL_DEPTH_COMPONENT24, viewport.x, viewport.y, 0, GL_DEPTH_COMPONENT,
-      GL_FLOAT, nullptr
-    );
-    screen_framebuffer_ = std::make_unique<::opengl::Framebuffer>();
-    screen_framebuffer_->attach_texture(GL_COLOR_ATTACHMENT0, *screen_texture_);
-    screen_framebuffer_->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture_);
-    screen_framebuffer_->check_status_complete(
-      "axgl::impl::opengl::Renderer -> screen_framebuffer_"
-    );
-  }
-
   void render_shadow_pass(
     impl::opengl::renderer::RenderContext& render_context,
     const impl::opengl::renderer::PipelineContext& pipeline_context
@@ -206,7 +183,7 @@ private:
         GL_DEPTH_ATTACHMENT, *shadow.shadow_texture, c
       );
       shadow.shadow_framebuffer->check_status_complete(
-        "axgl::impl::opengl::Renderer -> shadow_framebuffer_"
+        "axgl::impl::opengl::Renderer -> shadow.shadow_framebuffer"
       );
       glClearDepth(1.0);
       glClear(GL_DEPTH_BUFFER_BIT);
@@ -233,7 +210,7 @@ private:
     glDepthRange(0.0f, 1.0f);
 
     if (msaa.enabled) msaa.msaa_framebuffer->use();
-    else screen_framebuffer_->use();
+    else screen.screen_framebuffer->use();
     glClearDepth(1.0);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -247,7 +224,7 @@ private:
     {
       AXGL_PROFILE_SCOPE("Renderer MSAA Resolve");
       msaa.msaa_framebuffer->use_read();
-      screen_framebuffer_->use_write();
+      screen.screen_framebuffer->use_write();
       glBlitFramebuffer(
         0, 0, viewport_i.x, viewport_i.y,                     //
         0, 0, viewport_i.x, viewport_i.y,                     //
@@ -283,13 +260,13 @@ private:
         render_func(render_context);
     }
 
-    screen_framebuffer_->use();
+    screen.screen_framebuffer->use();
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto& blend_shader = renderer::Shaders::instance().weighted_blended();
+    auto& blend_shader = Shaders::instance().weighted_blended();
     const auto& quad_vao = ::opengl::StaticVAOs::instance().quad();
     blend.accum_texture->use(GL_TEXTURE0);
     blend.reveal_texture->use(GL_TEXTURE1);
@@ -307,8 +284,8 @@ private:
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    screen_texture_->use(GL_TEXTURE0);
-    auto& screen_shader = renderer::Shaders::instance().screen();
+    screen.screen_texture->use(GL_TEXTURE0);
+    auto& screen_shader = Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     screen_shader.set_bool("enable_hdr", true);
@@ -373,12 +350,12 @@ private:
       );
 #endif
     if (hdr.enabled) hdr.hdr_framebuffer->use();
-    else screen_framebuffer_->use();
+    else screen.screen_framebuffer->use();
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     gui_texture->use(GL_TEXTURE0);
-    auto& screen_shader = renderer::Shaders::instance().screen();
+    auto& screen_shader = Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     screen_shader.set_bool("enable_hdr", false);
@@ -396,8 +373,8 @@ private:
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     if (hdr.enabled) hdr.hdr_texture->use(GL_TEXTURE0);
-    else screen_texture_->use(GL_TEXTURE0);
-    auto& screen_shader = renderer::Shaders::instance().screen();
+    else screen.screen_texture->use(GL_TEXTURE0);
+    auto& screen_shader = Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     screen_shader.set_bool("enable_hdr", false);

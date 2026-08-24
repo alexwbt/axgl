@@ -8,7 +8,7 @@
 namespace axgl::impl::opengl::renderer
 {
 
-struct Hdr
+struct HDR
 {
   bool enabled = false;
   float exposure = 1.0f;
@@ -26,7 +26,7 @@ struct Hdr
     hdr_framebuffer = std::make_unique<::opengl::Framebuffer>();
     hdr_framebuffer->attach_texture(GL_COLOR_ATTACHMENT0, *hdr_texture);
     hdr_framebuffer->check_status_complete(
-      "axgl::impl::opengl::renderer::Hdr -> hdr_framebuffer"
+      "axgl::impl::opengl::renderer::HDR -> hdr_framebuffer"
     );
   }
 
