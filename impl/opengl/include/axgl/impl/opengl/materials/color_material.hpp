@@ -10,7 +10,7 @@ namespace axgl::impl::opengl
 
 class ColorMaterial : public Material
 {
-  ::opengl::ShaderProgram& shader_ = Shaders::instance().color();
+  const ::opengl::ShaderProgram& shader_ = Shaders::instance().color();
 
 public:
   void use(const impl::opengl::renderer::RenderContext& context) override

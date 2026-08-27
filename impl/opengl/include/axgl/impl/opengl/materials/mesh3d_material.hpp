@@ -16,9 +16,6 @@ namespace axgl::impl::opengl
 
 class Mesh3dMaterial : public Material
 {
-  ::opengl::ShaderProgram& shader_blend_ = Shaders::instance().mesh3d();
-  ::opengl::ShaderProgram& shader_opaque_ = Shaders::instance().mesh3d_opaque();
-
   axgl::ptr_t<impl::opengl::Texture> diffuse_texture_;
   axgl::ptr_t<impl::opengl::Texture> specular_texture_;
   axgl::ptr_t<impl::opengl::Texture> normal_texture_;
@@ -67,20 +64,21 @@ public:
   {
     Material::use(context);
 
-    auto& shader_ = enable_blend_ ? shader_blend_ : shader_opaque_;
-    shader_.use_program();
-    shader_.set_bool("transparent", enable_blend_);
-    shader_.set_mat4("projection_view", context.projection_view_matrix);
-    shader_.set_vec3("camera_pos", context.viewpoint);
-    shader_.set_vec4("mesh_color", color_);
-    shader_.set_float("mesh_shininess", shininess_);
-    shader_.set_float("mesh_specular", specular_);
-    shader_.set_float("alpha_discard", enable_blend_ ? 0.0f : alpha_discard_);
-    shader_.set_vec2("uv_scale", uv_scale_);
-    shader_.set_vec2("uv_offset", uv_offset_);
-    shader_.set_float("diffuse_texture_gamma", 2.2f);
-    shader_.set_float("height_scale", height_scale_);
-    shader_.set_float("normal_scale", normal_scale_);
+    const auto& shader = enable_blend_ ? Shaders::instance().mesh3d()
+                                       : Shaders::instance().mesh3d_opaque();
+    shader.use_program();
+    shader.set_bool("transparent", enable_blend_);
+    shader.set_mat4("projection_view", context.projection_view_matrix);
+    shader.set_vec3("camera_pos", context.viewpoint);
+    shader.set_vec4("mesh_color", color_);
+    shader.set_float("mesh_shininess", shininess_);
+    shader.set_float("mesh_specular", specular_);
+    shader.set_float("alpha_discard", enable_blend_ ? 0.0f : alpha_discard_);
+    shader.set_vec2("uv_scale", uv_scale_);
+    shader.set_vec2("uv_offset", uv_offset_);
+    shader.set_float("diffuse_texture_gamma", 2.2f);
+    shader.set_float("height_scale", height_scale_);
+    shader.set_float("normal_scale", normal_scale_);
 
     // shadow: scan for the shadow-casting light (don't assume lights[0]).
     const impl::opengl::renderer::LightContext* shadow_light = nullptr;
@@ -93,8 +91,8 @@ public:
       }
     }
     const bool enable_shadow = shadow_light != nullptr;
-    shader_.set_int("enable_shadow", enable_shadow);
-    shader_.set_int(
+    shader.set_int("enable_shadow", enable_shadow);
+    shader.set_int(
       "csm_debug_borders", enable_shadow && context.csm_debug_borders
     );
     if (enable_shadow)
@@ -111,28 +109,28 @@ public:
         cascade_pvs[i] = shadow_light->cascades[i].light_pv;
         cascade_far[i] = shadow_light->cascades[i].split_far;
       }
-      shader_.set_int("cascade_count", cascade_count);
-      shader_.set_mat4_array(
+      shader.set_int("cascade_count", cascade_count);
+      shader.set_mat4_array(
         "cascade_light_pv", cascade_count, cascade_pvs.data()
       );
-      shader_.set_float_array(
+      shader.set_float_array(
         "cascade_split_far", cascade_count, cascade_far.data()
       );
-      shader_.set_int("shadow_maps", 5);
+      shader.set_int("shadow_maps", 5);
       shadow_light->shadow_map->use(GL_TEXTURE5);
     }
 
-    use_lights(shader_, context.lights);
+    use_lights(shader, context.lights);
 
-    use_texture(shader_, 0, "diffuse", diffuse_texture_);
-    use_texture(shader_, 1, "specular", specular_texture_);
-    use_texture(shader_, 2, "normal", normal_texture_);
-    use_texture(shader_, 3, "height", height_texture_);
+    use_texture(shader, 0, "diffuse", diffuse_texture_);
+    use_texture(shader, 1, "specular", specular_texture_);
+    use_texture(shader, 2, "normal", normal_texture_);
+    use_texture(shader, 3, "height", height_texture_);
   }
 
 private:
   void use_lights(
-    ::opengl::ShaderProgram& shader_,
+    const ::opengl::ShaderProgram& shader,
     const std::span<const impl::opengl::renderer::LightContext>& lights
   ) const
   {
@@ -145,107 +143,107 @@ private:
       switch (const auto* light = light_context.light; light->type)
       {
       case (axgl::Light::Type::kSun):
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("sun_lights[{}].direction", sun_lights_size),
           light->direction
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("sun_lights[{}].ambient", sun_lights_size),
           light->color.ambient
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("sun_lights[{}].diffuse", sun_lights_size),
           light->color.diffuse
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("sun_lights[{}].specular", sun_lights_size),
           light->color.specular
         );
-        sun_lights_size++;
+        ++sun_lights_size;
         break;
       case (axgl::Light::Type::kPoint):
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("point_lights[{}].position", point_lights_size),
           light->position
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("point_lights[{}].ambient", point_lights_size),
           light->color.ambient
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("point_lights[{}].diffuse", point_lights_size),
           light->color.diffuse
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("point_lights[{}].specular", point_lights_size),
           light->color.specular
         );
-        shader_.set_float(
+        shader.set_float(
           std::format("point_lights[{}].constant", point_lights_size),
           light->strength.constant
         );
-        shader_.set_float(
+        shader.set_float(
           std::format("point_lights[{}].linear", point_lights_size),
           light->strength.linear
         );
-        shader_.set_float(
+        shader.set_float(
           std::format("point_lights[{}].quadratic", point_lights_size),
           light->strength.quadratic
         );
-        point_lights_size++;
+        ++point_lights_size;
         break;
       case (axgl::Light::Type::kSpot):
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("spot_lights[{}].direction", spot_lights_size),
           light->direction
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("spot_lights[{}].position", spot_lights_size),
           light->position
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("spot_lights[{}].ambient", spot_lights_size),
           light->color.ambient
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("spot_lights[{}].diffuse", spot_lights_size),
           light->color.diffuse
         );
-        shader_.set_vec3(
+        shader.set_vec3(
           std::format("spot_lights[{}].specular", spot_lights_size),
           light->color.specular
         );
-        shader_.set_float(
+        shader.set_float(
           std::format("spot_lights[{}].constant", spot_lights_size),
           light->strength.constant
         );
-        shader_.set_float(
+        shader.set_float(
           std::format("spot_lights[{}].linear", spot_lights_size),
           light->strength.linear
         );
-        shader_.set_float(
+        shader.set_float(
           std::format("spot_lights[{}].quadratic", spot_lights_size),
           light->strength.quadratic
         );
-        shader_.set_float(
+        shader.set_float(
           std::format("spot_lights[{}].cut_off", spot_lights_size),
           light->cut_off
         );
-        shader_.set_float(
+        shader.set_float(
           std::format("spot_lights[{}].outer_cut_off", spot_lights_size),
           light->outer_cut_off
         );
-        spot_lights_size++;
+        ++spot_lights_size;
         break;
       }
     }
-    shader_.set_int("sun_lights_size", sun_lights_size);
-    shader_.set_int("spot_lights_size", spot_lights_size);
-    shader_.set_int("point_lights_size", point_lights_size);
+    shader.set_int("sun_lights_size", sun_lights_size);
+    shader.set_int("spot_lights_size", spot_lights_size);
+    shader.set_int("point_lights_size", point_lights_size);
   }
 
   void use_texture(
-    ::opengl::ShaderProgram& shader_,
+    const ::opengl::ShaderProgram& shader,
     const int texture_unit,
     const std::string& name,
     const axgl::ptr_t<impl::opengl::Texture>& texture
@@ -253,13 +251,13 @@ private:
   {
     if (!texture)
     {
-      shader_.set_bool(std::format("use_{}_texture", name), false);
+      shader.set_bool(std::format("use_{}_texture", name), false);
       return;
     }
 
     texture->use(GL_TEXTURE0 + texture_unit);
-    shader_.set_bool(std::format("use_{}_texture", name), true);
-    shader_.set_int(std::format("{}_texture", name), texture_unit);
+    shader.set_bool(std::format("use_{}_texture", name), true);
+    shader.set_int(std::format("{}_texture", name), texture_unit);
   }
 };
 

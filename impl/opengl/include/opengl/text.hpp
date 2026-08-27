@@ -221,7 +221,7 @@ public:
     const std::string& value,
     const std::vector<std::string>& font,
     const TextOptions& options,
-    ShaderProgram& shader
+    const ShaderProgram& shader
   ) const
   {
     std::unordered_map<std::uint32_t, Character> chars;

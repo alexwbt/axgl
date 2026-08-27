@@ -258,7 +258,7 @@ public:
             // glEnable(GL_CULL_FACE);
             // glFrontFace(GL_CW);
             // glCullFace(GL_FRONT);
-            auto& depth_only_shader = Shaders::instance().depth_only();
+            const auto& depth_only_shader = Shaders::instance().depth_only();
             depth_only_shader.use_program();
             depth_only_shader.set_mat4("projection_view", c.light_pv);
             vao_->draw_instanced(instance_count);

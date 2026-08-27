@@ -266,14 +266,13 @@ private:
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto& blend_shader = Shaders::instance().weighted_blended();
-    const auto& quad_vao = ::opengl::StaticVAOs::instance().quad();
     blend.accum_texture->use(GL_TEXTURE0);
     blend.reveal_texture->use(GL_TEXTURE1);
+    const auto& blend_shader = Shaders::instance().blend();
     blend_shader.use_program();
     blend_shader.set_int("accumulation_texture", 0);
     blend_shader.set_int("reveal_texture", 1);
-    quad_vao.draw();
+    ::opengl::StaticVAOs::instance().quad().draw();
   }
 
   void render_tone_mapping_pass(const glm::ivec2& viewport_i)
@@ -285,7 +284,7 @@ private:
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     screen.screen_texture->use(GL_TEXTURE0);
-    auto& screen_shader = Shaders::instance().screen();
+    const auto& screen_shader = Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     screen_shader.set_bool("enable_hdr", true);
@@ -355,7 +354,7 @@ private:
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     gui_texture->use(GL_TEXTURE0);
-    auto& screen_shader = Shaders::instance().screen();
+    const auto& screen_shader = Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     screen_shader.set_bool("enable_hdr", false);
@@ -374,7 +373,7 @@ private:
     glClear(GL_COLOR_BUFFER_BIT);
     if (hdr.enabled) hdr.hdr_texture->use(GL_TEXTURE0);
     else screen.screen_texture->use(GL_TEXTURE0);
-    auto& screen_shader = Shaders::instance().screen();
+    const auto& screen_shader = Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
     screen_shader.set_bool("enable_hdr", false);

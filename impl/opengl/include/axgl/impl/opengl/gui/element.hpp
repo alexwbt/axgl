@@ -27,9 +27,10 @@ public:
 protected:
   void render_base(const axgl::gui::Context& context)
   {
-    const auto scissor_x = util::clamp_cast<GLint>(scissor_rect_.x);
-    const auto scissor_y = util::clamp_cast<GLint>(context.page->get_height())
-      - util::clamp_cast<GLint>(scissor_rect_.w);
+    // const auto scissor_x = util::clamp_cast<GLint>(scissor_rect_.x);
+    // const auto scissor_y =
+    // util::clamp_cast<GLint>(context.page->get_height())
+    //   - util::clamp_cast<GLint>(scissor_rect_.w);
     const auto scissor_width
       = util::clamp_cast<GLsizei>(scissor_rect_.z - scissor_rect_.x);
     const auto scissor_height
@@ -46,7 +47,7 @@ protected:
     const auto model                                                //
       = glm::translate(glm::mat4(1.0f), glm::vec3(position_, 0.0f)) //
       * glm::scale(glm::vec3(size_.x, size_.y, 1.0f));              //
-    auto& shader = Shaders::instance().gui();
+    const auto& shader = Shaders::instance().gui();
     shader.use_program();
     shader.set_bool("use_texture", false);
     shader.set_vec4("color", color);

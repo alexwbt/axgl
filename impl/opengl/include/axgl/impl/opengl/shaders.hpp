@@ -16,6 +16,16 @@ namespace axgl::impl::opengl
 
 class Shaders
 {
+  std::unique_ptr<const ::opengl::ShaderProgram> mesh2d_;
+  std::unique_ptr<const ::opengl::ShaderProgram> mesh3d_;
+  std::unique_ptr<const ::opengl::ShaderProgram> mesh3d_opaque_;
+  std::unique_ptr<const ::opengl::ShaderProgram> text_;
+  std::unique_ptr<const ::opengl::ShaderProgram> screen_;
+  std::unique_ptr<const ::opengl::ShaderProgram> weighted_blended_;
+  std::unique_ptr<const ::opengl::ShaderProgram> gui_;
+  std::unique_ptr<const ::opengl::ShaderProgram> color_;
+  std::unique_ptr<const ::opengl::ShaderProgram> depth_only_;
+
 public:
   static const Shaders& instance()
   {
@@ -28,35 +38,89 @@ public:
   Shaders(const Shaders&&) = delete;
   Shaders& operator=(const Shaders&&) = delete;
 
-  [[nodiscard]] ::opengl::ShaderProgram& mesh2d() const { return *mesh2d_; }
-  [[nodiscard]] ::opengl::ShaderProgram& mesh3d() const { return *mesh3d_; }
-  [[nodiscard]] ::opengl::ShaderProgram& mesh3d_opaque() const
-  {
-    return *mesh3d_opaque_;
-  }
-  [[nodiscard]] ::opengl::ShaderProgram& text() const { return *text_; }
-  [[nodiscard]] ::opengl::ShaderProgram& screen() const { return *screen_; }
-  [[nodiscard]] ::opengl::ShaderProgram& weighted_blended() const
-  {
-    return *weighted_blended_;
-  }
-  [[nodiscard]] ::opengl::ShaderProgram& gui() const { return *gui_; }
-  [[nodiscard]] ::opengl::ShaderProgram& color() const { return *color_; }
-  [[nodiscard]] ::opengl::ShaderProgram& depth_only() const
-  {
-    return *depth_only_;
-  }
+  [[nodiscard]] const auto& mesh2d() const { return *mesh2d_; }
+  [[nodiscard]] const auto& mesh3d() const { return *mesh3d_; }
+  [[nodiscard]] const auto& mesh3d_opaque() const { return *mesh3d_opaque_; }
+  [[nodiscard]] const auto& text() const { return *text_; }
+  [[nodiscard]] const auto& screen() const { return *screen_; }
+  [[nodiscard]] const auto& blend() const { return *weighted_blended_; }
+  [[nodiscard]] const auto& gui() const { return *gui_; }
+  [[nodiscard]] const auto& color() const { return *color_; }
+  [[nodiscard]] const auto& depth_only() const { return *depth_only_; }
 
 private:
-  std::unique_ptr<::opengl::ShaderProgram> mesh2d_;
-  std::unique_ptr<::opengl::ShaderProgram> mesh3d_;
-  std::unique_ptr<::opengl::ShaderProgram> mesh3d_opaque_;
-  std::unique_ptr<::opengl::ShaderProgram> text_;
-  std::unique_ptr<::opengl::ShaderProgram> screen_;
-  std::unique_ptr<::opengl::ShaderProgram> weighted_blended_;
-  std::unique_ptr<::opengl::ShaderProgram> gui_;
-  std::unique_ptr<::opengl::ShaderProgram> color_;
-  std::unique_ptr<::opengl::ShaderProgram> depth_only_;
+  Shaders()
+  {
+    using namespace axgl_opengl_impl_res;
+
+    mesh2d_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/mesh2d.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/mesh2d.fs")}
+      }
+    );
+    // mesh3d
+    {
+      const std::string defines = std::format(
+        "#define LIGHT_COUNT {}\n#define CASCADE_COUNT {}\n",
+        renderer::kLightCount, renderer::kCascadeCount
+      );
+      const auto mesh3d_vs = with_defines(get("shader/mesh3d.vs"), defines);
+      const auto mesh3d_fs = with_defines(get("shader/mesh3d.fs"), defines);
+      mesh3d_ = std::make_unique<::opengl::ShaderProgram>(
+        std::vector<::opengl::ShaderProgram::Shader>{
+          {GL_VERTEX_SHADER, mesh3d_vs}, {GL_FRAGMENT_SHADER, mesh3d_fs}
+        }
+      );
+      // opaque variant: same sources with OPAQUE_PASS defined, dropping the
+      // MRT reveal output and OIT weighting so opaque draws only need a
+      // single-attachment framebuffer.
+      const std::string opaque_fs = with_defines(
+        get("shader/mesh3d.fs"), defines + "#define OPAQUE_PASS\n"
+      );
+      mesh3d_opaque_ = std::make_unique<::opengl::ShaderProgram>(
+        std::vector<::opengl::ShaderProgram::Shader>{
+          {GL_VERTEX_SHADER, mesh3d_vs}, {GL_FRAGMENT_SHADER, opaque_fs}
+        }
+      );
+    }
+    text_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/mesh2d.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/text.fs")}
+      }
+    );
+    screen_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/screen.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/screen.fs")}
+      }
+    );
+    weighted_blended_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/screen.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/weighted_blended.fs")}
+      }
+    );
+    gui_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/gui.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/gui.fs")}
+      }
+    );
+    color_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/color.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/color.fs")}
+      }
+    );
+    depth_only_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/depth_only.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/depth_only.fs")}
+      }
+    );
+  }
 
   // injects `defines` after the #version line (which GLSL requires to be the
   // first statement), then appends the rest of `source`.
@@ -72,81 +136,6 @@ private:
     out += defines;
     out += str.substr(nl + 1);
     return out;
-  }
-
-  Shaders()
-  {
-    mesh2d_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
-        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.fs")}
-      }
-    );
-    // mesh3d
-    {
-      const std::string defines = std::format(
-        "#define LIGHT_COUNT {}\n#define CASCADE_COUNT {}\n",
-        renderer::kLightCount, renderer::kCascadeCount
-      );
-      const auto mesh3d_vs
-        = with_defines(axgl_opengl_impl_res::get("shader/mesh3d.vs"), defines);
-      const auto mesh3d_fs
-        = with_defines(axgl_opengl_impl_res::get("shader/mesh3d.fs"), defines);
-      mesh3d_ = std::make_unique<::opengl::ShaderProgram>(
-        std::vector<::opengl::ShaderProgram::Shader>{
-          {GL_VERTEX_SHADER, mesh3d_vs}, {GL_FRAGMENT_SHADER, mesh3d_fs}
-        }
-      );
-      // opaque variant: same sources with OPAQUE_PASS defined, dropping the
-      // MRT reveal output and OIT weighting so opaque draws only need a
-      // single-attachment framebuffer.
-      const std::string opaque_fs = with_defines(
-        axgl_opengl_impl_res::get("shader/mesh3d.fs"),
-        defines + "#define OPAQUE_PASS\n"
-      );
-      mesh3d_opaque_ = std::make_unique<::opengl::ShaderProgram>(
-        std::vector<::opengl::ShaderProgram::Shader>{
-          {GL_VERTEX_SHADER, mesh3d_vs}, {GL_FRAGMENT_SHADER, opaque_fs}
-        }
-      );
-    }
-    text_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/mesh2d.vs")},
-        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/text.fs")}
-      }
-    );
-    screen_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/screen.vs")},
-        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/screen.fs")}
-      }
-    );
-    weighted_blended_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/screen.vs")},
-        {GL_FRAGMENT_SHADER,
-         axgl_opengl_impl_res::get("shader/weighted_blended.fs")}
-      }
-    );
-    gui_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/gui.vs")},
-        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/gui.fs")}
-      }
-    );
-    color_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/color.vs")},
-        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/color.fs")}
-      }
-    );
-    depth_only_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, axgl_opengl_impl_res::get("shader/depth_only.vs")},
-        {GL_FRAGMENT_SHADER, axgl_opengl_impl_res::get("shader/depth_only.fs")}
-      }
-    );
   }
 };
 

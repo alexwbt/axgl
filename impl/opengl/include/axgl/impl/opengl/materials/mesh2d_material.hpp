@@ -13,12 +13,12 @@ namespace axgl::impl::opengl
 
 class Mesh2dMaterial : public Material
 {
-  ::opengl::ShaderProgram& shader_ = Shaders::instance().mesh2d();
+  const ::opengl::ShaderProgram& shader_ = Shaders::instance().mesh2d();
   axgl::ptr_t<impl::opengl::Texture> texture_;
 
 public:
   void add_texture(
-    axgl::Material::TextureType type, axgl::ptr_t<axgl::Texture> texture
+    axgl::Material::TextureType, axgl::ptr_t<axgl::Texture> texture
   ) override
   {
     texture_ = std::dynamic_pointer_cast<Texture>(texture);
