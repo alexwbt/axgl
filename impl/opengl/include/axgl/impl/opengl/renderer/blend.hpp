@@ -39,9 +39,7 @@ struct Blend
     blend_framebuffer->set_draw_buffers(
       {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1}
     );
-    blend_framebuffer->check_status_complete(
-      "axgl::impl::opengl::renderer::Blend -> blend_framebuffer"
-    );
+    blend_framebuffer->check_status_complete();
   }
 
   void reset()

@@ -30,9 +30,7 @@ struct Screen
     screen_framebuffer = std::make_unique<::opengl::Framebuffer>();
     screen_framebuffer->attach_texture(GL_COLOR_ATTACHMENT0, *screen_texture);
     screen_framebuffer->attach_texture(GL_DEPTH_ATTACHMENT, *depth_texture);
-    screen_framebuffer->check_status_complete(
-      "axgl::impl::opengl::renderer::Screen -> screen_framebuffer"
-    );
+    screen_framebuffer->check_status_complete();
   }
 };
 

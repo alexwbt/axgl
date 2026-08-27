@@ -198,9 +198,11 @@ public:
       return;
     }
 
+    // setup model vertex array
     if (!vao_) create_vao();
     vao_->set_mode(material_->draw_mode());
 
+    // setup instancing vertex buffer
     if (instanced_models_buffer_id_ == 0)
     {
       constexpr size_t vec4_size = sizeof(glm::vec4);
@@ -233,10 +235,12 @@ public:
         instanced_models_buffer_id_, instanced_models_
       );
 
+    // get instances count
     const auto instance_count
       = util::clamp_cast<GLsizei>(instanced_models_.size());
     instanced_models_.clear();
 
+    // render function
     const auto render_function
       = [this,
          instance_count](const axgl::impl::opengl::renderer::RenderContext& c)
@@ -245,19 +249,19 @@ public:
       vao_->draw_instanced(instance_count);
     };
     if (material_->get_enable_blend())
+      // submit to blend pass
       context.blend_pass.emplace_back(std::move(render_function));
     else
     {
+      // submit to opaque pass
       context.opaque_pass.emplace_back(std::move(render_function));
 
       if (material_->get_enable_shadow())
+        // submit to shadow pass
         context.shadow_pass.emplace_back(
           [this,
            instance_count](const axgl::impl::opengl::renderer::LightContext& c)
           {
-            // glEnable(GL_CULL_FACE);
-            // glFrontFace(GL_CW);
-            // glCullFace(GL_FRONT);
             const auto& depth_only_shader = Shaders::instance().depth_only();
             depth_only_shader.use_program();
             depth_only_shader.set_mat4("projection_view", c.light_pv);

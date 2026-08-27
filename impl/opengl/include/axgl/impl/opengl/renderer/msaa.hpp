@@ -34,9 +34,7 @@ struct MSAA
     msaa_framebuffer->attach_renderbuffer(
       GL_DEPTH_STENCIL_ATTACHMENT, *msaa_depth_stencil
     );
-    msaa_framebuffer->check_status_complete(
-      "axgl::impl::opengl::renderer::MSAA -> msaa_framebuffer"
-    );
+    msaa_framebuffer->check_status_complete();
   }
 
   void reset()

@@ -117,11 +117,9 @@ public:
           render_comp->submit_render_function(pipeline_context);
       }
 
-      if (shadow.enable_shadow)
-        render_shadow_pass(render_context, pipeline_context);
+      shadow.render(render_context, pipeline_context);
       render_opaque_pass(render_context, pipeline_context, viewport_i);
-      if (blend.enabled)
-        render_transparent_pass(render_context, pipeline_context);
+      render_transparent_pass(render_context, pipeline_context);
     }
     else
     {
@@ -140,62 +138,6 @@ public:
   }
 
 private:
-  void render_shadow_pass(
-    impl::opengl::renderer::RenderContext& render_context,
-    const impl::opengl::renderer::PipelineContext& pipeline_context
-  )
-  {
-    if (render_context.lights.empty()) return;
-
-    // find the shadow-casting sun light (cascades are sun-only); point/spot
-    // keep the single light_pv fallback path in gather_render_components.
-    impl::opengl::renderer::LightContext* sun_light_context = nullptr;
-    for (auto& lc : render_context.lights)
-    {
-      if (lc.light && lc.light->type == axgl::Light::Type::kSun
-          && lc.light->casts_shadows)
-      {
-        sun_light_context = &lc;
-        break;
-      }
-    }
-    if (!sun_light_context) return;
-
-    sun_light_context->cascades = renderer::ShadowMap::compute_cascades(
-      *sun_light_context->light, render_context.inverse_projection_view_matrix,
-      render_context.camera_near, render_context.camera_far,
-      shadow.shadow_distance
-    );
-
-    glViewport(0, 0, shadow.shadow_map_size, shadow.shadow_map_size);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glDepthRange(0.0f, 1.0f);
-
-    AXGL_PROFILE_SCOPE("Render Shadow Map");
-    // Render the scene once per cascade: attach layer c, set its light_pv,
-    // clear, draw. The depth_only shader reads light_pv from the LightContext
-    // so no shadow-pass shader changes are needed.
-    for (GLsizei c = 0; c < shadow.shadow_map_cascade_levels; ++c)
-    {
-      shadow.shadow_framebuffer->use();
-      shadow.shadow_framebuffer->attach_texture_layer(
-        GL_DEPTH_ATTACHMENT, *shadow.shadow_texture, c
-      );
-      shadow.shadow_framebuffer->check_status_complete(
-        "axgl::impl::opengl::Renderer -> shadow.shadow_framebuffer"
-      );
-      glClearDepth(1.0);
-      glClear(GL_DEPTH_BUFFER_BIT);
-
-      sun_light_context->light_pv = sun_light_context->cascades[c].light_pv;
-      for (const auto& render_func : pipeline_context.shadow_pass)
-        render_func(*sun_light_context);
-    }
-
-    sun_light_context->shadow_map = shadow.shadow_texture.get();
-  }
-
   void render_opaque_pass(
     const impl::opengl::renderer::RenderContext& render_context,
     const impl::opengl::renderer::PipelineContext& pipeline_context,
@@ -501,7 +443,7 @@ public:
   //
   void set_enable_shadow(bool enable_shadow) override
   {
-    shadow.enable_shadow = enable_shadow;
+    shadow.enabled = enable_shadow;
   }
   void set_shadow_map_size(std::uint32_t shadow_map_size) override
   {
@@ -513,7 +455,7 @@ public:
   }
   [[nodiscard]] bool get_enable_shadow() const override
   {
-    return shadow.enable_shadow;
+    return shadow.enabled;
   }
   [[nodiscard]] std::uint32_t get_shadow_map_size() const override
   {

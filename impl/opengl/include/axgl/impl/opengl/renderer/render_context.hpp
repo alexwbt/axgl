@@ -7,7 +7,7 @@
 #include <axgl/interface/light.hpp>
 
 #include <axgl/impl/opengl/renderer/constants.hpp>
-#include <axgl/impl/opengl/renderer/shadow_map.hpp>
+#include <axgl/impl/opengl/renderer/sun_shadow_cascade.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
 namespace axgl::impl::opengl::renderer
@@ -15,10 +15,10 @@ namespace axgl::impl::opengl::renderer
 
 struct LightContext
 {
+  const axgl::Light* light = nullptr;
   glm::mat4 light_pv{0.0f};
   // per-cascade light PVs + split distances; populated for sun lights only.
-  std::array<ShadowMap::Cascade, kCascadeCount> cascades{};
-  const axgl::Light* light = nullptr;
+  std::array<SunShadowCascade, kCascadeCount> cascades{};
   // must be nullptr-initialized: when shadows are off, gather never sets this
   // and the material reads `shadow_map != nullptr` to detect the shadow light.
   const ::opengl::Texture* shadow_map = nullptr;

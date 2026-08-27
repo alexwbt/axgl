@@ -25,9 +25,7 @@ struct HDR
     hdr_texture->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     hdr_framebuffer = std::make_unique<::opengl::Framebuffer>();
     hdr_framebuffer->attach_texture(GL_COLOR_ATTACHMENT0, *hdr_texture);
-    hdr_framebuffer->check_status_complete(
-      "axgl::impl::opengl::renderer::HDR -> hdr_framebuffer"
-    );
+    hdr_framebuffer->check_status_complete();
   }
 
   void reset()

@@ -82,11 +82,11 @@ public:
 
     // shadow: scan for the shadow-casting light (don't assume lights[0]).
     const impl::opengl::renderer::LightContext* shadow_light = nullptr;
-    for (const auto& lc : context.lights)
+    for (const auto& light : context.lights)
     {
-      if (lc.shadow_map != nullptr)
+      if (light.shadow_map != nullptr)
       {
-        shadow_light = &lc;
+        shadow_light = &light;
         break;
       }
     }

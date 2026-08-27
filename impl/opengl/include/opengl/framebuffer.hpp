@@ -1,5 +1,7 @@
 #pragma once
 
+#include <source_location>
+
 #include <axgl/common.hpp>
 #include <glad/glad.h>
 #include <opengl/renderbuffer.hpp>
@@ -83,11 +85,14 @@ public:
     glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
   }
 
-  void check_status_complete(const std::string& name = "") const
+  void check_status_complete(
+    const std::source_location location = std::source_location::current()
+  ) const
   {
     if (const auto status = get_status(); status != GL_FRAMEBUFFER_COMPLETE)
       AXGL_LOG_ERROR(
-        "Framebuffer({}) status is incomplete. (status: {})", name, status
+        "Framebuffer status is incomplete. (status: {}, location: {}:{})",
+        status, location.file_name(), location.line()
       );
   }
 

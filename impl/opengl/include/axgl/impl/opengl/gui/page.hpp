@@ -51,9 +51,7 @@ public:
       framebuffer_->set_draw_buffers(
         {GL_COLOR_ATTACHMENT0, GL_STENCIL_ATTACHMENT}
       );
-      framebuffer_->check_status_complete(
-        "axgl::impl::gui::Page::init -> framebuffer_"
-      );
+      framebuffer_->check_status_complete();
     }
   }
 

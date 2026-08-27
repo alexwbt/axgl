@@ -271,9 +271,7 @@ public:
     const Framebuffer framebuffer;
     framebuffer.attach_texture(GL_COLOR_ATTACHMENT0, target.texture);
     framebuffer.set_draw_buffers({GL_COLOR_ATTACHMENT0});
-    framebuffer.check_status_complete(
-      "opengl::TextRenderer::render_text -> framebuffer"
-    );
+    framebuffer.check_status_complete();
     framebuffer.use();
     glViewport(0, 0, width, height);
 
