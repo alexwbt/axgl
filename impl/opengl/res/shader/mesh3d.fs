@@ -317,9 +317,13 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
     / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
   // Cut Off (soft edge between cut_off and outer_cut_off)
+  // cut_off/outer_cut_off are in degrees; convert to cosine for comparison
+  // with the dot product theta.
   float theta = dot(light_dir, normalize(-light.direction));
-  float epsilon = light.cut_off - light.outer_cut_off;
-  float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
+  float cos_cut_off = cos(radians(light.cut_off));
+  float cos_outer_cut_off = cos(radians(light.outer_cut_off));
+  float epsilon = cos_cut_off - cos_outer_cut_off;
+  float intensity = clamp((theta - cos_outer_cut_off) / epsilon, 0.0, 1.0);
 
   return (ambient + (diffuse + specular) * intensity) * attenuation;
 }
