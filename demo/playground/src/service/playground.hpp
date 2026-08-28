@@ -97,5 +97,8 @@ public:
       renderer->set_exposure(renderer->get_exposure() + 0.01f);
     if (inputs_->exposure_down()->down())
       renderer->set_exposure(std::max(0.01f, renderer->get_exposure() - 0.01f));
+    // ssao
+    if (inputs_->ssao()->clicked())
+      renderer->set_enable_ssao(!renderer->get_enable_ssao());
   }
 };

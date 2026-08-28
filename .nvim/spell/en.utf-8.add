@@ -133,6 +133,7 @@ shaders
 simdjson
 skybox
 spdlog
+ssao
 stb
 stbi
 stdlib
@@ -164,6 +165,7 @@ utfcpp
 util
 uv
 uvs
+vao
 vec
 vec3
 vso
@@ -171,4 +173,3 @@ wextra
 ws
 x3
 xy
-VAO

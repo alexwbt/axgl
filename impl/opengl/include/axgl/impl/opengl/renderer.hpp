@@ -1,5 +1,7 @@
 #pragma once
 
+#include <format>
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <spdlog/spdlog.h>
@@ -16,6 +18,7 @@
 #include <axgl/impl/opengl/renderer/render_component.hpp>
 #include <axgl/impl/opengl/renderer/screen.hpp>
 #include <axgl/impl/opengl/renderer/shadow_map.hpp>
+#include <axgl/impl/opengl/renderer/ssao.hpp>
 #include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
@@ -41,6 +44,7 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   renderer::Blend blend;
   renderer::Screen screen;
   renderer::ShadowMap shadow;
+  renderer::SSAO ssao;
 
 public:
   void render() override
@@ -64,6 +68,7 @@ public:
       if (msaa.enabled) msaa.setup(viewport_i);
       if (blend.enabled) blend.setup(viewport_i, *screen.depth_texture);
       if (hdr.enabled) hdr.setup(viewport_i);
+      if (ssao.enabled) ssao.setup(viewport_i, *screen.depth_texture);
       if (gui)
       {
         gui->set_size(viewport_i.x, viewport_i.y);
@@ -74,6 +79,7 @@ public:
     blend.update(viewport_i, *screen.depth_texture);
     hdr.update(viewport_i);
     shadow.update();
+    ssao.update(viewport_i, *screen.depth_texture);
 
     // render realm
     auto* camera = axgl_->camera_service()->get_camera();
@@ -119,6 +125,7 @@ public:
       }
 
       shadow.render(render_context, pipeline_context);
+      render_ssao_pass(render_context, pipeline_context, viewport_i);
       render_opaque_pass(render_context, pipeline_context, viewport_i);
       render_transparent_pass(render_context, pipeline_context);
     }
@@ -174,6 +181,74 @@ private:
         GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST //
       );
     }
+  }
+
+  void render_ssao_pass(
+    renderer::RenderContext& render_context,
+    const renderer::PipelineContext& pipeline_context,
+    const glm::ivec2& viewport_i
+  )
+  {
+    if (!ssao.enabled || pipeline_context.geometry_pass.empty()) return;
+
+    // geometry pass: render view-space position + normal to the SSAO g-buffer
+    {
+      AXGL_PROFILE_SCOPE("Renderer SSAO Geometry Pass");
+      ssao.geometry_framebuffer->use();
+      glViewport(0, 0, viewport_i.x, viewport_i.y);
+      glEnable(GL_DEPTH_TEST);
+      glDepthFunc(GL_LESS);
+      glDepthMask(GL_TRUE);
+      glDisable(GL_BLEND);
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      for (const auto& render_func : pipeline_context.geometry_pass)
+        render_func(render_context);
+    }
+
+    // SSAO generation pass: sample hemisphere against the g-buffer
+    {
+      AXGL_PROFILE_SCOPE("Renderer SSAO Generation Pass");
+      ssao.ssao_framebuffer->use();
+      glViewport(0, 0, viewport_i.x, viewport_i.y);
+      glDisable(GL_DEPTH_TEST);
+      glDisable(GL_BLEND);
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+      ssao.position_texture->use(GL_TEXTURE0);
+      ssao.normal_texture->use(GL_TEXTURE1);
+      ssao.noise_texture->use(GL_TEXTURE2);
+      const auto& shader = Shaders::instance().ssao();
+      shader.use_program();
+      shader.set_int("position_texture", 0);
+      shader.set_int("normal_texture", 1);
+      shader.set_int("noise_texture", 2);
+      shader.set_mat4("projection_matrix", render_context.projection_matrix);
+      shader.set_vec2("noise_scale", ssao.noise_scale(viewport_i));
+      shader.set_float("radius", ssao.radius);
+      shader.set_float("bias", ssao.bias);
+      for (std::size_t i = 0; i < renderer::kSsaoKernelSize; ++i)
+        shader.set_vec3(std::format("kernel_samples[{}]", i), ssao.kernel[i]);
+      ::opengl::StaticVAOs::instance().quad().draw();
+    }
+
+    // blur pass: 5x5 box filter to remove the noise tiling pattern
+    {
+      AXGL_PROFILE_SCOPE("Renderer SSAO Blur Pass");
+      ssao.blur_framebuffer->use();
+      glViewport(0, 0, viewport_i.x, viewport_i.y);
+      glDisable(GL_DEPTH_TEST);
+      glDisable(GL_BLEND);
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+      ssao.ssao_texture->use(GL_TEXTURE0);
+      const auto& shader = Shaders::instance().ssao_blur();
+      shader.use_program();
+      shader.set_int("ssao_texture", 0);
+      ::opengl::StaticVAOs::instance().quad().draw();
+    }
+
+    render_context.ssao_texture = ssao.blur_texture.get();
   }
 
   void render_transparent_pass(
@@ -481,6 +556,22 @@ public:
   void set_exposure(float exposure) override { hdr.exposure = exposure; }
   [[nodiscard]] bool get_enable_hdr() const override { return hdr.enabled; }
   [[nodiscard]] float get_exposure() const override { return hdr.exposure; }
+
+  //
+  // SSAO
+  //
+  void set_enable_ssao(bool enable_ssao) override
+  {
+    ssao.enabled = enable_ssao;
+  }
+  void set_ssao_radius(float ssao_radius) override
+  {
+    ssao.radius = ssao_radius;
+  }
+  void set_ssao_bias(float ssao_bias) override { ssao.bias = ssao_bias; }
+  [[nodiscard]] bool get_enable_ssao() const override { return ssao.enabled; }
+  [[nodiscard]] float get_ssao_radius() const override { return ssao.radius; }
+  [[nodiscard]] float get_ssao_bias() const override { return ssao.bias; }
 };
 
 } // namespace axgl::impl::opengl

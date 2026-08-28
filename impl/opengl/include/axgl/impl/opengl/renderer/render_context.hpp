@@ -40,6 +40,9 @@ struct RenderContext
   float camera_far = 1000.0f;
   std::vector<LightContext> lights{};
   bool csm_debug_borders = false;
+  // SSAO: blurred occlusion texture (R8, 1.0 = unoccluded). nullptr when SSAO
+  // is disabled, so materials can skip the ambient-multiply branch.
+  const ::opengl::Texture* ssao_texture = nullptr;
   std::int64_t entity_count = 0;
   std::int64_t component_count = 0;
 };
@@ -49,6 +52,10 @@ struct PipelineContext
   std::vector<std::function<void(const LightContext&)>> shadow_pass;
   std::vector<std::function<void(const RenderContext&)>> opaque_pass;
   std::vector<std::function<void(const RenderContext&)>> blend_pass;
+  // SSAO geometry pass: renders view-space position + normal to the SSAO
+  // g-buffer. Only opaque, shadow-eligible meshes contribute (same set as the
+  // shadow pass).
+  std::vector<std::function<void(const RenderContext&)>> geometry_pass;
 };
 
 } // namespace axgl::impl::opengl::renderer

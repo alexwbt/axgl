@@ -46,6 +46,7 @@ int main()
   renderer->set_shadow_distance(50.0f);
   renderer->set_enable_hdr(true);
   renderer->set_exposure(1.0f);
+  renderer->set_enable_ssao(true);
 #endif
   renderer_service->set_active_renderer(renderer);
   // resource

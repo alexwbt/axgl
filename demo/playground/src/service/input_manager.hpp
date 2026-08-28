@@ -24,6 +24,7 @@ private:
   axgl::ptr_t<axgl::Input> hdr_;
   axgl::ptr_t<axgl::Input> exposure_up_;
   axgl::ptr_t<axgl::Input> exposure_down_;
+  axgl::ptr_t<axgl::Input> ssao_;
 
 public:
   [[nodiscard]] auto rotate_sun() const { return rotate_sun_; }
@@ -36,6 +37,7 @@ public:
   [[nodiscard]] auto hdr() const { return hdr_; }
   [[nodiscard]] auto exposure_up() const { return exposure_up_; }
   [[nodiscard]] auto exposure_down() const { return exposure_down_; }
+  [[nodiscard]] auto ssao() const { return ssao_; }
 
   void initialize() override
   {
@@ -68,6 +70,9 @@ public:
     exposure_down_ = axgl::create_ptr<axgl::Input>(
       "Exposure Down", axgl::Input::Source::kKeyDown
     );
+    ssao_ = axgl::create_ptr<axgl::Input>(
+      "Toggle SSAO", axgl::Input::Source::kKeyF7
+    );
   }
 
   void on_start() override
@@ -83,5 +88,6 @@ public:
     input_service->add_input(hdr_);
     input_service->add_input(exposure_up_);
     input_service->add_input(exposure_down_);
+    input_service->add_input(ssao_);
   }
 };

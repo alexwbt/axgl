@@ -264,6 +264,18 @@ public:
             vao_->draw_instanced(instance_count);
           }
         );
+
+      // submit to SSAO geometry pass (opaque meshes only)
+      context.geometry_pass.emplace_back(
+        [this, instance_count](const renderer::RenderContext& c)
+        {
+          const auto& shader = Shaders::instance().ssao_geometry();
+          shader.use_program();
+          shader.set_mat4("projection_view", c.projection_view_matrix);
+          shader.set_mat4("view_matrix", c.view_matrix);
+          vao_->draw_instanced(instance_count);
+        }
+      );
     }
   }
 

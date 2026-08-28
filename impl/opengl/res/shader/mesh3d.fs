@@ -75,6 +75,7 @@ struct Context
   vec3 frag_diffuse;
   vec3 frag_specular;
   vec3 frag_normal;
+  float ssao;
 };
 
 uniform vec4 mesh_color;
@@ -93,6 +94,10 @@ uniform bool use_normal_texture;
 
 uniform sampler2D height_texture;
 uniform bool use_height_texture;
+
+uniform sampler2D ssao_texture;
+uniform bool use_ssao;
+uniform vec2 viewport;
 
 uniform int sun_lights_size;
 uniform SunLight sun_lights[LIGHT_COUNT];
@@ -276,7 +281,7 @@ vec3 calc_sun_light(Context ctx, SunLight light)
       * ctx.frag_specular;
 
   // Ambient
-  vec3 ambient = light.ambient * ctx.frag_diffuse;
+  vec3 ambient = light.ambient * ctx.frag_diffuse * ctx.ssao;
 
   // Shadow
   float shadow = enable_shadow ? calc_shadow() : 0.0;
@@ -304,7 +309,7 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
       * ctx.frag_specular;
 
   // Ambient
-  vec3 ambient = light.ambient * ctx.frag_diffuse;
+  vec3 ambient = light.ambient * ctx.frag_diffuse * ctx.ssao;
 
   // Attenuation
   float dis = length(light.position - vso.position);
@@ -338,7 +343,7 @@ vec3 calc_point_light(Context ctx, PointLight light)
       * ctx.frag_specular;
 
   // Ambient
-  vec3 ambient = light.ambient * ctx.frag_diffuse;
+  vec3 ambient = light.ambient * ctx.frag_diffuse * ctx.ssao;
 
   // Attenuation
   float dis = length(light.position - vso.position);
@@ -382,6 +387,11 @@ void main()
   normal_sample.xy *= normal_scale;
   ctx.frag_normal = use_normal_texture ? normalize(vso.tbn * normal_sample)
                                        : normalize(vso.normal);
+
+  // SSAO: sample the blurred occlusion factor (1.0 = unoccluded). The SSAO
+  // texture is screen-space, so index it by gl_FragCoord, not mesh UVs.
+  ctx.ssao
+    = use_ssao ? texture(ssao_texture, gl_FragCoord.xy / viewport).r : 1.0;
 
   // accumulate light contributions from all active lights
   vec3 result = vec3(0.0);

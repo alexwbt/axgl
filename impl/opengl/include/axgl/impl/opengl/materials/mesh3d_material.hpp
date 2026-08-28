@@ -70,6 +70,7 @@ public:
     shader.set_bool("transparent", enable_blend_);
     shader.set_mat4("projection_view", context.projection_view_matrix);
     shader.set_vec3("camera_pos", context.viewpoint);
+    shader.set_vec2("viewport", context.viewport);
     shader.set_vec4("mesh_color", color_);
     shader.set_float("mesh_shininess", shininess_);
     shader.set_float("mesh_specular", specular_);
@@ -119,6 +120,17 @@ public:
     }
 
     use_lights(shader, context.lights);
+
+    // SSAO: bind the blurred occlusion texture to unit 4. The renderer leaves
+    // ssao_texture null when SSAO is off, so the FS uniform flag stays false
+    // and the sample is skipped.
+    if (context.ssao_texture)
+    {
+      context.ssao_texture->use(GL_TEXTURE4);
+      shader.set_bool("use_ssao", true);
+      shader.set_int("ssao_texture", 4);
+    }
+    else shader.set_bool("use_ssao", false);
 
     use_texture(shader, 0, "diffuse", diffuse_texture_);
     use_texture(shader, 1, "specular", specular_texture_);

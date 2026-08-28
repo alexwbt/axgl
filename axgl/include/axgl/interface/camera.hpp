@@ -33,13 +33,10 @@ public:
   [[nodiscard]] glm::vec3 up() const { return up_; }
   [[nodiscard]] glm::vec3 front() const { return front_; }
   [[nodiscard]] glm::vec3 horizontal_right() const { return horizontal_right_; }
-  [[nodiscard]] glm::mat4 view_matrix() const
-  {
-    return projection_view_matrix_;
-  }
+  [[nodiscard]] glm::mat4 view_matrix() const { return view_matrix_; }
   [[nodiscard]] glm::mat4 projection_matrix() const
   {
-    return projection_view_matrix_;
+    return projection_matrix_;
   }
   [[nodiscard]] glm::mat4 projection_view_matrix() const
   {

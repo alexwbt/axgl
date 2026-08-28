@@ -35,6 +35,14 @@ public:
   virtual void set_exposure(float exposure) = 0;
   [[nodiscard]] virtual bool get_enable_hdr() const = 0;
   [[nodiscard]] virtual float get_exposure() const = 0;
+
+  // SSAO
+  virtual void set_enable_ssao(bool enable_ssao) = 0;
+  virtual void set_ssao_radius(float ssao_radius) = 0;
+  virtual void set_ssao_bias(float ssao_bias) = 0;
+  [[nodiscard]] virtual bool get_enable_ssao() const = 0;
+  [[nodiscard]] virtual float get_ssao_radius() const = 0;
+  [[nodiscard]] virtual float get_ssao_bias() const = 0;
 };
 
 } // namespace axgl

@@ -9,6 +9,7 @@
 
 #include <axgl/impl/opengl/renderer/constants.hpp>
 #include <axgl/impl/opengl/renderer/shadow_map.hpp>
+#include <axgl/impl/opengl/renderer/ssao.hpp>
 #include <axgl_opengl_impl/res.hpp>
 
 namespace axgl::impl::opengl
@@ -25,6 +26,9 @@ class Shaders
   std::unique_ptr<const ::opengl::ShaderProgram> gui_;
   std::unique_ptr<const ::opengl::ShaderProgram> color_;
   std::unique_ptr<const ::opengl::ShaderProgram> depth_only_;
+  std::unique_ptr<const ::opengl::ShaderProgram> ssao_geometry_;
+  std::unique_ptr<const ::opengl::ShaderProgram> ssao_;
+  std::unique_ptr<const ::opengl::ShaderProgram> ssao_blur_;
 
 public:
   static const Shaders& instance()
@@ -47,6 +51,9 @@ public:
   [[nodiscard]] const auto& gui() const { return *gui_; }
   [[nodiscard]] const auto& color() const { return *color_; }
   [[nodiscard]] const auto& depth_only() const { return *depth_only_; }
+  [[nodiscard]] const auto& ssao_geometry() const { return *ssao_geometry_; }
+  [[nodiscard]] const auto& ssao() const { return *ssao_; }
+  [[nodiscard]] const auto& ssao_blur() const { return *ssao_blur_; }
 
 private:
   Shaders()
@@ -118,6 +125,29 @@ private:
       std::vector<::opengl::ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, get("shader/depth_only.vs")},
         {GL_FRAGMENT_SHADER, get("shader/depth_only.fs")}
+      }
+    );
+    ssao_geometry_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/ssao_geometry.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/ssao_geometry.fs")}
+      }
+    );
+    {
+      const std::string defines
+        = std::format("#define KERNEL_SIZE {}\n", renderer::kSsaoKernelSize);
+      const auto ssao_fs = with_defines(get("shader/ssao.fs"), defines);
+      ssao_ = std::make_unique<::opengl::ShaderProgram>(
+        std::vector<::opengl::ShaderProgram::Shader>{
+          {GL_VERTEX_SHADER, get("shader/screen.vs")},
+          {GL_FRAGMENT_SHADER, ssao_fs}
+        }
+      );
+    }
+    ssao_blur_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/screen.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/ssao_blur.fs")}
       }
     );
   }
