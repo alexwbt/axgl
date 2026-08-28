@@ -143,9 +143,7 @@ public:
     }
   }
 
-  virtual void use(
-    [[maybe_unused]] const impl::opengl::renderer::RenderContext& context
-  )
+  virtual void use([[maybe_unused]] const renderer::RenderContext& context)
   {
     if (enable_depth_test_)
     {

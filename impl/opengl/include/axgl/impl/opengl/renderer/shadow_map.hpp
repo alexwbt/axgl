@@ -72,7 +72,7 @@ struct ShadowMap
 
     // find the shadow-casting sun light (cascades are sun-only); point/spot
     // keep the single light_pv fallback path in gather_render_components.
-    impl::opengl::renderer::LightContext* sun_light_context = nullptr;
+    LightContext* sun_light_context = nullptr;
     for (auto& light : render_context.lights)
     {
       if (light.light && light.light->type == axgl::Light::Type::kSun

@@ -28,6 +28,9 @@ namespace axgl::impl::opengl
 
 class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
 {
+  using RenderComponents
+    = std::unordered_map<std::uint64_t, renderer::RenderComponent*>;
+
   bool initialized_glad_ = false;
   axgl::ptr_t<glfw::Window> window_;
 
@@ -82,7 +85,7 @@ public:
     }
     if (camera && realm)
     {
-      impl::opengl::renderer::RenderContext render_context{
+      renderer::RenderContext render_context{
         .viewport = viewport_f,
         .viewpoint = camera->position,
         .view_matrix = camera->view_matrix(),
@@ -95,9 +98,7 @@ public:
         .csm_debug_borders = shadow.enable_csm_debug,
       };
 
-      std::unordered_map<
-        std::uint64_t, impl::opengl::renderer::RenderComponent*>
-        render_components;
+      RenderComponents render_components;
       {
         AXGL_PROFILE_SCOPE("Renderer Gather Instances");
         gather_render_components(
@@ -110,7 +111,7 @@ public:
           static_cast<std::int64_t>(render_context.lights.size())
         );
       }
-      impl::opengl::renderer::PipelineContext pipeline_context;
+      renderer::PipelineContext pipeline_context;
       {
         AXGL_PROFILE_SCOPE("Renderer Submit Calls");
         for (auto* render_comp : render_components | std::views::values)
@@ -139,8 +140,8 @@ public:
 
 private:
   void render_opaque_pass(
-    const impl::opengl::renderer::RenderContext& render_context,
-    const impl::opengl::renderer::PipelineContext& pipeline_context,
+    const renderer::RenderContext& render_context,
+    const renderer::PipelineContext& pipeline_context,
     const glm::ivec2& viewport_i
   )
   {
@@ -176,8 +177,8 @@ private:
   }
 
   void render_transparent_pass(
-    const impl::opengl::renderer::RenderContext& render_context,
-    const impl::opengl::renderer::PipelineContext& pipeline_context
+    const renderer::RenderContext& render_context,
+    const renderer::PipelineContext& pipeline_context
   )
   {
     if (!blend.enabled || pipeline_context.blend_pass.empty()) return;
@@ -325,9 +326,8 @@ private:
 
   // TODO: reimplement without recursion
   void gather_render_components(
-    impl::opengl::renderer::RenderContext& render_context,
-    std::unordered_map<std::uint64_t, impl::opengl::renderer::RenderComponent*>&
-      render_components,
+    renderer::RenderContext& render_context,
+    RenderComponents& render_components,
     const axgl::Container<axgl::Entity>& entities,
     const glm::mat4* base_transform_matrix = nullptr
   )
@@ -348,9 +348,7 @@ private:
         ++render_context.component_count;
 
         if (auto* render_comp
-            = dynamic_cast<impl::opengl::renderer::RenderComponent*>(
-              component.get()
-            ))
+            = dynamic_cast<renderer::RenderComponent*>(component.get()))
         {
           render_comp->gather_instances(model_matrix);
 
@@ -360,7 +358,7 @@ private:
         else if (const auto* light_comp
                  = dynamic_cast<axgl::impl::component::Light*>(component.get()))
         {
-          impl::opengl::renderer::LightContext light_context;
+          renderer::LightContext light_context;
           light_context.light = &light_comp->light;
 
           render_context.lights.emplace_back(light_context);

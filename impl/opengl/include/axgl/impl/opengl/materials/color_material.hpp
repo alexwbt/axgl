@@ -13,7 +13,7 @@ class ColorMaterial : public Material
   const ::opengl::ShaderProgram& shader_ = Shaders::instance().color();
 
 public:
-  void use(const impl::opengl::renderer::RenderContext& context) override
+  void use(const renderer::RenderContext& context) override
   {
     Material::use(context);
     shader_.use_program();

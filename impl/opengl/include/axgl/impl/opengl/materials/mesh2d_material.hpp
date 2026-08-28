@@ -30,7 +30,7 @@ public:
 #endif
   }
 
-  void use(const impl::opengl::renderer::RenderContext& context) override
+  void use(const renderer::RenderContext& context) override
   {
     Material::use(context);
 

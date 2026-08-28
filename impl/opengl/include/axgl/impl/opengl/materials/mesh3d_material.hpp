@@ -60,7 +60,7 @@ public:
     }
   }
 
-  void use(const impl::opengl::renderer::RenderContext& context) override
+  void use(const renderer::RenderContext& context) override
   {
     Material::use(context);
 
@@ -81,7 +81,7 @@ public:
     shader.set_float("normal_scale", normal_scale_);
 
     // shadow: scan for the shadow-casting light (don't assume lights[0]).
-    const impl::opengl::renderer::LightContext* shadow_light = nullptr;
+    const renderer::LightContext* shadow_light = nullptr;
     for (const auto& light : context.lights)
     {
       if (light.shadow_map != nullptr)
@@ -97,14 +97,12 @@ public:
     );
     if (enable_shadow)
     {
-      constexpr std::size_t kCascadeCount
-        = impl::opengl::renderer::kCascadeCount;
       // upload the per-cascade light PVs + split distances and bind the
       // sampler2DArray; the FS selects the cascade by fragment distance.
-      const auto cascade_count = static_cast<GLsizei>(kCascadeCount);
-      std::array<glm::mat4, kCascadeCount> cascade_pvs{};
-      std::array<float, kCascadeCount> cascade_far{};
-      for (std::size_t i = 0; i < kCascadeCount; ++i)
+      const auto cascade_count = static_cast<GLsizei>(renderer::kCascadeCount);
+      std::array<glm::mat4, renderer::kCascadeCount> cascade_pvs{};
+      std::array<float, renderer::kCascadeCount> cascade_far{};
+      for (std::size_t i = 0; i < renderer::kCascadeCount; ++i)
       {
         cascade_pvs[i] = shadow_light->cascades[i].light_pv;
         cascade_far[i] = shadow_light->cascades[i].split_far;
@@ -131,7 +129,7 @@ public:
 private:
   void use_lights(
     const ::opengl::ShaderProgram& shader,
-    const std::span<const impl::opengl::renderer::LightContext>& lights
+    const std::span<const renderer::LightContext>& lights
   ) const
   {
     int sun_lights_size = 0;

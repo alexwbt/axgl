@@ -1,12 +1,12 @@
 #pragma once
 
-#include "util/numcast.hpp"
 #include <algorithm>
 #include <array>
 #include <cmath>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
+#include <util/numcast.hpp>
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/component_base.hpp>
@@ -21,7 +21,7 @@ namespace axgl::impl::opengl::component
 {
 
 class Mesh : virtual public axgl::component::Mesh,
-             virtual public axgl::impl::opengl::renderer::RenderComponent,
+             virtual public renderer::RenderComponent,
              public axgl::impl::ComponentBase
 {
   axgl::ptr_t<axgl::impl::opengl::Material> material_;
@@ -186,9 +186,7 @@ public:
     instanced_models_.emplace_back(transform_matrix);
   }
 
-  void submit_render_function(
-    axgl::impl::opengl::renderer::PipelineContext& context
-  ) override
+  void submit_render_function(renderer::PipelineContext& context) override
   {
     if (!material_)
     {
@@ -242,8 +240,7 @@ public:
 
     // render function
     const auto render_function
-      = [this,
-         instance_count](const axgl::impl::opengl::renderer::RenderContext& c)
+      = [this, instance_count](const renderer::RenderContext& c)
     {
       material_->use(c);
       vao_->draw_instanced(instance_count);
@@ -259,8 +256,7 @@ public:
       if (material_->get_enable_shadow())
         // submit to shadow pass
         context.shadow_pass.emplace_back(
-          [this,
-           instance_count](const axgl::impl::opengl::renderer::LightContext& c)
+          [this, instance_count](const renderer::LightContext& c)
           {
             const auto& depth_only_shader = Shaders::instance().depth_only();
             depth_only_shader.use_program();
