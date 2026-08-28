@@ -1,6 +1,9 @@
 # AGENTS.md
 
-A C++ game development framework.
+A C++ game development framework. Service-oriented core (interfaces in
+`axgl/include/axgl/interface/`, default implementations in `axgl/include/axgl/impl/`)
+over a component-based entity/realm tree; backends in `impl/`, examples in
+`demo/`. See `README.md` for design philosophy.
 
 ## Setup (do this first, or builds fail silently)
 
@@ -68,7 +71,7 @@ A C++ game development framework.
 ## There is no test suite
 
 No `test/`, no CTest, no framework. "Verification" = the project builds and a
-demo runs. Don't invent test commands or claim coverage.
+demo runs.
 
 ## Architecture
 
