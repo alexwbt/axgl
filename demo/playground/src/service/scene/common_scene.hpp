@@ -20,25 +20,21 @@ protected:
 public:
   void initialize() override
   {
-    const auto& entity_service = axgl_->entity_service();
-    const auto& camera_service = axgl_->camera_service();
-    entity_service_ = entity_service;
+    entity_service_ = axgl_->entity_service();
     input_manager_ = axgl_->get_service_t<InputManager>();
+    const auto& camera_service = axgl_->camera_service();
 
     // floor entity
-    floor_entity_ = entity_service->create_entity_t<FloorEntity>();
+    floor_entity_ = add_entity<FloorEntity>();
 
     // camera entity
-    camera_entity_ = entity_service->create_entity_t<CameraEntity>();
+    camera_entity_ = add_entity<CameraEntity>();
     camera_entity_->transform().position.y = 2.0f;
     camera_entity_->transform().update_matrix();
     camera_service->set_camera_mode(
       axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>()
     );
     camera_service->set_camera_entity(camera_entity_);
-
-    entities_.add(floor_entity_);
-    entities_.add(camera_entity_);
   }
 
 protected:
@@ -52,5 +48,18 @@ protected:
     light_entity->set_position(light.position);
     entities_.add(light_entity);
     return light_comp;
+  }
+
+  template <typename EntityType>
+  axgl::ptr_t<EntityType> add_entity(
+    const glm::vec3& position = glm::vec3(0.0f), float scale = 1.0f
+  )
+  {
+    auto entity = entity_service_->create_entity_t<EntityType>();
+    entity->set_position(position);
+    entity->set_scale(glm::vec3(scale));
+    entity->transform().update_matrix();
+    entities_.add(entity);
+    return entity;
   }
 };

@@ -9,10 +9,10 @@
 #include "entity/cube.hpp"
 #include "entity/toy_block.hpp"
 
-class LightingScene : public CommonScene
+class HdrScene : public CommonScene
 {
 public:
-  static constexpr std::string_view kTypeId = "realm::lighting";
+  static constexpr std::string_view kTypeId = "realm::hdr";
 
 private:
   void add_wall(
@@ -50,16 +50,6 @@ private:
     entities_.add(entity);
   }
 
-  template <typename EntityType>
-  void add_object(const glm::vec3& position, float scale = 1.0f)
-  {
-    const auto entity = entity_service_->create_entity_t<EntityType>();
-    entity->set_position(position);
-    entity->set_scale(glm::vec3(scale));
-    entity->transform().update_matrix();
-    entities_.add(entity);
-  }
-
 public:
   void initialize() override
   {
@@ -86,11 +76,11 @@ public:
       {thickness, wall_h, length}, {length, wall_h}
     );
 
-    add_object<CubeEntity>({-1.0f, 0.5f, -4.0f}, 0.5f);
-    add_object<BoxEntity>({1.0f, 0.5f, -7.0f}, 0.5f);
-    add_object<ToyBlockEntity>({0.0f, 0.5f, -10.0f}, 0.5f);
-    add_object<ConcreteBlockEntity>({-1.2f, 0.5f, -13.0f}, 0.5f);
-    add_object<CubeEntity>({1.2f, 0.5f, -15.0f}, 0.5f);
+    add_entity<CubeEntity>({-1.0f, 0.5f, -4.0f}, 0.5f);
+    add_entity<BoxEntity>({1.0f, 0.5f, -7.0f}, 0.5f);
+    add_entity<ToyBlockEntity>({0.0f, 0.5f, -10.0f}, 0.5f);
+    add_entity<ConcreteBlockEntity>({-1.2f, 0.5f, -13.0f}, 0.5f);
+    add_entity<CubeEntity>({1.2f, 0.5f, -15.0f}, 0.5f);
 
     // bright light at the end of the tunnel (HDR showcase)
     add_light(

@@ -5,7 +5,9 @@
 #include <axgl/impl/service_base.hpp>
 
 #include "scene/entity/transparent_cube.hpp"
-#include "scene/lighting_scene.hpp"
+#include "scene/hdr_scene.hpp"
+#include "scene/point_light_scene.hpp"
+#include "scene/spot_light_scene.hpp"
 #include "scene/testing_scene.hpp"
 
 #include "scene/component/spinning.hpp"
@@ -49,7 +51,9 @@ public:
     entity_service->register_entity_t<TransparentCubeEntity>();
     // register scenes
     realm_service->register_realm_t<TestingScene>();
-    realm_service->register_realm_t<LightingScene>();
+    realm_service->register_realm_t<SpotLightScene>();
+    realm_service->register_realm_t<PointLightScene>();
+    realm_service->register_realm_t<HdrScene>();
   }
 
   void on_start() override
@@ -59,7 +63,9 @@ public:
     const auto& realm_service = axgl_->realm_service();
     // create scenes
     scenes_.emplace_back(realm_service->create_realm_t<TestingScene>());
-    scenes_.emplace_back(realm_service->create_realm_t<LightingScene>());
+    scenes_.emplace_back(realm_service->create_realm_t<SpotLightScene>());
+    scenes_.emplace_back(realm_service->create_realm_t<PointLightScene>());
+    scenes_.emplace_back(realm_service->create_realm_t<HdrScene>());
 
     // set first scene as active realm
     axgl_->realm_service()->set_active_realm(scenes_[current_scene_]);

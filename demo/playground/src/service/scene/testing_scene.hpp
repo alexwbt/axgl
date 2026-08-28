@@ -22,23 +22,6 @@ private:
 
   axgl::ptr_t<axgl::impl::component::Light> sunlight_;
 
-  void next_row()
-  {
-    item_offset.y += margin * 2;
-    item_offset.x = 0;
-  }
-
-  glm::vec3 item_position(float height)
-  {
-    item_offset.x += margin * 2.0f;
-    return {item_offset.x - margin, height, item_offset.y};
-  }
-
-  void add_entity(const axgl::ptr_t<axgl::Entity>& entity)
-  {
-    entities_.add(entity);
-  }
-
 public:
   void initialize() override
   {
@@ -57,97 +40,36 @@ public:
     }
 
     // cube
-    {
-      const auto entity = entity_service_->create_entity_t<CubeEntity>();
-      entity->set_position(item_position(0.5f));
-      add_entity(entity);
-    }
-    // spinning cube
-    {
-      const auto entity = entity_service_->create_entity_t<CubeEntity>();
-      entity->set_position(item_position(1.0f));
-      entity->add_component(spinning_comp);
-      add_entity(entity);
-    }
+    add_entity<CubeEntity>(item_position(0.5f));
+    add_entity<CubeEntity>(item_position(1.0f))->add_component(spinning_comp);
     next_row();
 
     // transparent cube
-    {
-      const auto entity
-        = entity_service_->create_entity_t<TransparentCubeEntity>();
-      entity->set_position(item_position(0.5f));
-      add_entity(entity);
-    }
-    // transparent spinning cube
-    {
-      const auto entity
-        = entity_service_->create_entity_t<TransparentCubeEntity>();
-      entity->set_position(item_position(1.0f));
-      entity->add_component(spinning_comp);
-      add_entity(entity);
-    }
+    add_entity<TransparentCubeEntity>(item_position(0.5f));
+    add_entity<TransparentCubeEntity>(item_position(1.0f))
+      ->add_component(spinning_comp);
     next_row();
 
     // box
-    {
-      const auto entity = entity_service_->create_entity_t<BoxEntity>();
-      entity->set_position(item_position(0.5f));
-      add_entity(entity);
-    }
-    // spinning box
-    {
-      const auto entity = entity_service_->create_entity_t<BoxEntity>();
-      entity->set_position(item_position(1.0f));
-      entity->add_component(spinning_comp);
-      add_entity(entity);
-    }
+    add_entity<BoxEntity>(item_position(0.5f));
+    add_entity<BoxEntity>(item_position(1.0f))->add_component(spinning_comp);
     next_row();
 
     // concrete block
-    {
-      const auto entity
-        = entity_service_->create_entity_t<ConcreteBlockEntity>();
-      entity->set_position(item_position(0.5f));
-      add_entity(entity);
-    }
-    // spinning concrete block
-    {
-      const auto entity
-        = entity_service_->create_entity_t<ConcreteBlockEntity>();
-      entity->set_position(item_position(1.0f));
-      entity->add_component(spinning_comp);
-      add_entity(entity);
-    }
+    add_entity<ConcreteBlockEntity>(item_position(0.5f));
+    add_entity<ConcreteBlockEntity>(item_position(1.0f))
+      ->add_component(spinning_comp);
     next_row();
 
     // toy block
-    {
-      const auto entity = entity_service_->create_entity_t<ToyBlockEntity>();
-      entity->set_position(item_position(0.5f));
-      add_entity(entity);
-    }
-    // spinning toy block
-    {
-      const auto entity = entity_service_->create_entity_t<ToyBlockEntity>();
-      entity->set_position(item_position(1.0f));
-      entity->add_component(spinning_comp);
-      add_entity(entity);
-    }
+    add_entity<ToyBlockEntity>(item_position(0.5f));
+    add_entity<ToyBlockEntity>(item_position(1.0f))
+      ->add_component(spinning_comp);
     next_row();
 
     // bunny
-    {
-      const auto entity = entity_service_->create_entity_t<BunnyEntity>();
-      entity->set_position(item_position(0.5f));
-      add_entity(entity);
-    }
-    // spinning bunny
-    {
-      const auto entity = entity_service_->create_entity_t<BunnyEntity>();
-      entity->set_position(item_position(1.5f));
-      entity->add_component(spinning_comp);
-      add_entity(entity);
-    }
+    add_entity<BunnyEntity>(item_position(0.5f));
+    add_entity<BunnyEntity>(item_position(1.0f))->add_component(spinning_comp);
     next_row();
   }
 
@@ -161,5 +83,18 @@ public:
       if (sunlight_->light.direction.z < -1.2f)
         sunlight_->light.direction.z = 1.2f;
     }
+  }
+
+private:
+  void next_row()
+  {
+    item_offset.y += margin * 2;
+    item_offset.x = 0;
+  }
+
+  glm::vec3 item_position(float height)
+  {
+    item_offset.x += margin * 2.0f;
+    return {item_offset.x - margin, height, item_offset.y};
   }
 };
