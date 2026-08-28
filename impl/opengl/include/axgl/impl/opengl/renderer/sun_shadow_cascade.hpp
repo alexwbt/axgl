@@ -18,7 +18,7 @@ struct SunShadowCascade
   float split_near = 0.0f;
   float split_far = 0.0f;
 
-  static std::array<SunShadowCascade, kCascadeCount> get_cascades(
+  static std::array<SunShadowCascade, kSunShadowCascadeCount> get_cascades(
     const axgl::Light& light,
     const glm::mat4& camera_inverse_pv,
     const float camera_near,
@@ -27,7 +27,7 @@ struct SunShadowCascade
     const float lambda = 0.5f
   )
   {
-    std::array<SunShadowCascade, kCascadeCount> cascades;
+    std::array<SunShadowCascade, kSunShadowCascadeCount> cascades;
 
     const float effective_far = std::min(camera_far, shadow_far);
 
@@ -35,12 +35,13 @@ struct SunShadowCascade
     // (even spread) partitions via lambda. splits use effective_far so
     // cascades concentrate on the visible band instead of stretching to
     // camera_far (e.g. 1000).
-    std::array<float, kCascadeCount + 1> split_distances{};
+    std::array<float, kSunShadowCascadeCount + 1> split_distances{};
     split_distances[0] = camera_near;
-    split_distances[kCascadeCount] = effective_far;
-    for (std::size_t i = 1; i < kCascadeCount; ++i)
+    split_distances[kSunShadowCascadeCount] = effective_far;
+    for (std::size_t i = 1; i < kSunShadowCascadeCount; ++i)
     {
-      const float p = static_cast<float>(i) / static_cast<float>(kCascadeCount);
+      const float p
+        = static_cast<float>(i) / static_cast<float>(kSunShadowCascadeCount);
       const float log_split
         = camera_near * std::pow(effective_far / camera_near, p);
       const float linear_split
@@ -48,7 +49,7 @@ struct SunShadowCascade
       split_distances[i] = lambda * log_split + (1.0f - lambda) * linear_split;
     }
 
-    for (std::size_t c = 0; c < kCascadeCount; ++c)
+    for (std::size_t c = 0; c < kSunShadowCascadeCount; ++c)
     {
       const float near_dist = split_distances[c];
       const float far_dist = split_distances[c + 1];

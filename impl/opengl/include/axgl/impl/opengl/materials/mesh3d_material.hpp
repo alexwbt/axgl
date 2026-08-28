@@ -6,8 +6,9 @@
 
 #include <axgl/axgl.hpp>
 #include <axgl/impl/opengl/material.hpp>
+#include <axgl/impl/opengl/renderer/constants.hpp>
 #include <axgl/impl/opengl/renderer/render_context.hpp>
-#include <axgl/impl/opengl/renderer/shadow_map.hpp>
+#include <axgl/impl/opengl/renderer/sun_shadow_map.hpp>
 #include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
@@ -100,10 +101,11 @@ public:
     {
       // upload the per-cascade light PVs + split distances and bind the
       // sampler2DArray; the FS selects the cascade by fragment distance.
-      const auto cascade_count = static_cast<GLsizei>(renderer::kCascadeCount);
-      std::array<glm::mat4, renderer::kCascadeCount> cascade_pvs{};
-      std::array<float, renderer::kCascadeCount> cascade_far{};
-      for (std::size_t i = 0; i < renderer::kCascadeCount; ++i)
+      constexpr auto cascade_count
+        = static_cast<GLsizei>(renderer::kSunShadowCascadeCount);
+      std::array<glm::mat4, cascade_count> cascade_pvs{};
+      std::array<float, cascade_count> cascade_far{};
+      for (std::size_t i = 0; i < cascade_count; ++i)
       {
         cascade_pvs[i] = shadow_light->cascades[i].light_pv;
         cascade_far[i] = shadow_light->cascades[i].split_far;

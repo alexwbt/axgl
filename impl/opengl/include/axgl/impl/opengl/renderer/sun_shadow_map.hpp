@@ -18,11 +18,11 @@
 namespace axgl::impl::opengl::renderer
 {
 
-struct ShadowMap
+struct SunShadowMap
 {
   bool enabled = false;
   bool enable_csm_debug = false;
-  GLsizei shadow_map_cascade_levels = static_cast<GLsizei>(kCascadeCount);
+  GLsizei cascade_count = static_cast<GLsizei>(kSunShadowCascadeCount);
   GLsizei shadow_map_size = 1024;
   // clamps the effective far used for cascade splitting so resolution
   // concentrates on the visible band rather than stretching to camera_far.
@@ -36,8 +36,8 @@ struct ShadowMap
     // at a time in the render loop below.
     shadow_texture = std::make_unique<::opengl::Texture>();
     shadow_texture->load_texture_array(
-      0, GL_DEPTH_COMPONENT, shadow_map_size, shadow_map_size,
-      shadow_map_cascade_levels, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr
+      0, GL_DEPTH_COMPONENT, shadow_map_size, shadow_map_size, cascade_count, 0,
+      GL_DEPTH_COMPONENT, GL_FLOAT, nullptr
     );
     shadow_texture->set_parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     shadow_texture->set_parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -98,7 +98,7 @@ struct ShadowMap
     // Render the scene once per cascade: attach layer c, set its light_pv,
     // clear, draw. The depth_only shader reads light_pv from the LightContext
     // so no shadow-pass shader changes are needed.
-    for (GLsizei c = 0; c < shadow_map_cascade_levels; ++c)
+    for (GLsizei c = 0; c < cascade_count; ++c)
     {
       shadow_framebuffer->use();
       shadow_framebuffer->attach_texture_layer(

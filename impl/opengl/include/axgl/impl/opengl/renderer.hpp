@@ -17,8 +17,8 @@
 #include <axgl/impl/opengl/renderer/msaa.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
 #include <axgl/impl/opengl/renderer/screen.hpp>
-#include <axgl/impl/opengl/renderer/shadow_map.hpp>
 #include <axgl/impl/opengl/renderer/ssao.hpp>
+#include <axgl/impl/opengl/renderer/sun_shadow_map.hpp>
 #include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
@@ -43,7 +43,7 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   renderer::MSAA msaa;
   renderer::Blend blend;
   renderer::Screen screen;
-  renderer::ShadowMap shadow;
+  renderer::SunShadowMap shadow;
   renderer::SSAO ssao;
 
 public:

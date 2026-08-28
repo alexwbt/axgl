@@ -100,13 +100,13 @@ uniform bool use_ssao;
 uniform vec2 viewport;
 
 uniform int sun_lights_size;
-uniform SunLight sun_lights[LIGHT_COUNT];
+uniform SunLight sun_lights[SUN_LIGHT_LIMIT];
 
 uniform int spot_lights_size;
-uniform SpotLight spot_lights[LIGHT_COUNT];
+uniform SpotLight spot_lights[SPOT_LIGHT_LIMIT];
 
 uniform int point_lights_size;
-uniform PointLight point_lights[LIGHT_COUNT];
+uniform PointLight point_lights[POINT_LIGHT_LIMIT];
 
 uniform bool transparent;
 uniform float alpha_discard;
@@ -115,8 +115,8 @@ uniform float normal_scale;
 
 uniform bool enable_shadow;
 uniform int cascade_count;
-uniform mat4 cascade_light_pv[CASCADE_COUNT];
-uniform float cascade_split_far[CASCADE_COUNT];
+uniform mat4 cascade_light_pv[SUN_SHADOW_CASCADE_COUNT];
+uniform float cascade_split_far[SUN_SHADOW_CASCADE_COUNT];
 uniform sampler2DArray shadow_maps;
 uniform bool csm_debug_borders;
 
@@ -127,7 +127,7 @@ in VertexShaderOutput
   vec3 normal;
   vec2 uv;
   mat3 tbn;
-  vec4 light_space_position[CASCADE_COUNT];
+  vec4 light_space_position[SUN_SHADOW_CASCADE_COUNT];
 }
 vso;
 
@@ -407,7 +407,7 @@ void main()
   // concentric outlines where they intersect scene geometry.
   if (csm_debug_borders && enable_shadow)
   {
-    vec3 cascade_colors[CASCADE_COUNT]
+    vec3 cascade_colors[SUN_SHADOW_CASCADE_COUNT]
       = vec3[](vec3(1.0, 0.2, 0.2), vec3(0.2, 1.0, 0.2), vec3(0.2, 0.4, 1.0));
 
     for (int i = 0; i < cascade_count; ++i)

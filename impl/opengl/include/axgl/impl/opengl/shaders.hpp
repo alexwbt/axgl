@@ -8,8 +8,8 @@
 #include <opengl/shader_program.hpp>
 
 #include <axgl/impl/opengl/renderer/constants.hpp>
-#include <axgl/impl/opengl/renderer/shadow_map.hpp>
 #include <axgl/impl/opengl/renderer/ssao.hpp>
+#include <axgl/impl/opengl/renderer/sun_shadow_map.hpp>
 #include <axgl_opengl_impl/res.hpp>
 
 namespace axgl::impl::opengl
@@ -69,8 +69,20 @@ private:
     // mesh3d
     {
       const std::string defines = std::format(
-        "#define LIGHT_COUNT {}\n#define CASCADE_COUNT {}\n",
-        renderer::kLightCount, renderer::kCascadeCount
+        "#define SUN_LIGHT_LIMIT {}\n"
+        "#define SUN_SHADOW_LIMIT {}\n"
+        "#define SUN_SHADOW_CASCADE_COUNT {}\n"
+        "#define SPOT_LIGHT_LIMIT {}\n"
+        "#define SPOT_SHADOW_LIMIT {}\n"
+        "#define POINT_LIGHT_LIMIT {}\n"
+        "#define POINT_SHADOW_LIMIT {}\n",
+        renderer::kSunLightLimit,         //
+        renderer::kSunShadowLimit,        //
+        renderer::kSunShadowCascadeCount, //
+        renderer::kSpotLightLimit,        //
+        renderer::kSpotShadowLimit,       //
+        renderer::kPointLightLimit,       //
+        renderer::kPointShadowLimit       //
       );
       const auto mesh3d_vs = with_defines(get("shader/mesh3d.vs"), defines);
       const auto mesh3d_fs = with_defines(get("shader/mesh3d.fs"), defines);
