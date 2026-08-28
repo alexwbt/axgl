@@ -43,6 +43,14 @@ public:
   [[nodiscard]] virtual bool get_enable_ssao() const = 0;
   [[nodiscard]] virtual float get_ssao_radius() const = 0;
   [[nodiscard]] virtual float get_ssao_bias() const = 0;
+
+  // Bloom
+  virtual void set_enable_bloom(bool enable_bloom) = 0;
+  virtual void set_bloom_threshold(float bloom_threshold) = 0;
+  virtual void set_bloom_intensity(float bloom_intensity) = 0;
+  [[nodiscard]] virtual bool get_enable_bloom() const = 0;
+  [[nodiscard]] virtual float get_bloom_threshold() const = 0;
+  [[nodiscard]] virtual float get_bloom_intensity() const = 0;
 };
 
 } // namespace axgl

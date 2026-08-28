@@ -13,6 +13,7 @@
 #include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/glfw/window.hpp>
 #include <axgl/impl/opengl/renderer/blend.hpp>
+#include <axgl/impl/opengl/renderer/bloom.hpp>
 #include <axgl/impl/opengl/renderer/hdr.hpp>
 #include <axgl/impl/opengl/renderer/msaa.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
@@ -45,6 +46,7 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   renderer::Screen screen;
   renderer::SunShadowMap shadow;
   renderer::SSAO ssao;
+  renderer::Bloom bloom;
 
 public:
   void render() override
@@ -69,6 +71,7 @@ public:
       if (blend.enabled) blend.setup(viewport_i, *screen.depth_texture);
       if (hdr.enabled) hdr.setup(viewport_i);
       if (ssao.enabled) ssao.setup(viewport_i, *screen.depth_texture);
+      if (bloom.enabled) bloom.setup(viewport_i);
       if (gui)
       {
         gui->set_size(viewport_i.x, viewport_i.y);
@@ -80,6 +83,7 @@ public:
     hdr.update(viewport_i);
     shadow.update();
     ssao.update(viewport_i, *screen.depth_texture);
+    bloom.update(viewport_i);
 
     // render realm
     auto* camera = axgl_->camera_service()->get_camera();
@@ -139,6 +143,7 @@ public:
     }
 
     // render screen
+    if (bloom.enabled) render_bloom_pass(viewport_i);
     if (hdr.enabled) render_tone_mapping_pass(viewport_i);
     render_gui(gui);
     render_to_screen();
@@ -291,6 +296,138 @@ private:
     blend_shader.set_int("accumulation_texture", 0);
     blend_shader.set_int("reveal_texture", 1);
     ::opengl::StaticVAOs::instance().quad().draw();
+  }
+
+  void render_bloom_pass(const glm::ivec2& viewport_i)
+  {
+    // bright-pass: extract pixels above the luminance threshold from the
+    // rendered scene (screen_texture, pre-tone-map HDR)
+    {
+      AXGL_PROFILE_SCOPE("Renderer Bloom Bright Pass");
+      bloom.bright_framebuffer->use();
+      glViewport(0, 0, viewport_i.x, viewport_i.y);
+      glDisable(GL_BLEND);
+      glDisable(GL_DEPTH_TEST);
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+      screen.screen_texture->use(GL_TEXTURE0);
+      const auto& shader = Shaders::instance().bloom_bright_pass();
+      shader.use_program();
+      shader.set_int("screen_texture", 0);
+      shader.set_float("threshold", bloom.threshold);
+      ::opengl::StaticVAOs::instance().quad().draw();
+    }
+
+    // downsample + blur: for each mip level, downsample the previous result
+    // then do 2 iterations of separable Gaussian blur (horizontal + vertical)
+    // via ping-pong between the two textures at that level.
+    {
+      AXGL_PROFILE_SCOPE("Renderer Bloom Blur");
+
+      // downsample bright_texture into mip level 0
+      const auto& downsample_shader = Shaders::instance().bloom_blur();
+      downsample_shader.use_program();
+
+      // first mip: downsample from bright_texture
+      {
+        const auto mip_dim = bloom.mip_size(0);
+        bloom.mip_framebuffers[0][0]->use();
+        glViewport(0, 0, mip_dim.x, mip_dim.y);
+        glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        bloom.bright_texture->use(GL_TEXTURE0);
+        downsample_shader.use_program();
+        downsample_shader.set_int("source_texture", 0);
+        downsample_shader.set_vec2("texel_size", 1.0f / glm::vec2(mip_dim));
+        downsample_shader.set_vec2("direction", glm::vec2(0.0f));
+        ::opengl::StaticVAOs::instance().quad().draw();
+      }
+
+      // downsample further mips
+      for (std::size_t i = 1; i < renderer::kBloomMipLevels; ++i)
+      {
+        const auto mip_dim = bloom.mip_size(i);
+        bloom.mip_framebuffers[i][0]->use();
+        glViewport(0, 0, mip_dim.x, mip_dim.y);
+        glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        bloom.mip_textures[i - 1][0]->use(GL_TEXTURE0);
+        downsample_shader.use_program();
+        downsample_shader.set_int("source_texture", 0);
+        downsample_shader.set_vec2("texel_size", 1.0f / glm::vec2(mip_dim));
+        downsample_shader.set_vec2("direction", glm::vec2(0.0f));
+        ::opengl::StaticVAOs::instance().quad().draw();
+      }
+
+      // blur each mip level with ping-pong (3 iterations per axis)
+      for (std::size_t i = 0; i < renderer::kBloomMipLevels; ++i)
+      {
+        const auto mip_dim = bloom.mip_size(i);
+        const glm::vec2 texel_size = 1.0f / glm::vec2(mip_dim);
+
+        for (int iter = 0; iter < 3; ++iter)
+        {
+          // horizontal blur: [i][0] -> [i][1]
+          bloom.mip_framebuffers[i][1]->use();
+          glViewport(0, 0, mip_dim.x, mip_dim.y);
+          glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+          glClear(GL_COLOR_BUFFER_BIT);
+          bloom.mip_textures[i][0]->use(GL_TEXTURE0);
+          downsample_shader.use_program();
+          downsample_shader.set_int("source_texture", 0);
+          downsample_shader.set_vec2("texel_size", texel_size);
+          downsample_shader.set_vec2("direction", glm::vec2(1.0f, 0.0f));
+          ::opengl::StaticVAOs::instance().quad().draw();
+
+          // vertical blur: [i][1] -> [i][0]
+          bloom.mip_framebuffers[i][0]->use();
+          glViewport(0, 0, mip_dim.x, mip_dim.y);
+          glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+          glClear(GL_COLOR_BUFFER_BIT);
+          bloom.mip_textures[i][1]->use(GL_TEXTURE0);
+          downsample_shader.use_program();
+          downsample_shader.set_int("source_texture", 0);
+          downsample_shader.set_vec2("texel_size", texel_size);
+          downsample_shader.set_vec2("direction", glm::vec2(0.0f, 1.0f));
+          ::opengl::StaticVAOs::instance().quad().draw();
+        }
+      }
+    }
+
+    // composite: add bloom back into a separate texture (can't read and write
+    // screen_texture at the same time — that's feedback-undefined), then blit
+    // the result back into screen_texture for the tone-map pass.
+    {
+      AXGL_PROFILE_SCOPE("Renderer Bloom Composite");
+      bloom.composite_framebuffer->use();
+      glViewport(0, 0, viewport_i.x, viewport_i.y);
+      glDisable(GL_BLEND);
+      glDisable(GL_DEPTH_TEST);
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+      screen.screen_texture->use(GL_TEXTURE0);
+      // bind the smallest mip (most blurred) as the bloom contribution
+      bloom.mip_textures[renderer::kBloomMipLevels - 1][0]->use(GL_TEXTURE1);
+      const auto& shader = Shaders::instance().bloom_composite();
+      shader.use_program();
+      shader.set_int("screen_texture", 0);
+      shader.set_int("bloom_texture", 1);
+      shader.set_float("intensity", bloom.intensity);
+      ::opengl::StaticVAOs::instance().quad().draw();
+
+      // copy composite back into screen_texture so tone-mapping sees it
+      bloom.composite_framebuffer->use_read();
+      screen.screen_framebuffer->use_write();
+      glBlitFramebuffer(
+        0, 0, viewport_i.x, viewport_i.y, //
+        0, 0, viewport_i.x, viewport_i.y, //
+        GL_COLOR_BUFFER_BIT, GL_NEAREST   //
+      );
+    }
   }
 
   void render_tone_mapping_pass(const glm::ivec2& viewport_i)
@@ -572,6 +709,31 @@ public:
   [[nodiscard]] bool get_enable_ssao() const override { return ssao.enabled; }
   [[nodiscard]] float get_ssao_radius() const override { return ssao.radius; }
   [[nodiscard]] float get_ssao_bias() const override { return ssao.bias; }
+
+  //
+  // Bloom
+  //
+  void set_enable_bloom(bool enable_bloom) override
+  {
+    bloom.enabled = enable_bloom;
+  }
+  void set_bloom_threshold(float bloom_threshold) override
+  {
+    bloom.threshold = bloom_threshold;
+  }
+  void set_bloom_intensity(float bloom_intensity) override
+  {
+    bloom.intensity = bloom_intensity;
+  }
+  [[nodiscard]] bool get_enable_bloom() const override { return bloom.enabled; }
+  [[nodiscard]] float get_bloom_threshold() const override
+  {
+    return bloom.threshold;
+  }
+  [[nodiscard]] float get_bloom_intensity() const override
+  {
+    return bloom.intensity;
+  }
 };
 
 } // namespace axgl::impl::opengl

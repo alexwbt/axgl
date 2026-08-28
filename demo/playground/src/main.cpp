@@ -47,6 +47,9 @@ int main()
   renderer->set_enable_hdr(true);
   renderer->set_exposure(1.0f);
   renderer->set_enable_ssao(true);
+  renderer->set_enable_bloom(true);
+  renderer->set_bloom_threshold(1.0f);
+  renderer->set_bloom_intensity(0.3f);
 #endif
   renderer_service->set_active_renderer(renderer);
   // resource

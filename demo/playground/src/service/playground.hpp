@@ -100,5 +100,8 @@ public:
     // ssao
     if (inputs_->ssao()->clicked())
       renderer->set_enable_ssao(!renderer->get_enable_ssao());
+    // bloom
+    if (inputs_->bloom()->clicked())
+      renderer->set_enable_bloom(!renderer->get_enable_bloom());
   }
 };

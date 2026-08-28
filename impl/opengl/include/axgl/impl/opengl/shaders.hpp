@@ -29,6 +29,9 @@ class Shaders
   std::unique_ptr<const ::opengl::ShaderProgram> ssao_geometry_;
   std::unique_ptr<const ::opengl::ShaderProgram> ssao_;
   std::unique_ptr<const ::opengl::ShaderProgram> ssao_blur_;
+  std::unique_ptr<const ::opengl::ShaderProgram> bloom_bright_pass_;
+  std::unique_ptr<const ::opengl::ShaderProgram> bloom_blur_;
+  std::unique_ptr<const ::opengl::ShaderProgram> bloom_composite_;
 
 public:
   static const Shaders& instance()
@@ -54,6 +57,15 @@ public:
   [[nodiscard]] const auto& ssao_geometry() const { return *ssao_geometry_; }
   [[nodiscard]] const auto& ssao() const { return *ssao_; }
   [[nodiscard]] const auto& ssao_blur() const { return *ssao_blur_; }
+  [[nodiscard]] const auto& bloom_bright_pass() const
+  {
+    return *bloom_bright_pass_;
+  }
+  [[nodiscard]] const auto& bloom_blur() const { return *bloom_blur_; }
+  [[nodiscard]] const auto& bloom_composite() const
+  {
+    return *bloom_composite_;
+  }
 
 private:
   Shaders()
@@ -160,6 +172,24 @@ private:
       std::vector<::opengl::ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, get("shader/screen.vs")},
         {GL_FRAGMENT_SHADER, get("shader/ssao_blur.fs")}
+      }
+    );
+    bloom_bright_pass_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/screen.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/bloom_bright_pass.fs")}
+      }
+    );
+    bloom_blur_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/screen.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/bloom_blur.fs")}
+      }
+    );
+    bloom_composite_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/screen.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/bloom_composite.fs")}
       }
     );
   }

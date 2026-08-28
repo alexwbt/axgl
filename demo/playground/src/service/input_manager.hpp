@@ -25,6 +25,7 @@ private:
   axgl::ptr_t<axgl::Input> exposure_up_;
   axgl::ptr_t<axgl::Input> exposure_down_;
   axgl::ptr_t<axgl::Input> ssao_;
+  axgl::ptr_t<axgl::Input> bloom_;
 
 public:
   [[nodiscard]] auto rotate_sun() const { return rotate_sun_; }
@@ -38,6 +39,7 @@ public:
   [[nodiscard]] auto exposure_up() const { return exposure_up_; }
   [[nodiscard]] auto exposure_down() const { return exposure_down_; }
   [[nodiscard]] auto ssao() const { return ssao_; }
+  [[nodiscard]] auto bloom() const { return bloom_; }
 
   void initialize() override
   {
@@ -73,6 +75,9 @@ public:
     ssao_ = axgl::create_ptr<axgl::Input>(
       "Toggle SSAO", axgl::Input::Source::kKeyF7
     );
+    bloom_ = axgl::create_ptr<axgl::Input>(
+      "Toggle Bloom", axgl::Input::Source::kKeyF8
+    );
   }
 
   void on_start() override
@@ -89,5 +94,6 @@ public:
     input_service->add_input(exposure_up_);
     input_service->add_input(exposure_down_);
     input_service->add_input(ssao_);
+    input_service->add_input(bloom_);
   }
 };
