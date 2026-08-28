@@ -82,46 +82,9 @@ public:
     shader.set_float("height_scale", height_scale_);
     shader.set_float("normal_scale", normal_scale_);
 
-    // shadow: scan for the shadow-casting light (don't assume lights[0]).
-    const renderer::LightContext* shadow_light = nullptr;
-    for (const auto& light : context.lights)
-    {
-      if (light.shadow_map != nullptr)
-      {
-        shadow_light = &light;
-        break;
-      }
-    }
-    const bool enable_shadow = shadow_light != nullptr;
-    shader.set_int("enable_shadow", enable_shadow);
-    shader.set_int(
-      "csm_debug_borders", enable_shadow && context.csm_debug_borders
-    );
-    if (enable_shadow)
-    {
-      // upload the per-cascade light PVs + split distances and bind the
-      // sampler2DArray; the FS selects the cascade by fragment distance.
-      constexpr auto cascade_count
-        = static_cast<GLsizei>(renderer::kSunShadowCascadeCount);
-      std::array<glm::mat4, cascade_count> cascade_pvs{};
-      std::array<float, cascade_count> cascade_far{};
-      for (std::size_t i = 0; i < cascade_count; ++i)
-      {
-        cascade_pvs[i] = shadow_light->cascades[i].light_pv;
-        cascade_far[i] = shadow_light->cascades[i].split_far;
-      }
-      shader.set_int("cascade_count", cascade_count);
-      shader.set_mat4_array(
-        "cascade_light_pv", cascade_count, cascade_pvs.data()
-      );
-      shader.set_float_array(
-        "cascade_split_far", cascade_count, cascade_far.data()
-      );
-      shader.set_int("shadow_maps", 5);
-      shadow_light->shadow_map->use(GL_TEXTURE5);
-    }
-
-    use_lights(shader, context.lights);
+    use_sun_lights(shader, context);
+    use_spot_lights(shader, context);
+    use_point_lights(shader, context);
 
     // SSAO: bind the blurred occlusion texture to unit 4. The renderer leaves
     // ssao_texture null when SSAO is off, so the FS uniform flag stays false
@@ -141,126 +104,157 @@ public:
   }
 
 private:
-  void use_lights(
+  void use_sun_lights(
     const ::opengl::ShaderProgram& shader,
-    const std::span<const renderer::LightContext>& lights
+    const renderer::RenderContext& render_context
   ) const
   {
-    std::size_t sun_lights_size = 0;
-    std::size_t spot_lights_size = 0;
-    std::size_t point_lights_size = 0;
+    constexpr auto shadow_limit = static_cast<int>(renderer::kSunShadowLimit);
+    constexpr auto cascade_count
+      = static_cast<GLsizei>(renderer::kSunShadowCascadeCount);
 
-    for (const auto& light_context : lights)
+    int size = static_cast<int>(
+      std::min(render_context.sun_lights.size(), renderer::kSunLightLimit)
+    );
+    shader.set_int("sun_lights_size", size);
+
+    int sun_shadow_count = 0;
+
+    for (int i = 0; i < size; ++i)
     {
-      switch (const auto* light = light_context.light; light->type)
+      const auto& context = render_context.sun_lights[i];
+      const auto* light = context.light;
+
+      shader.set_vec3(
+        std::format("sun_lights[{}].direction", i), light->direction
+      );
+      shader.set_vec3(
+        std::format("sun_lights[{}].ambient", i), light->color.ambient
+      );
+      shader.set_vec3(
+        std::format("sun_lights[{}].diffuse", i), light->color.diffuse
+      );
+      shader.set_vec3(
+        std::format("sun_lights[{}].specular", i), light->color.specular
+      );
+
+      if (context.shadow_map && i < shadow_limit)
       {
-      case (axgl::Light::Type::kSun):
-        if (sun_lights_size < renderer::kSunLightLimit)
+        // upload the per-cascade light PVs + split distances and bind the
+        // sampler2DArray; the FS selects the cascade by fragment distance.
+        std::array<glm::mat4, cascade_count> cascade_pvs{};
+        std::array<float, cascade_count> cascade_far{};
+        for (std::size_t i = 0; i < cascade_count; ++i)
         {
-          shader.set_vec3(
-            std::format("sun_lights[{}].direction", sun_lights_size),
-            light->direction
-          );
-          shader.set_vec3(
-            std::format("sun_lights[{}].ambient", sun_lights_size),
-            light->color.ambient
-          );
-          shader.set_vec3(
-            std::format("sun_lights[{}].diffuse", sun_lights_size),
-            light->color.diffuse
-          );
-          shader.set_vec3(
-            std::format("sun_lights[{}].specular", sun_lights_size),
-            light->color.specular
-          );
-          ++sun_lights_size;
+          cascade_pvs[i] = context.cascades[i].light_pv;
+          cascade_far[i] = context.cascades[i].split_far;
         }
-        break;
-      case (axgl::Light::Type::kPoint):
-        if (point_lights_size < renderer::kPointLightLimit)
-        {
-          shader.set_vec3(
-            std::format("point_lights[{}].position", point_lights_size),
-            light->position
-          );
-          shader.set_vec3(
-            std::format("point_lights[{}].ambient", point_lights_size),
-            light->color.ambient
-          );
-          shader.set_vec3(
-            std::format("point_lights[{}].diffuse", point_lights_size),
-            light->color.diffuse
-          );
-          shader.set_vec3(
-            std::format("point_lights[{}].specular", point_lights_size),
-            light->color.specular
-          );
-          shader.set_float(
-            std::format("point_lights[{}].constant", point_lights_size),
-            light->strength.constant
-          );
-          shader.set_float(
-            std::format("point_lights[{}].linear", point_lights_size),
-            light->strength.linear
-          );
-          shader.set_float(
-            std::format("point_lights[{}].quadratic", point_lights_size),
-            light->strength.quadratic
-          );
-          ++point_lights_size;
-        }
-        break;
-      case (axgl::Light::Type::kSpot):
-        if (spot_lights_size < renderer::kSpotLightLimit)
-        {
-          shader.set_vec3(
-            std::format("spot_lights[{}].direction", spot_lights_size),
-            light->direction
-          );
-          shader.set_vec3(
-            std::format("spot_lights[{}].position", spot_lights_size),
-            light->position
-          );
-          shader.set_vec3(
-            std::format("spot_lights[{}].ambient", spot_lights_size),
-            light->color.ambient
-          );
-          shader.set_vec3(
-            std::format("spot_lights[{}].diffuse", spot_lights_size),
-            light->color.diffuse
-          );
-          shader.set_vec3(
-            std::format("spot_lights[{}].specular", spot_lights_size),
-            light->color.specular
-          );
-          shader.set_float(
-            std::format("spot_lights[{}].constant", spot_lights_size),
-            light->strength.constant
-          );
-          shader.set_float(
-            std::format("spot_lights[{}].linear", spot_lights_size),
-            light->strength.linear
-          );
-          shader.set_float(
-            std::format("spot_lights[{}].quadratic", spot_lights_size),
-            light->strength.quadratic
-          );
-          shader.set_float(
-            std::format("spot_lights[{}].cut_off", spot_lights_size),
-            light->cut_off
-          );
-          shader.set_float(
-            std::format("spot_lights[{}].outer_cut_off", spot_lights_size),
-            light->outer_cut_off
-          );
-          ++spot_lights_size;
-        }
-        break;
+        shader.set_mat4_array(
+          "cascade_light_pv", cascade_count, cascade_pvs.data()
+        );
+        shader.set_float_array(
+          "cascade_split_far", cascade_count, cascade_far.data()
+        );
+        shader.set_int("sun_shadow_maps", 5);
+        context.shadow_map->use(GL_TEXTURE5);
+        ++sun_shadow_count;
       }
     }
-    shader.set_int("sun_lights_size", static_cast<int>(sun_lights_size));
-    shader.set_int("spot_lights_size", static_cast<int>(spot_lights_size));
-    shader.set_int("point_lights_size", static_cast<int>(point_lights_size));
+
+    shader.set_int("enable_sun_shadow", sun_shadow_count > 0);
+#ifdef AXGL_DEBUG
+    shader.set_int(
+      "csm_debug_borders",
+      sun_shadow_count > 0 && render_context.csm_debug_borders
+    );
+#endif
+  }
+
+  void use_point_lights(
+    const ::opengl::ShaderProgram& shader,
+    const renderer::RenderContext& render_context
+  ) const
+  {
+    int size = static_cast<int>(
+      std::min(render_context.point_lights.size(), renderer::kPointLightLimit)
+    );
+    shader.set_int("point_lights_size", size);
+
+    for (int i = 0; i < size; ++i)
+    {
+      const auto& context = render_context.point_lights[i];
+      const auto* light = context.light;
+
+      shader.set_vec3(
+        std::format("point_lights[{}].position", i), light->position
+      );
+      shader.set_vec3(
+        std::format("point_lights[{}].ambient", i), light->color.ambient
+      );
+      shader.set_vec3(
+        std::format("point_lights[{}].diffuse", i), light->color.diffuse
+      );
+      shader.set_vec3(
+        std::format("point_lights[{}].specular", i), light->color.specular
+      );
+      shader.set_float(
+        std::format("point_lights[{}].constant", i), light->strength.constant
+      );
+      shader.set_float(
+        std::format("point_lights[{}].linear", i), light->strength.linear
+      );
+      shader.set_float(
+        std::format("point_lights[{}].quadratic", i), light->strength.quadratic
+      );
+    }
+  }
+
+  void use_spot_lights(
+    const ::opengl::ShaderProgram& shader,
+    const renderer::RenderContext& render_context
+  ) const
+  {
+    int size = static_cast<int>(
+      std::min(render_context.spot_lights.size(), renderer::kSpotLightLimit)
+    );
+    shader.set_int("spot_lights_size", size);
+
+    for (int i = 0; i < size; ++i)
+    {
+      const auto& context = render_context.spot_lights[i];
+      const auto* light = context.light;
+
+      shader.set_vec3(
+        std::format("spot_lights[{}].direction", i), light->direction
+      );
+      shader.set_vec3(
+        std::format("spot_lights[{}].position", i), light->position
+      );
+      shader.set_vec3(
+        std::format("spot_lights[{}].ambient", i), light->color.ambient
+      );
+      shader.set_vec3(
+        std::format("spot_lights[{}].diffuse", i), light->color.diffuse
+      );
+      shader.set_vec3(
+        std::format("spot_lights[{}].specular", i), light->color.specular
+      );
+      shader.set_float(
+        std::format("spot_lights[{}].constant", i), light->strength.constant
+      );
+      shader.set_float(
+        std::format("spot_lights[{}].linear", i), light->strength.linear
+      );
+      shader.set_float(
+        std::format("spot_lights[{}].quadratic", i), light->strength.quadratic
+      );
+      shader.set_float(
+        std::format("spot_lights[{}].cut_off", i), light->cut_off
+      );
+      shader.set_float(
+        std::format("spot_lights[{}].outer_cut_off", i), light->outer_cut_off
+      );
+    }
   }
 
   void use_texture(

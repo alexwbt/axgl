@@ -13,19 +13,18 @@
  *   location 0: position       - vertex position (object space)
  *   location 1: normal         - vertex normal (object space)
  *   location 2: tangent        - vertex tangent (object space)
- *   location 3: bitangent     - vertex bitangent (object space, used for
- * handedness) location 4: uv            - texture coordinates location 5: model
+ *   location 3: bitangent      - vertex bitangent (object space)
+ *   location 4: uv             - texture coordinates location 5: model
  * - per-instance model matrix (instanced rendering)
  *
  * Uniforms:
  *   camera_pos          - world-space camera position
  *   projection_view     - combined projection * view matrix
- *   cascade_count       - number of shadow cascades
- *   cascade_light_pv[N] - per-cascade light projection * view matrices
  *   uv_scale / uv_offset- texture coordinate transform
  *   use_normal_texture  - normal map present (enables TBN construction)
  *   use_height_texture  - height map present (enables TBN construction for POM)
- *   enable_shadow       - shadow mapping enabled
+ *   enable_sun_shadow   - shadow mapping enabled
+ *   cascade_light_pv[N] - per-cascade light projection * view matrices
  *
  * Outputs (vso):
  *   camera_pos          - world-space camera position (untransformed)
@@ -33,9 +32,9 @@
  *   normal              - world-space normal (normalized)
  *   uv                  - scaled/offset texture coordinates
  *   tbn                 - tangent->world matrix (columns: t, b, n); identity if
- *                        no normal/height texture
+ *                         no normal/height texture
  *   light_space_position[N] - clip-space position in each cascade's light
- * frustum
+ *                             frustum
  *
  * Note: gl_Position.x is negated to match the engine's handedness convention.
  */
@@ -49,13 +48,12 @@ layout(location = 5) in mat4 model;
 
 uniform vec3 camera_pos;
 uniform mat4 projection_view;
-uniform int cascade_count;
-uniform mat4 cascade_light_pv[SUN_SHADOW_CASCADE_COUNT];
 uniform vec2 uv_scale;
 uniform vec2 uv_offset;
 uniform bool use_normal_texture;
 uniform bool use_height_texture;
-uniform bool enable_shadow;
+uniform bool enable_sun_shadow;
+uniform mat4 cascade_light_pv[SUN_SHADOW_CASCADE_COUNT];
 
 out VertexShaderOutput
 {
@@ -83,11 +81,11 @@ void main()
   vso.normal = normalize(normal_matrix * normal);
   vso.uv = (uv + uv_offset) * uv_scale;
 
-  if (enable_shadow)
+  if (enable_sun_shadow)
   {
     // output the world-space position transformed by each cascade's light PV
     // so the FS can pick the matching one without re-transforming.
-    for (int i = 0; i < cascade_count; ++i)
+    for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i)
       vso.light_space_position[i]
         = cascade_light_pv[i] * vec4(vso.position, 1.0);
   }

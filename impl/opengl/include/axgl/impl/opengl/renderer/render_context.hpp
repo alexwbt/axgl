@@ -13,15 +13,21 @@
 namespace axgl::impl::opengl::renderer
 {
 
-struct LightContext
+struct SunLightContext
 {
   const axgl::Light* light = nullptr;
-  glm::mat4 light_pv{0.0f};
-  // per-cascade light PVs + split distances; populated for sun lights only.
-  std::array<SunShadowCascade, kSunShadowCascadeCount> cascades{};
-  // must be nullptr-initialized: when shadows are off, gather never sets this
-  // and the material reads `shadow_map != nullptr` to detect the shadow light.
   const ::opengl::Texture* shadow_map = nullptr;
+  std::array<SunShadowCascade, kSunShadowCascadeCount> cascades{};
+};
+
+struct SpotLightContext
+{
+  const axgl::Light* light = nullptr;
+};
+
+struct PointLightContext
+{
+  const axgl::Light* light = nullptr;
 };
 
 struct RenderContext
@@ -38,8 +44,12 @@ struct RenderContext
   // these to interpolate the unprojected corners correctly.
   float camera_near = 0.1f;
   float camera_far = 1000.0f;
-  std::vector<LightContext> lights{};
+  std::vector<SunLightContext> sun_lights{};
+  std::vector<SpotLightContext> spot_lights{};
+  std::vector<PointLightContext> point_lights{};
+#ifdef AXGL_DEBUG
   bool csm_debug_borders = false;
+#endif
   // SSAO: blurred occlusion texture (R8, 1.0 = unoccluded). nullptr when SSAO
   // is disabled, so materials can skip the ambient-multiply branch.
   const ::opengl::Texture* ssao_texture = nullptr;
@@ -47,11 +57,16 @@ struct RenderContext
   std::int64_t component_count = 0;
 };
 
+struct ShadowPassContext
+{
+  glm::mat4 projection_view_matrix{0.0f};
+};
+
 struct PipelineContext
 {
-  std::vector<std::function<void(const LightContext&)>> shadow_pass;
   std::vector<std::function<void(const RenderContext&)>> opaque_pass;
   std::vector<std::function<void(const RenderContext&)>> blend_pass;
+  std::vector<std::function<void(const ShadowPassContext&)>> shadow_pass;
   // SSAO geometry pass: renders view-space position + normal to the SSAO
   // g-buffer. Only opaque, shadow-eligible meshes contribute (same set as the
   // shadow pass).

@@ -18,8 +18,8 @@
 #include <axgl/impl/opengl/renderer/msaa.hpp>
 #include <axgl/impl/opengl/renderer/render_component.hpp>
 #include <axgl/impl/opengl/renderer/screen.hpp>
+#include <axgl/impl/opengl/renderer/shadow.hpp>
 #include <axgl/impl/opengl/renderer/ssao.hpp>
-#include <axgl/impl/opengl/renderer/sun_shadow_map.hpp>
 #include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
@@ -42,11 +42,11 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
 
   renderer::HDR hdr;
   renderer::MSAA msaa;
-  renderer::Blend blend;
-  renderer::Screen screen;
-  renderer::SunShadowMap shadow;
   renderer::SSAO ssao;
+  renderer::Blend blend;
   renderer::Bloom bloom;
+  renderer::Shadow shadow;
+  renderer::Screen screen;
 
 public:
   void render() override
@@ -105,7 +105,9 @@ public:
         = glm::inverse(camera->projection_view_matrix()),
         .camera_near = camera->near_clip,
         .camera_far = camera->far_clip,
+#ifdef AXGL_DEBUG
         .csm_debug_borders = shadow.enable_csm_debug,
+#endif
       };
 
       RenderComponents render_components;
@@ -118,7 +120,7 @@ public:
         AXGL_PLOT("Renderer Component Count", render_context.component_count);
         AXGL_PLOT(
           "Renderer Light Count",
-          static_cast<std::int64_t>(render_context.lights.size())
+          static_cast<std::int64_t>(render_context.sun_lights.size())
         );
       }
       renderer::PipelineContext pipeline_context;
@@ -550,7 +552,7 @@ private:
       ++render_context.entity_count;
 
       const auto& transform = entity->transform();
-      const auto model_matrix = base_transform_matrix //
+      const auto model_matrix = base_transform_matrix
         ? *base_transform_matrix * transform.model_matrix
         : transform.model_matrix;
 
@@ -570,15 +572,24 @@ private:
         else if (const auto* light_comp
                  = dynamic_cast<axgl::impl::component::Light*>(component.get()))
         {
-          renderer::LightContext light_context;
-          light_context.light = &light_comp->light;
-
-          render_context.lights.emplace_back(light_context);
+          const auto* light = &light_comp->light;
+          switch (light->type)
+          {
+          case axgl::Light::Type::kSun:
+            render_context.sun_lights.emplace_back(light);
+            break;
+          case axgl::Light::Type::kSpot:
+            render_context.spot_lights.emplace_back(light);
+            break;
+          case axgl::Light::Type::kPoint:
+            render_context.point_lights.emplace_back(light);
+            break;
+          }
         }
       }
       if (!entity->children().empty())
       {
-        const auto pivot_matrix = base_transform_matrix //
+        const auto pivot_matrix = base_transform_matrix
           ? *base_transform_matrix * transform.pivot_matrix
           : transform.pivot_matrix;
         gather_render_components(

@@ -205,6 +205,9 @@ private:
     );
     const auto nl = str.find('\n');
     std::string out = str.substr(0, nl + 1);
+#ifdef AXGL_DEBUG
+    out += "\n#define AXGL_DEBUG\n";
+#endif
     out += defines;
     out += str.substr(nl + 1);
     return out;

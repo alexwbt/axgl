@@ -20,17 +20,13 @@ namespace axgl::impl::opengl::renderer
 
 struct SunShadowMap
 {
-  bool enabled = false;
-  bool enable_csm_debug = false;
-  GLsizei cascade_count = static_cast<GLsizei>(kSunShadowCascadeCount);
-  GLsizei shadow_map_size = 1024;
-  // clamps the effective far used for cascade splitting so resolution
-  // concentrates on the visible band rather than stretching to camera_far.
-  float shadow_distance = 100.0f;
+  static constexpr GLsizei cascade_count
+    = static_cast<GLsizei>(kSunShadowCascadeCount);
+
   std::unique_ptr<::opengl::Texture> shadow_texture;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer;
 
-  void setup()
+  void setup(const GLsizei shadow_map_size)
   {
     // one 2D-array texture layer per cascade; the FBO attaches a single layer
     // at a time in the render loop below.
@@ -56,38 +52,20 @@ struct SunShadowMap
     shadow_texture.reset();
   }
 
-  void update()
-  {
-    if (enabled
-        && (!shadow_texture || shadow_map_size != shadow_texture->get_width()))
-      setup();
-    else if (!enabled && shadow_texture) reset();
-  }
-
   void render(
-    RenderContext& render_context, const PipelineContext& pipeline_context
+    const axgl::Light& light,
+    const RenderContext& render_context,
+    const PipelineContext& pipeline_context,
+    const GLsizei shadow_map_size,
+    const float shadow_distance,
+    SunLightContext& output
   )
   {
-    if (!enabled || render_context.lights.empty()) return;
-
-    // find the shadow-casting sun light (cascades are sun-only); point/spot
-    // keep the single light_pv fallback path in gather_render_components.
-    LightContext* sun_light_context = nullptr;
-    for (auto& light : render_context.lights)
-    {
-      if (light.light && light.light->type == axgl::Light::Type::kSun
-          && light.light->casts_shadows)
-      {
-        sun_light_context = &light;
-        break;
-      }
-    }
-    if (!sun_light_context) return;
-
-    sun_light_context->cascades = SunShadowCascade::get_cascades(
-      *sun_light_context->light, render_context.inverse_projection_view_matrix,
+    output.cascades = SunShadowCascade::get_cascades(
+      light, render_context.inverse_projection_view_matrix,
       render_context.camera_near, render_context.camera_far, shadow_distance
     );
+    output.shadow_map = shadow_texture.get();
 
     glViewport(0, 0, shadow_map_size, shadow_map_size);
     glEnable(GL_DEPTH_TEST);
@@ -98,22 +76,22 @@ struct SunShadowMap
     // Render the scene once per cascade: attach layer c, set its light_pv,
     // clear, draw. The depth_only shader reads light_pv from the LightContext
     // so no shadow-pass shader changes are needed.
-    for (GLsizei c = 0; c < cascade_count; ++c)
+    for (GLsizei i = 0; i < cascade_count; ++i)
     {
       shadow_framebuffer->use();
       shadow_framebuffer->attach_texture_layer(
-        GL_DEPTH_ATTACHMENT, *shadow_texture, c
+        GL_DEPTH_ATTACHMENT, *shadow_texture, i
       );
       shadow_framebuffer->check_status_complete();
       glClearDepth(1.0);
       glClear(GL_DEPTH_BUFFER_BIT);
 
-      sun_light_context->light_pv = sun_light_context->cascades[c].light_pv;
+      ShadowPassContext shadow_pass_context{
+        .projection_view_matrix = output.cascades[i].light_pv
+      };
       for (const auto& render_func : pipeline_context.shadow_pass)
-        render_func(*sun_light_context);
+        render_func(shadow_pass_context);
     }
-
-    sun_light_context->shadow_map = shadow_texture.get();
   }
 };
 

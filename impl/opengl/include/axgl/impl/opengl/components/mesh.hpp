@@ -256,11 +256,13 @@ public:
       if (material_->get_enable_shadow())
         // submit to shadow pass
         context.shadow_pass.emplace_back(
-          [this, instance_count](const renderer::LightContext& c)
+          [this, instance_count](const renderer::ShadowPassContext& context)
           {
             const auto& depth_only_shader = Shaders::instance().depth_only();
             depth_only_shader.use_program();
-            depth_only_shader.set_mat4("projection_view", c.light_pv);
+            depth_only_shader.set_mat4(
+              "projection_view", context.projection_view_matrix
+            );
             vao_->draw_instanced(instance_count);
           }
         );

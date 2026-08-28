@@ -113,12 +113,12 @@ uniform float alpha_discard;
 uniform float height_scale;
 uniform float normal_scale;
 
-uniform bool enable_shadow;
-uniform int cascade_count;
-uniform mat4 cascade_light_pv[SUN_SHADOW_CASCADE_COUNT];
+uniform bool enable_sun_shadow;
+uniform sampler2DArray sun_shadow_maps;
 uniform float cascade_split_far[SUN_SHADOW_CASCADE_COUNT];
-uniform sampler2DArray shadow_maps;
+#ifdef AXGL_DEBUG
 uniform bool csm_debug_borders;
+#endif
 
 in VertexShaderOutput
 {
@@ -202,7 +202,7 @@ int select_cascade()
 {
   float frag_distance = length(vso.position - vso.camera_pos);
   int cascade_index = 0;
-  for (int i = 0; i < cascade_count; ++i)
+  for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i)
   {
     if (frag_distance <= cascade_split_far[i])
     {
@@ -214,13 +214,7 @@ int select_cascade()
   return cascade_index;
 }
 
-/**
- * Cascaded shadow factor via 3x3 percentage-closer filtering (PCF).
- * Selects the cascade whose split_far exceeds the fragment's distance from
- * the camera, then samples the corresponding layer of the shadow map array.
- * Returns 0.0 (fully lit) to 1.0 (fully shadowed).
- */
-float calc_shadow()
+float calc_sun_shadow()
 {
   int cascade_index = select_cascade();
 
@@ -238,7 +232,7 @@ float calc_shadow()
   float shadow = 0.0;
   // textureSize on a sampler2DArray returns ivec3(w, h, layers); .xy is the
   // per-layer texel size.
-  vec2 texel_size = 1.0 / textureSize(shadow_maps, 0).xy;
+  vec2 texel_size = 1.0 / textureSize(sun_shadow_maps, 0).xy;
   for (int x = -1; x <= 1; ++x)
   {
     for (int y = -1; y <= 1; ++y)
@@ -246,7 +240,7 @@ float calc_shadow()
       // sample the array with vec3(uv, layer)
       float pcf_depth
         = texture(
-            shadow_maps,
+            sun_shadow_maps,
             vec3(projection_coords.xy + vec2(x, y) * texel_size, cascade_index)
         )
             .r;
@@ -284,7 +278,7 @@ vec3 calc_sun_light(Context ctx, SunLight light)
   vec3 ambient = light.ambient * ctx.frag_diffuse * ctx.ssao;
 
   // Shadow
-  float shadow = enable_shadow ? calc_shadow() : 0.0;
+  float shadow = enable_sun_shadow ? calc_sun_shadow() : 0.0;
 
   return ambient + (1.0 - shadow) * (diffuse + specular);
 }
@@ -406,15 +400,13 @@ void main()
   for (int i = 0; i < point_lights_size; ++i)
     result += calc_point_light(ctx, point_lights[i]);
 
+#ifdef AXGL_DEBUG
   // Debug: draw borders at the edges of each cascade's ortho frustum box
   // (light clip space [-1,1]^3) so nested frustum boundaries are visible as
   // concentric outlines where they intersect scene geometry.
-  if (csm_debug_borders && enable_shadow)
+  if (csm_debug_borders && enable_sun_shadow)
   {
-    vec3 cascade_colors[SUN_SHADOW_CASCADE_COUNT]
-      = vec3[](vec3(1.0, 0.2, 0.2), vec3(0.2, 1.0, 0.2), vec3(0.2, 0.4, 1.0));
-
-    for (int i = 0; i < cascade_count; ++i)
+    for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i)
     {
       vec3 proj
         = vso.light_space_position[i].xyz / vso.light_space_position[i].w;
@@ -423,9 +415,10 @@ void main()
       if (min_edge > 0.2) continue;
 
       float border = 1.0 - smoothstep(0.0, 0.02, abs(min_edge));
-      result = mix(result, cascade_colors[i], border * 0.8);
+      result = mix(result, vec3(0.2, 0.4, 1.0), border * 0.8);
     }
   }
+#endif
 
   // Weighted blended order-independent transparency (OIT):
   // weight by alpha and depth so that transparent surfaces blend correctly
