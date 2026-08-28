@@ -637,6 +637,15 @@ public:
   }
 
   //
+  // blend
+  //
+  void set_enable_blend(bool enable_blend) override
+  {
+    blend.enabled = enable_blend;
+  }
+  [[nodiscard]] bool get_enable_blend() const override { return blend.enabled; }
+
+  //
   // msaa
   //
   void set_enable_msaa(bool enable_msaa) override

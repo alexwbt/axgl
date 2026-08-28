@@ -82,6 +82,9 @@ public:
 
     // renderer inputs
     const auto& renderer = axgl_->renderer_service()->get_active_renderer();
+    // blend
+    if (inputs_->blend()->clicked())
+      renderer->set_enable_blend(!renderer->get_enable_blend());
     // msaa
     if (inputs_->msaa()->clicked())
       renderer->set_enable_msaa(!renderer->get_enable_msaa());

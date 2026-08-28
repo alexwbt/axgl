@@ -17,6 +17,7 @@ private:
   axgl::ptr_t<axgl::Input> rotate_sun_;
   axgl::ptr_t<axgl::Input> flashlight_;
   axgl::ptr_t<axgl::Input> switch_scene_;
+  axgl::ptr_t<axgl::Input> blend_;
   axgl::ptr_t<axgl::Input> msaa_;
   axgl::ptr_t<axgl::Input> debug_;
   axgl::ptr_t<axgl::Input> shadow_;
@@ -31,6 +32,7 @@ public:
   [[nodiscard]] auto rotate_sun() const { return rotate_sun_; }
   [[nodiscard]] auto flashlight() const { return flashlight_; }
   [[nodiscard]] auto switch_scene() const { return switch_scene_; }
+  [[nodiscard]] auto blend() const { return blend_; }
   [[nodiscard]] auto msaa() const { return msaa_; }
   [[nodiscard]] auto debug() const { return debug_; }
   [[nodiscard]] auto shadow() const { return shadow_; }
@@ -51,20 +53,23 @@ public:
     switch_scene_ = axgl::create_ptr<axgl::Input>(
       "Switch Scene", axgl::Input::Source::kKeyF1
     );
+    blend_ = axgl::create_ptr<axgl::Input>(
+      "Toggle Blend", axgl::Input::Source::kKeyF2
+    );
     msaa_ = axgl::create_ptr<axgl::Input>(
-      "Toggle MSAA", axgl::Input::Source::kKeyF2
+      "Toggle MSAA", axgl::Input::Source::kKeyF3
     );
     debug_ = axgl::create_ptr<axgl::Input>(
-      "Toggle Debug Mode", axgl::Input::Source::kKeyF3
+      "Toggle Debug Mode", axgl::Input::Source::kKeyF4
     );
     shadow_ = axgl::create_ptr<axgl::Input>(
-      "Toggle Shadow", axgl::Input::Source::kKeyF4
+      "Toggle Shadow", axgl::Input::Source::kKeyF5
     );
     debug_csm_ = axgl::create_ptr<axgl::Input>(
-      "Toggle CSM Borders", axgl::Input::Source::kKeyF5
+      "Toggle CSM Borders", axgl::Input::Source::kKeyF6
     );
     hdr_ = axgl::create_ptr<axgl::Input>(
-      "Toggle HDR", axgl::Input::Source::kKeyF6
+      "Toggle HDR", axgl::Input::Source::kKeyF7
     );
     exposure_up_ = axgl::create_ptr<axgl::Input>(
       "Exposure Up", axgl::Input::Source::kKeyUp
@@ -86,6 +91,7 @@ public:
     input_service->add_input(rotate_sun_);
     input_service->add_input(flashlight_);
     input_service->add_input(switch_scene_);
+    input_service->add_input(blend_);
     input_service->add_input(msaa_);
     input_service->add_input(debug_);
     input_service->add_input(shadow_);

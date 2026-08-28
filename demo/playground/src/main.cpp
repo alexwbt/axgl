@@ -39,6 +39,7 @@ int main()
   const auto renderer = renderer_service->create_renderer();
   renderer->set_window(window);
 #ifdef AXGL_DEMO_FANCY_MODE
+  renderer->set_enable_blend(true);
   renderer->set_enable_msaa(true);
   renderer->set_enable_shadow(true);
   renderer->set_msaa_sample_count(8);

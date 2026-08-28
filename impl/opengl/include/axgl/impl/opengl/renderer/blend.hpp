@@ -13,7 +13,7 @@ struct Blend
   static constexpr glm::vec4 zero_filler{0.0f};
   static constexpr glm::vec4 one_filler{1.0f};
 
-  bool enabled = true;
+  bool enabled = false;
   std::unique_ptr<::opengl::Texture> accum_texture;
   std::unique_ptr<::opengl::Texture> reveal_texture;
   std::unique_ptr<::opengl::Framebuffer> blend_framebuffer;

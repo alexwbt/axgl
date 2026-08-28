@@ -16,6 +16,10 @@ public:
   virtual void set_window(axgl::ptr_t<axgl::Window> window) = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Window> get_window() const = 0;
 
+  // blend
+  virtual void set_enable_blend(bool enable_blend) = 0;
+  [[nodiscard]] virtual bool get_enable_blend() const = 0;
+
   // msaa
   virtual void set_enable_msaa(bool enable_msaa) = 0;
   virtual void set_msaa_sample_count(std::uint32_t msaa_sample_count) = 0;
