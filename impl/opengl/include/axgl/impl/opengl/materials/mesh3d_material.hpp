@@ -138,16 +138,16 @@ private:
         std::format("sun_lights[{}].specular", i), light->color.specular
       );
 
-      if (context.shadow_map && i < shadow_limit)
+      if (light->casts_shadows && context.shadow_map && i < shadow_limit)
       {
         // upload the per-cascade light PVs + split distances and bind the
         // sampler2DArray; the FS selects the cascade by fragment distance.
         std::array<glm::mat4, cascade_count> cascade_pvs{};
         std::array<float, cascade_count> cascade_far{};
-        for (std::size_t i = 0; i < cascade_count; ++i)
+        for (std::size_t j = 0; j < cascade_count; ++j)
         {
-          cascade_pvs[i] = context.cascades[i].light_pv;
-          cascade_far[i] = context.cascades[i].split_far;
+          cascade_pvs[j] = context.cascades[j].light_pv;
+          cascade_far[j] = context.cascades[j].split_far;
         }
         shader.set_mat4_array(
           "cascade_light_pv", cascade_count, cascade_pvs.data()

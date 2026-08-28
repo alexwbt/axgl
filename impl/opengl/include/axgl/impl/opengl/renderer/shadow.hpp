@@ -36,14 +36,17 @@ struct Shadow
     if (!enabled) return;
 
     // render sun shadow maps
-    const std::size_t sun_shadows
-      = std::min(render_context.sun_lights.size(), kSunShadowLimit);
-    for (std::size_t i = 0; i < sun_shadows; ++i)
+    std::size_t sun_shadow_count = 0;
+    for (auto& e : render_context.sun_lights)
     {
-      sun.render(
-        *render_context.sun_lights[i].light, render_context, pipeline_context,
-        shadow_map_size, shadow_distance, render_context.sun_lights[i]
-      );
+      if (e.light->casts_shadows)
+      {
+        sun.render(
+          *e.light, render_context, pipeline_context, shadow_map_size,
+          shadow_distance, e
+        );
+        if (++sun_shadow_count >= kSunShadowLimit) break;
+      }
     }
   }
 };
