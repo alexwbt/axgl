@@ -21,6 +21,11 @@ public:
     shader_.set_mat4("projection_view", context.projection_view_matrix);
     shader_.set_vec4("color", color_);
   }
+
+  [[nodiscard]] const ::opengl::ShaderProgram* get_shader() const override
+  {
+    return &shader_;
+  }
 };
 
 } // namespace axgl::impl::opengl

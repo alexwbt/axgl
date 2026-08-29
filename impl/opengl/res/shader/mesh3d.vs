@@ -9,33 +9,6 @@
  * and to derive the tangent-space view direction for parallax occlusion
  * mapping.
  *
- * Inputs:
- *   location 0: position       - vertex position (object space)
- *   location 1: normal         - vertex normal (object space)
- *   location 2: tangent        - vertex tangent (object space)
- *   location 3: bitangent      - vertex bitangent (object space)
- *   location 4: uv             - texture coordinates location 5: model
- * - per-instance model matrix (instanced rendering)
- *
- * Uniforms:
- *   camera_pos          - world-space camera position
- *   projection_view     - combined projection * view matrix
- *   uv_scale / uv_offset- texture coordinate transform
- *   use_normal_texture  - normal map present (enables TBN construction)
- *   use_height_texture  - height map present (enables TBN construction for POM)
- *   enable_sun_shadow   - shadow mapping enabled
- *   cascade_light_pv[N] - per-cascade light projection * view matrices
- *
- * Outputs (vso):
- *   camera_pos          - world-space camera position (untransformed)
- *   position            - world-space fragment position
- *   normal              - world-space normal (normalized)
- *   uv                  - scaled/offset texture coordinates
- *   tbn                 - tangent->world matrix (columns: t, b, n); identity if
- *                         no normal/height texture
- *   light_space_position[N] - clip-space position in each cascade's light
- *                             frustum
- *
  * Note: gl_Position.x is negated to match the engine's handedness convention.
  */
 
@@ -55,6 +28,9 @@ uniform bool use_height_texture;
 uniform bool enable_sun_shadow;
 uniform mat4 cascade_light_pv[SUN_SHADOW_CASCADE_COUNT];
 
+uniform bool enable_spot_shadow;
+uniform mat4 spot_shadow_pv[SPOT_SHADOW_LIMIT];
+
 out VertexShaderOutput
 {
   vec3 camera_pos;
@@ -62,7 +38,8 @@ out VertexShaderOutput
   vec3 normal;
   vec2 uv;
   mat3 tbn;
-  vec4 light_space_position[SUN_SHADOW_CASCADE_COUNT];
+  vec4 sun_light_space_position[SUN_SHADOW_CASCADE_COUNT];
+  vec4 spot_light_space_position[SPOT_SHADOW_LIMIT];
 }
 vso;
 
@@ -86,8 +63,18 @@ void main()
     // output the world-space position transformed by each cascade's light PV
     // so the FS can pick the matching one without re-transforming.
     for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i)
-      vso.light_space_position[i]
+      vso.sun_light_space_position[i]
         = cascade_light_pv[i] * vec4(vso.position, 1.0);
+  }
+
+  if (enable_spot_shadow)
+  {
+    // one light_space_position per spot shadow slot; unused slots keep
+    // whatever default but the FS gates on spot_shadow_index[i] so they're
+    // never sampled.
+    for (int i = 0; i < SPOT_SHADOW_LIMIT; ++i)
+      vso.spot_light_space_position[i]
+        = spot_shadow_pv[i] * vec4(vso.position, 1.0);
   }
 
   // Build a tangent->world TBN matrix when normal or height mapping is active.

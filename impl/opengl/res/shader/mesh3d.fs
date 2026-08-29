@@ -120,6 +120,11 @@ uniform float cascade_split_far[SUN_SHADOW_CASCADE_COUNT];
 uniform bool csm_debug_borders;
 #endif
 
+uniform bool enable_spot_shadow;
+uniform sampler2DArray spot_shadow_maps;
+uniform mat4 spot_shadow_pv[SPOT_SHADOW_LIMIT];
+uniform int spot_shadow_index[SPOT_LIGHT_LIMIT];
+
 in VertexShaderOutput
 {
   vec3 camera_pos;
@@ -127,7 +132,8 @@ in VertexShaderOutput
   vec3 normal;
   vec2 uv;
   mat3 tbn;
-  vec4 light_space_position[SUN_SHADOW_CASCADE_COUNT];
+  vec4 sun_light_space_position[SUN_SHADOW_CASCADE_COUNT];
+  vec4 spot_light_space_position[SPOT_SHADOW_LIMIT];
 }
 vso;
 
@@ -219,8 +225,8 @@ float calc_sun_shadow()
   int cascade_index = select_cascade();
 
   // project into the selected cascade's light clip space and remap to [0,1]
-  vec3 projection_coords = vso.light_space_position[cascade_index].xyz
-    / vso.light_space_position[cascade_index].w;
+  vec3 projection_coords = vso.sun_light_space_position[cascade_index].xyz
+    / vso.sun_light_space_position[cascade_index].w;
   projection_coords = projection_coords * 0.5 + 0.5;
 
   // beyond the light's far plane: not in shadow
@@ -250,6 +256,32 @@ float calc_sun_shadow()
   shadow /= 9.0;
 
   return shadow;
+}
+
+float calc_spot_shadow(int slot_index)
+{
+  int layer = spot_shadow_index[slot_index];
+  vec4 clip = vso.spot_light_space_position[layer];
+  vec3 proj = clip.xyz / clip.w;
+  proj = proj * 0.5 + 0.5;
+  if (proj.z > 1.0) return 0.0;
+
+  float bias = 0.001;
+  vec2 texel_size = 1.0 / textureSize(spot_shadow_maps, 0).xy;
+  float shadow = 0.0;
+  for (int x = -1; x <= 1; ++x)
+  {
+    for (int y = -1; y <= 1; ++y)
+    {
+      float pcf_depth
+        = texture(
+            spot_shadow_maps, vec3(proj.xy + vec2(x, y) * texel_size, layer)
+        )
+            .r;
+      shadow += proj.z - bias > pcf_depth ? 1.0 : 0.0;
+    }
+  }
+  return shadow / 9.0;
 }
 
 /**
@@ -287,7 +319,7 @@ vec3 calc_sun_light(Context ctx, SunLight light)
  * Spot light contribution with distance attenuation and a soft cone cutoff.
  * light.direction points from the light toward the scene.
  */
-vec3 calc_spot_light(Context ctx, SpotLight light)
+vec3 calc_spot_light(Context ctx, SpotLight light, int slot_index)
 {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);
@@ -319,7 +351,12 @@ vec3 calc_spot_light(Context ctx, SpotLight light)
   float epsilon = cos_cut_off - cos_outer_cut_off;
   float intensity = clamp((theta - cos_outer_cut_off) / epsilon, 0.0, 1.0);
 
-  return (ambient + (diffuse + specular) * intensity) * attenuation;
+  float shadow = (enable_spot_shadow && spot_shadow_index[slot_index] >= 0)
+    ? calc_spot_shadow(slot_index)
+    : 0.0;
+
+  return (ambient + (1.0 - shadow) * (diffuse + specular) * intensity)
+    * attenuation;
 }
 
 /**
@@ -396,7 +433,7 @@ void main()
   for (int i = 0; i < sun_lights_size; ++i)
     result += calc_sun_light(ctx, sun_lights[i]);
   for (int i = 0; i < spot_lights_size; ++i)
-    result += calc_spot_light(ctx, spot_lights[i]);
+    result += calc_spot_light(ctx, spot_lights[i], i);
   for (int i = 0; i < point_lights_size; ++i)
     result += calc_point_light(ctx, point_lights[i]);
 
@@ -408,8 +445,8 @@ void main()
   {
     for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i)
     {
-      vec3 proj
-        = vso.light_space_position[i].xyz / vso.light_space_position[i].w;
+      vec3 proj = vso.sun_light_space_position[i].xyz
+        / vso.sun_light_space_position[i].w;
       float min_edge
         = min(min(1.0 - abs(proj.x), 1.0 - abs(proj.y)), 1.0 - abs(proj.z));
       if (min_edge > 0.2) continue;

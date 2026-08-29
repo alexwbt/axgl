@@ -187,7 +187,6 @@ public:
       );
   }
 
-private:
   void bind() const { glBindVertexArray(id_); }
 };
 

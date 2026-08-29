@@ -1,5 +1,6 @@
 #pragma once
 
+#include <axgl/impl/opengl/renderer/spot_shadow_map.hpp>
 #include <axgl/impl/opengl/renderer/sun_shadow_map.hpp>
 #include <glad/glad.h>
 
@@ -14,6 +15,7 @@ struct Shadow
   GLsizei shadow_map_size = 1024;
 
   SunShadowMap sun;
+  SpotShadowMap spot;
 
   void update()
   {
@@ -22,32 +24,51 @@ struct Shadow
       if (!sun.shadow_texture
           || shadow_map_size != sun.shadow_texture->get_width())
         sun.setup(shadow_map_size);
+      if (!spot.shadow_texture
+          || shadow_map_size != spot.shadow_texture->get_width())
+        spot.setup(shadow_map_size);
     }
     else
     {
       if (sun.shadow_texture) sun.reset();
+      if (spot.shadow_texture) spot.reset();
     }
   }
 
-  void render(
+  // Render shadow maps and populate render context
+  void render_shadow_pass(
     RenderContext& render_context, const PipelineContext& pipeline_context
   )
   {
     if (!enabled) return;
 
-    // render sun shadow maps
+    // sun light shadow
     std::size_t sun_shadow_count = 0;
     for (auto& e : render_context.sun_lights)
     {
       if (e.light->casts_shadows)
       {
         sun.render(
-          *e.light, render_context, pipeline_context, shadow_map_size,
-          shadow_distance, e
+          e, render_context, pipeline_context, shadow_map_size, shadow_distance
         );
         if (++sun_shadow_count >= kSunShadowLimit) break;
       }
     }
+    render_context.sun_shadow_maps = sun.shadow_texture.get();
+
+    // spot light shadow
+    std::size_t spot_shadow_count = 0;
+    for (auto& e : render_context.spot_lights)
+    {
+      if (e.light->casts_shadows && spot_shadow_count < kSpotShadowLimit)
+      {
+        e.shadow_index = static_cast<std::int32_t>(spot_shadow_count);
+        spot.render(e, shadow_map_size, shadow_distance, pipeline_context);
+        ++spot_shadow_count;
+      }
+      else e.shadow_index = -1;
+    }
+    render_context.spot_shadow_maps = spot.shadow_texture.get();
   }
 };
 

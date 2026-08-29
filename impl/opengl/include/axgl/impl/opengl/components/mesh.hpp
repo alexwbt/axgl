@@ -243,6 +243,13 @@ public:
       = [this, instance_count](const renderer::RenderContext& c)
     {
       material_->use(c);
+#ifdef AXGL_DEBUG
+      if (const auto* shader = material_->get_shader())
+      {
+        vao_->bind();
+        shader->validate_program();
+      }
+#endif
       vao_->draw_instanced(instance_count);
     };
     if (material_->get_enable_blend())

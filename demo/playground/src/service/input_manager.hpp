@@ -47,6 +47,12 @@ public:
   {
     rotate_sun_
       = axgl::create_ptr<axgl::Input>("Rotate Sun", axgl::Input::Source::kKeyR);
+    exposure_up_ = axgl::create_ptr<axgl::Input>(
+      "Exposure Up", axgl::Input::Source::kKeyUp
+    );
+    exposure_down_ = axgl::create_ptr<axgl::Input>(
+      "Exposure Down", axgl::Input::Source::kKeyDown
+    );
     flashlight_ = axgl::create_ptr<axgl::Input>(
       "Toggle Flashlight", axgl::Input::Source::kKeyF
     );
@@ -71,17 +77,11 @@ public:
     hdr_ = axgl::create_ptr<axgl::Input>(
       "Toggle HDR", axgl::Input::Source::kKeyF7
     );
-    exposure_up_ = axgl::create_ptr<axgl::Input>(
-      "Exposure Up", axgl::Input::Source::kKeyUp
-    );
-    exposure_down_ = axgl::create_ptr<axgl::Input>(
-      "Exposure Down", axgl::Input::Source::kKeyDown
-    );
     ssao_ = axgl::create_ptr<axgl::Input>(
-      "Toggle SSAO", axgl::Input::Source::kKeyF7
+      "Toggle SSAO", axgl::Input::Source::kKeyF8
     );
     bloom_ = axgl::create_ptr<axgl::Input>(
-      "Toggle Bloom", axgl::Input::Source::kKeyF8
+      "Toggle Bloom", axgl::Input::Source::kKeyF9
     );
   }
 

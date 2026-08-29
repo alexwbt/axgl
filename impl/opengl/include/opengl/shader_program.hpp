@@ -159,6 +159,25 @@ public:
 
   void use_program() const { glUseProgram(program_id_); }
 
+  void validate_program() const
+  {
+    glValidateProgram(program_id_);
+
+    GLint is_valid = 0;
+    glGetProgramiv(program_id_, GL_VALIDATE_STATUS, &is_valid);
+
+    if (is_valid == GL_FALSE)
+    {
+      GLint length = 0;
+      glGetProgramiv(program_id_, GL_INFO_LOG_LENGTH, &length);
+
+      std::vector<GLchar> log(length);
+      glGetProgramInfoLog(program_id_, length, &length, log.data());
+
+      AXGL_LOG_WARN("Shader program validation log:\n{}", log.data());
+    }
+  }
+
 private:
   GLint get_uniform_location(const std::string& name) const
   {

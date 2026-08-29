@@ -65,8 +65,7 @@ public:
   {
     Material::use(context);
 
-    const auto& shader = enable_blend_ ? Shaders::instance().mesh3d()
-                                       : Shaders::instance().mesh3d_opaque();
+    const auto& shader = *get_shader();
     shader.use_program();
     shader.set_bool("transparent", enable_blend_);
     shader.set_mat4("projection_view", context.projection_view_matrix);
@@ -86,21 +85,43 @@ public:
     use_spot_lights(shader, context);
     use_point_lights(shader, context);
 
-    // SSAO: bind the blurred occlusion texture to unit 4. The renderer leaves
-    // ssao_texture null when SSAO is off, so the FS uniform flag stays false
-    // and the sample is skipped.
-    if (context.ssao_texture)
-    {
-      context.ssao_texture->use(GL_TEXTURE4);
-      shader.set_bool("use_ssao", true);
-      shader.set_int("ssao_texture", 4);
-    }
-    else shader.set_bool("use_ssao", false);
-
     use_texture(shader, 0, "diffuse", diffuse_texture_);
     use_texture(shader, 1, "specular", specular_texture_);
     use_texture(shader, 2, "normal", normal_texture_);
     use_texture(shader, 3, "height", height_texture_);
+
+    const auto use_ssao = context.ssao_texture != nullptr;
+    shader.set_bool("use_ssao", use_ssao);
+    if (use_ssao)
+    {
+      context.ssao_texture->use(GL_TEXTURE4);
+      shader.set_int("ssao_texture", 4);
+    }
+
+    const auto use_sun_shadow = context.sun_shadow_maps != nullptr;
+    shader.set_bool("enable_sun_shadow", use_sun_shadow);
+#ifdef AXGL_DEBUG
+    shader.set_bool("csm_debug_borders", context.csm_debug_borders);
+#endif
+    if (use_sun_shadow)
+    {
+      context.sun_shadow_maps->use(GL_TEXTURE5);
+      shader.set_int("sun_shadow_maps", 5);
+    }
+
+    const auto use_spot_shadow = context.spot_shadow_maps != nullptr;
+    shader.set_bool("enable_spot_shadow", use_spot_shadow);
+    if (use_spot_shadow)
+    {
+      context.spot_shadow_maps->use(GL_TEXTURE6);
+      shader.set_int("spot_shadow_maps", 6);
+    }
+  }
+
+  [[nodiscard]] const ::opengl::ShaderProgram* get_shader() const override
+  {
+    return enable_blend_ ? &Shaders::instance().mesh3d()
+                         : &Shaders::instance().mesh3d_opaque();
   }
 
 private:
@@ -109,7 +130,6 @@ private:
     const renderer::RenderContext& render_context
   ) const
   {
-    constexpr auto shadow_limit = static_cast<int>(renderer::kSunShadowLimit);
     constexpr auto cascade_count
       = static_cast<GLsizei>(renderer::kSunShadowCascadeCount);
 
@@ -118,8 +138,7 @@ private:
     );
     shader.set_int("sun_lights_size", size);
 
-    int sun_shadow_count = 0;
-
+    std::size_t sun_shadow_count = 0;
     for (int i = 0; i < size; ++i)
     {
       const auto& context = render_context.sun_lights[i];
@@ -138,7 +157,8 @@ private:
         std::format("sun_lights[{}].specular", i), light->color.specular
       );
 
-      if (light->casts_shadows && context.shadow_map && i < shadow_limit)
+      if (light->casts_shadows
+          && sun_shadow_count++ < renderer::kSunShadowLimit)
       {
         // upload the per-cascade light PVs + split distances and bind the
         // sampler2DArray; the FS selects the cascade by fragment distance.
@@ -155,19 +175,8 @@ private:
         shader.set_float_array(
           "cascade_split_far", cascade_count, cascade_far.data()
         );
-        shader.set_int("sun_shadow_maps", 5);
-        context.shadow_map->use(GL_TEXTURE5);
-        ++sun_shadow_count;
       }
     }
-
-    shader.set_int("enable_sun_shadow", sun_shadow_count > 0);
-#ifdef AXGL_DEBUG
-    shader.set_int(
-      "csm_debug_borders",
-      sun_shadow_count > 0 && render_context.csm_debug_borders
-    );
-#endif
   }
 
   void use_point_lights(
@@ -219,6 +228,7 @@ private:
     );
     shader.set_int("spot_lights_size", size);
 
+    std::size_t spot_shadow_count = 0;
     for (int i = 0; i < size; ++i)
     {
       const auto& context = render_context.spot_lights[i];
@@ -254,6 +264,19 @@ private:
       shader.set_float(
         std::format("spot_lights[{}].outer_cut_off", i), light->outer_cut_off
       );
+
+      if (light->casts_shadows && context.shadow_index >= 0
+          && spot_shadow_count++ < renderer::kSpotShadowLimit)
+      {
+        shader.set_int(
+          std::format("spot_shadow_index[{}]", i), context.shadow_index
+        );
+        shader.set_mat4(
+          std::format("spot_shadow_pv[{}]", context.shadow_index),
+          context.light_pv
+        );
+      }
+      else shader.set_int(std::format("spot_shadow_index[{}]", i), -1);
     }
   }
 

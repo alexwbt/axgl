@@ -4,6 +4,8 @@
 
 #include <axgl/impl/opengl/renderer/render_component.hpp>
 
+#include <opengl/shader_program.hpp>
+
 namespace axgl::impl::opengl
 {
 
@@ -186,6 +188,11 @@ public:
     case kModels: return 5;
     default: return 6;
     }
+  }
+
+  [[nodiscard]] virtual const ::opengl::ShaderProgram* get_shader() const
+  {
+    return nullptr;
   }
 };
 

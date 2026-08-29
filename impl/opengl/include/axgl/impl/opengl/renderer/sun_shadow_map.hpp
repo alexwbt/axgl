@@ -53,19 +53,17 @@ struct SunShadowMap
   }
 
   void render(
-    const axgl::Light& light,
+    SunLightContext& light_context,
     const RenderContext& render_context,
     const PipelineContext& pipeline_context,
     const GLsizei shadow_map_size,
-    const float shadow_distance,
-    SunLightContext& output
+    const float shadow_distance
   )
   {
-    output.cascades = SunShadowCascade::get_cascades(
-      light, render_context.inverse_projection_view_matrix,
+    light_context.cascades = SunShadowCascade::get_cascades(
+      *light_context.light, render_context.inverse_projection_view_matrix,
       render_context.camera_near, render_context.camera_far, shadow_distance
     );
-    output.shadow_map = shadow_texture.get();
 
     glViewport(0, 0, shadow_map_size, shadow_map_size);
     glEnable(GL_DEPTH_TEST);
@@ -87,7 +85,7 @@ struct SunShadowMap
       glClear(GL_DEPTH_BUFFER_BIT);
 
       ShadowPassContext shadow_pass_context{
-        .projection_view_matrix = output.cascades[i].light_pv
+        .projection_view_matrix = light_context.cascades[i].light_pv
       };
       for (const auto& render_func : pipeline_context.shadow_pass)
         render_func(shadow_pass_context);

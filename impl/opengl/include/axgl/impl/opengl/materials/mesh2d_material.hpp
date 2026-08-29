@@ -62,6 +62,11 @@ public:
     default: return 3;
     }
   }
+
+  [[nodiscard]] const ::opengl::ShaderProgram* get_shader() const override
+  {
+    return &shader_;
+  }
 };
 
 } // namespace axgl::impl::opengl

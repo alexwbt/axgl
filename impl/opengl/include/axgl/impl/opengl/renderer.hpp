@@ -130,7 +130,7 @@ public:
           render_comp->submit_render_function(pipeline_context);
       }
 
-      shadow.render(render_context, pipeline_context);
+      shadow.render_shadow_pass(render_context, pipeline_context);
       render_ssao_pass(render_context, pipeline_context, viewport_i);
       render_opaque_pass(render_context, pipeline_context, viewport_i);
       render_transparent_pass(render_context, pipeline_context);
