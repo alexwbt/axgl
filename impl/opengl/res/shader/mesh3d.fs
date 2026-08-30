@@ -220,7 +220,7 @@ int select_cascade()
   return cascade_index;
 }
 
-float calc_sun_shadow()
+float calc_sun_shadow(SunLight light)
 {
   int cascade_index = select_cascade();
 
@@ -232,9 +232,10 @@ float calc_sun_shadow()
   // beyond the light's far plane: not in shadow
   if (projection_coords.z > 1.0) return 0.0;
 
-  // bias scales per cascade: farther cascades have lower depth precision and
-  // need a larger bias to avoid self-shadowing acne.
-  float bias = 0.00005 * (cascade_index + 1);
+  vec3 light_dir = normalize(-light.direction);
+  float NdotL = max(dot(normalize(vso.normal), light_dir), 0.0);
+  float bias = max(0.0005 * (cascade_index + 1), 0.005 * (1.0 - NdotL));
+
   float shadow = 0.0;
   // textureSize on a sampler2DArray returns ivec3(w, h, layers); .xy is the
   // per-layer texel size.
@@ -258,7 +259,7 @@ float calc_sun_shadow()
   return shadow;
 }
 
-float calc_spot_shadow(int slot_index)
+float calc_spot_shadow(int slot_index, vec3 normal, vec3 light_dir)
 {
   int layer = spot_shadow_index[slot_index];
   vec4 clip = vso.spot_light_space_position[layer];
@@ -266,7 +267,9 @@ float calc_spot_shadow(int slot_index)
   proj = proj * 0.5 + 0.5;
   if (proj.z > 1.0) return 0.0;
 
-  float bias = 0.001;
+  float NdotL = max(dot(normal, light_dir), 0.0);
+  float bias = clamp(0.0001 * tan(acos(NdotL)), 0.000005, 0.00005);
+
   vec2 texel_size = 1.0 / textureSize(spot_shadow_maps, 0).xy;
   float shadow = 0.0;
   for (int x = -1; x <= 1; ++x)
@@ -310,7 +313,7 @@ vec3 calc_sun_light(Context ctx, SunLight light)
   vec3 ambient = light.ambient * ctx.frag_diffuse * ctx.ssao;
 
   // Shadow
-  float shadow = enable_sun_shadow ? calc_sun_shadow() : 0.0;
+  float shadow = enable_sun_shadow ? calc_sun_shadow(light) : 0.0;
 
   return ambient + (1.0 - shadow) * (diffuse + specular);
 }
@@ -352,7 +355,7 @@ vec3 calc_spot_light(Context ctx, SpotLight light, int slot_index)
   float intensity = clamp((theta - cos_outer_cut_off) / epsilon, 0.0, 1.0);
 
   float shadow = (enable_spot_shadow && spot_shadow_index[slot_index] >= 0)
-    ? calc_spot_shadow(slot_index)
+    ? calc_spot_shadow(slot_index, ctx.frag_normal, light_dir)
     : 0.0;
 
   return (ambient + (1.0 - shadow) * (diffuse + specular) * intensity)

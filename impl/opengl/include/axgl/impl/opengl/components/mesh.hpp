@@ -302,7 +302,7 @@ public:
         context.shadow_pass.emplace_back(
           [this, instance_count](const renderer::ShadowPassContext& context)
           {
-            use_state();
+            glDisable(GL_CULL_FACE);
             const auto& depth_only_shader = Shaders::instance().depth_only();
             depth_only_shader.use_program();
             depth_only_shader.set_mat4(
