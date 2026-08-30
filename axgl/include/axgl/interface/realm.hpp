@@ -11,7 +11,8 @@ class Entity;
 class Realm : virtual public axgl::ContextHolder
 {
 public:
-  virtual void initialize() = 0;
+  virtual void on_create() = 0;
+  virtual void on_active() = 0;
   virtual void update() = 0;
   virtual void tick() = 0;
   [[nodiscard]] virtual std::uint64_t ticks() = 0;

@@ -34,6 +34,7 @@ public:
   void set_camera_entity(axgl::ptr_t<axgl::Entity> camera_entity) override
   {
     camera_entity_ = std::move(camera_entity);
+    camera_comp_ = camera_entity_->components().get_t<component::Camera>();
   }
 
   axgl::Camera* get_camera() override

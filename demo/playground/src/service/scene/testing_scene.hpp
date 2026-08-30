@@ -23,9 +23,9 @@ private:
   axgl::ptr_t<axgl::impl::component::Light> sunlight_;
 
 public:
-  void initialize() override
+  void on_create() override
   {
-    CommonScene::initialize();
+    CommonScene::on_create();
 
     // sunlight
     sunlight_ = add_light(axgl::Light::sunlight({0.2f, -1.0f, 1.2f}));

@@ -15,13 +15,14 @@ protected:
   axgl::impl::EntityContainer entities_{nullptr};
 
 public:
+  void on_create() override { }
+  void on_active() override { }
   void tick() override
   {
     ++ticks_;
     entities_.tick();
   }
   void update() override { entities_.update(); }
-  void initialize() override { }
 
   [[nodiscard]] std::uint64_t ticks() override { return ticks_; }
   [[nodiscard]] axgl::impl::EntityContainer& entities() override

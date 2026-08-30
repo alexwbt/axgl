@@ -14,9 +14,9 @@ private:
   axgl::ptr_t<axgl::impl::component::Light> spot_light_;
 
 public:
-  void initialize() override
+  void on_create() override
   {
-    CommonScene::initialize();
+    CommonScene::on_create();
 
     // spot light
     spot_light_ = add_light(axgl::Light::spotlight(position_, -position_));

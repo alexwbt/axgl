@@ -13,9 +13,12 @@ namespace axgl::impl
 class RealmService : virtual public axgl::RealmService,
                      public axgl::impl::ServiceBase
 {
+  using RealmFactory = std::function<axgl::ptr_t<axgl::Realm>()>;
+  using RealmFactories = std::unordered_map<std::string, RealmFactory>;
+
+  RealmFactories realm_factories_;
   axgl::ptr_t<axgl::Realm> realm_;
-  std::unordered_map<std::string, std::function<axgl::ptr_t<axgl::Realm>()>>
-    realm_factories_;
+  bool activated_ = false;
 
 public:
   void tick() override
@@ -27,6 +30,13 @@ public:
   void update() override
   {
     if (!realm_) return;
+
+    if (realm_->ticks() == 0) realm_->on_create();
+    if (!activated_)
+    {
+      realm_->on_active();
+      activated_ = true;
+    }
     realm_->update();
   }
 
@@ -42,7 +52,7 @@ public:
     return with_context(axgl::create_ptr<impl::Realm>());
   }
 
-  ptr_t<axgl::Realm> create_realm(const std::string& type) override
+  axgl::ptr_t<axgl::Realm> create_realm(const std::string& type) override
   {
 #ifdef AXGL_DEBUG
     if (!realm_factories_.contains(type))
@@ -62,7 +72,7 @@ public:
   {
     realm_ = std::move(realm);
     realm_->set_context(context_);
-    if (realm_->ticks() == 0) realm_->initialize();
+    activated_ = false;
   }
 };
 

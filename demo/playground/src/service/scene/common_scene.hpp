@@ -18,11 +18,10 @@ protected:
   axgl::ptr_t<CameraEntity> camera_entity_;
 
 public:
-  void initialize() override
+  void on_create() override
   {
     entity_service_ = axgl_->entity_service();
     input_manager_ = axgl_->get_service_t<InputManager>();
-    const auto& camera_service = axgl_->camera_service();
 
     // floor entity
     floor_entity_ = add_entity<FloorEntity>();
@@ -31,6 +30,11 @@ public:
     camera_entity_ = add_entity<CameraEntity>();
     camera_entity_->transform().position.y = 2.0f;
     camera_entity_->transform().update_matrix();
+  }
+
+  void on_active() override
+  {
+    const auto& camera_service = axgl_->camera_service();
     camera_service->set_camera_mode(
       axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>()
     );

@@ -9,9 +9,9 @@ public:
   static constexpr std::string_view kTypeId = "realm::point-light";
 
 public:
-  void initialize() override
+  void on_create() override
   {
-    CommonScene::initialize();
+    CommonScene::on_create();
 
     // point light
     add_light(axgl::Light::point_light({2.0f, 2.0f, 0.0f}));

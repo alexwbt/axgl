@@ -51,9 +51,9 @@ private:
   }
 
 public:
-  void initialize() override
+  void on_create() override
   {
-    CommonScene::initialize();
+    CommonScene::on_create();
 
     const float half_w = 2.5f;
     const float length = 20.0f;
