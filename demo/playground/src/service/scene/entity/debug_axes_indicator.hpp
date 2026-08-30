@@ -16,13 +16,13 @@ class DebugAxesIndicatorEntity : public axgl::impl::EntityBase
     const auto& entity_service = axgl->entity_service();
     const auto& renderer_service = axgl->renderer_service();
     auto material = renderer_service->create_material("color");
-    material->set_draw_mode(axgl::Material::DrawMode::kLines);
     material->set_color(glm::vec4(axis, 1.0f));
     material->set_enable_depth_test(false);
-    material->set_enable_shadow(false);
     const auto mesh
       = entity_service->create_component_t<axgl::component::Mesh>();
     mesh->set_vertices(std::vector{{0.0f, 0.0f, 0.0f}, axis});
+    mesh->set_draw_mode(axgl::component::Mesh::DrawMode::kLines);
+    mesh->set_enable_shadow(false);
     mesh->set_material(std::move(material));
     return mesh;
   }

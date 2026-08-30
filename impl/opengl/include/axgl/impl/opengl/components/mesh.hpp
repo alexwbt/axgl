@@ -40,6 +40,14 @@ class Mesh : virtual public axgl::component::Mesh,
   GLuint instanced_models_buffer_id_ = 0;
   std::vector<glm::mat4> instanced_models_;
 
+  // per-instance rendering state (geometry-derived)
+  float line_width_ = 1.0f;
+  axgl::component::Mesh::DrawMode draw_mode_
+    = axgl::component::Mesh::DrawMode::kTriangles;
+  axgl::component::Mesh::CullMode cull_mode_
+    = axgl::component::Mesh::CullMode::kCCW;
+  bool enable_shadow_ = true;
+
 public:
   void set_vertices(const std::span<const glm::vec3>& vertices) override
   {
@@ -81,6 +89,34 @@ public:
   {
     indices_.resize(indices.size());
     std::ranges::copy(indices, indices_.begin());
+  }
+
+  void set_line_width(float line_width) override { line_width_ = line_width; }
+  void set_draw_mode(axgl::component::Mesh::DrawMode draw_mode) override
+  {
+    draw_mode_ = draw_mode;
+  }
+  void set_cull_mode(const axgl::component::Mesh::CullMode cull_mode) override
+  {
+    cull_mode_ = cull_mode;
+  }
+  void set_enable_shadow(const bool enable_shadow) override
+  {
+    enable_shadow_ = enable_shadow;
+  }
+
+  [[nodiscard]] float get_line_width() const override { return line_width_; }
+  [[nodiscard]] axgl::component::Mesh::DrawMode get_draw_mode() const override
+  {
+    return draw_mode_;
+  }
+  [[nodiscard]] axgl::component::Mesh::CullMode get_cull_mode() const override
+  {
+    return cull_mode_;
+  }
+  [[nodiscard]] bool get_enable_shadow() const override
+  {
+    return enable_shadow_;
   }
 
   void set_material(const axgl::ptr_t<axgl::Material> material) override
@@ -198,7 +234,7 @@ public:
 
     // setup model vertex array
     if (!vao_) create_vao();
-    vao_->set_mode(material_->draw_mode());
+    vao_->set_mode(draw_mode_glenum());
 
     // setup instancing vertex buffer
     if (instanced_models_buffer_id_ == 0)
@@ -243,6 +279,7 @@ public:
       = [this, instance_count](const renderer::RenderContext& c)
     {
       material_->use(c);
+      use_state();
 #ifdef AXGL_DEBUG
       if (const auto* shader = material_->get_shader())
       {
@@ -260,11 +297,12 @@ public:
       // submit to opaque pass
       context.opaque_pass.emplace_back(std::move(render_function));
 
-      if (material_->get_enable_shadow())
+      if (enable_shadow_)
         // submit to shadow pass
         context.shadow_pass.emplace_back(
           [this, instance_count](const renderer::ShadowPassContext& context)
           {
+            use_state();
             const auto& depth_only_shader = Shaders::instance().depth_only();
             depth_only_shader.use_program();
             depth_only_shader.set_mat4(
@@ -294,6 +332,40 @@ public:
   }
 
 private:
+  void use_state()
+  {
+    glLineWidth(line_width_);
+    glFrontFace(GL_CW);
+    switch (cull_mode_)
+    {
+    case axgl::component::Mesh::CullMode::kCW:
+      glEnable(GL_CULL_FACE);
+      glCullFace(GL_FRONT);
+      break;
+    case axgl::component::Mesh::CullMode::kCCW:
+      glEnable(GL_CULL_FACE);
+      glCullFace(GL_BACK);
+      break;
+    case axgl::component::Mesh::CullMode::kNone: glDisable(GL_CULL_FACE); break;
+    }
+  }
+
+  [[nodiscard]] GLenum draw_mode_glenum() const
+  {
+    using enum axgl::component::Mesh::DrawMode;
+    switch (draw_mode_)
+    {
+    case kPoints: return GL_POINTS;
+    case kLines: return GL_LINES;
+    case kLineStrip: return GL_LINE_STRIP;
+    case kLineLoop: return GL_LINE_LOOP;
+    case kTriangleStrip: return GL_TRIANGLE_STRIP;
+    case kTriangleFan: return GL_TRIANGLE_FAN;
+    default:
+    case kTriangles: return GL_TRIANGLES;
+    }
+  }
+
   void create_vao()
   {
     vao_ = std::make_unique<::opengl::VertexArrayObject>();
@@ -370,4 +442,3 @@ private:
 };
 
 } // namespace axgl::impl::opengl::component
-

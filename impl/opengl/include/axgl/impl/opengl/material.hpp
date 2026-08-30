@@ -24,12 +24,8 @@ public:
 
 protected:
   glm::vec4 color_{1.0f, 1.0f, 1.0f, 1.0f};
-  float line_width_ = 1.0f;
-  axgl::Material::DrawMode draw_mode_ = axgl::Material::DrawMode::kTriangles;
-  axgl::Material::CullMode cull_mode_ = axgl::Material::CullMode::kCCW;
   bool enable_depth_test_ = true;
   bool enable_blend_ = false;
-  bool enable_shadow_ = true;
   float alpha_discard_ = 0.0f;
   float height_scale_ = 0.1f;
   float normal_scale_ = 1.0f;
@@ -38,15 +34,6 @@ protected:
 
 public:
   void set_color(const glm::vec4& color) override { color_ = color; }
-  void set_line_width(float line_width) override { line_width_ = line_width; }
-  void set_draw_mode(axgl::Material::DrawMode draw_mode) override
-  {
-    draw_mode_ = draw_mode;
-  }
-  void set_cull_mode(const axgl::Material::CullMode cull_mode) override
-  {
-    cull_mode_ = cull_mode;
-  }
   void set_enable_depth_test(const bool enable_depth_test) override
   {
     enable_depth_test_ = enable_depth_test;
@@ -54,10 +41,6 @@ public:
   void set_enable_blend(const bool enable_blend) override
   {
     enable_blend_ = enable_blend;
-  }
-  void set_enable_shadow(const bool enable_shadow) override
-  {
-    enable_shadow_ = enable_shadow;
   }
   void set_alpha_discard(const float alpha_discard) override
   {
@@ -88,24 +71,11 @@ public:
     AXGL_LOG_DEBUG("Textures are not supported.");
   }
   [[nodiscard]] glm::vec4 get_color() const override { return color_; }
-  [[nodiscard]] float get_line_width() const override { return line_width_; }
-  [[nodiscard]] axgl::Material::DrawMode get_draw_mode() const override
-  {
-    return draw_mode_;
-  }
-  [[nodiscard]] axgl::Material::CullMode get_cull_mode() const override
-  {
-    return cull_mode_;
-  }
   [[nodiscard]] bool get_enable_depth_test() const override
   {
     return enable_depth_test_;
   }
   [[nodiscard]] bool get_enable_blend() const override { return enable_blend_; }
-  [[nodiscard]] bool get_enable_shadow() const override
-  {
-    return enable_shadow_;
-  }
   [[nodiscard]] float get_alpha_discard() const override
   {
     return alpha_discard_;
@@ -130,21 +100,6 @@ public:
     return nullptr;
   }
 
-  [[nodiscard]] GLenum draw_mode() const
-  {
-    switch (draw_mode_)
-    {
-    case DrawMode::kPoints: return GL_POINTS;
-    case DrawMode::kLines: return GL_LINES;
-    case DrawMode::kLineStrip: return GL_LINE_STRIP;
-    case DrawMode::kLineLoop: return GL_LINE_LOOP;
-    default:
-    case DrawMode::kTriangles: return GL_TRIANGLES;
-    case DrawMode::kTriangleStrip: return GL_TRIANGLE_STRIP;
-    case DrawMode::kTriangleFan: return GL_TRIANGLE_FAN;
-    }
-  }
-
   virtual void use([[maybe_unused]] const renderer::RenderContext& context)
   {
     if (enable_depth_test_)
@@ -156,21 +111,6 @@ public:
     {
       glDepthFunc(GL_ALWAYS);
       glDepthRange(0.0f, 0.0f);
-    }
-
-    glLineWidth(line_width_);
-    glFrontFace(GL_CW);
-    switch (cull_mode_)
-    {
-    case axgl::Material::CullMode::kCW:
-      glEnable(GL_CULL_FACE);
-      glCullFace(GL_FRONT);
-      break;
-    case axgl::Material::CullMode::kCCW:
-      glEnable(GL_CULL_FACE);
-      glCullFace(GL_BACK);
-      break;
-    case axgl::Material::CullMode::kNone: glDisable(GL_CULL_FACE); break;
     }
   }
 
@@ -197,4 +137,3 @@ public:
 };
 
 } // namespace axgl::impl::opengl
-

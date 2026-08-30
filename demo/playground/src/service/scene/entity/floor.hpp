@@ -52,7 +52,6 @@ private:
       axgl::Material::TextureType::kSpecular, std::move(specular)
     );
     material->set_tiling(glm::vec2(size) / 3.0f);
-    material->set_enable_shadow(false);
     // material->set_color({0.392f, 0.584f, 0.929f, 1.0f});
     // material->set_property("shininess", "2.0");
     // material->set_property("specular", "0.0");
@@ -60,6 +59,7 @@ private:
     const auto mesh
       = entity_service->create_component_t<axgl::component::Mesh>();
     axgl::mesh::init_plain(*mesh);
+    mesh->set_enable_shadow(false);
     mesh->set_material(std::move(material));
     return mesh;
   }

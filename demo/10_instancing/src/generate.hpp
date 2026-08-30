@@ -40,11 +40,11 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
     material->add_texture(
       axgl::Material::TextureType::kSpecular, specular_texture
     );
-  if (no_cull) material->set_cull_mode(axgl::Material::CullMode::kNone);
   material->set_alpha_discard(alpha_discard);
   // mesh
   const auto mesh = entity_service->create_component_t<axgl::component::Mesh>();
   init_mesh(*mesh);
+  if (no_cull) mesh->set_cull_mode(axgl::component::Mesh::CullMode::kNone);
   mesh->set_material(material);
   return mesh;
 }
