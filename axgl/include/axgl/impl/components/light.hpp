@@ -15,10 +15,11 @@ public:
   static constexpr std::string_view kTypeId = "component::light";
 
   axgl::Light light{axgl::Light::Type::kSun};
+  bool bind_parent = true;
 
   void parent_update(axgl::Entity* parent) override
   {
-    light.position = parent->transform().position;
+    if (bind_parent) light.position = parent->transform().position;
   }
 };
 

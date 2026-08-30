@@ -38,12 +38,13 @@ public:
   }
 
 protected:
-  auto add_light(const axgl::Light& light)
+  auto add_light(const axgl::Light& light, bool bind_entity = false)
   {
     const auto light_entity = entity_service_->create_entity();
     const auto light_comp
       = entity_service_->create_component_t<axgl::impl::component::Light>();
     light_comp->light = light;
+    light_comp->bind_parent = bind_entity;
     light_entity->add_component(light_comp);
     light_entity->set_position(light.position);
     entities_.add(light_entity);

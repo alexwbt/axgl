@@ -52,6 +52,6 @@ public:
   {
     EntityBase::update();
 
-    if (debug_input_->tick == 1) set_hidden(!is_hidden());
+    if (debug_input_->clicked()) set_hidden(!is_hidden());
   }
 };
