@@ -19,5 +19,5 @@ void main()
     mapped = pow(mapped, vec3(1.0 / gamma));
     frag_color = vec4(mapped, 1.0);
   }
-  else { frag_color = vec4(color, 1.0); }
+  else { frag_color = vec4(color, texture(screen, vert_uv).a); }
 }
