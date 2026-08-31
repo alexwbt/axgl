@@ -193,6 +193,34 @@ public:
     );
   }
 
+  void load_cubemap_array(
+    const GLint level,
+    const GLint internal_format,
+    const GLsizei width,
+    const GLsizei height,
+    const GLsizei layers,
+    const GLint border,
+    const GLenum format,
+    const GLenum type,
+    const void* pixels
+  )
+  {
+    if (initialized())
+    {
+      AXGL_LOG_ERROR("Texture is already initialized.");
+      return;
+    }
+    target_ = GL_TEXTURE_CUBE_MAP_ARRAY;
+    width_ = width;
+    height_ = height;
+
+    use();
+    glTexImage3D(
+      GL_TEXTURE_CUBE_MAP_ARRAY, level, internal_format, width, height,
+      layers * 6, border, format, type, pixels
+    );
+  }
+
   void load_image_texture(const std::span<const uint8_t> data)
   {
     const StbiImage texture(data);

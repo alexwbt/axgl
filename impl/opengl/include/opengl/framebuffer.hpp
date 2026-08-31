@@ -68,6 +68,19 @@ public:
     );
   }
 
+  void attach_cubemap_face(
+    const GLenum attachment,
+    const ::opengl::Texture& texture,
+    const GLint layer,
+    const GLint face
+  ) const
+  {
+    use();
+    glFramebufferTextureLayer(
+      GL_FRAMEBUFFER, attachment, texture.get_id(), 0, layer * 6 + face
+    );
+  }
+
   void attach_renderbuffer(
     const GLenum attachment, const ::opengl::Renderbuffer& renderbuffer
   ) const

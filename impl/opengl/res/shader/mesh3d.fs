@@ -125,6 +125,11 @@ uniform sampler2DArray spot_shadow_maps;
 uniform mat4 spot_shadow_pv[SPOT_SHADOW_LIMIT];
 uniform int spot_shadow_index[SPOT_LIGHT_LIMIT];
 
+uniform bool enable_point_shadow;
+uniform samplerCubeArray point_shadow_maps;
+uniform int point_shadow_index[POINT_LIGHT_LIMIT];
+uniform float point_shadow_far_plane[POINT_SHADOW_LIMIT];
+
 in VertexShaderOutput
 {
   vec3 camera_pos;
@@ -234,7 +239,7 @@ float calc_sun_shadow(SunLight light)
 
   vec3 light_dir = normalize(-light.direction);
   float NdotL = max(dot(normalize(vso.normal), light_dir), 0.0);
-  float bias = max(0.0005 * (cascade_index + 1), 0.005 * (1.0 - NdotL));
+  float bias = 0.0;
 
   float shadow = 0.0;
   // textureSize on a sampler2DArray returns ivec3(w, h, layers); .xy is the
@@ -268,7 +273,7 @@ float calc_spot_shadow(int slot_index, vec3 normal, vec3 light_dir)
   if (proj.z > 1.0) return 0.0;
 
   float NdotL = max(dot(normal, light_dir), 0.0);
-  float bias = clamp(0.0001 * tan(acos(NdotL)), 0.000005, 0.00005);
+  float bias = 0.0;
 
   vec2 texel_size = 1.0 / textureSize(spot_shadow_maps, 0).xy;
   float shadow = 0.0;
@@ -282,6 +287,43 @@ float calc_spot_shadow(int slot_index, vec3 normal, vec3 light_dir)
         )
             .r;
       shadow += proj.z - bias > pcf_depth ? 1.0 : 0.0;
+    }
+  }
+  return shadow / 9.0;
+}
+
+float calc_point_shadow(int slot_index, vec3 normal, vec3 light_dir)
+{
+  int layer = point_shadow_index[slot_index];
+  vec3 frag_to_light = vso.position - point_lights[slot_index].position;
+  float current_depth = length(frag_to_light) / point_shadow_far_plane[layer];
+
+  // cubemap PCF: build an orthonormal basis around the sample direction and
+  // step by one texel in the face's tangent plane for 3x3 filtering.
+  vec3 sample_dir = normalize(frag_to_light);
+  float texel = 1.0 / float(textureSize(point_shadow_maps, 0).xy);
+  vec3 t
+    = abs(sample_dir.y) < 0.999 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+  vec3 tangent = normalize(cross(sample_dir, t));
+  vec3 bitangent = cross(sample_dir, tangent);
+
+  // slope-scaled bias in normalized [0,1] depth. Back-face culling in the
+  // shadow pass means the depth buffer stores the far side, so only a small
+  // bias is needed for depth quantization noise.
+  float NdotL = max(dot(normal, light_dir), 0.0);
+  float bias = clamp(
+    0.00002 * tan(acos(NdotL)) / point_shadow_far_plane[layer], 0.0, 0.0002
+  );
+
+  float shadow = 0.0;
+  for (int x = -1; x <= 1; ++x)
+  {
+    for (int y = -1; y <= 1; ++y)
+    {
+      vec3 offset = (tangent * float(x) + bitangent * float(y)) * texel;
+      float closest_depth
+        = texture(point_shadow_maps, vec4(sample_dir + offset, layer)).r;
+      shadow += current_depth - bias > closest_depth ? 1.0 : 0.0;
     }
   }
   return shadow / 9.0;
@@ -365,7 +407,7 @@ vec3 calc_spot_light(Context ctx, SpotLight light, int slot_index)
 /**
  * Point light contribution with distance attenuation (no cutoff cone).
  */
-vec3 calc_point_light(Context ctx, PointLight light)
+vec3 calc_point_light(Context ctx, PointLight light, int slot_index)
 {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);
@@ -388,7 +430,11 @@ vec3 calc_point_light(Context ctx, PointLight light)
   float attenuation = 1.0
     / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
-  return (ambient + diffuse + specular) * attenuation;
+  float shadow = (enable_point_shadow && point_shadow_index[slot_index] >= 0)
+    ? calc_point_shadow(slot_index, ctx.frag_normal, light_dir)
+    : 0.0;
+
+  return (ambient + (1.0 - shadow) * (diffuse + specular)) * attenuation;
 }
 
 void main()
@@ -438,7 +484,7 @@ void main()
   for (int i = 0; i < spot_lights_size; ++i)
     result += calc_spot_light(ctx, spot_lights[i], i);
   for (int i = 0; i < point_lights_size; ++i)
-    result += calc_point_light(ctx, point_lights[i]);
+    result += calc_point_light(ctx, point_lights[i], i);
 
 #ifdef AXGL_DEBUG
   // Debug: draw borders at the edges of each cascade's ortho frustum box

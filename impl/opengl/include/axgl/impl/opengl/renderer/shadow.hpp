@@ -1,5 +1,6 @@
 #pragma once
 
+#include <axgl/impl/opengl/renderer/point_shadow_map.hpp>
 #include <axgl/impl/opengl/renderer/spot_shadow_map.hpp>
 #include <axgl/impl/opengl/renderer/sun_shadow_map.hpp>
 #include <glad/glad.h>
@@ -16,6 +17,7 @@ struct Shadow
 
   SunShadowMap sun;
   SpotShadowMap spot;
+  PointShadowMap point;
 
   void update()
   {
@@ -27,11 +29,15 @@ struct Shadow
       if (!spot.shadow_texture
           || shadow_map_size != spot.shadow_texture->get_width())
         spot.setup(shadow_map_size);
+      if (!point.shadow_texture
+          || shadow_map_size != point.shadow_texture->get_width())
+        point.setup(shadow_map_size);
     }
     else
     {
       if (sun.shadow_texture) sun.reset();
       if (spot.shadow_texture) spot.reset();
+      if (point.shadow_texture) point.reset();
     }
   }
 
@@ -69,6 +75,20 @@ struct Shadow
       else e.shadow_index = -1;
     }
     render_context.spot_shadow_maps = spot.shadow_texture.get();
+
+    // point light shadow
+    std::size_t point_shadow_count = 0;
+    for (auto& e : render_context.point_lights)
+    {
+      if (e.light->casts_shadows && point_shadow_count < kPointShadowLimit)
+      {
+        e.shadow_index = static_cast<std::int32_t>(point_shadow_count);
+        point.render(e, shadow_map_size, shadow_distance, pipeline_context);
+        ++point_shadow_count;
+      }
+      else e.shadow_index = -1;
+    }
+    render_context.point_shadow_maps = point.shadow_texture.get();
   }
 };
 

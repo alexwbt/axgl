@@ -26,6 +26,7 @@ class Shaders
   std::unique_ptr<const ::opengl::ShaderProgram> gui_;
   std::unique_ptr<const ::opengl::ShaderProgram> color_;
   std::unique_ptr<const ::opengl::ShaderProgram> depth_only_;
+  std::unique_ptr<const ::opengl::ShaderProgram> point_depth_;
   std::unique_ptr<const ::opengl::ShaderProgram> ssao_geometry_;
   std::unique_ptr<const ::opengl::ShaderProgram> ssao_;
   std::unique_ptr<const ::opengl::ShaderProgram> ssao_blur_;
@@ -54,6 +55,7 @@ public:
   [[nodiscard]] const auto& gui() const { return *gui_; }
   [[nodiscard]] const auto& color() const { return *color_; }
   [[nodiscard]] const auto& depth_only() const { return *depth_only_; }
+  [[nodiscard]] const auto& point_depth() const { return *point_depth_; }
   [[nodiscard]] const auto& ssao_geometry() const { return *ssao_geometry_; }
   [[nodiscard]] const auto& ssao() const { return *ssao_; }
   [[nodiscard]] const auto& ssao_blur() const { return *ssao_blur_; }
@@ -149,6 +151,12 @@ private:
       std::vector<::opengl::ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, get("shader/depth_only.vs")},
         {GL_FRAGMENT_SHADER, get("shader/depth_only.fs")}
+      }
+    );
+    point_depth_ = std::make_unique<::opengl::ShaderProgram>(
+      std::vector<::opengl::ShaderProgram::Shader>{
+        {GL_VERTEX_SHADER, get("shader/point_depth.vs")},
+        {GL_FRAGMENT_SHADER, get("shader/point_depth.fs")}
       }
     );
     ssao_geometry_ = std::make_unique<::opengl::ShaderProgram>(

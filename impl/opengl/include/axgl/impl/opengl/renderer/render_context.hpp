@@ -29,6 +29,8 @@ struct SpotLightContext
 struct PointLightContext
 {
   const axgl::Light* light = nullptr;
+  std::int32_t shadow_index = -1;
+  float far_plane = 0.0f;
 };
 
 struct RenderContext
@@ -49,6 +51,7 @@ struct RenderContext
 #endif
   const ::opengl::Texture* sun_shadow_maps = nullptr;
   const ::opengl::Texture* spot_shadow_maps = nullptr;
+  const ::opengl::Texture* point_shadow_maps = nullptr;
   const ::opengl::Texture* ssao_texture = nullptr;
   std::int64_t entity_count = 0;
   std::int64_t component_count = 0;
@@ -56,7 +59,10 @@ struct RenderContext
 
 struct ShadowPassContext
 {
+  axgl::Light::Type light_type = axgl::Light::Type::kSun;
   glm::mat4 projection_view_matrix{0.0f};
+  glm::vec3 light_position{0.0f};
+  float far_plane = 0.0f;
 };
 
 struct PipelineContext

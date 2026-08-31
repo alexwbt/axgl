@@ -302,12 +302,26 @@ public:
         context.shadow_pass.emplace_back(
           [this, instance_count](const renderer::ShadowPassContext& context)
           {
-            glDisable(GL_CULL_FACE);
-            const auto& depth_only_shader = Shaders::instance().depth_only();
-            depth_only_shader.use_program();
-            depth_only_shader.set_mat4(
-              "projection_view", context.projection_view_matrix
-            );
+            use_state();
+            // use point depth shader for point light shadows
+            if (context.light_type == axgl::Light::Type::kPoint)
+            {
+              const auto& shader = Shaders::instance().point_depth();
+              shader.use_program();
+              shader.set_mat4(
+                "projection_view", context.projection_view_matrix
+              );
+              shader.set_vec3("light_position", context.light_position);
+              shader.set_float("far_plane", context.far_plane);
+            }
+            else
+            {
+              const auto& depth_only_shader = Shaders::instance().depth_only();
+              depth_only_shader.use_program();
+              depth_only_shader.set_mat4(
+                "projection_view", context.projection_view_matrix
+              );
+            }
             vao_->draw_instanced(instance_count);
           }
         );

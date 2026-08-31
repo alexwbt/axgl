@@ -85,6 +85,7 @@ struct SunShadowMap
       glClear(GL_DEPTH_BUFFER_BIT);
 
       ShadowPassContext shadow_pass_context{
+        .light_type = axgl::Light::Type::kSun,
         .projection_view_matrix = light_context.cascades[i].light_pv
       };
       for (const auto& render_func : pipeline_context.shadow_pass)

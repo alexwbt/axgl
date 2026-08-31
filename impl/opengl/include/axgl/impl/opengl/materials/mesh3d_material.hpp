@@ -116,6 +116,14 @@ public:
       context.spot_shadow_maps->use(GL_TEXTURE6);
       shader.set_int("spot_shadow_maps", 6);
     }
+
+    const auto use_point_shadow = context.point_shadow_maps != nullptr;
+    shader.set_bool("enable_point_shadow", use_point_shadow);
+    if (use_point_shadow)
+    {
+      context.point_shadow_maps->use(GL_TEXTURE7);
+      shader.set_int("point_shadow_maps", 7);
+    }
   }
 
   [[nodiscard]] const ::opengl::ShaderProgram* get_shader() const override
@@ -215,6 +223,18 @@ private:
       shader.set_float(
         std::format("point_lights[{}].quadratic", i), light->strength.quadratic
       );
+
+      if (context.shadow_index >= 0)
+      {
+        shader.set_int(
+          std::format("point_shadow_index[{}]", i), context.shadow_index
+        );
+        shader.set_float(
+          std::format("point_shadow_far_plane[{}]", context.shadow_index),
+          context.far_plane
+        );
+      }
+      else shader.set_int(std::format("point_shadow_index[{}]", i), -1);
     }
   }
 

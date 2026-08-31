@@ -82,6 +82,7 @@ struct SpotShadowMap
     glClear(GL_DEPTH_BUFFER_BIT);
 
     ShadowPassContext shadow_pass_context{
+      .light_type = axgl::Light::Type::kSpot,
       .projection_view_matrix = light_context.light_pv
     };
     for (const auto& render_func : pipeline_context.shadow_pass)

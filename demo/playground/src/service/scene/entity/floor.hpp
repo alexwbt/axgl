@@ -72,5 +72,6 @@ public:
     static const auto mesh = create_mesh(axgl_, size_);
     add_component(mesh);
     set_scale({size_, 1.0f, size_});
+    set_position({0.0f, -0.001f, 0.0f});
   }
 };
