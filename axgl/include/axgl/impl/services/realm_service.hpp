@@ -23,7 +23,7 @@ class RealmService : virtual public axgl::RealmService,
 public:
   void tick() override
   {
-    if (!realm_) return;
+    if (!realm_ || !activated_) return;
     realm_->tick();
   }
 
@@ -31,9 +31,9 @@ public:
   {
     if (!realm_) return;
 
-    if (realm_->ticks() == 0) realm_->on_create();
     if (!activated_)
     {
+      if (realm_->ticks() == 0) realm_->on_create();
       realm_->on_active();
       activated_ = true;
     }

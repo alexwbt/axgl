@@ -19,7 +19,7 @@ public:
 
   void terminate() override { ::glfw::Window::terminate(); }
 
-  void render() override { ::glfw::Window::update_all(); }
+  void update() override { ::glfw::Window::update_all(); }
 
   bool running() override { return !::glfw::Window::should_close_all(); }
 

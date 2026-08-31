@@ -17,14 +17,12 @@ namespace axgl
 class ServiceContainer
 {
   std::unordered_map<std::string, axgl::ptr_t<Service>> service_map_;
+  std::vector<axgl::ptr_t<Service>> services_;
 
 public:
   virtual ~ServiceContainer() = default;
 
-  [[nodiscard]] auto services() const
-  {
-    return service_map_ | std::views::values;
-  }
+  [[nodiscard]] auto services() const { return services_; }
 
   [[nodiscard]] virtual bool has_service(const std::string& type_id) const
   {
@@ -45,6 +43,7 @@ public:
       );
 #endif
     service_map_.emplace(type_id, service);
+    services_.emplace_back(service);
   }
 
   virtual void remove_service(const std::string& type_id)
@@ -58,6 +57,7 @@ public:
         )
       );
 #endif
+    std::erase(services_, service_map_.at(type_id));
     service_map_.erase(type_id);
   }
 
@@ -120,43 +120,45 @@ public:
       service->set_context(context);
   }
 
-  virtual void initialize() const
+  virtual void initialize()
   {
+    reorder_services();
+
     for (const auto& service : services())
       service->initialize();
   }
 
-  virtual void terminate() const
+  virtual void terminate()
   {
-    for (const auto& service : services())
+    for (const auto& service : services() | std::views::reverse)
       service->terminate();
   }
 
-  virtual void on_start() const
+  virtual void on_start()
   {
     for (const auto& service : services())
       service->on_start();
   }
 
-  virtual void on_end() const
+  virtual void on_end()
   {
-    for (const auto& service : services())
+    for (const auto& service : services() | std::views::reverse)
       service->on_end();
   }
 
-  virtual void tick() const
+  virtual void tick()
   {
     for (const auto& service : services())
       if (service->running()) service->tick();
   }
 
-  virtual void update() const
+  virtual void update()
   {
     for (const auto& service : services())
       if (service->running()) service->update();
   }
 
-  virtual void render() const
+  virtual void render()
   {
     for (const auto& service : services())
       if (service->running()) service->render();
@@ -175,6 +177,14 @@ public:
     if (args.empty()) return;
 
     if (const auto service = get_service<Service>(args[0])) service->exec(args);
+  }
+
+  virtual void reorder_services()
+  {
+    std::sort(
+      services_.begin(), services_.end(),
+      [](const auto& a, const auto& b) { return a->priority() > b->priority(); }
+    );
   }
 };
 

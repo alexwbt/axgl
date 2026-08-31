@@ -56,16 +56,12 @@ public:
   {
     normal_scale_ = normal_scale;
   }
-  void set_property(
-    [[maybe_unused]] const std::string& key,
-    [[maybe_unused]] const std::string& value
-  ) override
+  void set_property(const std::string&, const std::string&) override
   {
     AXGL_LOG_DEBUG("Properties are not supported.");
   }
   void add_texture(
-    [[maybe_unused]] const axgl::Material::TextureType type,
-    [[maybe_unused]] const axgl::ptr_t<axgl::Texture> texture
+    const axgl::Material::TextureType, const axgl::ptr_t<axgl::Texture>
   ) override
   {
     AXGL_LOG_DEBUG("Textures are not supported.");
@@ -87,20 +83,18 @@ public:
   {
     return normal_scale_;
   }
-  [[nodiscard]] std::string get_property(
-    [[maybe_unused]] const std::string& key
-  ) const override
+  [[nodiscard]] std::string get_property(const std::string&) const override
   {
     return {};
   }
   [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture(
-    [[maybe_unused]] axgl::Material::TextureType type
+    axgl::Material::TextureType
   ) const override
   {
     return nullptr;
   }
 
-  virtual void use([[maybe_unused]] const renderer::RenderContext& context)
+  virtual void use(const renderer::RenderContext&)
   {
     if (enable_depth_test_)
     {

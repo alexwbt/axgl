@@ -28,19 +28,10 @@ public:
   [[nodiscard]] virtual axgl::Container<axgl::Entity>& children() = 0;
   [[nodiscard]] virtual axgl::Container<axgl::Component>& components() = 0;
 
-  void parent_tick([[maybe_unused]] axgl::Entity* parent) override { tick(); }
-  void parent_update([[maybe_unused]] axgl::Entity* parent) override
-  {
-    update();
-  }
-  void on_parent_create([[maybe_unused]] axgl::Entity* parent) override
-  {
-    on_create();
-  }
-  void on_parent_remove([[maybe_unused]] axgl::Entity* parent) override
-  {
-    on_remove();
-  }
+  void parent_tick(axgl::Entity*) override { tick(); }
+  void parent_update(axgl::Entity*) override { update(); }
+  void on_parent_create(axgl::Entity*) override { on_create(); }
+  void on_parent_remove(axgl::Entity*) override { on_remove(); }
 
   void set_position(glm::vec3 position)
   {

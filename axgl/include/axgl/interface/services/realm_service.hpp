@@ -45,6 +45,8 @@ public:
 #endif
     return realm;
   }
+
+  [[nodiscard]] std::int32_t priority() const override { return 300; }
 };
 
 } // namespace axgl

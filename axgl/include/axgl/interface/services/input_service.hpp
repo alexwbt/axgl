@@ -33,6 +33,8 @@ public:
   [[nodiscard]] virtual std::vector<axgl::ptr_t<axgl::Pointer>>
   get_pointer_by_source(axgl::Pointer::Source source) = 0;
 
+  [[nodiscard]] std::int32_t priority() const override { return 999; }
+
   friend class axgl::Input;
   friend class axgl::Pointer;
 };

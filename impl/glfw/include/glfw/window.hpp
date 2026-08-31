@@ -19,23 +19,13 @@ namespace glfw
 struct EventListener
 {
   virtual ~EventListener() = default;
-  virtual void on_key_down([[maybe_unused]] int key) { }
-  virtual void on_key_up([[maybe_unused]] int key) { }
-  virtual void on_mouse_down([[maybe_unused]] int button) { }
-  virtual void on_mouse_up([[maybe_unused]] int button) { }
-  virtual void on_mouse_move(
-    [[maybe_unused]] double x, [[maybe_unused]] double y
-  )
-  {
-  }
-  virtual void on_scroll([[maybe_unused]] double x, [[maybe_unused]] double y)
-  {
-  }
-  virtual void on_resize(
-    [[maybe_unused]] int width, [[maybe_unused]] int height
-  )
-  {
-  }
+  virtual void on_key_down(int) { }
+  virtual void on_key_up(int) { }
+  virtual void on_mouse_down(int) { }
+  virtual void on_mouse_up(int) { }
+  virtual void on_mouse_move(double, double) { }
+  virtual void on_scroll(double, double) { }
+  virtual void on_resize(int, int) { }
 };
 
 class Window final
@@ -138,11 +128,7 @@ private:
   }
 
   static void key_callback(
-    GLFWwindow* glfw_window,
-    int key,
-    [[maybe_unused]] int scancode,
-    int action,
-    [[maybe_unused]] int mods
+    GLFWwindow* glfw_window, int key, int, int action, int
   )
   {
     const auto listener = get_window_event_listener(glfw_window);
@@ -173,7 +159,7 @@ private:
   }
 
   static void mouse_button_callback(
-    GLFWwindow* glfw_window, int button, int action, [[maybe_unused]] int mods
+    GLFWwindow* glfw_window, int button, int action, int
   )
   {
     const auto listener = get_window_event_listener(glfw_window);

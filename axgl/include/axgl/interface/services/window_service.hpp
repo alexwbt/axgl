@@ -13,6 +13,8 @@ public:
   static constexpr std::string_view kTypeId = "service::window";
 
   virtual axgl::ptr_t<axgl::Window> create_window() = 0;
+
+  [[nodiscard]] std::int32_t priority() const override { return 1000; }
 };
 
 } // namespace axgl

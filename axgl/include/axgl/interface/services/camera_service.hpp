@@ -19,6 +19,8 @@ public:
 
   virtual axgl::Camera* get_camera() = 0;
   virtual axgl::ptr_t<axgl::Entity> get_camera_entity() = 0;
+
+  [[nodiscard]] std::int32_t priority() const override { return 500; }
 };
 
 } // namespace axgl

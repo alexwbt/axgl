@@ -19,6 +19,7 @@ public:
   virtual bool running() { return true; }
   virtual bool keep_alive() { return false; }
   virtual void exec(const std::vector<std::string>&) { }
+  [[nodiscard]] virtual std::int32_t priority() const { return 0; }
 };
 
 } // namespace axgl

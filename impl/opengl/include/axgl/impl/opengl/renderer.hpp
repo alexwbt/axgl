@@ -51,11 +51,7 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
 public:
   void render() override
   {
-    if (!window_ || !window_->ready())
-    {
-      AXGL_LOG_DEBUG("Unable to render: window is not set or not ready.");
-      return;
-    }
+    if (!window_ || !window_->ready()) return;
 
     const auto& gui = axgl_->gui_service()->get_main_ui();
     const auto& realm = axgl_->realm_service()->get_active_realm();

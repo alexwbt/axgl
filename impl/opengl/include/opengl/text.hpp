@@ -49,7 +49,7 @@ class Character final
   glm::ivec2 offset{0};
   glm::ivec2 advance{0};
 
-  void load(FT_Face face, [[maybe_unused]] bool vertical)
+  void load(FT_Face face, bool)
   {
     const auto& glyph = face->glyph;
     const auto& bitmap = glyph->bitmap;

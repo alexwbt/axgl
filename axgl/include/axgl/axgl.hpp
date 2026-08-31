@@ -36,7 +36,7 @@ class Axgl final : public ServiceContainer
   axgl::Context context_{this};
 
 public:
-  void initialize() const override
+  void initialize() override
   {
 #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
     spdlog::set_level(spdlog::level::debug);
@@ -59,7 +59,7 @@ public:
 #endif
   }
 
-  void terminate() const override
+  void terminate() override
   {
 #ifdef AXGL_DEBUG
     CPPTRACE_TRY
