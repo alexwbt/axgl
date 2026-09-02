@@ -20,7 +20,6 @@ class Shaders
   std::unique_ptr<const ::opengl::ShaderProgram> mesh2d_;
   std::unique_ptr<const ::opengl::ShaderProgram> mesh3d_;
   std::unique_ptr<const ::opengl::ShaderProgram> mesh3d_opaque_;
-  std::unique_ptr<const ::opengl::ShaderProgram> text_;
   std::unique_ptr<const ::opengl::ShaderProgram> screen_;
   std::unique_ptr<const ::opengl::ShaderProgram> weighted_blended_;
   std::unique_ptr<const ::opengl::ShaderProgram> gui_;
@@ -49,7 +48,6 @@ public:
   [[nodiscard]] const auto& mesh2d() const { return *mesh2d_; }
   [[nodiscard]] const auto& mesh3d() const { return *mesh3d_; }
   [[nodiscard]] const auto& mesh3d_opaque() const { return *mesh3d_opaque_; }
-  [[nodiscard]] const auto& text() const { return *text_; }
   [[nodiscard]] const auto& screen() const { return *screen_; }
   [[nodiscard]] const auto& blend() const { return *weighted_blended_; }
   [[nodiscard]] const auto& gui() const { return *gui_; }
@@ -117,12 +115,6 @@ private:
         }
       );
     }
-    text_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
-        {GL_VERTEX_SHADER, get("shader/mesh2d.vs")},
-        {GL_FRAGMENT_SHADER, get("shader/text.fs")}
-      }
-    );
     screen_ = std::make_unique<::opengl::ShaderProgram>(
       std::vector<::opengl::ShaderProgram::Shader>{
         {GL_VERTEX_SHADER, get("shader/screen.vs")},

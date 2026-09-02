@@ -12,6 +12,8 @@ namespace opengl
 
 class StaticVAOs
 {
+  std::unique_ptr<VertexArrayObject> quad_;
+
 public:
   static const StaticVAOs& instance()
   {
@@ -27,8 +29,6 @@ public:
   [[nodiscard]] VertexArrayObject& quad() const { return *quad_; }
 
 private:
-  std::unique_ptr<VertexArrayObject> quad_;
-
   StaticVAOs() { init_quad(); }
 
   void init_quad()

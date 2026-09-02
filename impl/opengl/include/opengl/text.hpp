@@ -19,6 +19,7 @@
 
 #include <opengl/framebuffer.hpp>
 #include <opengl/shader_program.hpp>
+#include <opengl/static_shaders.hpp>
 #include <opengl/static_vaos.hpp>
 #include <opengl/texture.hpp>
 
@@ -220,8 +221,7 @@ public:
     Text& target,
     const std::string& value,
     const std::vector<std::string>& font,
-    const TextOptions& options,
-    const ShaderProgram& shader
+    const TextOptions& options
   ) const
   {
     std::unordered_map<std::uint32_t, Character> chars;
@@ -278,10 +278,11 @@ public:
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    shader.use_program();
-    shader.set_int("text_texture", 0);
-    shader.set_bool("use_instancing", false);
-    shader.set_vec4("text_color", options.color);
+    const auto& text_shader = ::opengl::StaticShaders::instance().text();
+    text_shader.use_program();
+    text_shader.set_int("text_texture", 0);
+    text_shader.set_bool("use_instancing", false);
+    text_shader.set_vec4("text_color", options.color);
 
     glm::vec3 advance(0.0f);
     glm::mat4 projection = glm::ortho(
@@ -301,7 +302,7 @@ public:
         glm::vec3 offset(chars[c].offset - min_offset, 0.0f);
         auto model = glm::translate(glm::mat4(1.0f), advance + offset)
           * glm::scale(scale);
-        shader.set_mat4("projection_view_model", projection * model);
+        text_shader.set_mat4("projection_view_model", projection * model);
 
         quad.draw();
       }
