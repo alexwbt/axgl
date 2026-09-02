@@ -126,6 +126,13 @@ public:
     );
   }
 
+  void remove_all() override
+  {
+    new_entities_.clear();
+    for (auto& e : entities_)
+      e->mark_remove(true);
+  }
+
   [[nodiscard]] std::span<const axgl::ptr_t<axgl::Entity>> get() const override
   {
     return entities_;

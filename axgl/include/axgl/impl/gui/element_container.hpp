@@ -23,6 +23,7 @@ public:
   {
     std::erase(children_, element);
   }
+  void remove_all() override { children_.clear(); }
   [[nodiscard]] std::span<const ptr_t<axgl::gui::Element>> get() const override
   {
     return children_;

@@ -63,6 +63,7 @@ public:
   {
     std::erase(components_, component);
   }
+  void remove_all() override { components_.clear(); }
   [[nodiscard]] std::span<const ptr_t<axgl::Component>> get() const override
   {
     return components_;

@@ -21,6 +21,7 @@ public:
   }
 
   virtual void remove(const axgl::ptr_t<Item>& item) = 0;
+  virtual void remove_all() = 0;
 
   [[nodiscard]] virtual std::uint64_t size() const = 0;
   [[nodiscard]] virtual bool empty() const = 0;
