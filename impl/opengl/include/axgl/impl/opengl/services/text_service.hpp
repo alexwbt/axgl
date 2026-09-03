@@ -59,8 +59,10 @@ public:
     text_renderer_.render_text(
       text, options.value, options.fonts,
       {
-        .size = util::clamp_cast<std::uint32_t>(options.font_size),
         .color = options.font_color,
+        .size = util::clamp_cast<std::uint32_t>(options.font_size),
+        .max_width = options.max_width,
+        .max_height = options.max_height,
         .vertical = options.vertical,
       }
     );
