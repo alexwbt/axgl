@@ -31,8 +31,10 @@ class TextRenderer;
 
 struct TextOptions final
 {
-  std::uint32_t size = 0;
   glm::vec4 color{1};
+  std::uint32_t size = 0;
+  std::int32_t max_width = -1;
+  std::int32_t max_height = -1;
   bool vertical = false;
 };
 
