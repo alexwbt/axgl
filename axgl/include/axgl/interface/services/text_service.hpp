@@ -12,12 +12,19 @@ class TextService : virtual public axgl::Service
 public:
   static constexpr std::string_view kTypeId = "service::text";
 
+  enum class Wrap
+  {
+
+  };
+
   struct Options
   {
     const std::string& value;
     const std::vector<std::string>& fonts;
     const glm::vec4& font_color;
     float font_size = 16.0f;
+    std::int32_t max_width = -1;
+    std::int32_t max_height = -1;
     bool vertical = false;
   };
 
