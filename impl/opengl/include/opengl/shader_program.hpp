@@ -6,34 +6,18 @@
 #include <axgl/common.hpp>
 #include <glad/glad.h>
 
+#include <opengl/shader_source.hpp>
+
 namespace opengl
 {
 
 class ShaderProgram final
 {
-public:
-  struct Shader final
-  {
-    GLenum type;
-    std::string_view source_code;
-
-    Shader(const GLenum type, const std::string& data) :
-      type(type), source_code(data)
-    {
-    }
-    Shader(const GLenum type, const std::span<const uint8_t>& data) :
-      type(type),
-      source_code(reinterpret_cast<const char*>(data.data()), data.size())
-    {
-    }
-  };
-
-private:
   GLuint program_id_;
   mutable std::unordered_map<std::string, GLint> uniform_locations_;
 
 public:
-  explicit ShaderProgram(const std::vector<Shader>& shaders)
+  explicit ShaderProgram(const std::vector<ShaderSource>& shaders)
   {
     program_id_ = glCreateProgram();
 
@@ -41,7 +25,7 @@ public:
     shader_ids.reserve(shaders.size());
     for (const auto& shader : shaders)
     {
-      auto shader_id = create_shader(shader);
+      auto shader_id = shader.compile(program_id_);
       glAttachShader(program_id_, shader_id);
       shader_ids.push_back(shader_id);
     }
@@ -55,6 +39,11 @@ public:
       char log[512] = {};
       glGetProgramInfoLog(program_id_, sizeof(log), nullptr, log);
       AXGL_LOG_ERROR("Failed to link shader program: {}", log);
+
+#ifdef AXGL_DEBUG
+      for (const auto& shader : shaders)
+        AXGL_LOG_DEBUG("\n{}", shader.preprocess());
+#endif
     }
 
     for (const auto shader_id : shader_ids)
@@ -186,27 +175,6 @@ private:
         = glGetUniformLocation(program_id_, name.c_str());
 
     return uniform_locations_[name];
-  }
-
-  static GLuint create_shader(const Shader& shader)
-  {
-    const GLuint id = glCreateShader(shader.type);
-
-    const GLchar* code = shader.source_code.data();
-    const auto size = util::narrow<GLint>(shader.source_code.size());
-    glShaderSource(id, 1, &code, &size);
-
-    glCompileShader(id);
-
-    int success;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-      char log[512] = {};
-      glGetShaderInfoLog(id, sizeof(log), nullptr, log);
-      AXGL_LOG_ERROR("Failed to compile shader: {}", log);
-    }
-    return id;
   }
 };
 
