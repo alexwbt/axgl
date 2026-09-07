@@ -54,9 +54,10 @@ words = [
     "utfcpp",
 ]
 ignore_paths = [
-    ".codebook.toml",
     ".git/**/*",
     ".vscode/**/*",
+    ".codebook.toml",
+    ".clang-tidy",
     "_log/**/*",
     "_build/**/*",
     "_external/**/*",
@@ -67,7 +68,6 @@ ignore_patterns = [
     '\bGL_[A-Z0-9_]+\b',
     '\bglfw[A-Z][a-zA-Z0-9]*\b',
     '\bGLFW_[A-Z0-9_]+\b',
-    "[^a-zA-Z0-9]-[D|W|f][a-zA-Z0-9-]*",
 ]
 
 [[overrides]]
@@ -102,4 +102,12 @@ extra_words = [
     "ivec",
     "texel",
     "isinf",
+]
+
+[[overrides]]
+paths = [
+    ".clangd"
+]
+extra_ignore_patterns = [
+    "[^a-zA-Z0-9]-[D|W|f][a-zA-Z0-9-]*",
 ]
