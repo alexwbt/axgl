@@ -1,4 +1,7 @@
-dictionaries = ["en_gb", "en_us"]
+dictionaries = [
+    "en_gb",
+    "en_us",
+]
 words = [
     "allman",
     "asio",
@@ -45,8 +48,10 @@ words = [
     "renderbuffer",
     "shader",
     "shaderiv",
+    "shaders",
     "skybox",
     "spdlog",
+    "ssao",
     "stbi",
     "stdlib",
     "ubyte",
@@ -105,9 +110,5 @@ extra_words = [
 ]
 
 [[overrides]]
-paths = [
-    ".clangd"
-]
-extra_ignore_patterns = [
-    "[^a-zA-Z0-9]-[D|W|f][a-zA-Z0-9-]*",
-]
+paths = [".clangd"]
+extra_ignore_patterns = ["[^a-zA-Z0-9]-[D|W|f][a-zA-Z0-9-]*"]
