@@ -31,6 +31,7 @@ add_subdirectory(_external/cpptrace)
 add_subdirectory(_external/simdjson)
 add_subdirectory(_external/freetype)
 add_subdirectory(_external/flatbuffer)
+add_subdirectory(_external/doctest)
 
 # Internal Libraries
 add_subdirectory(lib/net)
@@ -49,6 +50,13 @@ add_subdirectory(impl/glfw)
 add_subdirectory(impl/opengl)
 add_subdirectory(impl/assimp)
 add_subdirectory(impl/bundlefile)
+
+option(AXGL_BUILD_TESTS "Build tests" OFF)
+message("AXGL_BUILD_TESTS: ${AXGL_BUILD_TESTS}")
+
+if(AXGL_BUILD_TESTS)
+  enable_testing()
+endif()
 
 # Demonstrations
 add_subdirectory(demo)

@@ -26,6 +26,13 @@
       }
     },
     {
+      "name": "debug-tests",
+      "inherits": "debug",
+      "cacheVariables": {
+        "AXGL_BUILD_TESTS": "ON"
+      }
+    },
+    {
       "name": "release",
       "binaryDir": "_build/Release",
       "cacheVariables": {
@@ -47,6 +54,11 @@
     {
       "name": "debug",
       "configurePreset": "debug",
+      "configuration": "Debug"
+    },
+    {
+      "name": "debug-tests",
+      "configurePreset": "debug-tests",
       "configuration": "Debug"
     },
     {

@@ -6,13 +6,14 @@ PARALLEL ?= 4
 export CMAKE_BUILD_PARALLEL_LEVEL := $(PARALLEL)
 
 CMAKE ?= cmake
+CTEST ?= ctest
 CLEAN := $(ROOT)/_scripts/clean.sh
 BUILD := $(ROOT)/_scripts/build.sh
 FORMAT := $(ROOT)/_scripts/format.sh
 
 .DEFAULT_GOAL := debug
 
-.PHONY: all debug release target run format tidy clean setup help
+.PHONY: all debug release target run format tidy clean setup help test
 .PHONY: demo_%
 
 all: debug
@@ -48,6 +49,10 @@ clean:
 setup:
 	git lfs install && git submodule update --init --recursive
 
+test:
+	$(BUILD) debug-tests
+	cd $(ROOT)/_build/Debug && $(CTEST) --output-on-failure
+
 help:
 	@echo "axgl build targets"
 	@echo "  make                             build debug preset"
@@ -59,3 +64,4 @@ help:
 	@echo "  make tidy                        clang-tidy + clang-format"
 	@echo "  make clean                       remove _build/ and _bin/"
 	@echo "  make setup                       init git submodules and LFS"
+	@echo "  make test                        build debug-tests preset and run ctest"

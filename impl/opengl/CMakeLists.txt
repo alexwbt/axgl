@@ -20,3 +20,7 @@ embed_resource(axgl_opengl_impl res)
 
 include(${CMAKE_SOURCE_DIR}/_cmake/compile_proxy.cmake)
 add_compile_proxy(axgl_opengl_impl "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+if(AXGL_BUILD_TESTS)
+  add_subdirectory(test)
+endif()

@@ -40,3 +40,6 @@
 [submodule "_external/simdjson"]
 	path = _external/simdjson
 	url = https://github.com/simdjson/simdjson.git
+[submodule "_external/doctest"]
+	path = _external/doctest
+	url = https://github.com/doctest/doctest.git
