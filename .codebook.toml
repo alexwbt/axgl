@@ -20,10 +20,14 @@ words = [
     "codegen",
     "cpptrace",
     "cstdint",
+    "ctest",
     "cubemap",
+    "cxx",
+    "doctest",
     "embedfile",
     "endforeach",
     "endfunction",
+    "fbs",
     "flatbuffer",
     "flatbuffers",
     "flatc",
@@ -32,10 +36,13 @@ words = [
     "freetype",
     "gameloop",
     "glfw",
+    "glm",
     "glsl",
     "imgui",
     "infacing",
     "inout",
+    "lastword",
+    "lfs",
     "lightmap",
     "metalness",
     "msaa",
@@ -51,9 +58,11 @@ words = [
     "shader",
     "shaderiv",
     "shaders",
+    "simdjson",
     "skybox",
     "spdlog",
     "ssao",
+    "stb",
     "stbi",
     "stdlib",
     "ubyte",
@@ -75,6 +84,7 @@ ignore_patterns = [
     '\bGL_[A-Z0-9_]+\b',
     '\bglfw[A-Z][a-zA-Z0-9]*\b',
     '\bGLFW_[A-Z0-9_]+\b',
+    '\bCPPTRACE_[A-Z0-9_]+\b',
 ]
 
 [[overrides]]
@@ -91,6 +101,7 @@ extra_words = [
     "argn",
     "strequal",
     "unittests",
+    "wle",
 ]
 
 [[overrides]]

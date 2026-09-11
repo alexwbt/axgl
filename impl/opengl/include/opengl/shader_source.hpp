@@ -54,13 +54,13 @@ public:
     while (include != std::string::npos)
     {
       const auto quote_begin = shader_code.find('"', include);
-      const auto quote_end = shader_code.find('"', quote_begin);
+      const auto quote_end = shader_code.find('"', quote_begin + 1);
 
       const auto include_path
         = shader_code.substr(quote_begin + 1, quote_end - quote_begin - 1);
 #ifdef AXGL_DEBUG
       if (!axgl_opengl_impl_res::data.contains(include_path))
-        AXGL_LOG_ERROR("Shader include resource not round: ", include_path);
+        AXGL_LOG_ERROR("Shader include resource not found: {}", include_path);
 #endif
       const auto include_content = axgl_opengl_impl_res::get(include_path);
       shader_code.replace(
