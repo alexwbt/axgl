@@ -26,3 +26,6 @@ add_compile_proxy(bundlefile_lib
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   HEADER_FILES ${fbs_output_files}
 )
+
+include(${CMAKE_SOURCE_DIR}/_cmake/tests.cmake)
+add_tests(test_bundlefile test DEPS bundlefile_lib)
