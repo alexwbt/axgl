@@ -194,10 +194,12 @@ protected:
         if (focused_) set_using_style(context.gui_service, style + ":focus");
       }
     }
-    if (update_styles_ || element_style_->is_modified()
-        || std::ranges::any_of(
-          using_styles_, [](const auto& s) { return s->is_modified(); }
-        ))
+    if (
+      update_styles_ || element_style_->is_modified()
+      || std::ranges::any_of(
+        using_styles_, [](const auto& s) { return s->is_modified(); }
+      )
+    )
     {
       computed_style_ = std::make_unique<axgl::gui::Style>();
       for (const auto& style : using_styles_)

@@ -16,8 +16,7 @@ public:
   virtual void apply(
     const axgl::gui::Context& context,
     axgl::Container<axgl::gui::Element>& element
-  ) const
-    = 0;
+  ) const = 0;
 };
 
 } // namespace axgl::gui

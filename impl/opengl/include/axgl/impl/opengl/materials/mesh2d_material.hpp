@@ -47,7 +47,10 @@ public:
       shader_.set_int("mesh_texture", 0);
       shader_.set_bool("use_texture", true);
     }
-    else { shader_.set_bool("use_texture", false); }
+    else
+    {
+      shader_.set_bool("use_texture", false);
+    }
   }
 
   [[nodiscard]] int get_attribute_offset(

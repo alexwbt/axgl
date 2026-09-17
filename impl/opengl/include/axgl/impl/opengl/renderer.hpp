@@ -557,16 +557,20 @@ private:
         if (component->is_disabled() || component->is_hidden()) continue;
         ++render_context.component_count;
 
-        if (auto* render_comp
-            = dynamic_cast<renderer::RenderComponent*>(component.get()))
+        if (
+          auto* render_comp
+          = dynamic_cast<renderer::RenderComponent*>(component.get())
+        )
         {
           render_comp->gather_instances(model_matrix);
 
           const auto id = render_comp->get_id();
           render_components[id] = render_comp;
         }
-        else if (const auto* light_comp
-                 = dynamic_cast<axgl::impl::component::Light*>(component.get()))
+        else if (
+          const auto* light_comp
+          = dynamic_cast<axgl::impl::component::Light*>(component.get())
+        )
         {
           const auto* light = &light_comp->light;
           switch (light->type)
@@ -615,10 +619,10 @@ public:
     window_->use();
 
     // initialize glad
-    if (!initialized_glad_
-        && !gladLoadGLLoader(
-          reinterpret_cast<GLADloadproc>(glfwGetProcAddress)
-        ))
+    if (
+      !initialized_glad_
+      && !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))
+    )
       AXGL_LOG_ERROR("Failed to initialize GLAD.");
     initialized_glad_ = true;
 

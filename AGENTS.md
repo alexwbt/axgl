@@ -1,9 +1,9 @@
 # AGENTS.md
 
 A C++ game development framework. Service-oriented core (interfaces in
-`axgl/include/axgl/interface/`, default implementations in `axgl/include/axgl/impl/`)
-over a component-based entity/realm tree; backends in `impl/`, examples in
-`demo/`. See `README.md` for design philosophy.
+`axgl/include/axgl/interface/`, default implementations in
+`axgl/include/axgl/impl/`) over a component-based entity/realm tree; backends in
+`impl/`, examples in `demo/`. See `README.md` for design philosophy.
 
 ## Setup (do this first, or builds fail silently)
 
@@ -54,9 +54,8 @@ over a component-based entity/realm tree; backends in `impl/`, examples in
 
 - Style is clang-format **Allman braces, 2-space, 80 col, pointers left**
   (`.clang-format`). Match this exactly; do not reflow to LLVM defaults.
-- `clang-format` major version **20** is required (enforced by
-  `_scripts/format.sh`; override with `CLANG_FORMAT_SKIP_VERSION_CHECK=1`). The
-  `.env` file sets `CLANG_FORMAT=/c/msys64/usr/bin/clang-format`.
+- `clang-format` major version **22** is required (enforced by
+  `_scripts/format.sh`; override with `CLANG_FORMAT_SKIP_VERSION_CHECK=1`).
 - `pre-commit` hook (in `.githooks`) auto-runs `clang-format -i` on staged
   `.cpp/.hpp/.fs/.vs` under `axgl/`, `demo/`, `impl/`, `lib/` and re-stages
   them. If you commit from a shell that doesn't run hooks, run

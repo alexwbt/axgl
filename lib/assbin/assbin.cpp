@@ -73,8 +73,10 @@ static int convert(
     return 1;
   }
 
-  if (Assimp::Exporter exporter;
-      exporter.Export(scene, format, output) != AI_SUCCESS)
+  if (
+    Assimp::Exporter exporter;
+    exporter.Export(scene, format, output) != AI_SUCCESS
+  )
   {
     SPDLOG_ERROR(
       "Failed to export to format '{}': {}", format, exporter.GetErrorString()

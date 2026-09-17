@@ -76,8 +76,10 @@ public:
     if (it == styles_.end())
     {
 #ifdef AXGL_DEBUG
-      if (!name.ends_with(":hover") && !name.ends_with(":active")
-          && !name.ends_with(":focus"))
+      if (
+        !name.ends_with(":hover") && !name.ends_with(":active")
+        && !name.ends_with(":focus")
+      )
         AXGL_LOG_WARN(
           "GuiService: required style \"{}\" does not exist.", name
         );

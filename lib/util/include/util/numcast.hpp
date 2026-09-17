@@ -162,8 +162,10 @@ template <typename to_t, typename from_t>
 {
   constexpr auto to_max = std::numeric_limits<to_t>::max();
   if (value < 0) return static_cast<to_t>(0);
-  if (static_cast<std::make_unsigned_t<from_t>>(value)
-      > static_cast<std::make_unsigned_t<to_t>>(to_max))
+  if (
+    static_cast<std::make_unsigned_t<from_t>>(value)
+    > static_cast<std::make_unsigned_t<to_t>>(to_max)
+  )
     return to_max;
   return static_cast<to_t>(value);
 }

@@ -165,8 +165,9 @@ private:
         std::format("sun_lights[{}].specular", i), light->color.specular
       );
 
-      if (light->casts_shadows
-          && sun_shadow_count++ < renderer::kSunShadowLimit)
+      if (
+        light->casts_shadows && sun_shadow_count++ < renderer::kSunShadowLimit
+      )
       {
         // upload the per-cascade light PVs + split distances and bind the
         // sampler2DArray; the FS selects the cascade by fragment distance.
@@ -285,8 +286,10 @@ private:
         std::format("spot_lights[{}].outer_cut_off", i), light->outer_cut_off
       );
 
-      if (light->casts_shadows && context.shadow_index >= 0
-          && spot_shadow_count++ < renderer::kSpotShadowLimit)
+      if (
+        light->casts_shadows && context.shadow_index >= 0
+        && spot_shadow_count++ < renderer::kSpotShadowLimit
+      )
       {
         shader.set_int(
           std::format("spot_shadow_index[{}]", i), context.shadow_index

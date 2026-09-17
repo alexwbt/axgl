@@ -47,8 +47,7 @@ public:
     = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Texture> get_texture(
     axgl::Material::TextureType type
-  ) const
-    = 0;
+  ) const = 0;
 };
 
 } // namespace axgl

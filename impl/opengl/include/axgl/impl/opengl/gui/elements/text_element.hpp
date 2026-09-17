@@ -31,8 +31,10 @@ public:
     axgl::impl::opengl::gui::Element::update(context);
 
     const auto text_scale = context.scale * context.font_scale;
-    if (computed_style_->is_modified() || modified_text_
-        || text_scale_ != text_scale)
+    if (
+      computed_style_->is_modified() || modified_text_
+      || text_scale_ != text_scale
+    )
     {
       modified_text_ = false;
       text_scale_ = text_scale;

@@ -173,11 +173,15 @@ class InputService : virtual public axgl::InputService,
     const axgl::Input::Source source, const axgl::ptr_t<::glfw::Window>& window
   )
   {
-    if (const auto keycode = to_glfw_keycode(source);
-        keycode != -1 && window->key_down(keycode))
+    if (
+      const auto keycode = to_glfw_keycode(source);
+      keycode != -1 && window->key_down(keycode)
+    )
       return true;
-    if (const auto mouse_button = to_glfw_mouse_button(source);
-        mouse_button != -1 && window->mouse_down(mouse_button))
+    if (
+      const auto mouse_button = to_glfw_mouse_button(source);
+      mouse_button != -1 && window->mouse_down(mouse_button)
+    )
       return true;
     return false;
   }

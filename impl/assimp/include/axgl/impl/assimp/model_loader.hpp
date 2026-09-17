@@ -57,8 +57,10 @@ class ModelLoader
       data.data(), data.size(), aiProcess_CalcTangentSpace
     );
 #ifdef AXGL_DEBUG
-    if (!ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
-        || !ai_scene->mRootNode)
+    if (
+      !ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
+      || !ai_scene->mRootNode
+    )
     {
       AXGL_LOG_ERROR("Failed to load model: {}", importer.GetErrorString());
       throw std::runtime_error(importer.GetErrorString());

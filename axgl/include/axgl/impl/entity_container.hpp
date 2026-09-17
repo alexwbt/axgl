@@ -93,12 +93,14 @@ public:
   void add(axgl::ptr_t<axgl::Entity> entity) override
   {
 #ifdef AXGL_DEBUG
-    if (std::ranges::any_of(
-          entities_, [&entity](const auto& e) { return e == entity; }
-        )
-        || std::ranges::any_of(
-          new_entities_, [&entity](const auto& e) { return e == entity; }
-        ))
+    if (
+      std::ranges::any_of(
+        entities_, [&entity](const auto& e) { return e == entity; }
+      )
+      || std::ranges::any_of(
+        new_entities_, [&entity](const auto& e) { return e == entity; }
+      )
+    )
     {
       AXGL_LOG_DEBUG(
         "Entity(id: {}, name: {}) already exists.", entity->get_id(),

@@ -28,14 +28,19 @@ public:
     if (!enabled_) ImGui::BeginDisabled();
 
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 64.0f);
-    if (ImGui::InputText(
-          "##chat_input", &input_value_, ImGuiInputTextFlags_EnterReturnsTrue
-        ))
+    if (
+      ImGui::InputText(
+        "##chat_input", &input_value_, ImGuiInputTextFlags_EnterReturnsTrue
+      )
+    )
     {
       submit();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Send", ImVec2(64.0f, 0))) { submit(); }
+    if (ImGui::Button("Send", ImVec2(64.0f, 0)))
+    {
+      submit();
+    }
 
     if (!enabled_) ImGui::EndDisabled();
   }

@@ -28,8 +28,7 @@ public:
 
   [[nodiscard]] virtual axgl::ptr_t<axgl::Texture> create_texture(
     const Options& options
-  ) const
-    = 0;
+  ) const = 0;
 };
 
 } // namespace axgl

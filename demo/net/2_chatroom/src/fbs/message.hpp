@@ -38,8 +38,10 @@ inline const fbs::chatroom::Message* read_message(const net::data_ptr_t& buffer)
   );
 
   if (identifier != fbs::chatroom::MessageIdentifier()) return nullptr;
-  if (auto verifier = flatbuffers::Verifier(data.data(), data.size());
-      !fbs::chatroom::VerifyMessageBuffer(verifier))
+  if (
+    auto verifier = flatbuffers::Verifier(data.data(), data.size());
+    !fbs::chatroom::VerifyMessageBuffer(verifier)
+  )
     return nullptr;
 
   const auto message = fbs::chatroom::GetMessage(data.data());

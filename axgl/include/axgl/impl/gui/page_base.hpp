@@ -78,8 +78,10 @@ public:
     else using_cursor_ = false;
 
     // update scale_
-    if (normal_cursor_mode && scale_input_ && scroll_pointer_
-        && scale_input_->tick > 0 && scroll_pointer_->delta.y != 0.0f)
+    if (
+      normal_cursor_mode && scale_input_ && scroll_pointer_
+      && scale_input_->tick > 0 && scroll_pointer_->delta.y != 0.0f
+    )
     {
       should_render_ = true;
       scale_ += scroll_pointer_->delta.y * 0.1f;

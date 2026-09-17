@@ -23,14 +23,20 @@ struct Shadow
   {
     if (enabled)
     {
-      if (!sun.shadow_texture
-          || shadow_map_size != sun.shadow_texture->get_width())
+      if (
+        !sun.shadow_texture
+        || shadow_map_size != sun.shadow_texture->get_width()
+      )
         sun.setup(shadow_map_size);
-      if (!spot.shadow_texture
-          || shadow_map_size != spot.shadow_texture->get_width())
+      if (
+        !spot.shadow_texture
+        || shadow_map_size != spot.shadow_texture->get_width()
+      )
         spot.setup(shadow_map_size);
-      if (!point.shadow_texture
-          || shadow_map_size != point.shadow_texture->get_width())
+      if (
+        !point.shadow_texture
+        || shadow_map_size != point.shadow_texture->get_width()
+      )
         point.setup(shadow_map_size);
     }
     else

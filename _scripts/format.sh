@@ -42,7 +42,7 @@ fi
 #
 # clang-format version check
 #
-REQUIRED_CLANG_FORMAT_MAJOR=20
+REQUIRED_CLANG_FORMAT_MAJOR=22
 if [ -z "$CLANG_FORMAT_SKIP_VERSION_CHECK" ]; then
   CF_VERSION=$($CLANG_FORMAT --version 2>/dev/null)
   CF_MAJOR=$(echo "$CF_VERSION" | sed -n 's/.*version \([0-9][0-9]*\)\..*/\1/p')

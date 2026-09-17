@@ -55,8 +55,7 @@ public:
     = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::gui::Style> get_style(
     const std::string& name
-  ) const
-    = 0;
+  ) const = 0;
 
   virtual void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::gui::Page> get_main_ui() const = 0;

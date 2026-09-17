@@ -93,10 +93,12 @@ public:
     FT_Library library, const std::span<const uint8_t> buffer, const int index
   )
   {
-    if (FT_New_Memory_Face(
-          library, buffer.data(), util::narrow<FT_Long>(buffer.size()), index,
-          &face_
-        ))
+    if (
+      FT_New_Memory_Face(
+        library, buffer.data(), util::narrow<FT_Long>(buffer.size()), index,
+        &face_
+      )
+    )
       throw std::runtime_error("Failed to load font face from memory.");
   }
 
