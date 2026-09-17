@@ -67,10 +67,28 @@ A C++ game development framework. Service-oriented core (interfaces in
 - clang-tidy checks are pinned in `.clang-tidy` (large bugprone/modernize/
   performance/readability set). Don't disable checks ad hoc; edit the file.
 
-## There is no test suite
+## Tests (opt-in via `AXGL_BUILD_TESTS`)
 
-No `test/`, no CTest, no framework. "Verification" = the project builds and a
-demo runs.
+- Tests are **off by default**. The `debug` CMake preset turns
+  `AXGL_BUILD_TESTS=ON` (see `CMakePresets.json`); `release` leaves it off.
+  `make` / `make debug` therefore configure tests; a bare `cmake` without the
+  preset will not, unless you pass `-DAXGL_BUILD_TESTS=ON`.
+- Framework is **doctest** (`_external/doctest`), with `doctest_with_main`
+  providing `main()`. Tests live next to the code they cover as a `test/`
+  subdir registered via `add_tests(<prefix> <dir> DEPS ...)` from
+  `_cmake/tests.cmake`. Each `*.cpp` in the dir becomes its own executable +
+  CTest entry, all gathered under the `axgl_tests` custom target. Tests may
+  skip themselves at runtime when a prerequisite (e.g. a GL context) is
+  unavailable — guard with an availability check, don't fail.
+- Run: `make test` (builds `axgl_tests` with `--no-config` then runs
+  `ctest --test-dir _build/Debug --output-on-failure`). CTest filters work,
+  e.g. `ctest --test-dir _build/Debug -R '<pattern>'`; a single test binary
+  is `_bin/<test_target>`.
+- There is no top-level `test/` dir; do not create one. Add tests by calling
+  `add_tests(...)` from the relevant library's `CMakeLists.txt` (mirror an
+  existing one like `impl/opengl/CMakeLists.txt`).
+- "Verification" still mostly means: the project builds and a demo runs. Tests
+  are a supplement, not a gate.
 
 ## Architecture
 
