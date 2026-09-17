@@ -63,6 +63,8 @@ public:
         .size = util::clamp_cast<std::uint32_t>(options.font_size),
         .max_width = options.max_width,
         .max_height = options.max_height,
+        .line_height = options.line_height,
+        .wrap = static_cast<::opengl::WrapMode>(options.wrap),
         .vertical = options.vertical,
       }
     );

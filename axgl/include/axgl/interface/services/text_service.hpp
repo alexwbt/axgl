@@ -14,7 +14,10 @@ public:
 
   enum class Wrap
   {
-
+    None,
+    Word,
+    Char,
+    Auto,
   };
 
   struct Options
@@ -25,6 +28,8 @@ public:
     float font_size = 16.0f;
     std::int32_t max_width = -1;
     std::int32_t max_height = -1;
+    float line_height = 0.0f;
+    Wrap wrap = Wrap::Auto;
     bool vertical = false;
   };
 

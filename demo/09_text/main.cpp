@@ -87,6 +87,8 @@ public:
         .fonts = {"arial", "noto-tc"},
         .font_color = {1.0f, 0.5f, 0.2f, 1.0f},
         .font_size = 48.0f,
+        .max_width = 512,
+        .wrap = axgl::TextService::Wrap::Auto,
       });
       // material
       const auto material = renderer_service->create_material("2d");
