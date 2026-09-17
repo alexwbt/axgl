@@ -8,11 +8,9 @@
 
 #include <opengl/buffer_object.hpp>
 
-namespace opengl
-{
+namespace opengl {
 
-struct VertexAttribute
-{
+struct VertexAttribute {
   GLint size;
   GLenum type;
   GLboolean normalized;
@@ -20,8 +18,7 @@ struct VertexAttribute
   const void* pointer;
 };
 
-class VertexArrayObject final
-{
+class VertexArrayObject final {
   GLuint id_;
   GLenum mode_ = GL_TRIANGLES;
   std::vector<std::unique_ptr<BufferObject>> buffer_objects_;
@@ -35,8 +32,7 @@ public:
   VertexArrayObject(const VertexArrayObject&) = delete;
   VertexArrayObject& operator=(const VertexArrayObject&) = delete;
 
-  VertexArrayObject(VertexArrayObject&& other) noexcept
-  {
+  VertexArrayObject(VertexArrayObject&& other) noexcept {
     id_ = other.id_;
     other.id_ = 0;
     vertex_size_ = other.vertex_size_;
@@ -47,10 +43,8 @@ public:
     other.attribute_size_ = 0;
     buffer_objects_ = std::move(other.buffer_objects_);
   }
-  VertexArrayObject& operator=(VertexArrayObject&& other) noexcept
-  {
-    if (this != &other)
-    {
+  VertexArrayObject& operator=(VertexArrayObject&& other) noexcept {
+    if (this != &other) {
       buffer_objects_.clear();
       if (id_ > 0) glDeleteVertexArrays(1, &id_);
 
@@ -67,8 +61,7 @@ public:
     return *this;
   }
 
-  ~VertexArrayObject()
-  {
+  ~VertexArrayObject() {
     buffer_objects_.clear();
     if (id_ > 0) glDeleteVertexArrays(1, &id_);
   }
@@ -79,18 +72,15 @@ public:
     const std::span<const VertexAttribute>& attributes,
     const int attributes_offset,
     const GLuint divisor = 0
-  )
-  {
+  ) {
     bind();
     auto buffer = std::make_unique<BufferObject>(GL_ARRAY_BUFFER);
     buffer->set_data(data, GL_STATIC_DRAW);
-    for (size_t i = 0; i < attributes.size(); i++)
-    {
+    for (size_t i = 0; i < attributes.size(); i++) {
       const auto index = attributes_offset + i;
       const auto& [size, type, normalized, stride, pointer] = attributes[i];
       glEnableVertexAttribArray(index);
-      switch (type)
-      {
+      switch (type) {
       case GL_BYTE:
       case GL_UNSIGNED_BYTE:
       case GL_SHORT:
@@ -115,8 +105,7 @@ public:
       if (divisor > 0) glVertexAttribDivisor(index, divisor);
     }
 
-    if (divisor == 0)
-    {
+    if (divisor == 0) {
       if (vertex_size_ > 0 && buffer->size() != vertex_size_)
         throw std::runtime_error("Size of all vertex buffer should be equal.");
       vertex_size_ = buffer->size();
@@ -130,8 +119,7 @@ public:
     return id;
   }
 
-  auto create_element_buffer(const std::span<const uint32_t>& data)
-  {
+  auto create_element_buffer(const std::span<const uint32_t>& data) {
     bind();
     auto buffer = std::make_unique<BufferObject>(GL_ELEMENT_ARRAY_BUFFER);
     buffer->set_data(data, GL_STATIC_DRAW);
@@ -147,12 +135,9 @@ public:
   template <typename DataType>
   void update_buffer_data(
     const GLuint buffer_id, const std::span<const DataType>& data
-  )
-  {
-    for (const auto& buffer : buffer_objects_)
-    {
-      if (buffer->id() == buffer_id)
-      {
+  ) {
+    for (const auto& buffer : buffer_objects_) {
+      if (buffer->id() == buffer_id) {
         buffer->set_data(data, GL_DYNAMIC_DRAW);
         break;
       }
@@ -161,25 +146,28 @@ public:
 
   void set_mode(const GLenum mode) { mode_ = mode; }
 
-  void draw() const
-  {
+  void draw() const {
     bind();
     if (element_size_ > 0)
       glDrawElements(
-        mode_, util::clamp_cast<GLsizei>(element_size_), GL_UNSIGNED_INT,
+        mode_,
+        util::clamp_cast<GLsizei>(element_size_),
+        GL_UNSIGNED_INT,
         nullptr
       );
     else if (vertex_size_ > 0)
       glDrawArrays(mode_, 0, util::clamp_cast<GLint>(vertex_size_));
   }
 
-  void draw_instanced(const GLsizei count) const
-  {
+  void draw_instanced(const GLsizei count) const {
     bind();
     if (element_size_ > 0)
       glDrawElementsInstanced(
-        mode_, util::clamp_cast<GLsizei>(element_size_), GL_UNSIGNED_INT,
-        nullptr, count
+        mode_,
+        util::clamp_cast<GLsizei>(element_size_),
+        GL_UNSIGNED_INT,
+        nullptr,
+        count
       );
     else if (vertex_size_ > 0)
       glDrawArraysInstanced(

@@ -17,8 +17,7 @@
 
 namespace fs = std::filesystem;
 
-static std::string_view get_include_path(const std::string& file_content)
-{
+static std::string_view get_include_path(const std::string& file_content) {
   const auto include = file_content.find("#include");
   if (include == std::string::npos) return {};
 
@@ -31,8 +30,7 @@ static std::string_view get_include_path(const std::string& file_content)
   return {file_content.data() + begin + 1, end - begin - 1};
 }
 
-static void resolve_header_file(std::string& file, std::string_view command)
-{
+static void resolve_header_file(std::string& file, std::string_view command) {
   // read cpp
   const auto file_content = util::read_text_file(file);
   const auto include_path = get_include_path(file_content);
@@ -40,8 +38,7 @@ static void resolve_header_file(std::string& file, std::string_view command)
 
   // find header path
   // only handles glued include flags
-  for (auto&& subrange : command | std::views::split(' '))
-  {
+  for (auto&& subrange : command | std::views::split(' ')) {
     const auto length = std::ranges::distance(subrange);
     if (length <= 2) continue;
 
@@ -50,8 +47,7 @@ static void resolve_header_file(std::string& file, std::string_view command)
 
     std::string_view include_dir = view.substr(2);
     const auto header_file = fs::path(include_dir) / include_path;
-    if (fs::is_regular_file(header_file))
-    {
+    if (fs::is_regular_file(header_file)) {
       file = header_file.lexically_normal().generic_string();
       return;
     }
@@ -60,15 +56,13 @@ static void resolve_header_file(std::string& file, std::string_view command)
   SPDLOG_WARN("Failed to find header file of \"{}\"", file);
 }
 
-static bool is_proxy_file(const std::string& filepath)
-{
+static bool is_proxy_file(const std::string& filepath) {
   return filepath.ends_with(".cpp")
     && filepath.find("/compile_proxy/") != std::string_view::npos
     && !filepath.ends_with("compile_proxy.cpp");
 }
 
-static int fix_compile_proxy(const std::string& directory)
-{
+static int fix_compile_proxy(const std::string& directory) {
   using namespace simdjson;
 
   static constexpr std::string_view kFilename = "compile_commands.json";
@@ -84,8 +78,7 @@ static int fix_compile_proxy(const std::string& directory)
   builder.start_array();
 
   bool first = true;
-  for (ondemand::object entry : doc)
-  {
+  for (ondemand::object entry : doc) {
     // read
     std::string_view directory = entry[DIRECTORY_FIELD];
     std::string_view command = entry[COMMAND_FIELD];
@@ -120,35 +113,29 @@ static int fix_compile_proxy(const std::string& directory)
   return 0;
 }
 
-int main(const int argc, char** argv)
-{
+int main(const int argc, char** argv) {
   args::ArgumentParser parser(
     "Compilation database compile proxy post processing."
   );
   args::HelpFlag help(parser, "help", "Display the help menu.", {'h', "help"});
 
   args::Positional<std::string> directory(
-    parser, "dir", "The directory containing compile_commands.json",
+    parser,
+    "dir",
+    "The directory containing compile_commands.json",
     args::Options::Required
   );
 
-  try
-  {
+  try {
     parser.ParseCLI(argc, argv);
     return fix_compile_proxy(args::get(directory));
-  }
-  catch (const args::Completion& e)
-  {
+  } catch (const args::Completion& e) {
     std::cout << e.what();
     return 0;
-  }
-  catch (const args::Help&)
-  {
+  } catch (const args::Help&) {
     std::cout << parser;
     return 0;
-  }
-  catch (const std::exception& e)
-  {
+  } catch (const std::exception& e) {
     SPDLOG_ERROR("{}", e.what());
     return 1;
   }

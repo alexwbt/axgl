@@ -1,8 +1,7 @@
 #include <axgl/axgl.hpp>
 #include <axgl/impl/glfw.hpp>
 
-int main()
-{
+int main() {
   axgl::Axgl axgl;
   axgl::configure_glfw(axgl);
   axgl.initialize();

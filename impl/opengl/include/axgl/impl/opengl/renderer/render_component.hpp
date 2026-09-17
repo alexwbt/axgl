@@ -2,11 +2,9 @@
 
 #include <axgl/impl/opengl/renderer/render_context.hpp>
 
-namespace axgl::impl::opengl::renderer
-{
+namespace axgl::impl::opengl::renderer {
 
-class RenderComponent
-{
+class RenderComponent {
 public:
   virtual ~RenderComponent() = default;
   virtual void gather_instances(const glm::mat4& transform_matrix) = 0;

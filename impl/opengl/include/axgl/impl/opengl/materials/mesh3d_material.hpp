@@ -12,11 +12,9 @@
 #include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
-namespace axgl::impl::opengl
-{
+namespace axgl::impl::opengl {
 
-class Mesh3dMaterial : public Material
-{
+class Mesh3dMaterial : public Material {
   axgl::ptr_t<impl::opengl::Texture> diffuse_texture_;
   axgl::ptr_t<impl::opengl::Texture> specular_texture_;
   axgl::ptr_t<impl::opengl::Texture> normal_texture_;
@@ -25,8 +23,7 @@ class Mesh3dMaterial : public Material
   float specular_ = 1.0f;
 
 public:
-  void set_property(const std::string& key, const std::string& value) override
-  {
+  void set_property(const std::string& key, const std::string& value) override {
     if (key == "shininess") shininess_ = std::stof(value);
     else if (key == "specular") specular_ = std::stof(value);
 #ifdef AXGL_DEBUG
@@ -37,8 +34,7 @@ public:
   void add_texture(
     const axgl::Material::TextureType type,
     const axgl::ptr_t<axgl::Texture> texture
-  ) override
-  {
+  ) override {
     auto texture_ = std::dynamic_pointer_cast<impl::opengl::Texture>(texture);
     if (!texture_)
 #ifdef AXGL_DEBUG
@@ -49,8 +45,7 @@ public:
       return;
 #endif
     using enum axgl::Material::TextureType;
-    switch (type)
-    {
+    switch (type) {
     case kDiffuse: diffuse_texture_ = std::move(texture_); break;
     case kSpecular: specular_texture_ = std::move(texture_); break;
     case kNormal: normal_texture_ = std::move(texture_); break;
@@ -61,8 +56,7 @@ public:
     }
   }
 
-  void use(const renderer::RenderContext& context) override
-  {
+  void use(const renderer::RenderContext& context) override {
     Material::use(context);
 
     const auto& shader = *get_shader();
@@ -92,8 +86,7 @@ public:
 
     const auto use_ssao = context.ssao_texture != nullptr;
     shader.set_bool("use_ssao", use_ssao);
-    if (use_ssao)
-    {
+    if (use_ssao) {
       context.ssao_texture->use(GL_TEXTURE4);
       shader.set_int("ssao_texture", 4);
     }
@@ -103,31 +96,27 @@ public:
 #ifdef AXGL_DEBUG
     shader.set_bool("csm_debug_borders", context.csm_debug_borders);
 #endif
-    if (use_sun_shadow)
-    {
+    if (use_sun_shadow) {
       context.sun_shadow_maps->use(GL_TEXTURE5);
       shader.set_int("sun_shadow_maps", 5);
     }
 
     const auto use_spot_shadow = context.spot_shadow_maps != nullptr;
     shader.set_bool("enable_spot_shadow", use_spot_shadow);
-    if (use_spot_shadow)
-    {
+    if (use_spot_shadow) {
       context.spot_shadow_maps->use(GL_TEXTURE6);
       shader.set_int("spot_shadow_maps", 6);
     }
 
     const auto use_point_shadow = context.point_shadow_maps != nullptr;
     shader.set_bool("enable_point_shadow", use_point_shadow);
-    if (use_point_shadow)
-    {
+    if (use_point_shadow) {
       context.point_shadow_maps->use(GL_TEXTURE7);
       shader.set_int("point_shadow_maps", 7);
     }
   }
 
-  [[nodiscard]] const ::opengl::ShaderProgram* get_shader() const override
-  {
+  [[nodiscard]] const ::opengl::ShaderProgram* get_shader() const override {
     return enable_blend_ ? &Shaders::instance().mesh3d()
                          : &Shaders::instance().mesh3d_opaque();
   }
@@ -136,8 +125,7 @@ private:
   void use_sun_lights(
     const ::opengl::ShaderProgram& shader,
     const renderer::RenderContext& render_context
-  ) const
-  {
+  ) const {
     constexpr auto cascade_count
       = static_cast<GLsizei>(renderer::kSunShadowCascadeCount);
 
@@ -147,8 +135,7 @@ private:
     shader.set_int("sun_lights_size", size);
 
     std::size_t sun_shadow_count = 0;
-    for (int i = 0; i < size; ++i)
-    {
+    for (int i = 0; i < size; ++i) {
       const auto& context = render_context.sun_lights[i];
       const auto* light = context.light;
 
@@ -167,14 +154,12 @@ private:
 
       if (
         light->casts_shadows && sun_shadow_count++ < renderer::kSunShadowLimit
-      )
-      {
+      ) {
         // upload the per-cascade light PVs + split distances and bind the
         // sampler2DArray; the FS selects the cascade by fragment distance.
         std::array<glm::mat4, cascade_count> cascade_pvs{};
         std::array<float, cascade_count> cascade_far{};
-        for (std::size_t j = 0; j < cascade_count; ++j)
-        {
+        for (std::size_t j = 0; j < cascade_count; ++j) {
           cascade_pvs[j] = context.cascades[j].light_pv;
           cascade_far[j] = context.cascades[j].split_far;
         }
@@ -191,15 +176,13 @@ private:
   void use_point_lights(
     const ::opengl::ShaderProgram& shader,
     const renderer::RenderContext& render_context
-  ) const
-  {
+  ) const {
     int size = static_cast<int>(
       std::min(render_context.point_lights.size(), renderer::kPointLightLimit)
     );
     shader.set_int("point_lights_size", size);
 
-    for (int i = 0; i < size; ++i)
-    {
+    for (int i = 0; i < size; ++i) {
       const auto& context = render_context.point_lights[i];
       const auto* light = context.light;
 
@@ -225,8 +208,7 @@ private:
         std::format("point_lights[{}].quadratic", i), light->strength.quadratic
       );
 
-      if (context.shadow_index >= 0)
-      {
+      if (context.shadow_index >= 0) {
         shader.set_int(
           std::format("point_shadow_index[{}]", i), context.shadow_index
         );
@@ -234,24 +216,21 @@ private:
           std::format("point_shadow_far_plane[{}]", context.shadow_index),
           context.far_plane
         );
-      }
-      else shader.set_int(std::format("point_shadow_index[{}]", i), -1);
+      } else shader.set_int(std::format("point_shadow_index[{}]", i), -1);
     }
   }
 
   void use_spot_lights(
     const ::opengl::ShaderProgram& shader,
     const renderer::RenderContext& render_context
-  ) const
-  {
+  ) const {
     int size = static_cast<int>(
       std::min(render_context.spot_lights.size(), renderer::kSpotLightLimit)
     );
     shader.set_int("spot_lights_size", size);
 
     std::size_t spot_shadow_count = 0;
-    for (int i = 0; i < size; ++i)
-    {
+    for (int i = 0; i < size; ++i) {
       const auto& context = render_context.spot_lights[i];
       const auto* light = context.light;
 
@@ -289,8 +268,7 @@ private:
       if (
         light->casts_shadows && context.shadow_index >= 0
         && spot_shadow_count++ < renderer::kSpotShadowLimit
-      )
-      {
+      ) {
         shader.set_int(
           std::format("spot_shadow_index[{}]", i), context.shadow_index
         );
@@ -298,8 +276,7 @@ private:
           std::format("spot_shadow_pv[{}]", context.shadow_index),
           context.light_pv
         );
-      }
-      else shader.set_int(std::format("spot_shadow_index[{}]", i), -1);
+      } else shader.set_int(std::format("spot_shadow_index[{}]", i), -1);
     }
   }
 
@@ -308,10 +285,8 @@ private:
     const int texture_unit,
     const std::string& name,
     const axgl::ptr_t<impl::opengl::Texture>& texture
-  ) const
-  {
-    if (!texture)
-    {
+  ) const {
+    if (!texture) {
       shader.set_bool(std::format("use_{}_texture", name), false);
       return;
     }

@@ -27,11 +27,10 @@
 #include <opengl/renderbuffer.hpp>
 #include <opengl/static_vaos.hpp>
 
-namespace axgl::impl::opengl
-{
+namespace axgl::impl::opengl {
 
-class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
-{
+class Renderer : virtual public axgl::Renderer,
+                 public axgl::impl::ContextHolder {
   using RenderComponents
     = std::unordered_map<std::uint64_t, renderer::RenderComponent*>;
 
@@ -49,8 +48,7 @@ class Renderer : virtual public axgl::Renderer, public axgl::impl::ContextHolder
   renderer::Screen screen;
 
 public:
-  void render() override
-  {
+  void render() override {
     if (!window_ || !window_->ready()) return;
 
     const auto& gui = axgl_->gui_service()->get_main_ui();
@@ -59,8 +57,7 @@ public:
     const auto viewport_i = window_->get_size();
     const auto viewport_f = glm::vec2(viewport_i);
     // setup
-    if (viewport_ != viewport_f)
-    {
+    if (viewport_ != viewport_f) {
       viewport_ = viewport_f;
       screen.setup(viewport_i);
       if (msaa.enabled) msaa.setup(viewport_i);
@@ -68,8 +65,7 @@ public:
       if (hdr.enabled) hdr.setup(viewport_i);
       if (ssao.enabled) ssao.setup(viewport_i, *screen.depth_texture);
       if (bloom.enabled) bloom.setup(viewport_i);
-      if (gui)
-      {
+      if (gui) {
         gui->set_size(viewport_i.x, viewport_i.y);
         gui->init();
       }
@@ -83,14 +79,12 @@ public:
 
     // render realm
     auto* camera = axgl_->camera_service()->get_camera();
-    if (camera && camera->viewport != viewport_f)
-    {
+    if (camera && camera->viewport != viewport_f) {
       camera->viewport.x = viewport_f.x;
       camera->viewport.y = viewport_f.y;
       camera->update_projection_view_matrix();
     }
-    if (camera && realm)
-    {
+    if (camera && realm) {
       renderer::RenderContext render_context{
         .viewport = viewport_f,
         .viewpoint = camera->position,
@@ -130,9 +124,7 @@ public:
       render_ssao_pass(render_context, pipeline_context, viewport_i);
       render_opaque_pass(render_context, pipeline_context, viewport_i);
       render_transparent_pass(render_context, pipeline_context);
-    }
-    else
-    {
+    } else {
       // only clear screen texture if no camera or realm exists
       screen.screen_framebuffer->use();
       glViewport(0, 0, viewport_i.x, viewport_i.y);
@@ -153,8 +145,7 @@ private:
     const renderer::RenderContext& render_context,
     const renderer::PipelineContext& pipeline_context,
     const glm::ivec2& viewport_i
-  )
-  {
+  ) {
     glViewport(0, 0, viewport_i.x, viewport_i.y);
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
@@ -173,15 +164,21 @@ private:
         render_func(render_context);
     }
 
-    if (msaa.enabled)
-    {
+    if (msaa.enabled) {
       AXGL_PROFILE_SCOPE("Renderer MSAA Resolve");
       msaa.msaa_framebuffer->use_read();
       screen.screen_framebuffer->use_write();
       glBlitFramebuffer(
-        0, 0, viewport_i.x, viewport_i.y,                     //
-        0, 0, viewport_i.x, viewport_i.y,                     //
-        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST //
+        0,
+        0,
+        viewport_i.x,
+        viewport_i.y, //
+        0,
+        0,
+        viewport_i.x,
+        viewport_i.y, //
+        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
+        GL_NEAREST    //
       );
     }
   }
@@ -190,8 +187,7 @@ private:
     renderer::RenderContext& render_context,
     const renderer::PipelineContext& pipeline_context,
     const glm::ivec2& viewport_i
-  )
-  {
+  ) {
     if (!ssao.enabled || pipeline_context.geometry_pass.empty()) return;
 
     // geometry pass: render view-space position + normal to the SSAO g-buffer
@@ -257,8 +253,7 @@ private:
   void render_transparent_pass(
     const renderer::RenderContext& render_context,
     const renderer::PipelineContext& pipeline_context
-  )
-  {
+  ) {
     if (!blend.enabled || pipeline_context.blend_pass.empty()) return;
 
     glDisable(GL_BLEND);
@@ -296,8 +291,7 @@ private:
     ::opengl::StaticVAOs::instance().quad().draw();
   }
 
-  void render_bloom_pass(const glm::ivec2& viewport_i)
-  {
+  void render_bloom_pass(const glm::ivec2& viewport_i) {
     // bright-pass: extract pixels above the luminance threshold from the
     // rendered scene (screen_texture, pre-tone-map HDR)
     {
@@ -344,8 +338,7 @@ private:
       }
 
       // downsample further mips
-      for (std::size_t i = 1; i < renderer::kBloomMipLevels; ++i)
-      {
+      for (std::size_t i = 1; i < renderer::kBloomMipLevels; ++i) {
         const auto mip_dim = bloom.mip_size(i);
         bloom.mip_framebuffers[i][0]->use();
         glViewport(0, 0, mip_dim.x, mip_dim.y);
@@ -362,13 +355,11 @@ private:
       }
 
       // blur each mip level with ping-pong (3 iterations per axis)
-      for (std::size_t i = 0; i < renderer::kBloomMipLevels; ++i)
-      {
+      for (std::size_t i = 0; i < renderer::kBloomMipLevels; ++i) {
         const auto mip_dim = bloom.mip_size(i);
         const glm::vec2 texel_size = 1.0f / glm::vec2(mip_dim);
 
-        for (int iter = 0; iter < 3; ++iter)
-        {
+        for (int iter = 0; iter < 3; ++iter) {
           // horizontal blur: [i][0] -> [i][1]
           bloom.mip_framebuffers[i][1]->use();
           glViewport(0, 0, mip_dim.x, mip_dim.y);
@@ -421,15 +412,21 @@ private:
       bloom.composite_framebuffer->use_read();
       screen.screen_framebuffer->use_write();
       glBlitFramebuffer(
-        0, 0, viewport_i.x, viewport_i.y, //
-        0, 0, viewport_i.x, viewport_i.y, //
-        GL_COLOR_BUFFER_BIT, GL_NEAREST   //
+        0,
+        0,
+        viewport_i.x,
+        viewport_i.y, //
+        0,
+        0,
+        viewport_i.x,
+        viewport_i.y, //
+        GL_COLOR_BUFFER_BIT,
+        GL_NEAREST    //
       );
     }
   }
 
-  void render_tone_mapping_pass(const glm::ivec2& viewport_i)
-  {
+  void render_tone_mapping_pass(const glm::ivec2& viewport_i) {
     hdr.hdr_framebuffer->use();
     glViewport(0, 0, viewport_i.x, viewport_i.y);
     glDisable(GL_BLEND);
@@ -446,18 +443,15 @@ private:
     screen_shader.set_bool("enable_hdr", false);
   }
 
-  void render_gui(const axgl::ptr_t<axgl::gui::Page>& gui)
-  {
+  void render_gui(const axgl::ptr_t<axgl::gui::Page>& gui) {
     if (!gui) return;
 
-    if (gui->should_render())
-    {
+    if (gui->should_render()) {
       AXGL_PROFILE_SCOPE("GUI Render");
       gui->render();
 
       const auto& glfw_window = window_->glfw_window();
-      switch (gui->get_cursor())
-      {
+      switch (gui->get_cursor()) {
       default:
       case gui::Cursor::kNormal:
         glfw_window->use_standard_cursor(GLFW_ARROW_CURSOR);
@@ -514,8 +508,7 @@ private:
     ::opengl::StaticVAOs::instance().quad().draw();
   }
 
-  void render_to_screen()
-  {
+  void render_to_screen() {
     glDisable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
@@ -540,10 +533,8 @@ private:
     RenderComponents& render_components,
     const axgl::Container<axgl::Entity>& entities,
     const glm::mat4* base_transform_matrix = nullptr
-  )
-  {
-    for (const auto& entity : entities.get())
-    {
+  ) {
+    for (const auto& entity : entities.get()) {
       if (entity->is_disabled() || entity->is_hidden()) continue;
       ++render_context.entity_count;
 
@@ -552,29 +543,24 @@ private:
         ? *base_transform_matrix * transform.model_matrix
         : transform.model_matrix;
 
-      for (const auto& component : entity->components().get())
-      {
+      for (const auto& component : entity->components().get()) {
         if (component->is_disabled() || component->is_hidden()) continue;
         ++render_context.component_count;
 
         if (
           auto* render_comp
           = dynamic_cast<renderer::RenderComponent*>(component.get())
-        )
-        {
+        ) {
           render_comp->gather_instances(model_matrix);
 
           const auto id = render_comp->get_id();
           render_components[id] = render_comp;
-        }
-        else if (
+        } else if (
           const auto* light_comp
           = dynamic_cast<axgl::impl::component::Light*>(component.get())
-        )
-        {
+        ) {
           const auto* light = &light_comp->light;
-          switch (light->type)
-          {
+          switch (light->type) {
           case axgl::Light::Type::kSun:
             render_context.sun_lights.emplace_back(light);
             break;
@@ -587,8 +573,7 @@ private:
           }
         }
       }
-      if (!entity->children().empty())
-      {
+      if (!entity->children().empty()) {
         const auto pivot_matrix = base_transform_matrix
           ? *base_transform_matrix * transform.pivot_matrix
           : transform.pivot_matrix;
@@ -603,8 +588,7 @@ public:
   //
   // window
   //
-  void set_window(axgl::ptr_t<axgl::Window> window) override
-  {
+  void set_window(axgl::ptr_t<axgl::Window> window) override {
     window_ = std::dynamic_pointer_cast<glfw::Window>(std::move(window));
     if (!window_)
 #ifdef AXGL_DEBUG
@@ -631,16 +615,14 @@ public:
     glClear(GL_COLOR_BUFFER_BIT);
     window_->swap_buffers();
   }
-  [[nodiscard]] axgl::ptr_t<axgl::Window> get_window() const override
-  {
+  [[nodiscard]] axgl::ptr_t<axgl::Window> get_window() const override {
     return window_;
   }
 
   //
   // blend
   //
-  void set_enable_blend(bool enable_blend) override
-  {
+  void set_enable_blend(bool enable_blend) override {
     blend.enabled = enable_blend;
   }
   [[nodiscard]] bool get_enable_blend() const override { return blend.enabled; }
@@ -648,12 +630,10 @@ public:
   //
   // msaa
   //
-  void set_enable_msaa(bool enable_msaa) override
-  {
+  void set_enable_msaa(bool enable_msaa) override {
     msaa.enabled = enable_msaa;
   }
-  void set_msaa_sample_count(std::uint32_t msaa_sample_count) override
-  {
+  void set_msaa_sample_count(std::uint32_t msaa_sample_count) override {
     GLint max_samples = 0;
     glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
     const auto clamped
@@ -663,46 +643,37 @@ public:
     msaa.msaa_sample_count = util::narrow<GLsizei>(clamped);
   }
   [[nodiscard]] bool get_enable_msaa() const override { return msaa.enabled; }
-  [[nodiscard]] std::uint32_t get_msaa_sample_count() const override
-  {
+  [[nodiscard]] std::uint32_t get_msaa_sample_count() const override {
     return util::narrow<std::uint32_t>(msaa.msaa_sample_count);
   }
 
   //
   // shadow
   //
-  void set_enable_shadow(bool enable_shadow) override
-  {
+  void set_enable_shadow(bool enable_shadow) override {
     shadow.enabled = enable_shadow;
   }
-  void set_shadow_map_size(std::uint32_t shadow_map_size) override
-  {
+  void set_shadow_map_size(std::uint32_t shadow_map_size) override {
     shadow.shadow_map_size = util::narrow<GLsizei>(shadow_map_size);
   }
-  void set_shadow_distance(float shadow_distance) override
-  {
+  void set_shadow_distance(float shadow_distance) override {
     shadow.shadow_distance = shadow_distance;
   }
-  [[nodiscard]] bool get_enable_shadow() const override
-  {
+  [[nodiscard]] bool get_enable_shadow() const override {
     return shadow.enabled;
   }
-  [[nodiscard]] std::uint32_t get_shadow_map_size() const override
-  {
+  [[nodiscard]] std::uint32_t get_shadow_map_size() const override {
     return util::narrow<std::uint32_t>(shadow.shadow_map_size);
   }
-  [[nodiscard]] float get_shadow_distance() const override
-  {
+  [[nodiscard]] float get_shadow_distance() const override {
     return shadow.shadow_distance;
   }
 
   // CSM debug
-  void set_enable_csm_debug(bool enable_csm_debug)
-  {
+  void set_enable_csm_debug(bool enable_csm_debug) {
     shadow.enable_csm_debug = enable_csm_debug;
   }
-  [[nodiscard]] bool get_enable_csm_debug() const
-  {
+  [[nodiscard]] bool get_enable_csm_debug() const {
     return shadow.enable_csm_debug;
   }
 
@@ -717,12 +688,10 @@ public:
   //
   // SSAO
   //
-  void set_enable_ssao(bool enable_ssao) override
-  {
+  void set_enable_ssao(bool enable_ssao) override {
     ssao.enabled = enable_ssao;
   }
-  void set_ssao_radius(float ssao_radius) override
-  {
+  void set_ssao_radius(float ssao_radius) override {
     ssao.radius = ssao_radius;
   }
   void set_ssao_bias(float ssao_bias) override { ssao.bias = ssao_bias; }
@@ -733,25 +702,20 @@ public:
   //
   // Bloom
   //
-  void set_enable_bloom(bool enable_bloom) override
-  {
+  void set_enable_bloom(bool enable_bloom) override {
     bloom.enabled = enable_bloom;
   }
-  void set_bloom_threshold(float bloom_threshold) override
-  {
+  void set_bloom_threshold(float bloom_threshold) override {
     bloom.threshold = bloom_threshold;
   }
-  void set_bloom_intensity(float bloom_intensity) override
-  {
+  void set_bloom_intensity(float bloom_intensity) override {
     bloom.intensity = bloom_intensity;
   }
   [[nodiscard]] bool get_enable_bloom() const override { return bloom.enabled; }
-  [[nodiscard]] float get_bloom_threshold() const override
-  {
+  [[nodiscard]] float get_bloom_threshold() const override {
     return bloom.threshold;
   }
-  [[nodiscard]] float get_bloom_intensity() const override
-  {
+  [[nodiscard]] float get_bloom_intensity() const override {
     return bloom.intensity;
   }
 };

@@ -3,11 +3,9 @@
 #include <net/common.hpp>
 #include <net/server.hpp>
 
-namespace net
-{
+namespace net {
 
-class TcpServer : public Server
-{
+class TcpServer : public Server {
 protected:
   asio::ip::tcp::acceptor acceptor_;
 
@@ -17,17 +15,13 @@ public:
     const asio::ip::port_type& port
   ) :
     Server(io_context, port),
-    acceptor_(*io_context, {asio::ip::tcp::v4(), port})
-  {
-  }
+    acceptor_(*io_context, {asio::ip::tcp::v4(), port}) {}
 
-  void start() override
-  {
+  void start() override {
     asio::co_spawn(*io_context_, accept_connections(), asio::detached);
   }
 
-  void stop() override
-  {
+  void stop() override {
     sessions_.clear();
     acceptor_.close();
   }
@@ -37,10 +31,8 @@ public:
   virtual std::shared_ptr<Socket> new_socket(asio::ip::tcp::socket socket) = 0;
 
 private:
-  asio::awaitable<void> accept_connections()
-  {
-    while (running())
-    {
+  asio::awaitable<void> accept_connections() {
+    while (running()) {
       auto asio_socket = co_await acceptor_.async_accept(asio::use_awaitable);
       auto socket = new_socket(std::move(asio_socket));
 

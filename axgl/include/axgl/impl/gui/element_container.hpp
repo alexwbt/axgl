@@ -6,26 +6,22 @@
 
 #include <axgl/impl/context_holder.hpp>
 
-namespace axgl::impl::gui
-{
+namespace axgl::impl::gui {
 
 class ElementContainer : virtual public axgl::Container<axgl::gui::Element>,
-                         public axgl::impl::ContextHolder
-{
+                         public axgl::impl::ContextHolder {
   std::vector<axgl::ptr_t<axgl::gui::Element>> children_;
 
 public:
-  void add(axgl::ptr_t<axgl::gui::Element> element) override
-  {
+  void add(axgl::ptr_t<axgl::gui::Element> element) override {
     children_.push_back(std::move(element));
   }
-  void remove(const axgl::ptr_t<axgl::gui::Element>& element) override
-  {
+  void remove(const axgl::ptr_t<axgl::gui::Element>& element) override {
     std::erase(children_, element);
   }
   void remove_all() override { children_.clear(); }
-  [[nodiscard]] std::span<const ptr_t<axgl::gui::Element>> get() const override
-  {
+  [[nodiscard]] std::span<const ptr_t<axgl::gui::Element>>
+  get() const override {
     return children_;
   }
   [[nodiscard]] std::uint64_t size() const override { return children_.size(); }

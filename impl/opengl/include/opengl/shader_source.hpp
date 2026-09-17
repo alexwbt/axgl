@@ -5,11 +5,9 @@
 
 #include <axgl_opengl_impl/res.hpp>
 
-namespace opengl
-{
+namespace opengl {
 
-class ShaderSource final
-{
+class ShaderSource final {
   GLenum type_;
   std::string source_code_;
   std::string prepend_;
@@ -20,9 +18,7 @@ public:
   ) :
     type_(type),
     source_code_(std::move(source_code)),
-    prepend_(std::move(prepend))
-  {
-  }
+    prepend_(std::move(prepend)) {}
 
   ShaderSource(
     const GLenum type,
@@ -33,12 +29,9 @@ public:
     source_code_(
       reinterpret_cast<const char*>(source_code.data()), source_code.size()
     ),
-    prepend_(std::move(prepend))
-  {
-  }
+    prepend_(std::move(prepend)) {}
 
-  [[nodiscard]] std::string preprocess() const
-  {
+  [[nodiscard]] std::string preprocess() const {
     // injects prepend_ after the first line, then appends the rest of `source`.
     const auto first_newline = source_code_.find('\n');
     std::string shader_code;
@@ -51,8 +44,7 @@ public:
 
     // handle includes
     auto include = shader_code.find("#include");
-    while (include != std::string::npos)
-    {
+    while (include != std::string::npos) {
       const auto quote_begin = shader_code.find('"', include);
       const auto quote_end = shader_code.find('"', quote_begin + 1);
 
@@ -64,7 +56,8 @@ public:
 #endif
       const auto include_content = axgl_opengl_impl_res::get(include_path);
       shader_code.replace(
-        include, quote_end - include,
+        include,
+        quote_end - include,
         reinterpret_cast<const char*>(include_content.data())
       );
 
@@ -75,8 +68,7 @@ public:
     return shader_code;
   }
 
-  [[nodiscard]] GLuint compile() const
-  {
+  [[nodiscard]] GLuint compile() const {
     const auto shader_code = preprocess();
     const auto* code = shader_code.data();
     const auto size = util::narrow<GLint>(shader_code.size());
@@ -87,8 +79,7 @@ public:
 
     int success;
     glGetShaderiv(id, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
+    if (!success) {
       char log[512] = {};
       glGetShaderInfoLog(id, sizeof(log), nullptr, log);
       AXGL_LOG_ERROR("Failed to compile shader: {}", log);

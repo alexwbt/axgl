@@ -31,8 +31,7 @@ uniform mat4 cascade_light_pv[SUN_SHADOW_CASCADE_COUNT];
 uniform bool enable_spot_shadow;
 uniform mat4 spot_shadow_pv[SPOT_SHADOW_LIMIT];
 
-out VertexShaderOutput
-{
+out VertexShaderOutput {
   vec3 camera_pos;
   vec3 position;
   vec3 normal;
@@ -43,8 +42,7 @@ out VertexShaderOutput
 }
 vso;
 
-void main()
-{
+void main() {
   vec4 position_v4 = vec4(position, 1.0);
   gl_Position = projection_view * model * position_v4;
   // negate x to match the engine's handedness convention
@@ -58,8 +56,7 @@ void main()
   vso.normal = normalize(normal_matrix * normal);
   vso.uv = (uv + uv_offset) * uv_scale;
 
-  if (enable_sun_shadow)
-  {
+  if (enable_sun_shadow) {
     // output the world-space position transformed by each cascade's light PV
     // so the FS can pick the matching one without re-transforming.
     for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i)
@@ -67,8 +64,7 @@ void main()
         = cascade_light_pv[i] * vec4(vso.position, 1.0);
   }
 
-  if (enable_spot_shadow)
-  {
+  if (enable_spot_shadow) {
     // one light_space_position per spot shadow slot; unused slots keep
     // whatever default but the FS gates on spot_shadow_index[i] so they're
     // never sampled.
@@ -93,13 +89,11 @@ void main()
   // its UV winding. calculate_tbn() in the C++ mesh component performs the
   // same handedness derivation for procedurally-generated meshes; this shader
   // path handles assimp-loaded meshes that provide their own bitangents.
-  if (use_normal_texture || use_height_texture)
-  {
+  if (use_normal_texture || use_height_texture) {
     vec3 t = normalize(normal_matrix * tangent);
     vec3 b_in = normalize(normal_matrix * bitangent);
     float w = (dot(cross(vso.normal, t), b_in) < 0.0) ? -1.0 : 1.0;
     vec3 b = w * cross(vso.normal, t);
     vso.tbn = mat3(t, b, vso.normal);
-  }
-  else vso.tbn = mat3(1.0);
+  } else vso.tbn = mat3(1.0);
 }

@@ -6,21 +6,18 @@
 
 #include <axgl/impl/context_holder.hpp>
 
-namespace axgl::impl
-{
+namespace axgl::impl {
 
 class EntityContainer : virtual public axgl::Container<axgl::Entity>,
-                        public axgl::impl::ContextHolder
-{
+                        public axgl::impl::ContextHolder {
   axgl::Entity* parent_;
   std::vector<axgl::ptr_t<axgl::Entity>> new_entities_;
   std::vector<axgl::ptr_t<axgl::Entity>> entities_;
 
 public:
-  explicit EntityContainer(axgl::Entity* parent) : parent_(parent) { }
+  explicit EntityContainer(axgl::Entity* parent) : parent_(parent) {}
 
-  void set_context(const axgl::Context* context) override
-  {
+  void set_context(const axgl::Context* context) override {
     axgl::impl::ContextHolder::set_context(context);
 
     for (const auto& entity : entities_)
@@ -30,80 +27,67 @@ public:
       entity->set_context(context);
   }
 
-  void tick() const
-  {
+  void tick() const {
     for (const auto& entity : entities_)
       if (!entity->is_disabled() && !entity->is_static())
         entity->parent_tick(parent_);
   }
 
-  void update()
-  {
-    if (!new_entities_.empty())
-    {
+  void update() {
+    if (!new_entities_.empty()) {
       entities_.insert(
         entities_.end(), new_entities_.begin(), new_entities_.end()
       );
       new_entities_.clear();
     }
 
-    if (!entities_.empty())
-    {
+    if (!entities_.empty()) {
       for (const auto& entity : entities_)
-        if (!entity->is_disabled() && !entity->is_static())
-        {
+        if (!entity->is_disabled() && !entity->is_static()) {
           if (entity->ticks() == 0) entity->on_parent_create(parent_);
           entity->parent_update(parent_);
         }
 
-      std::erase_if(
-        entities_,
-        [&](const auto& entity)
-        {
-          const auto should_remove = entity->should_remove();
-          if (should_remove) entity->on_remove();
-          return should_remove;
-        }
-      );
+      std::erase_if(entities_, [&](const auto& entity) {
+        const auto should_remove = entity->should_remove();
+        if (should_remove) entity->on_remove();
+        return should_remove;
+      });
     }
   }
 
-  void on_create() const
-  {
+  void on_create() const {
     for (const auto& entity : entities_)
       if (!entity->is_disabled() && !entity->is_static())
         entity->on_parent_create(parent_);
   }
 
-  void on_remove() const
-  {
+  void on_remove() const {
     for (const auto& entity : entities_)
       if (!entity->is_disabled() && !entity->is_static())
         entity->on_parent_remove(parent_);
   }
 
-  [[nodiscard]] auto get_by_id(std::uint64_t id) const
-  {
-    const auto it = std::ranges::find_if(
-      entities_, [id](const auto& e) { return e->get_id() == id; }
-    );
+  [[nodiscard]] auto get_by_id(std::uint64_t id) const {
+    const auto it = std::ranges::find_if(entities_, [id](const auto& e) {
+      return e->get_id() == id;
+    });
     return it != entities_.end() ? *it : nullptr;
   }
 
-  void add(axgl::ptr_t<axgl::Entity> entity) override
-  {
+  void add(axgl::ptr_t<axgl::Entity> entity) override {
 #ifdef AXGL_DEBUG
     if (
       std::ranges::any_of(
         entities_, [&entity](const auto& e) { return e == entity; }
       )
-      || std::ranges::any_of(
-        new_entities_, [&entity](const auto& e) { return e == entity; }
-      )
-    )
-    {
+      || std::ranges::any_of(new_entities_, [&entity](const auto& e) {
+           return e == entity;
+         })
+    ) {
       AXGL_LOG_DEBUG(
-        "Entity(id: {}, name: {}) already exists.", entity->get_id(),
+        "Entity(id: {}, name: {}) already exists.",
+        entity->get_id(),
         entity->get_name()
       );
       return;
@@ -113,30 +97,26 @@ public:
     new_entities_.push_back(std::move(entity));
   }
 
-  void remove(const axgl::ptr_t<axgl::Entity>& entity) override
-  {
-    for (auto& e : entities_)
-    {
-      if (e == entity)
-      {
+  void remove(const axgl::ptr_t<axgl::Entity>& entity) override {
+    for (auto& e : entities_) {
+      if (e == entity) {
         e->mark_remove(true);
         break;
       }
     }
-    std::erase_if(
-      new_entities_, [&entity](const auto& e) { return e == entity; }
-    );
+    std::erase_if(new_entities_, [&entity](const auto& e) {
+      return e == entity;
+    });
   }
 
-  void remove_all() override
-  {
+  void remove_all() override {
     new_entities_.clear();
     for (auto& e : entities_)
       e->mark_remove(true);
   }
 
-  [[nodiscard]] std::span<const axgl::ptr_t<axgl::Entity>> get() const override
-  {
+  [[nodiscard]] std::span<const axgl::ptr_t<axgl::Entity>>
+  get() const override {
     return entities_;
   }
   [[nodiscard]] std::uint64_t size() const override { return entities_.size(); }

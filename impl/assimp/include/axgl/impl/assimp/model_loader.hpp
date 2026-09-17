@@ -19,13 +19,11 @@
 
 #include <axgl/axgl.hpp>
 
-namespace axgl::impl::assimp
-{
+namespace axgl::impl::assimp {
 
 class ModelService;
 
-class ModelLoader
-{
+class ModelLoader {
   friend class ModelService;
 
   axgl::ptr_t<axgl::EntityService> entity_service_;
@@ -49,8 +47,7 @@ class ModelLoader
     renderer_service_(std::move(renderer_service)),
     resource_service_(std::move(resource_service)),
     resource_key_(std::move(resource_key)),
-    material_type_(std::move(material_type))
-  {
+    material_type_(std::move(material_type)) {
     Assimp::Importer importer;
     const auto& data = resource_service_->get_resource(resource_key_);
     const auto* ai_scene = importer.ReadFileFromMemory(
@@ -60,17 +57,14 @@ class ModelLoader
     if (
       !ai_scene || ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
       || !ai_scene->mRootNode
-    )
-    {
+    ) {
       AXGL_LOG_ERROR("Failed to load model: {}", importer.GetErrorString());
       throw std::runtime_error(importer.GetErrorString());
     }
 #endif
-    if (ai_scene->HasTextures())
-    {
+    if (ai_scene->HasTextures()) {
       embedded_textures_.resize(ai_scene->mNumTextures);
-      for (unsigned int i = 0; i < ai_scene->mNumTextures; ++i)
-      {
+      for (unsigned int i = 0; i < ai_scene->mNumTextures; ++i) {
         embedded_textures_[i] = renderer_service_->create_texture();
         embedded_textures_[i]->load_texture(
           {reinterpret_cast<uint8_t*>(ai_scene->mTextures[i]->pcData),
@@ -83,10 +77,8 @@ class ModelLoader
     process_node(ai_scene->mRootNode, ai_scene);
   }
 
-  void process_node(const aiNode* ai_node, const aiScene* ai_scene)
-  {
-    for (unsigned int i = 0; i < ai_node->mNumMeshes; ++i)
-    {
+  void process_node(const aiNode* ai_node, const aiScene* ai_scene) {
+    for (unsigned int i = 0; i < ai_node->mNumMeshes; ++i) {
       const aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
       load_mesh(ai_mesh, ai_scene);
     }
@@ -98,8 +90,7 @@ class ModelLoader
 
   axgl::ptr_t<axgl::component::Mesh> load_mesh(
     const aiMesh* ai_mesh, const aiScene* ai_scene
-  )
-  {
+  ) {
     auto mesh = entity_service_->create_component_t<axgl::component::Mesh>();
     resources_.meshes.push_back(mesh);
 
@@ -107,13 +98,13 @@ class ModelLoader
     vertices.reserve(ai_mesh->mNumVertices);
     for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
       vertices.emplace_back(
-        ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y,
+        ai_mesh->mVertices[i].x,
+        ai_mesh->mVertices[i].y,
         ai_mesh->mVertices[i].z
       );
     mesh->set_vertices(vertices);
 
-    if (ai_mesh->HasNormals())
-    {
+    if (ai_mesh->HasNormals()) {
       std::vector<glm::vec3> normals;
       normals.reserve(ai_mesh->mNumVertices);
       for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
@@ -123,20 +114,20 @@ class ModelLoader
       mesh->set_normals(normals);
     }
 
-    if (ai_mesh->HasTangentsAndBitangents())
-    {
+    if (ai_mesh->HasTangentsAndBitangents()) {
       std::vector<glm::vec3> tangents;
       std::vector<glm::vec3> bitangents;
       tangents.reserve(ai_mesh->mNumVertices);
       bitangents.reserve(ai_mesh->mNumVertices);
-      for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
-      {
+      for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i) {
         tangents.emplace_back(
-          ai_mesh->mTangents[i].x, ai_mesh->mTangents[i].y,
+          ai_mesh->mTangents[i].x,
+          ai_mesh->mTangents[i].y,
           ai_mesh->mTangents[i].z
         );
         bitangents.emplace_back(
-          ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y,
+          ai_mesh->mBitangents[i].x,
+          ai_mesh->mBitangents[i].y,
           ai_mesh->mBitangents[i].z
         );
       }
@@ -144,8 +135,7 @@ class ModelLoader
       mesh->set_bitangents(bitangents);
     }
 
-    if (ai_mesh->HasTextureCoords(0))
-    {
+    if (ai_mesh->HasTextureCoords(0)) {
       std::vector<glm::vec2> uv;
       uv.reserve(ai_mesh->mNumVertices);
       for (unsigned int i = 0; i < ai_mesh->mNumVertices; ++i)
@@ -155,8 +145,7 @@ class ModelLoader
       mesh->set_uv(uv);
     }
 
-    if (ai_mesh->HasFaces())
-    {
+    if (ai_mesh->HasFaces()) {
       std::vector<uint32_t> indices;
       for (unsigned int i = 0; i < ai_mesh->mNumFaces; ++i)
         for (unsigned int j = 0; j < ai_mesh->mFaces[i].mNumIndices; ++j)
@@ -167,8 +156,7 @@ class ModelLoader
     const auto material = renderer_service_->create_material(material_type_);
     const aiMaterial* ai_material
       = ai_scene->mMaterials[ai_mesh->mMaterialIndex];
-    for (int i = aiTextureType_DIFFUSE; i < aiTextureType_UNKNOWN; ++i)
-    {
+    for (int i = aiTextureType_DIFFUSE; i < aiTextureType_UNKNOWN; ++i) {
       const auto ai_texture_type = static_cast<aiTextureType>(i);
       const auto texture_type = map_texture_type(ai_texture_type);
 
@@ -187,16 +175,13 @@ class ModelLoader
     const aiTextureType ai_texture_type,
     const axgl::ptr_t<axgl::Material>& material,
     const axgl::Material::TextureType texture_type
-  )
-  {
+  ) {
     const unsigned int count = ai_material->GetTextureCount(ai_texture_type);
-    for (unsigned int i = 0; i < count; ++i)
-    {
+    for (unsigned int i = 0; i < count; ++i) {
       aiString texture_path;
       ai_material->GetTexture(ai_texture_type, i, &texture_path);
 
-      if (*texture_path.C_Str() == '*')
-      {
+      if (*texture_path.C_Str() == '*') {
         const auto index
           = util::narrow<std::size_t>(std::stoul(texture_path.C_Str() + 1));
 #ifdef AXGL_DEBUG
@@ -204,9 +189,7 @@ class ModelLoader
           throw std::runtime_error("Invalid texture path.");
 #endif
         material->add_texture(texture_type, embedded_textures_[index]);
-      }
-      else
-      {
+      } else {
         const auto base_path = std::filesystem::path(resource_key_);
         const auto relative_path = std::filesystem::path(texture_path.C_Str());
 
@@ -223,11 +206,9 @@ class ModelLoader
 
   static axgl::Material::TextureType map_texture_type(
     const aiTextureType ai_texture_type
-  )
-  {
+  ) {
     using enum axgl::Material::TextureType;
-    switch (ai_texture_type)
-    {
+    switch (ai_texture_type) {
     case aiTextureType_DIFFUSE: return kDiffuse;
     case aiTextureType_SPECULAR:
       return kSpecular;

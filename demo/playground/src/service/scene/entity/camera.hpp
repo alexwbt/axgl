@@ -7,8 +7,7 @@
 #include "../../input_manager.hpp"
 #include "debug_axes_indicator.hpp"
 
-class CameraEntity : public axgl::impl::EntityBase
-{
+class CameraEntity : public axgl::impl::EntityBase {
 public:
   static constexpr std::string_view kTypeId = "entity::camera";
 
@@ -20,8 +19,7 @@ private:
   axgl::ptr_t<axgl::Input> flashlight_input_;
 
 public:
-  void on_create() override
-  {
+  void on_create() override {
     EntityBase::on_create();
 
     const auto& entity_service = axgl_->entity_service();
@@ -48,8 +46,7 @@ public:
     flashlight_input_ = input_manager->flashlight();
   }
 
-  void update() override
-  {
+  void update() override {
     EntityBase::update();
 
     const auto front = camera_->camera.front();
@@ -58,8 +55,7 @@ public:
     if (!debug_cursor_->is_disabled()) debug_cursor_->set_position(front);
 
     // update flashlight
-    if (!flashlight_->is_disabled())
-    {
+    if (!flashlight_->is_disabled()) {
       auto& flashlight_dir = flashlight_->light.direction;
       flashlight_dir += (front - flashlight_dir) * 0.3f;
     }

@@ -8,8 +8,7 @@
 #include "entity/camera.hpp"
 #include "entity/floor.hpp"
 
-class CommonScene : public axgl::impl::Realm
-{
+class CommonScene : public axgl::impl::Realm {
 protected:
   axgl::ptr_t<axgl::EntityService> entity_service_;
   axgl::ptr_t<InputManager> input_manager_;
@@ -18,8 +17,7 @@ protected:
   axgl::ptr_t<CameraEntity> camera_entity_;
 
 public:
-  void on_create() override
-  {
+  void on_create() override {
     entity_service_ = axgl_->entity_service();
     input_manager_ = axgl_->get_service_t<InputManager>();
 
@@ -32,8 +30,7 @@ public:
     camera_entity_->transform().update_matrix();
   }
 
-  void on_active() override
-  {
+  void on_active() override {
     const auto& camera_service = axgl_->camera_service();
     camera_service->set_camera_mode(
       axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>()
@@ -42,8 +39,7 @@ public:
   }
 
 protected:
-  auto add_light(const axgl::Light& light, bool bind_entity = false)
-  {
+  auto add_light(const axgl::Light& light, bool bind_entity = false) {
     const auto light_entity = entity_service_->create_entity();
     const auto light_comp
       = entity_service_->create_component_t<axgl::impl::component::Light>();
@@ -58,8 +54,7 @@ protected:
   template <typename EntityType>
   axgl::ptr_t<EntityType> add_entity(
     const glm::vec3& position = glm::vec3(0.0f), float scale = 1.0f
-  )
-  {
+  ) {
     auto entity = entity_service_->create_entity_t<EntityType>();
     entity->set_position(position);
     entity->set_scale(glm::vec3(scale));

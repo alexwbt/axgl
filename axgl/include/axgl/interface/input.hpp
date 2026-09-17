@@ -4,14 +4,11 @@
 
 #include <axgl/common.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class Input final
-{
+class Input final {
 public:
-  enum class Source
-  {
+  enum class Source {
     kKeySpace,
     kKeyApostrophe,
     kKeyComma,
@@ -143,8 +140,7 @@ public:
   };
 
 private:
-  static std::uint64_t next_id()
-  {
+  static std::uint64_t next_id() {
     static std::uint64_t next_id_ = 1;
     return next_id_++;
   }
@@ -156,14 +152,10 @@ public:
   std::vector<axgl::Input::Source> sources;
 
   Input(std::string name, const std::vector<axgl::Input::Source>& sources) :
-    id(next_id()), name(std::move(name)), tick(0), sources(sources)
-  {
-  }
+    id(next_id()), name(std::move(name)), tick(0), sources(sources) {}
 
   Input(const std::string& name, axgl::Input::Source source) :
-    Input(name, std::vector{source})
-  {
-  }
+    Input(name, std::vector{source}) {}
 
   [[nodiscard]] bool clicked() const { return tick == 1; }
   [[nodiscard]] bool down() const { return tick > 0; }

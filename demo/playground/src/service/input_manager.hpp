@@ -8,8 +8,7 @@
 #include <axgl/impl/opengl/renderer.hpp>
 #include <axgl/impl/service_base.hpp>
 
-class InputManager : public axgl::impl::ServiceBase
-{
+class InputManager : public axgl::impl::ServiceBase {
 public:
   static constexpr std::string_view kTypeId = "service::input-manager";
 
@@ -43,8 +42,7 @@ public:
   [[nodiscard]] auto ssao() const { return ssao_; }
   [[nodiscard]] auto bloom() const { return bloom_; }
 
-  void initialize() override
-  {
+  void initialize() override {
     rotate_sun_
       = axgl::create_ptr<axgl::Input>("Rotate Sun", axgl::Input::Source::kKeyR);
     exposure_up_ = axgl::create_ptr<axgl::Input>(
@@ -85,8 +83,7 @@ public:
     );
   }
 
-  void on_start() override
-  {
+  void on_start() override {
     const auto& input_service = axgl_->input_service();
     input_service->add_input(rotate_sun_);
     input_service->add_input(flashlight_);

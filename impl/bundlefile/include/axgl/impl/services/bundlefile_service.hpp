@@ -13,12 +13,10 @@
 
 #include <bundlefile/unbundle.hpp>
 
-namespace axgl::impl::bundlefile
-{
+namespace axgl::impl::bundlefile {
 
 class BundlefileService : virtual public axgl::Service,
-                          public axgl::impl::ServiceBase
-{
+                          public axgl::impl::ServiceBase {
 public:
   static constexpr std::string_view kTypeId = "service::bundlefile";
 
@@ -30,8 +28,7 @@ private:
 public:
   void initialize() override { resource_service_ = axgl_->resource_service(); }
 
-  void load_bundlefile(const std::string& path)
-  {
+  void load_bundlefile(const std::string& path) {
     bundles_[path] = std::make_unique<::bundlefile::Bundle>(path);
 
     for (const auto bundle = bundles_[path]->get_bundle();
@@ -41,8 +38,7 @@ public:
       );
   }
 
-  void unload_bundlefile(const std::string& path)
-  {
+  void unload_bundlefile(const std::string& path) {
     for (const auto bundle = bundles_[path]->get_bundle();
          const auto& file : *bundle->files())
       resource_service_->unload_resource(file->key()->str());

@@ -6,60 +6,52 @@
 
 #include <glfw/window.hpp>
 
-namespace axgl::impl::glfw
-{
+namespace axgl::impl::glfw {
 
-class Window : public axgl::Window
-{
+class Window : public axgl::Window {
   axgl::ptr_t<::glfw::Window> window_;
 
 public:
   explicit Window(axgl::ptr_t<::glfw::Window> window) :
-    window_(std::move(window))
-  {
-  }
+    window_(std::move(window)) {}
 
-  void set_title(const std::string& title) override
-  {
+  void set_title(const std::string& title) override {
     if (!window_->is_destroyed()) window_->set_title(title);
   }
 
-  void set_position(const std::uint32_t x, const std::uint32_t y) override
-  {
+  void set_position(const std::uint32_t x, const std::uint32_t y) override {
     if (!window_->is_destroyed())
       window_->set_position(util::clamp_cast<int>(x), util::clamp_cast<int>(y));
   }
 
-  void set_size(const std::uint32_t width, const std::uint32_t height) override
-  {
+  void set_size(
+    const std::uint32_t width, const std::uint32_t height
+  ) override {
     if (!window_->is_destroyed())
       window_->set_size(
         util::clamp_cast<int>(width), util::clamp_cast<int>(height)
       );
   }
 
-  void maximize() override { }
+  void maximize() override {}
 
-  void hide() override { }
+  void hide() override {}
 
-  void show() override { }
+  void show() override {}
 
-  void close() override { }
+  void close() override {}
 
   [[nodiscard]] bool ready() const override { return !window_->is_destroyed(); }
 
-  void use() const override
-  {
+  void use() const override {
     if (!window_->is_destroyed()) window_->use();
   }
 
-  void swap_buffers() const override
-  {
+  void swap_buffers() const override {
     if (!window_->is_destroyed()) window_->swap_buffers();
   }
 
-  [[nodiscard]] glm::ivec2 get_size() const override
-  {
+  [[nodiscard]] glm::ivec2 get_size() const override {
     return window_->get_size();
   }
 

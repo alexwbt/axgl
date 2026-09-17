@@ -3,13 +3,11 @@
 #include <axgl/interface/container.hpp>
 #include <axgl/interface/gui/context.hpp>
 
-namespace axgl::gui
-{
+namespace axgl::gui {
 
 class Element;
 
-class Layout
-{
+class Layout {
 public:
   virtual ~Layout() = default;
 

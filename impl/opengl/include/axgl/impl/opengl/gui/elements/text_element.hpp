@@ -7,43 +7,37 @@
 #include <axgl/impl/opengl/gui/element.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
-namespace axgl::impl::opengl::gui
-{
+namespace axgl::impl::opengl::gui {
 
 class TextElement : virtual public axgl::gui::TextElement,
-                    public axgl::impl::opengl::gui::Element
-{
+                    public axgl::impl::opengl::gui::Element {
   std::string text_;
   float text_scale_ = 1.0f;
   bool modified_text_ = false;
   axgl::ptr_t<axgl::impl::opengl::Texture> text_texture_;
 
 public:
-  void set_text(const std::string& text) override
-  {
+  void set_text(const std::string& text) override {
     text_ = text;
     modified_text_ = true;
   }
   [[nodiscard]] std::string get_text() const override { return text_; }
 
-  void update(const axgl::gui::Context& context) override
-  {
+  void update(const axgl::gui::Context& context) override {
     axgl::impl::opengl::gui::Element::update(context);
 
     const auto text_scale = context.scale * context.font_scale;
     if (
       computed_style_->is_modified() || modified_text_
       || text_scale_ != text_scale
-    )
-    {
+    ) {
       modified_text_ = false;
       text_scale_ = text_scale;
 
       const auto fonts = computed_style_->get_fonts();
       const auto font_color = computed_style_->get_font_color();
       const auto font_size = computed_style_->get_font_size() * text_scale_;
-      if (!text_.empty() && !fonts.empty() && font_size > 0.01f)
-      {
+      if (!text_.empty() && !fonts.empty() && font_size > 0.01f) {
         const auto& text_service = context.axgl->text_service();
         text_texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(
           text_service->create_texture({
@@ -64,21 +58,17 @@ public:
         intrinsic_size_.x = util::clamp_cast<float>(text_texture_->get_width());
         intrinsic_size_.y
           = util::clamp_cast<float>(text_texture_->get_height());
-      }
-      else
-      {
+      } else {
         text_texture_ = nullptr;
         intrinsic_size_ = {0.0f, 0.0f};
       }
     }
   }
 
-  void render(const axgl::gui::Context& context) override
-  {
+  void render(const axgl::gui::Context& context) override {
     render_base(context);
 
-    if (text_texture_)
-    {
+    if (text_texture_) {
       // text texture is premultiplied (see opengl::TextRenderer::render_text)
       glEnable(GL_BLEND);
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

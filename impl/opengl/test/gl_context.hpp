@@ -4,14 +4,12 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
-class GlContext
-{
+class GlContext {
   GLFWwindow* window_ = nullptr;
   bool context_available_ = false;
 
 public:
-  GlContext()
-  {
+  GlContext() {
     if (glfwInit() == GLFW_FALSE) return;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -28,10 +26,8 @@ public:
       != 0;
   }
 
-  ~GlContext()
-  {
-    if (window_)
-    {
+  ~GlContext() {
+    if (window_) {
       glfwMakeContextCurrent(nullptr);
       glfwDestroyWindow(window_);
     }

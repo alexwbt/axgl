@@ -5,14 +5,11 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/texture.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class Material
-{
+class Material {
 public:
-  enum class TextureType
-  {
+  enum class TextureType {
     kUnknown,
     kDiffuse,
     kSpecular,

@@ -10,18 +10,15 @@
 #include <bundlefile/bundle_fbs.h>
 #include <bundlefile/unbundle.hpp>
 
-namespace
-{
+namespace {
 
 std::filesystem::path write_test_bundle(
   const std::vector<std::pair<std::string, std::vector<uint8_t>>>& entries
-)
-{
+) {
   flatbuffers::FlatBufferBuilder builder;
 
   std::vector<flatbuffers::Offset<fbs::bundlefile::File>> fbs_files;
-  for (const auto& [key, data] : entries)
-  {
+  for (const auto& [key, data] : entries) {
     auto key_off = builder.CreateString(key);
     auto data_off = builder.CreateVector(data);
     fbs::bundlefile::FileBuilder fb(builder);
@@ -47,10 +44,8 @@ std::filesystem::path write_test_bundle(
 
 } // namespace
 
-TEST_SUITE("bundlefile round-trip")
-{
-  TEST_CASE("empty bundle is readable")
-  {
+TEST_SUITE("bundlefile round-trip") {
+  TEST_CASE("empty bundle is readable") {
     const auto path = write_test_bundle({});
     const bundlefile::Bundle bundle(path.string());
     const auto* root = bundle.get_bundle();
@@ -59,8 +54,7 @@ TEST_SUITE("bundlefile round-trip")
     std::filesystem::remove(path);
   }
 
-  TEST_CASE("single entry round-trips key and data")
-  {
+  TEST_CASE("single entry round-trips key and data") {
     const std::vector<uint8_t> data{'h', 'e', 'l', 'l', 'o'};
     const auto path = write_test_bundle({{"a.txt", data}});
     const bundlefile::Bundle bundle(path.string());
@@ -77,8 +71,7 @@ TEST_SUITE("bundlefile round-trip")
     std::filesystem::remove(path);
   }
 
-  TEST_CASE("multiple entries preserve order")
-  {
+  TEST_CASE("multiple entries preserve order") {
     const std::vector<uint8_t> d1{1, 2, 3};
     const std::vector<uint8_t> d2{4, 5};
     const std::vector<uint8_t> d3{6};
@@ -95,8 +88,7 @@ TEST_SUITE("bundlefile round-trip")
     std::filesystem::remove(path);
   }
 
-  TEST_CASE("binary data round-trips intact")
-  {
+  TEST_CASE("binary data round-trips intact") {
     std::vector<uint8_t> data(256);
     for (uint16_t i = 0; i < 256; ++i)
       data[i] = static_cast<uint8_t>(i);
@@ -111,10 +103,8 @@ TEST_SUITE("bundlefile round-trip")
   }
 }
 
-TEST_SUITE("bundlefile::Bundle open errors")
-{
-  TEST_CASE("missing file throws")
-  {
+TEST_SUITE("bundlefile::Bundle open errors") {
+  TEST_CASE("missing file throws") {
     CHECK_THROWS_AS(
       bundlefile::Bundle("does_not_exist_bnd.bnd"), std::runtime_error
     );

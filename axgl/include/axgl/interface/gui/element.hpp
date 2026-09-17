@@ -4,11 +4,9 @@
 #include <axgl/interface/gui/page.hpp>
 #include <axgl/interface/gui/style.hpp>
 
-namespace axgl::gui
-{
+namespace axgl::gui {
 
-class Element
-{
+class Element {
 public:
   virtual ~Element() = default;
 

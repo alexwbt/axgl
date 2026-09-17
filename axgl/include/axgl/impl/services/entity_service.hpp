@@ -10,12 +10,10 @@
 #include <axgl/impl/entity_base.hpp>
 #include <axgl/impl/service_base.hpp>
 
-namespace axgl::impl
-{
+namespace axgl::impl {
 
 class EntityService : virtual public axgl::EntityService,
-                      public axgl::impl::ServiceBase
-{
+                      public axgl::impl::ServiceBase {
   std::unordered_map<std::string, std::function<axgl::ptr_t<axgl::Entity>()>>
     entity_factories_;
   std::unordered_map<std::string, std::function<axgl::ptr_t<axgl::Component>()>>
@@ -24,25 +22,21 @@ class EntityService : virtual public axgl::EntityService,
 public:
   void register_entity_factory(
     const std::string& type, std::function<ptr_t<axgl::Entity>()> entity_factory
-  ) override
-  {
+  ) override {
     entity_factories_.emplace(type, entity_factory);
   }
 
   void register_component_factory(
     const std::string& type, std::function<ptr_t<Component>()> component_factory
-  ) override
-  {
+  ) override {
     component_factories_.emplace(type, component_factory);
   }
 
-  ptr_t<axgl::Entity> create_entity() override
-  {
+  ptr_t<axgl::Entity> create_entity() override {
     return with_context(axgl::create_ptr<impl::EntityBase>());
   }
 
-  ptr_t<axgl::Entity> create_entity(const std::string& type) override
-  {
+  ptr_t<axgl::Entity> create_entity(const std::string& type) override {
 #ifdef AXGL_DEBUG
     if (!entity_factories_.contains(type))
       throw std::runtime_error(
@@ -52,8 +46,7 @@ public:
     return with_context(entity_factories_.at(type)());
   }
 
-  ptr_t<Component> create_component(const std::string& type) override
-  {
+  ptr_t<Component> create_component(const std::string& type) override {
 #ifdef AXGL_DEBUG
     if (!component_factories_.contains(type))
       throw std::runtime_error(

@@ -16,8 +16,7 @@
 #include "fbs/message.hpp"
 #include "ui/chat.hpp"
 
-class Client final : public net::TcpClient
-{
+class Client final : public net::TcpClient {
 public:
   bool running = true;
 
@@ -29,33 +28,29 @@ public:
   ) :
     net::TcpClient(io_context),
     username(std::move(user)),
-    chat_ui(
-      std::make_shared<ui::Chat>([&](const std::string& m) { on_input(m); })
-    )
-  {
-  }
+    chat_ui(std::make_shared<ui::Chat>([&](const std::string& m) {
+      on_input(m);
+    })) {}
 
-  std::shared_ptr<net::Socket> new_socket(asio::ip::tcp::socket socket) override
-  {
+  std::shared_ptr<net::Socket> new_socket(
+    asio::ip::tcp::socket socket
+  ) override {
     return std::make_shared<net::LengthPrefixedTcpSocket>(std::move(socket));
   }
 
-  void connection_failed(const asio::error_code& code) override
-  {
+  void connection_failed(const asio::error_code& code) override {
     chat_ui->add_message("Failed to connect to server: " + code.message());
     running = false;
   }
 
-  void on_disconnect() override
-  {
+  void on_disconnect() override {
     chat_ui->add_message("Disconnected from server.");
     running = false;
   }
 
   void on_connect() override { chat_ui->add_message("Connected to server."); }
 
-  void on_receive(const net::data_ptr_t& buffer) override
-  {
+  void on_receive(const net::data_ptr_t& buffer) override {
     if (const auto* message = read_message(buffer))
       chat_ui->add_message(
         std::format(
@@ -65,10 +60,8 @@ public:
   }
 
 private:
-  void on_input(const std::string& message)
-  {
-    if (message == "/clear")
-    {
+  void on_input(const std::string& message) {
+    if (message == "/clear") {
       chat_ui->clear_messages();
       return;
     }
@@ -76,8 +69,7 @@ private:
   }
 };
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   args::ArgumentParser parser("Net demo chatroom client.");
   args::ValueFlag<std::string> user_arg(
     parser, "user", "Username.", {'u', "user"}, "anon"
@@ -88,8 +80,7 @@ int main(int argc, char** argv)
   args::ValueFlag<std::uint16_t> port_arg(
     parser, "port", "Server port.", {'p', "port"}, 10000
   );
-  try
-  {
+  try {
     parser.ParseCLI(argc, argv);
     const auto& user = args::get(user_arg);
     const auto& host = args::get(host_arg);
@@ -103,8 +94,7 @@ int main(int argc, char** argv)
     GLFWwindow* window = glfwCreateWindow(
       900, 600, ("Chatroom - " + user).c_str(), nullptr, nullptr
     );
-    if (!window)
-    {
+    if (!window) {
       glfwTerminate();
       throw std::runtime_error("Failed to create GLFW window.");
     }
@@ -127,27 +117,20 @@ int main(int argc, char** argv)
     const auto io_context = std::make_shared<asio::io_context>();
     Client client(io_context, user);
 
-    std::thread io_thread(
-      [&]
-      {
-        try
-        {
-          io_context->run();
-        }
-        catch (const std::exception& e)
-        {
-          client.chat_ui->add_message(std::format("Error: {}", e.what()));
-        }
+    std::thread io_thread([&] {
+      try {
+        io_context->run();
+      } catch (const std::exception& e) {
+        client.chat_ui->add_message(std::format("Error: {}", e.what()));
       }
-    );
+    });
 
     client.chat_ui->add_message(
       std::format("Connecting to {}:{} as {}", host, port, user)
     );
     client.connect(host, port);
 
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
       glfwPollEvents();
       client.update();
 
@@ -159,7 +142,8 @@ int main(int argc, char** argv)
       ImGui::SetNextWindowPos(viewport->WorkPos);
       ImGui::SetNextWindowSize(viewport->WorkSize);
       ImGui::Begin(
-        "Chatroom", nullptr,
+        "Chatroom",
+        nullptr,
         ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
           | ImGuiWindowFlags_NoCollapse
       );
@@ -188,22 +172,14 @@ int main(int argc, char** argv)
 
     if (!io_context->stopped()) io_context->stop();
     if (io_thread.joinable()) io_thread.join();
-  }
-  catch (const args::Completion& e)
-  {
+  } catch (const args::Completion& e) {
     std::cout << e.what();
-  }
-  catch (const args::Help&)
-  {
+  } catch (const args::Help&) {
     std::cout << parser;
-  }
-  catch (const args::Error& e)
-  {
+  } catch (const args::Error& e) {
     std::cerr << e.what() << std::endl;
     return 1;
-  }
-  catch (const std::exception& e)
-  {
+  } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
     return 1;
   }

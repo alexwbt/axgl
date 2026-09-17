@@ -7,15 +7,13 @@ layout(location = 5) in mat4 model;
 uniform mat4 projection_view;
 uniform mat4 view_matrix;
 
-out VertexShaderOutput
-{
+out VertexShaderOutput {
   vec3 view_position;
   vec3 view_normal;
 }
 vso;
 
-void main()
-{
+void main() {
   vec4 world_pos = model * vec4(position, 1.0);
   gl_Position = projection_view * world_pos;
   gl_Position.x = -gl_Position.x;

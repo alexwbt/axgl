@@ -10,8 +10,7 @@
 
 inline axgl::ptr_t<axgl::Texture> create_texture(
   const axgl::Axgl& axgl, const std::string& res
-)
-{
+) {
   // texture
   const auto texture = axgl.renderer_service()->create_texture();
   texture->load_texture(axgl.resource_service()->get_resource(res));
@@ -26,8 +25,7 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
   const axgl::ptr_t<axgl::Texture>& specular_texture = nullptr,
   const float alpha_discard = 0.0f,
   const bool no_cull = false
-)
-{
+) {
   const auto entity_service = axgl.entity_service();
   const auto renderer_service = axgl.renderer_service();
   // material
@@ -49,8 +47,7 @@ inline axgl::ptr_t<axgl::component::Mesh> create_mesh(
   return mesh;
 }
 
-inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl)
-{
+inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl) {
   static const auto texture = create_texture(axgl, "grass.png");
   static const auto mesh = create_mesh(
     axgl, "2d", axgl::mesh::init_quad, texture, nullptr, 0.5f, true
@@ -63,8 +60,7 @@ inline axgl::ptr_t<axgl::Entity> create_grass(const axgl::Axgl& axgl)
   return grass;
 }
 
-inline axgl::ptr_t<axgl::Entity> create_box(const axgl::Axgl& axgl)
-{
+inline axgl::ptr_t<axgl::Entity> create_box(const axgl::Axgl& axgl) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution dis(-0.05, 0.05);
@@ -91,15 +87,13 @@ inline std::vector<axgl::ptr_t<axgl::Entity>> generate_entities(
   const float area,
   const float y,
   const bool rotate3d
-)
-{
+) {
   std::vector<axgl::ptr_t<axgl::Entity>> entities;
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution pos_dis(-area, area);
   std::uniform_real_distribution rot_dis(0.0f, 3.1415f);
-  for (int i = 0; i < count; i++)
-  {
+  for (int i = 0; i < count; i++) {
     auto entity = create_entity(axgl);
     auto& transform = entity->transform();
     transform.position.x = pos_dis(gen);

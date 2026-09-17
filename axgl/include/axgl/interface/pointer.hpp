@@ -3,21 +3,17 @@
 #include <axgl/common.hpp>
 #include <utility>
 
-namespace axgl
-{
+namespace axgl {
 
-class Pointer final
-{
+class Pointer final {
 public:
-  enum class Source
-  {
+  enum class Source {
     kMouseMove,
     kScroll,
   };
 
 private:
-  static std::uint64_t next_id()
-  {
+  static std::uint64_t next_id() {
     static std::uint64_t next_id_ = 1;
     return next_id_++;
   }
@@ -36,9 +32,7 @@ public:
     position(0.0f),
     delta(0.0f),
     tick(0),
-    source(source)
-  {
-  }
+    source(source) {}
 };
 
 } // namespace axgl

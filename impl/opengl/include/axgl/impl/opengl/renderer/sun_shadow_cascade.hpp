@@ -9,11 +9,9 @@
 
 #include <axgl/impl/opengl/renderer/constants.hpp>
 
-namespace axgl::impl::opengl::renderer
-{
+namespace axgl::impl::opengl::renderer {
 
-struct SunShadowCascade
-{
+struct SunShadowCascade {
   glm::mat4 light_pv{0.0f};
   float split_near = 0.0f;
   float split_far = 0.0f;
@@ -25,8 +23,7 @@ struct SunShadowCascade
     const float camera_far,
     const float shadow_far,
     const float lambda = 0.5f
-  )
-  {
+  ) {
     std::array<SunShadowCascade, kSunShadowCascadeCount> cascades;
 
     const float effective_far = std::min(camera_far, shadow_far);
@@ -38,8 +35,7 @@ struct SunShadowCascade
     std::array<float, kSunShadowCascadeCount + 1> split_distances{};
     split_distances[0] = camera_near;
     split_distances[kSunShadowCascadeCount] = effective_far;
-    for (std::size_t i = 1; i < kSunShadowCascadeCount; ++i)
-    {
+    for (std::size_t i = 1; i < kSunShadowCascadeCount; ++i) {
       const float p
         = static_cast<float>(i) / static_cast<float>(kSunShadowCascadeCount);
       const float log_split
@@ -49,8 +45,7 @@ struct SunShadowCascade
       split_distances[i] = lambda * log_split + (1.0f - lambda) * linear_split;
     }
 
-    for (std::size_t c = 0; c < kSunShadowCascadeCount; ++c)
-    {
+    for (std::size_t c = 0; c < kSunShadowCascadeCount; ++c) {
       const float near_dist = split_distances[c];
       const float far_dist = split_distances[c + 1];
 
@@ -72,8 +67,7 @@ struct SunShadowCascade
       }};
 
       std::array<glm::vec3, 8> frustum_corners{};
-      for (std::size_t i = 0; i < 8; ++i)
-      {
+      for (std::size_t i = 0; i < 8; ++i) {
         glm::vec4 world = camera_inverse_pv * ndc_corners[i];
         world /= world.w;
         frustum_corners[i] = glm::vec3(world);
@@ -88,8 +82,7 @@ struct SunShadowCascade
         = (near_dist - camera_near) / (camera_far - camera_near);
       const float far_ratio
         = (far_dist - camera_near) / (camera_far - camera_near);
-      for (std::size_t i = 0; i < 4; ++i)
-      {
+      for (std::size_t i = 0; i < 4; ++i) {
         const glm::vec3 near_c = frustum_corners[i];
         const glm::vec3 far_c = frustum_corners[i + 4];
         frustum_corners[i] = glm::mix(near_c, far_c, near_ratio);
@@ -118,8 +111,7 @@ struct SunShadowCascade
       float max_y = std::numeric_limits<float>::lowest();
       float min_z = std::numeric_limits<float>::max();
       float max_z = std::numeric_limits<float>::lowest();
-      for (const auto& v : corners)
-      {
+      for (const auto& v : corners) {
         const glm::vec3 t = glm::vec3(light_view * v);
         min_x = std::min(min_x, t.x);
         max_x = std::max(max_x, t.x);

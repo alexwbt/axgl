@@ -7,20 +7,17 @@
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/pointer.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
 class Texture;
 
 } // namespace axgl
 
-namespace axgl::gui
-{
+namespace axgl::gui {
 
 class Element;
 
-class Page : virtual public axgl::ContextHolder
-{
+class Page : virtual public axgl::ContextHolder {
 public:
   virtual void set_size(std::uint32_t width, std::uint32_t height) = 0;
   virtual void set_scale(float scale) = 0;

@@ -8,12 +8,10 @@
 
 #include <glfw/window.hpp>
 
-namespace axgl::impl::glfw
-{
+namespace axgl::impl::glfw {
 
 class WindowService final : virtual public axgl::WindowService,
-                            public axgl::impl::ServiceBase
-{
+                            public axgl::impl::ServiceBase {
 public:
   void initialize() override { ::glfw::Window::initialize(); }
 
@@ -25,17 +23,14 @@ public:
 
   bool keep_alive() override { return running(); }
 
-  axgl::ptr_t<axgl::Window> create_window() override
-  {
+  axgl::ptr_t<axgl::Window> create_window() override {
     return axgl::create_ptr<Window>(::glfw::Window::create(800, 600, ""));
   }
 
-  static void set_window_hint(const int hint, const int value)
-  {
+  static void set_window_hint(const int hint, const int value) {
     ::glfw::Window::set_hint(hint, value);
   }
-  static void set_window_hint(const int hint, const std::string& value)
-  {
+  static void set_window_hint(const int hint, const std::string& value) {
     ::glfw::Window::set_hint(hint, value);
   }
 };

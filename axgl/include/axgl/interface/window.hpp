@@ -5,11 +5,9 @@
 
 #include <glm/glm.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class Window
-{
+class Window {
 public:
   virtual ~Window() = default;
   virtual void set_title(const std::string& title) = 0;

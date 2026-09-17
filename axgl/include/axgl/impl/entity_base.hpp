@@ -6,11 +6,9 @@
 #include <axgl/impl/component_container.hpp>
 #include <axgl/impl/entity_container.hpp>
 
-namespace axgl::impl
-{
+namespace axgl::impl {
 
-class EntityBase : virtual public Entity, public axgl::impl::ComponentBase
-{
+class EntityBase : virtual public Entity, public axgl::impl::ComponentBase {
 protected:
   std::string name_;
   std::uint64_t ticks_ = 0;
@@ -21,31 +19,26 @@ protected:
   axgl::impl::EntityContainer children_{this};
 
 public:
-  void set_context(const axgl::Context* context) override
-  {
+  void set_context(const axgl::Context* context) override {
     axgl::impl::ComponentBase::set_context(context);
     components_.set_context(context);
     children_.set_context(context);
   }
 
-  void tick() override
-  {
+  void tick() override {
     ++ticks_;
     components_.tick();
     children_.tick();
   }
-  void update() override
-  {
+  void update() override {
     components_.update();
     children_.update();
   }
-  void on_create() override
-  {
+  void on_create() override {
     components_.on_create();
     children_.on_create();
   }
-  void on_remove() override
-  {
+  void on_remove() override {
     components_.on_remove();
     children_.on_remove();
   }
@@ -53,8 +46,7 @@ public:
   [[nodiscard]] std::uint64_t ticks() const override { return ticks_; }
 
   void set_name(const std::string& name) override { name_ = name; }
-  void mark_remove(const bool should_remove) override
-  {
+  void mark_remove(const bool should_remove) override {
     should_remove_ = should_remove;
   }
 
@@ -62,12 +54,10 @@ public:
   [[nodiscard]] bool should_remove() const override { return should_remove_; }
 
   [[nodiscard]] axgl::Transform& transform() override { return transform_; }
-  [[nodiscard]] axgl::impl::ComponentContainer& components() override
-  {
+  [[nodiscard]] axgl::impl::ComponentContainer& components() override {
     return components_;
   }
-  [[nodiscard]] axgl::impl::EntityContainer& children() override
-  {
+  [[nodiscard]] axgl::impl::EntityContainer& children() override {
     return children_;
   }
 };

@@ -3,11 +3,9 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/gui/element.hpp>
 
-namespace axgl::gui
-{
+namespace axgl::gui {
 
-class TextElement : virtual public axgl::gui::Element
-{
+class TextElement : virtual public axgl::gui::Element {
 public:
   static constexpr std::string_view kTypeId = "element:text";
 

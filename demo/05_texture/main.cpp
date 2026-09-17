@@ -6,8 +6,7 @@
 
 #include <demo_texture/res.hpp>
 
-int main()
-{
+int main() {
   axgl::Axgl axgl;
   axgl::configure_default(axgl);
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL

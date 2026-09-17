@@ -4,11 +4,9 @@
 #include <axgl/interface/realm.hpp>
 #include <axgl/interface/service.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class RealmService : virtual public axgl::Service
-{
+class RealmService : virtual public axgl::Service {
 public:
   static constexpr std::string_view kTypeId = "service::realm";
 
@@ -23,16 +21,14 @@ public:
   [[nodiscard]] virtual axgl::ptr_t<axgl::Realm> get_active_realm() const = 0;
 
   template <typename RealmType>
-  void register_realm_t()
-  {
-    register_realm_factory(
-      RealmType::kTypeId.data(), [] { return axgl::create_ptr<RealmType>(); }
-    );
+  void register_realm_t() {
+    register_realm_factory(RealmType::kTypeId.data(), [] {
+      return axgl::create_ptr<RealmType>();
+    });
   }
 
   template <typename RealmType>
-  axgl::ptr_t<RealmType> create_realm_t()
-  {
+  axgl::ptr_t<RealmType> create_realm_t() {
     const auto type = RealmType::kTypeId.data();
     auto realm = axgl::ptr_cast<RealmType>(create_realm(type));
 #ifdef AXGL_DEBUG

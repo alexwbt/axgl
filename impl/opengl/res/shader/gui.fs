@@ -9,8 +9,7 @@ in vec2 vert_uv;
 
 out vec4 frag_color;
 
-void main()
-{
+void main() {
   frag_color = use_texture ? texture(background_texture, vert_uv) : color;
   frag_color.a *= opacity;
 }

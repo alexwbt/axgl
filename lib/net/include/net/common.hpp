@@ -12,8 +12,7 @@
 
 #include <util/numcast.hpp>
 
-namespace net
-{
+namespace net {
 
 typedef const std::vector<std::uint8_t> data_t;
 typedef std::shared_ptr<data_t> data_ptr_t;

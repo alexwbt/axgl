@@ -3,11 +3,9 @@
 #include <cstdint>
 #include <span>
 
-namespace axgl
-{
+namespace axgl {
 
-class Texture
-{
+class Texture {
 public:
   virtual ~Texture() = default;
   virtual void load_texture(std::span<const std::uint8_t> data) = 0;

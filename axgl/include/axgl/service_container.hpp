@@ -11,11 +11,9 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class ServiceContainer
-{
+class ServiceContainer {
   std::unordered_map<std::string, axgl::ptr_t<Service>> service_map_;
   std::vector<axgl::ptr_t<Service>> services_;
 
@@ -24,15 +22,13 @@ public:
 
   [[nodiscard]] auto services() const { return services_; }
 
-  [[nodiscard]] virtual bool has_service(const std::string& type_id) const
-  {
+  [[nodiscard]] virtual bool has_service(const std::string& type_id) const {
     return service_map_.contains(type_id);
   }
 
   virtual void register_service(
     const std::string& type_id, const axgl::ptr_t<Service>& service
-  )
-  {
+  ) {
 #ifdef AXGL_DEBUG
     if (has_service(type_id))
       throw std::runtime_error(
@@ -46,8 +42,7 @@ public:
     services_.emplace_back(service);
   }
 
-  virtual void remove_service(const std::string& type_id)
-  {
+  virtual void remove_service(const std::string& type_id) {
 #ifdef AXGL_DEBUG
     if (!has_service(type_id))
       throw std::runtime_error(
@@ -62,16 +57,14 @@ public:
   }
 
   template <typename ServiceType>
-  axgl::ptr_t<ServiceType> register_service_t()
-  {
+  axgl::ptr_t<ServiceType> register_service_t() {
     auto service = axgl::create_ptr<ServiceType>();
     register_service(ServiceType::kTypeId.data(), service);
     return service;
   }
 
   template <typename ServiceType>
-  [[nodiscard]] bool has_service_type(const std::string& type_id) const
-  {
+  [[nodiscard]] bool has_service_type(const std::string& type_id) const {
     if (!has_service(type_id)) return false;
 
     const auto& service
@@ -82,8 +75,7 @@ public:
   template <typename ServiceType>
   [[nodiscard]] axgl::ptr_t<ServiceType> get_service(
     const std::string& type_id
-  ) const
-  {
+  ) const {
 #ifdef AXGL_DEBUG
     if (!has_service(type_id))
       throw std::runtime_error(
@@ -109,81 +101,70 @@ public:
   }
 
   template <typename ServiceType>
-  [[nodiscard]] axgl::ptr_t<ServiceType> get_service_t() const
-  {
+  [[nodiscard]] axgl::ptr_t<ServiceType> get_service_t() const {
     return get_service<ServiceType>(ServiceType::kTypeId.data());
   }
 
-  virtual void set_context(const axgl::Context* context) const
-  {
+  virtual void set_context(const axgl::Context* context) const {
     for (const auto& service : services())
       service->set_context(context);
   }
 
-  virtual void initialize()
-  {
+  virtual void initialize() {
     reorder_services();
 
     for (const auto& service : services())
       service->initialize();
   }
 
-  virtual void terminate()
-  {
+  virtual void terminate() {
     for (const auto& service : services() | std::views::reverse)
       service->terminate();
   }
 
-  virtual void on_start()
-  {
+  virtual void on_start() {
     for (const auto& service : services())
       service->on_start();
   }
 
-  virtual void on_end()
-  {
+  virtual void on_end() {
     for (const auto& service : services() | std::views::reverse)
       service->on_end();
   }
 
-  virtual void tick()
-  {
+  virtual void tick() {
     for (const auto& service : services())
       if (service->running()) service->tick();
   }
 
-  virtual void update()
-  {
+  virtual void update() {
     for (const auto& service : services())
       if (service->running()) service->update();
   }
 
-  virtual void render()
-  {
+  virtual void render() {
     for (const auto& service : services())
       if (service->running()) service->render();
   }
 
-  [[nodiscard]] virtual bool running() const
-  {
-    return std::ranges::any_of(
-      services(), [&](const auto& service) { return service->keep_alive(); }
-    );
+  [[nodiscard]] virtual bool running() const {
+    return std::ranges::any_of(services(), [&](const auto& service) {
+      return service->keep_alive();
+    });
   }
 
-  virtual void exec(const std::string& command) const
-  {
+  virtual void exec(const std::string& command) const {
     const auto args = util::split_string(command, ' ');
     if (args.empty()) return;
 
     if (const auto service = get_service<Service>(args[0])) service->exec(args);
   }
 
-  virtual void reorder_services()
-  {
+  virtual void reorder_services() {
     std::sort(
-      services_.begin(), services_.end(),
-      [](const auto& a, const auto& b) { return a->priority() > b->priority(); }
+      services_.begin(), services_.end(), [](const auto& a, const auto& b) {
+        return a->priority() > b->priority();
+      }
     );
   }
 };

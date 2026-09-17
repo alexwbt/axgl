@@ -7,11 +7,9 @@
 #include <axgl/impl/opengl/services/renderer_service.hpp>
 #include <axgl/impl/opengl/services/text_service.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-inline void configure_opengl(Axgl& axgl)
-{
+inline void configure_opengl(Axgl& axgl) {
   axgl.register_service_t<impl::opengl::RendererService>();
   axgl.register_service_t<impl::opengl::TextService>();
   axgl.register_service_t<impl::opengl::GuiService>();

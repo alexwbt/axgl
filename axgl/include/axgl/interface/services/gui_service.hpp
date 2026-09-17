@@ -7,11 +7,9 @@
 #include <axgl/interface/gui/page.hpp>
 #include <axgl/interface/gui/style.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class GuiService : virtual public axgl::Service
-{
+class GuiService : virtual public axgl::Service {
 public:
   static constexpr std::string_view kTypeId = "service::gui";
 
@@ -27,17 +25,14 @@ public:
   ) = 0;
 
   template <typename ElementType>
-  void register_element_t()
-  {
-    register_element_factory(
-      ElementType::kTypeId.data(),
-      [] { return axgl::create_ptr<ElementType>(); }
-    );
+  void register_element_t() {
+    register_element_factory(ElementType::kTypeId.data(), [] {
+      return axgl::create_ptr<ElementType>();
+    });
   }
 
   template <typename ElementType>
-  axgl::ptr_t<ElementType> create_element_t()
-  {
+  axgl::ptr_t<ElementType> create_element_t() {
     const auto type = ElementType::kTypeId.data();
     auto element = axgl::ptr_cast<ElementType>(create_element(type));
 #ifdef AXGL_DEBUG

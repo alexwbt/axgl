@@ -4,21 +4,17 @@
 #include <axgl/interface/component.hpp>
 #include <axgl/interface/material.hpp>
 
-namespace axgl::component
-{
+namespace axgl::component {
 
-class Mesh : virtual public Component
-{
+class Mesh : virtual public Component {
 public:
-  enum class CullMode
-  {
+  enum class CullMode {
     kNone,
     kCCW,
     kCW,
   };
 
-  enum class DrawMode
-  {
+  enum class DrawMode {
     kPoints,
     kLines,
     kLineStrip,

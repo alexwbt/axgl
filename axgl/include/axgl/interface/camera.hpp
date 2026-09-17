@@ -3,11 +3,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class Camera final
-{
+class Camera final {
 public:
   float fov = 80.0f;
   float pitch = 90.0f;
@@ -34,17 +32,14 @@ public:
   [[nodiscard]] glm::vec3 front() const { return front_; }
   [[nodiscard]] glm::vec3 horizontal_right() const { return horizontal_right_; }
   [[nodiscard]] glm::mat4 view_matrix() const { return view_matrix_; }
-  [[nodiscard]] glm::mat4 projection_matrix() const
-  {
+  [[nodiscard]] glm::mat4 projection_matrix() const {
     return projection_matrix_;
   }
-  [[nodiscard]] glm::mat4 projection_view_matrix() const
-  {
+  [[nodiscard]] glm::mat4 projection_view_matrix() const {
     return projection_view_matrix_;
   }
 
-  void update()
-  {
+  void update() {
     const auto pitch_radians = glm::radians(pitch);
     const auto yaw_radians = glm::radians(yaw);
     const auto roll_radians = glm::radians(roll);
@@ -67,20 +62,16 @@ public:
     update_projection_view_matrix();
   }
 
-  void update_projection_view_matrix()
-  {
+  void update_projection_view_matrix() {
     // view matrix
     view_matrix_ = glm::lookAt(position, position + front_, up_);
 
     // projection matrix
-    if (orthographic)
-    {
+    if (orthographic) {
       const auto v = viewport * 0.5f;
       projection_matrix_
         = glm::ortho(-v.x, v.x, -v.y, v.y, near_clip, far_clip);
-    }
-    else if (viewport.y > 0)
-    {
+    } else if (viewport.y > 0) {
       const float f = glm::radians(fov);
       const float r = viewport.x / viewport.y;
       projection_matrix_ = glm::perspective(f, r, near_clip, far_clip);
@@ -90,8 +81,7 @@ public:
     projection_view_matrix_ = projection_matrix_ * view_matrix_;
   }
 
-  void set_projection_view_matrix(const glm::mat4& pv)
-  {
+  void set_projection_view_matrix(const glm::mat4& pv) {
     projection_view_matrix_ = pv;
   }
 };

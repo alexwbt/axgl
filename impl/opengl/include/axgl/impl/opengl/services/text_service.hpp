@@ -11,12 +11,10 @@
 
 #include <opengl/text.hpp>
 
-namespace axgl::impl::opengl
-{
+namespace axgl::impl::opengl {
 
 class TextService : virtual public axgl::TextService,
-                    public axgl::impl::ServiceBase
-{
+                    public axgl::impl::ServiceBase {
   ::opengl::TextRenderer text_renderer_;
 
   axgl::ptr_t<axgl::RendererService> renderer_service_;
@@ -24,8 +22,7 @@ class TextService : virtual public axgl::TextService,
 public:
   void initialize() override { renderer_service_ = axgl_->renderer_service(); }
 
-  [[nodiscard]] bool has_font(const std::string& name) const
-  {
+  [[nodiscard]] bool has_font(const std::string& name) const {
     return text_renderer_.has_font(name);
   }
 
@@ -33,8 +30,7 @@ public:
     const std::string& name,
     const std::span<const std::uint8_t> data,
     const int index
-  ) override
-  {
+  ) override {
 #ifdef AXGL_DEBUG
     if (text_renderer_.has_font(name))
       throw std::runtime_error("Font already exists: " + name);
@@ -42,8 +38,7 @@ public:
     text_renderer_.load_font(name, data, index);
   }
 
-  void unload_font(const std::string& name) override
-  {
+  void unload_font(const std::string& name) override {
 #ifdef AXGL_DEBUG
     if (!text_renderer_.has_font(name))
       throw std::runtime_error("Font does not exist: " + name);
@@ -53,11 +48,12 @@ public:
 
   [[nodiscard]] axgl::ptr_t<axgl::Texture> create_texture(
     const Options& options
-  ) const override
-  {
+  ) const override {
     ::opengl::Text text;
     text_renderer_.render_text(
-      text, options.value, options.fonts,
+      text,
+      options.value,
+      options.fonts,
       {
         .color = options.font_color,
         .size = util::clamp_cast<std::uint32_t>(options.font_size),

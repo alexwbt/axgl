@@ -5,10 +5,8 @@
 
 #include "debug_axes_indicator.hpp"
 
-class BunnyEntity : public axgl::impl::EntityBase
-{
-  static void load_model(const axgl::Axgl* axgl, BunnyEntity* entity)
-  {
+class BunnyEntity : public axgl::impl::EntityBase {
+  static void load_model(const axgl::Axgl* axgl, BunnyEntity* entity) {
     static const auto resources
       = axgl->model_service()->load_model("bunny.glb");
     for (auto& components = entity->components();
@@ -19,8 +17,7 @@ class BunnyEntity : public axgl::impl::EntityBase
 public:
   static constexpr std::string_view kTypeId = "entity::bunny";
 
-  void on_create() override
-  {
+  void on_create() override {
     EntityBase::on_create();
 
     load_model(axgl_, this);

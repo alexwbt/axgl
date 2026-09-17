@@ -11,23 +11,19 @@
 #include <axgl/impl/glfw/window.hpp>
 #include <axgl/impl/service_base.hpp>
 
-namespace axgl::impl::glfw
-{
+namespace axgl::impl::glfw {
 
 class InputService : virtual public axgl::InputService,
-                     public axgl::impl::ServiceBase
-{
+                     public axgl::impl::ServiceBase {
   axgl::ptr_t<axgl::impl::glfw::Window> window_;
   std::vector<axgl::ptr_t<axgl::Input>> inputs_;
   std::vector<axgl::ptr_t<axgl::Pointer>> pointers_;
   axgl::InputService::CursorMode cursor_mode_
     = axgl::InputService::CursorMode::kNormal;
 
-  static int to_glfw_keycode(const axgl::Input::Source source)
-  {
+  static int to_glfw_keycode(const axgl::Input::Source source) {
     using enum axgl::Input::Source;
-    switch (source)
-    {
+    switch (source) {
     case kKeySpace: return GLFW_KEY_SPACE;
     case kKeyApostrophe: return GLFW_KEY_APOSTROPHE;
     case kKeyComma: return GLFW_KEY_COMMA;
@@ -152,11 +148,9 @@ class InputService : virtual public axgl::InputService,
     }
   }
 
-  static int to_glfw_mouse_button(const axgl::Input::Source source)
-  {
+  static int to_glfw_mouse_button(const axgl::Input::Source source) {
     using enum axgl::Input::Source;
-    switch (source)
-    {
+    switch (source) {
     case kMouseButton1: return GLFW_MOUSE_BUTTON_1;
     case kMouseButton2: return GLFW_MOUSE_BUTTON_2;
     case kMouseButton3: return GLFW_MOUSE_BUTTON_3;
@@ -171,8 +165,7 @@ class InputService : virtual public axgl::InputService,
 
   static bool get_glfw_input(
     const axgl::Input::Source source, const axgl::ptr_t<::glfw::Window>& window
-  )
-  {
+  ) {
     if (
       const auto keycode = to_glfw_keycode(source);
       keycode != -1 && window->key_down(keycode)
@@ -187,8 +180,7 @@ class InputService : virtual public axgl::InputService,
   }
 
 public:
-  void set_window(const axgl::ptr_t<axgl::Window> window) override
-  {
+  void set_window(const axgl::ptr_t<axgl::Window> window) override {
     window_ = dynamic_pointer_cast<axgl::impl::glfw::Window>(window);
 #ifdef AXGL_DEBUG
     if (!window_)
@@ -199,8 +191,7 @@ public:
 #endif
   }
 
-  void set_cursor_mode(const axgl::InputService::CursorMode mode) override
-  {
+  void set_cursor_mode(const axgl::InputService::CursorMode mode) override {
     if (!window_)
 #ifdef AXGL_DEBUG
       throw std::runtime_error("GlfwWindow is not set.");
@@ -210,8 +201,7 @@ public:
     window_->use();
     cursor_mode_ = mode;
     using enum axgl::InputService::CursorMode;
-    switch (mode)
-    {
+    switch (mode) {
     case kLocked:
       window_->glfw_window()->set_input_mode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
       break;
@@ -221,39 +211,33 @@ public:
     }
   }
 
-  [[nodiscard]] axgl::InputService::CursorMode get_cursor_mode() const override
-  {
+  [[nodiscard]] axgl::InputService::CursorMode
+  get_cursor_mode() const override {
     return cursor_mode_;
   }
 
-  void add_input(axgl::ptr_t<axgl::Input> input) override
-  {
+  void add_input(axgl::ptr_t<axgl::Input> input) override {
     inputs_.push_back(std::move(input));
   }
 
-  void add_pointer(axgl::ptr_t<axgl::Pointer> pointer) override
-  {
+  void add_pointer(axgl::ptr_t<axgl::Pointer> pointer) override {
     pointers_.push_back(std::move(pointer));
   }
 
-  void remove_input(std::uint64_t id) override
-  {
+  void remove_input(std::uint64_t id) override {
     std::erase_if(inputs_, [id](const auto& input) { return input->id == id; });
   }
 
-  void remove_pointer(std::uint64_t id) override
-  {
-    std::erase_if(
-      pointers_, [id](const auto& pointer) { return pointer->id == id; }
-    );
+  void remove_pointer(std::uint64_t id) override {
+    std::erase_if(pointers_, [id](const auto& pointer) {
+      return pointer->id == id;
+    });
   }
 
   [[nodiscard]] std::vector<axgl::ptr_t<axgl::Input>> get_input_by_source(
     axgl::Input::Source source
-  ) override
-  {
-    const auto contains = [&source](const auto& e)
-    {
+  ) override {
+    const auto contains = [&source](const auto& e) {
       return std::find(e->sources.begin(), e->sources.end(), source)
         != e->sources.end();
     };
@@ -263,44 +247,37 @@ public:
 
   [[nodiscard]] std::vector<axgl::ptr_t<axgl::Pointer>> get_pointer_by_source(
     axgl::Pointer::Source source
-  ) override
-  {
+  ) override {
     const auto is_source
       = [&source](const auto& e) { return e->source == source; };
     auto view = pointers_ | std::views::filter(is_source);
     return {view.begin(), view.end()};
   }
 
-  void update() override
-  {
+  void update() override {
     if (!window_) return;
     const auto window = window_->glfw_window();
 
-    for (const auto& input : inputs_)
-    {
-      const auto active = std::ranges::any_of(
-        input->sources,
-        [&window](const auto& source) { return get_glfw_input(source, window); }
-      );
+    for (const auto& input : inputs_) {
+      const auto active
+        = std::ranges::any_of(input->sources, [&window](const auto& source) {
+            return get_glfw_input(source, window);
+          });
       if (active) input->tick++;
       else input->tick = 0;
     }
 
-    for (const auto& pointer : pointers_)
-    {
+    for (const auto& pointer : pointers_) {
       pointer->tick++;
       using enum axgl::Pointer::Source;
-      switch (pointer->source)
-      {
-      case kMouseMove:
-      {
+      switch (pointer->source) {
+      case kMouseMove: {
         const auto pos = window->get_mouse_pos();
         pointer->delta = pos - pointer->position;
         pointer->position = pos;
         break;
       }
-      case kScroll:
-      {
+      case kScroll: {
         const auto scroll = window->get_scroll();
         window->reset_scroll();
         pointer->delta = scroll;

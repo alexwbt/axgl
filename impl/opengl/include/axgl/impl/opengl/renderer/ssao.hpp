@@ -9,14 +9,12 @@
 #include <opengl/framebuffer.hpp>
 #include <opengl/texture.hpp>
 
-namespace axgl::impl::opengl::renderer
-{
+namespace axgl::impl::opengl::renderer {
 
 inline constexpr std::size_t kSsaoKernelSize = 64;
 inline constexpr std::size_t kSsaoNoiseSize = 16;
 
-struct SSAO
-{
+struct SSAO {
   bool enabled = false;
 
   float radius = 0.5f;
@@ -37,16 +35,14 @@ struct SSAO
   std::unique_ptr<::opengl::Texture> blur_texture;
   std::unique_ptr<::opengl::Framebuffer> blur_framebuffer;
 
-  void generate_kernel()
-  {
+  void generate_kernel() {
     auto lerp = [](float a, float b, float f) { return a + f * (b - a); };
 
     std::uniform_real_distribution<float> dist01(0.0f, 1.0f);
     std::uniform_real_distribution<float> dist11(-1.0f, 1.0f);
     std::mt19937 rng(std::random_device{}());
 
-    for (std::size_t i = 0; i < kSsaoKernelSize; ++i)
-    {
+    for (std::size_t i = 0; i < kSsaoKernelSize; ++i) {
       glm::vec3 sample(dist11(rng), dist11(rng), dist01(rng));
       sample = glm::normalize(sample) * dist01(rng);
       float scale = static_cast<float>(i) / kSsaoKernelSize;
@@ -55,16 +51,14 @@ struct SSAO
     }
   }
 
-  void generate_noise()
-  {
+  void generate_noise() {
     std::uniform_real_distribution<float> dist11(-1.0f, 1.0f);
     std::mt19937 rng(std::random_device{}());
     for (auto& n : noise)
       n = glm::vec3(dist11(rng), dist11(rng), 0.0f);
   }
 
-  void setup(const glm::ivec2& viewport, ::opengl::Texture& depth_texture)
-  {
+  void setup(const glm::ivec2& viewport, ::opengl::Texture& depth_texture) {
     generate_kernel();
     generate_noise();
 
@@ -96,8 +90,14 @@ struct SSAO
     // noise_scale = viewport / noise_size
     noise_texture = std::make_unique<::opengl::Texture>();
     noise_texture->load_texture(
-      0, GL_RGB16F, static_cast<GLsizei>(kSsaoNoiseSize),
-      static_cast<GLsizei>(kSsaoNoiseSize), 0, GL_RGB, GL_FLOAT, noise.data()
+      0,
+      GL_RGB16F,
+      static_cast<GLsizei>(kSsaoNoiseSize),
+      static_cast<GLsizei>(kSsaoNoiseSize),
+      0,
+      GL_RGB,
+      GL_FLOAT,
+      noise.data()
     );
     noise_texture->set_parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     noise_texture->set_parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -125,8 +125,7 @@ struct SSAO
     blur_framebuffer->attach_texture(GL_COLOR_ATTACHMENT0, *blur_texture);
   }
 
-  void reset()
-  {
+  void reset() {
     blur_framebuffer.reset();
     blur_texture.reset();
     ssao_framebuffer.reset();
@@ -137,14 +136,12 @@ struct SSAO
     position_texture.reset();
   }
 
-  void update(const glm::ivec2& viewport, ::opengl::Texture& depth_texture)
-  {
+  void update(const glm::ivec2& viewport, ::opengl::Texture& depth_texture) {
     if (enabled && !ssao_framebuffer) setup(viewport, depth_texture);
     else if (!enabled && ssao_framebuffer) reset();
   }
 
-  [[nodiscard]] glm::vec2 noise_scale(const glm::ivec2& viewport) const
-  {
+  [[nodiscard]] glm::vec2 noise_scale(const glm::ivec2& viewport) const {
     return glm::vec2(viewport) / static_cast<float>(kSsaoNoiseSize);
   }
 };

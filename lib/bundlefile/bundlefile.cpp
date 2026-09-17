@@ -7,14 +7,12 @@
 
 #include <bundlefile/bundle_fbs.h>
 
-struct File
-{
+struct File {
   std::string path;
   std::string key;
 };
 
-static std::string entry_to_string(const std::filesystem::path& path)
-{
+static std::string entry_to_string(const std::filesystem::path& path) {
   std::stringstream stream;
   for (const auto& e : path)
     stream << e.string() << "/";
@@ -23,14 +21,11 @@ static std::string entry_to_string(const std::filesystem::path& path)
   return value;
 }
 
-static std::vector<File> read_directory(const std::string& source)
-{
+static std::vector<File> read_directory(const std::string& source) {
   std::vector<File> files;
   for (const auto& entry :
-       std::filesystem::recursive_directory_iterator(source))
-  {
-    if (!std::filesystem::is_directory(entry.path()))
-    {
+       std::filesystem::recursive_directory_iterator(source)) {
+    if (!std::filesystem::is_directory(entry.path())) {
       auto path = entry_to_string(entry.path());
       auto key
         = entry_to_string(std::filesystem::relative(entry.path(), source));
@@ -42,13 +37,11 @@ static std::vector<File> read_directory(const std::string& source)
 
 static int write_files(
   const std::vector<File>& files, const std::string& target
-)
-{
+) {
   flatbuffers::FlatBufferBuilder builder;
 
   std::vector<flatbuffers::Offset<fbs::bundlefile::File>> fbs_files;
-  for (const auto& file : files)
-  {
+  for (const auto& file : files) {
     std::ifstream input_stream(file.path, std::ios::binary | std::ios::ate);
     const auto size = input_stream.tellg();
     input_stream.seekg(0, std::ios::beg);
@@ -70,8 +63,7 @@ static int write_files(
   builder.Finish(bundle_builder.Finish(), fbs::bundlefile::BundleIdentifier());
 
   std::ofstream output_stream(target, std::ios::binary);
-  if (!output_stream)
-  {
+  if (!output_stream) {
     SPDLOG_ERROR("Error opening file for writing.");
     return 1;
   }
@@ -83,15 +75,12 @@ static int write_files(
   return 0;
 }
 
-static int bundle_files(const std::string& source, const std::string& target)
-{
-  if (!std::filesystem::is_directory(source))
-  {
+static int bundle_files(const std::string& source, const std::string& target) {
+  if (!std::filesystem::is_directory(source)) {
     SPDLOG_ERROR("Source must be a directory.");
     return 1;
   }
-  if (std::filesystem::is_directory(target))
-  {
+  if (std::filesystem::is_directory(target)) {
     SPDLOG_ERROR("Target must not be a directory.");
     return 1;
   }
@@ -100,8 +89,7 @@ static int bundle_files(const std::string& source, const std::string& target)
   return write_files(files, target);
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   args::ArgumentParser parser(
     "Bundles all files in a directory into a binary file."
   );
@@ -114,22 +102,15 @@ int main(int argc, char** argv)
     parser, "target", "The output binary file.", args::Options::Required
   );
 
-  try
-  {
+  try {
     parser.ParseCLI(argc, argv);
-  }
-  catch (const args::Completion& e)
-  {
+  } catch (const args::Completion& e) {
     std::cout << e.what();
     return 0;
-  }
-  catch (const args::Help&)
-  {
+  } catch (const args::Help&) {
     std::cout << parser;
     return 0;
-  }
-  catch (const args::Error& e)
-  {
+  } catch (const args::Error& e) {
     SPDLOG_ERROR("{}", e.what());
     return 1;
   }

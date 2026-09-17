@@ -5,7 +5,6 @@ layout(location = 5) in mat4 model;
 
 uniform mat4 projection_view;
 
-void main()
-{
+void main() {
   gl_Position = projection_view * model * vec4(position, 1.0);
 }

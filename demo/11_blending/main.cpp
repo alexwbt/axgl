@@ -11,15 +11,13 @@ auto create_cube(
   const glm::vec3& position,
   const glm::vec4& color,
   const bool blend
-)
-{
+) {
   const auto entity_service = axgl.entity_service();
   const auto renderer_service = axgl.renderer_service();
   // material
   const auto material = renderer_service->create_material("3d");
   material->set_color(color);
-  if (blend)
-  {
+  if (blend) {
     material->set_enable_blend(true);
     material->set_property("shininess", "0");
   }
@@ -34,13 +32,11 @@ auto create_cube(
   return cube;
 }
 
-class Application final : public axgl::impl::ServiceBase
-{
+class Application final : public axgl::impl::ServiceBase {
 public:
   static constexpr std::string_view kTypeId = "app";
 
-  void on_start() override
-  {
+  void on_start() override {
     const auto& window_service = axgl_->window_service();
     const auto& input_service = axgl_->input_service();
     const auto& renderer_service = axgl_->renderer_service();
@@ -108,8 +104,7 @@ public:
   }
 };
 
-int main()
-{
+int main() {
   axgl::Axgl axgl;
   axgl::configure_default(axgl);
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL

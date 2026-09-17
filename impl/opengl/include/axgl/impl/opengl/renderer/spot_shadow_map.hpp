@@ -12,20 +12,23 @@
 #include <opengl/framebuffer.hpp>
 #include <opengl/texture.hpp>
 
-namespace axgl::impl::opengl::renderer
-{
+namespace axgl::impl::opengl::renderer {
 
-struct SpotShadowMap
-{
+struct SpotShadowMap {
   std::unique_ptr<::opengl::Texture> shadow_texture;
   std::unique_ptr<::opengl::Framebuffer> shadow_framebuffer;
 
-  void setup(const GLsizei shadow_map_size)
-  {
+  void setup(const GLsizei shadow_map_size) {
     shadow_texture = std::make_unique<::opengl::Texture>();
     shadow_texture->load_texture_array(
-      0, GL_DEPTH_COMPONENT, shadow_map_size, shadow_map_size,
-      static_cast<GLsizei>(kSpotShadowLimit), 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+      0,
+      GL_DEPTH_COMPONENT,
+      shadow_map_size,
+      shadow_map_size,
+      static_cast<GLsizei>(kSpotShadowLimit),
+      0,
+      GL_DEPTH_COMPONENT,
+      GL_FLOAT,
       nullptr
     );
     shadow_texture->set_parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -38,8 +41,7 @@ struct SpotShadowMap
     shadow_framebuffer = std::make_unique<::opengl::Framebuffer>();
   }
 
-  void reset()
-  {
+  void reset() {
     shadow_framebuffer.reset();
     shadow_texture.reset();
   }
@@ -49,8 +51,7 @@ struct SpotShadowMap
     const GLsizei shadow_map_size,
     const float shadow_far,
     const PipelineContext& pipeline_context
-  )
-  {
+  ) {
     const auto& light = *light_context.light;
     // Perspective from the spot light along its direction. Use 2x the outer
     // cone angle so the projection covers the full visible cone (the cone

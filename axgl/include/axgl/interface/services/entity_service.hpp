@@ -7,11 +7,9 @@
 #include <axgl/interface/entity.hpp>
 #include <axgl/interface/service.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class EntityService : virtual public axgl::Service
-{
+class EntityService : virtual public axgl::Service {
 public:
   static constexpr std::string_view kTypeId = "service::entity";
 
@@ -32,25 +30,21 @@ public:
   ) = 0;
 
   template <typename EntityType>
-  void register_entity_t()
-  {
-    register_entity_factory(
-      EntityType::kTypeId.data(), [] { return axgl::create_ptr<EntityType>(); }
-    );
+  void register_entity_t() {
+    register_entity_factory(EntityType::kTypeId.data(), [] {
+      return axgl::create_ptr<EntityType>();
+    });
   }
 
   template <typename ComponentType>
-  void register_component_t()
-  {
-    register_component_factory(
-      ComponentType::kTypeId.data(),
-      [] { return axgl::create_ptr<ComponentType>(); }
-    );
+  void register_component_t() {
+    register_component_factory(ComponentType::kTypeId.data(), [] {
+      return axgl::create_ptr<ComponentType>();
+    });
   }
 
   template <typename EntityType>
-  axgl::ptr_t<EntityType> create_entity_t()
-  {
+  axgl::ptr_t<EntityType> create_entity_t() {
     const auto type = EntityType::kTypeId.data();
     auto entity = axgl::ptr_cast<EntityType>(create_entity(type));
 #ifdef AXGL_DEBUG
@@ -65,15 +59,15 @@ public:
   }
 
   template <typename ComponentType>
-  axgl::ptr_t<ComponentType> create_component_t()
-  {
+  axgl::ptr_t<ComponentType> create_component_t() {
     const auto type = ComponentType::kTypeId.data();
     auto component = axgl::ptr_cast<ComponentType>(create_component(type));
 #ifdef AXGL_DEBUG
     if (!component)
       throw std::runtime_error(
         std::format(
-          "Failed to create component: {} ({})", type,
+          "Failed to create component: {} ({})",
+          type,
           typeid(ComponentType).name()
         )
       );

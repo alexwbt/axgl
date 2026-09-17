@@ -3,19 +3,16 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/context.hpp>
 
-namespace axgl
-{
+namespace axgl {
 class GuiService;
 }
 
-namespace axgl::gui
-{
+namespace axgl::gui {
 
 class Page;
 class Element;
 
-struct Context : axgl::Context
-{
+struct Context : axgl::Context {
   axgl::GuiService* gui_service;
   axgl::gui::Page* page;
   axgl::gui::Element* parent;

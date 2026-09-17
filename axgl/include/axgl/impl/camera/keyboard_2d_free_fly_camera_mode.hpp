@@ -6,11 +6,9 @@
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/services/input_service.hpp>
 
-namespace axgl::impl::camera
-{
+namespace axgl::impl::camera {
 
-class Keyboard2DFreeFlyCameraMode : public axgl::CameraMode
-{
+class Keyboard2DFreeFlyCameraMode : public axgl::CameraMode {
   axgl::ptr_t<axgl::Input> up_;
   axgl::ptr_t<axgl::Input> down_;
   axgl::ptr_t<axgl::Input> left_;
@@ -30,9 +28,7 @@ public:
     down_(std::move(down)),
     left_(std::move(left)),
     right_(std::move(right)),
-    movement_speed_(movement_speed)
-  {
-  }
+    movement_speed_(movement_speed) {}
 
   explicit Keyboard2DFreeFlyCameraMode(float movement_speed = 2.0f) :
     Keyboard2DFreeFlyCameraMode(
@@ -41,12 +37,11 @@ public:
       axgl::create_ptr<axgl::Input>("Move Left", axgl::Input::Source::kKeyA),
       axgl::create_ptr<axgl::Input>("Move Right", axgl::Input::Source::kKeyD),
       movement_speed
-    )
-  {
-  }
+    ) {}
 
-  void bind_inputs(const axgl::ptr_t<axgl::InputService> input_service) override
-  {
+  void bind_inputs(
+    const axgl::ptr_t<axgl::InputService> input_service
+  ) override {
     input_service->add_input(up_);
     input_service->add_input(down_);
     input_service->add_input(left_);
@@ -55,16 +50,14 @@ public:
 
   void unbind_inputs(
     const axgl::ptr_t<axgl::InputService> input_service
-  ) override
-  {
+  ) override {
     input_service->remove_input(up_->id);
     input_service->remove_input(down_->id);
     input_service->remove_input(left_->id);
     input_service->remove_input(right_->id);
   }
 
-  void update(axgl::Camera& camera) override
-  {
+  void update(axgl::Camera& camera) override {
     if (up_->tick > 0) camera.position += glm::vec3(0, 1, 0) * movement_speed_;
     if (down_->tick > 0)
       camera.position -= glm::vec3(0, 1, 0) * movement_speed_;

@@ -4,11 +4,9 @@
 #include <axgl/interface/gui/element.hpp>
 #include <axgl/interface/gui/elements/text_element.hpp>
 
-namespace axgl::gui
-{
+namespace axgl::gui {
 
-class ButtonElement : virtual public axgl::gui::Element
-{
+class ButtonElement : virtual public axgl::gui::Element {
 public:
   static constexpr std::string_view kTypeId = "element:button";
 

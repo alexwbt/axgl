@@ -7,8 +7,7 @@
 
 inline net::data_ptr_t build_message(
   const std::string& sender, const std::string& content
-)
-{
+) {
   flatbuffers::FlatBufferBuilder builder;
 
   const auto sender_offset = builder.CreateString(sender);
@@ -27,8 +26,9 @@ inline net::data_ptr_t build_message(
   );
 }
 
-inline const fbs::chatroom::Message* read_message(const net::data_ptr_t& buffer)
-{
+inline const fbs::chatroom::Message* read_message(
+  const net::data_ptr_t& buffer
+) {
   constexpr int kOffset = net::LengthPrefixedTcpSocket::kLengthPrefixSize;
   const std::span data(buffer->data() + kOffset, buffer->size() - kOffset);
 

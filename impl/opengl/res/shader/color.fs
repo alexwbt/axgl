@@ -4,7 +4,6 @@ uniform vec4 color;
 
 out vec4 frag_color;
 
-void main()
-{
+void main() {
   frag_color = color;
 }

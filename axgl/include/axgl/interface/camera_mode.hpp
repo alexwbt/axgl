@@ -4,11 +4,9 @@
 #include <axgl/interface/camera.hpp>
 #include <axgl/interface/services/input_service.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class CameraMode
-{
+class CameraMode {
 public:
   virtual ~CameraMode() = default;
   virtual void bind_inputs(axgl::ptr_t<axgl::InputService> input_service) = 0;

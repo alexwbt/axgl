@@ -12,11 +12,9 @@
 #include <axgl/impl/opengl/renderer/sun_shadow_map.hpp>
 #include <axgl_opengl_impl/res.hpp>
 
-namespace axgl::impl::opengl
-{
+namespace axgl::impl::opengl {
 
-class Shaders
-{
+class Shaders {
   std::unique_ptr<const ::opengl::ShaderProgram> mesh2d_;
   std::unique_ptr<const ::opengl::ShaderProgram> mesh3d_;
   std::unique_ptr<const ::opengl::ShaderProgram> mesh3d_opaque_;
@@ -34,8 +32,7 @@ class Shaders
   std::unique_ptr<const ::opengl::ShaderProgram> bloom_composite_;
 
 public:
-  static const Shaders& instance()
-  {
+  static const Shaders& instance() {
     static Shaders instance_;
     return instance_;
   }
@@ -57,19 +54,16 @@ public:
   [[nodiscard]] const auto& ssao_geometry() const { return *ssao_geometry_; }
   [[nodiscard]] const auto& ssao() const { return *ssao_; }
   [[nodiscard]] const auto& ssao_blur() const { return *ssao_blur_; }
-  [[nodiscard]] const auto& bloom_bright_pass() const
-  {
+  [[nodiscard]] const auto& bloom_bright_pass() const {
     return *bloom_bright_pass_;
   }
   [[nodiscard]] const auto& bloom_blur() const { return *bloom_blur_; }
-  [[nodiscard]] const auto& bloom_composite() const
-  {
+  [[nodiscard]] const auto& bloom_composite() const {
     return *bloom_composite_;
   }
 
 private:
-  Shaders()
-  {
+  Shaders() {
     using namespace axgl_opengl_impl_res;
 
     mesh2d_ = std::make_unique<::opengl::ShaderProgram>(
@@ -108,7 +102,8 @@ private:
       mesh3d_opaque_ = std::make_unique<::opengl::ShaderProgram>(
         std::vector<::opengl::ShaderSource>{
           {GL_VERTEX_SHADER, get("shader/mesh3d.vs"), defines},
-          {GL_FRAGMENT_SHADER, get("shader/mesh3d.fs"),
+          {GL_FRAGMENT_SHADER,
+           get("shader/mesh3d.fs"),
            defines + "#define OPAQUE_PASS\n"}
         }
       );

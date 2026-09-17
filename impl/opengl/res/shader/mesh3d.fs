@@ -30,8 +30,7 @@
  *   location 1: reveal     - per-pixel coverage for weighted blended OIT
  */
 
-struct SunLight
-{
+struct SunLight {
   vec3 direction;
 
   vec3 ambient;
@@ -39,8 +38,7 @@ struct SunLight
   vec3 specular;
 };
 
-struct SpotLight
-{
+struct SpotLight {
   vec3 position;
   vec3 direction;
 
@@ -56,8 +54,7 @@ struct SpotLight
   float outer_cut_off;
 };
 
-struct PointLight
-{
+struct PointLight {
   vec3 position;
 
   vec3 ambient;
@@ -69,8 +66,7 @@ struct PointLight
   float quadratic;
 };
 
-struct Context
-{
+struct Context {
   vec3 view_dir;
   vec3 frag_diffuse;
   vec3 frag_specular;
@@ -130,8 +126,7 @@ uniform samplerCubeArray point_shadow_maps;
 uniform int point_shadow_index[POINT_LIGHT_LIMIT];
 uniform float point_shadow_far_plane[POINT_SHADOW_LIMIT];
 
-in VertexShaderOutput
-{
+in VertexShaderOutput {
   vec3 camera_pos;
   vec3 position;
   vec3 normal;
@@ -158,8 +153,7 @@ layout(location = 1) out float reveal;
  * view_dir.z is clamped to avoid unbounded UV displacement at grazing angles.
  * textureLod(..., 0) forces base-mip sampling to preserve height-field detail.
  */
-vec2 calc_height_offset(Context ctx)
-{
+vec2 calc_height_offset(Context ctx) {
   // tangent-space view direction (TBN columns are t,b,n so transpose maps
   // world->tangent)
   vec3 view_dir_tangent = transpose(vso.tbn) * ctx.view_dir;
@@ -182,8 +176,7 @@ vec2 calc_height_offset(Context ctx)
     = textureLod(height_texture, current_uv, 0.0).r;
 
   // march layers until the ray crosses the height-field surface
-  while (current_layer_depth < current_height_map_value)
-  {
+  while (current_layer_depth < current_height_map_value) {
     // shift texture coordinates along direction of P
     current_uv -= delta_uv;
     // get depth map value at current texture coordinates
@@ -209,14 +202,11 @@ vec2 calc_height_offset(Context ctx)
  * Selects the cascade index whose split range covers the fragment's distance
  * from the camera. Nearer cascades have higher depth precision.
  */
-int select_cascade()
-{
+int select_cascade() {
   float frag_distance = length(vso.position - vso.camera_pos);
   int cascade_index = 0;
-  for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i)
-  {
-    if (frag_distance <= cascade_split_far[i])
-    {
+  for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i) {
+    if (frag_distance <= cascade_split_far[i]) {
       cascade_index = i;
       break;
     }
@@ -225,8 +215,7 @@ int select_cascade()
   return cascade_index;
 }
 
-float calc_sun_shadow(SunLight light)
-{
+float calc_sun_shadow(SunLight light) {
   int cascade_index = select_cascade();
 
   // project into the selected cascade's light clip space and remap to [0,1]
@@ -245,10 +234,8 @@ float calc_sun_shadow(SunLight light)
   // textureSize on a sampler2DArray returns ivec3(w, h, layers); .xy is the
   // per-layer texel size.
   vec2 texel_size = 1.0 / textureSize(sun_shadow_maps, 0).xy;
-  for (int x = -1; x <= 1; ++x)
-  {
-    for (int y = -1; y <= 1; ++y)
-    {
+  for (int x = -1; x <= 1; ++x) {
+    for (int y = -1; y <= 1; ++y) {
       // sample the array with vec3(uv, layer)
       float pcf_depth
         = texture(
@@ -264,8 +251,7 @@ float calc_sun_shadow(SunLight light)
   return shadow;
 }
 
-float calc_spot_shadow(int slot_index, vec3 normal, vec3 light_dir)
-{
+float calc_spot_shadow(int slot_index, vec3 normal, vec3 light_dir) {
   int layer = spot_shadow_index[slot_index];
   vec4 clip = vso.spot_light_space_position[layer];
   vec3 proj = clip.xyz / clip.w;
@@ -277,10 +263,8 @@ float calc_spot_shadow(int slot_index, vec3 normal, vec3 light_dir)
 
   vec2 texel_size = 1.0 / textureSize(spot_shadow_maps, 0).xy;
   float shadow = 0.0;
-  for (int x = -1; x <= 1; ++x)
-  {
-    for (int y = -1; y <= 1; ++y)
-    {
+  for (int x = -1; x <= 1; ++x) {
+    for (int y = -1; y <= 1; ++y) {
       float pcf_depth
         = texture(
             spot_shadow_maps, vec3(proj.xy + vec2(x, y) * texel_size, layer)
@@ -292,8 +276,7 @@ float calc_spot_shadow(int slot_index, vec3 normal, vec3 light_dir)
   return shadow / 9.0;
 }
 
-float calc_point_shadow(int slot_index, vec3 normal, vec3 light_dir)
-{
+float calc_point_shadow(int slot_index, vec3 normal, vec3 light_dir) {
   int layer = point_shadow_index[slot_index];
   vec3 frag_to_light = vso.position - point_lights[slot_index].position;
   float current_depth = length(frag_to_light) / point_shadow_far_plane[layer];
@@ -316,10 +299,8 @@ float calc_point_shadow(int slot_index, vec3 normal, vec3 light_dir)
   );
 
   float shadow = 0.0;
-  for (int x = -1; x <= 1; ++x)
-  {
-    for (int y = -1; y <= 1; ++y)
-    {
+  for (int x = -1; x <= 1; ++x) {
+    for (int y = -1; y <= 1; ++y) {
       vec3 offset = (tangent * float(x) + bitangent * float(y)) * texel;
       float closest_depth
         = texture(point_shadow_maps, vec4(sample_dir + offset, layer)).r;
@@ -335,8 +316,7 @@ float calc_point_shadow(int slot_index, vec3 normal, vec3 light_dir)
  * light-to-surface direction. Applies shadowing from the first light's
  * shadow map.
  */
-vec3 calc_sun_light(Context ctx, SunLight light)
-{
+vec3 calc_sun_light(Context ctx, SunLight light) {
   // Diffuse
   vec3 light_dir = normalize(-light.direction);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
@@ -364,8 +344,7 @@ vec3 calc_sun_light(Context ctx, SunLight light)
  * Spot light contribution with distance attenuation and a soft cone cutoff.
  * light.direction points from the light toward the scene.
  */
-vec3 calc_spot_light(Context ctx, SpotLight light, int slot_index)
-{
+vec3 calc_spot_light(Context ctx, SpotLight light, int slot_index) {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
@@ -407,8 +386,7 @@ vec3 calc_spot_light(Context ctx, SpotLight light, int slot_index)
 /**
  * Point light contribution with distance attenuation (no cutoff cone).
  */
-vec3 calc_point_light(Context ctx, PointLight light, int slot_index)
-{
+vec3 calc_point_light(Context ctx, PointLight light, int slot_index) {
   // Diffuse
   vec3 light_dir = normalize(light.position - vso.position);
   float diffuse_value = max(dot(ctx.frag_normal, light_dir), 0.0);
@@ -437,8 +415,7 @@ vec3 calc_point_light(Context ctx, PointLight light, int slot_index)
   return (ambient + (1.0 - shadow) * (diffuse + specular)) * attenuation;
 }
 
-void main()
-{
+void main() {
   // alpha test: discard transparent fragments for non-blended passes
   if (mesh_color.a < alpha_discard) discard;
 
@@ -490,10 +467,8 @@ void main()
   // Debug: draw borders at the edges of each cascade's ortho frustum box
   // (light clip space [-1,1]^3) so nested frustum boundaries are visible as
   // concentric outlines where they intersect scene geometry.
-  if (csm_debug_borders && enable_sun_shadow)
-  {
-    for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i)
-    {
+  if (csm_debug_borders && enable_sun_shadow) {
+    for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i) {
       vec3 proj = vso.sun_light_space_position[i].xyz
         / vso.sun_light_space_position[i].w;
       float min_edge
@@ -513,7 +488,8 @@ void main()
   float weight = transparent ? clamp(
                                  pow(min(1.0, mesh_color.a * 10.0) + 0.01, 3.0)
                                    * 1e8 * pow(1.0 - gl_FragCoord.z * 0.9, 3.0),
-                                 1e-2, 3e3
+                                 1e-2,
+                                 3e3
                                )
                              : 1.0f;
   // pre-multiply color by alpha so the composite recovers the weighted average

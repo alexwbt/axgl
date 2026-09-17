@@ -5,11 +5,9 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/components/mesh.hpp>
 
-namespace axgl::mesh
-{
+namespace axgl::mesh {
 
-inline void init_quad(axgl::component::Mesh& mesh)
-{
+inline void init_quad(axgl::component::Mesh& mesh) {
   mesh.set_vertices(
     std::array{
       glm::vec2(0.5f, 0.5f),
@@ -29,8 +27,7 @@ inline void init_quad(axgl::component::Mesh& mesh)
   mesh.set_indices(std::array<std::uint32_t, 6>{0, 1, 2, 0, 2, 3});
 }
 
-inline void init_plain(axgl::component::Mesh& mesh)
-{
+inline void init_plain(axgl::component::Mesh& mesh) {
   mesh.set_vertices(
     std::array{
       glm::vec3(-0.5f, 0.0f, -0.5f),
@@ -54,8 +51,7 @@ inline void init_plain(axgl::component::Mesh& mesh)
   mesh.calculate_tbn();
 }
 
-inline void init_cube(axgl::component::Mesh& mesh)
-{
+inline void init_cube(axgl::component::Mesh& mesh) {
   mesh.set_vertices(
     std::array{
       glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.5f, 0.5f, -0.5f),

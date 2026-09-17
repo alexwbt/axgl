@@ -10,31 +10,26 @@
 #include <axgl/impl/opengl/renderer/sun_shadow_cascade.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
-namespace axgl::impl::opengl::renderer
-{
+namespace axgl::impl::opengl::renderer {
 
-struct SunLightContext
-{
+struct SunLightContext {
   const axgl::Light* light = nullptr;
   std::array<SunShadowCascade, kSunShadowCascadeCount> cascades{};
 };
 
-struct SpotLightContext
-{
+struct SpotLightContext {
   const axgl::Light* light = nullptr;
   std::int32_t shadow_index = -1;
   glm::mat4 light_pv{0.0f};
 };
 
-struct PointLightContext
-{
+struct PointLightContext {
   const axgl::Light* light = nullptr;
   std::int32_t shadow_index = -1;
   float far_plane = 0.0f;
 };
 
-struct RenderContext
-{
+struct RenderContext {
   glm::vec2 viewport{0.0f};
   glm::vec3 viewpoint{0.0f};
   glm::mat4 view_matrix{0.0f};
@@ -57,16 +52,14 @@ struct RenderContext
   std::int64_t component_count = 0;
 };
 
-struct ShadowPassContext
-{
+struct ShadowPassContext {
   axgl::Light::Type light_type = axgl::Light::Type::kSun;
   glm::mat4 projection_view_matrix{0.0f};
   glm::vec3 light_position{0.0f};
   float far_plane = 0.0f;
 };
 
-struct PipelineContext
-{
+struct PipelineContext {
   std::vector<std::function<void(const RenderContext&)>> opaque_pass;
   std::vector<std::function<void(const RenderContext&)>> blend_pass;
   std::vector<std::function<void(const ShadowPassContext&)>> shadow_pass;

@@ -8,8 +8,7 @@
 #include <axgl/common/mesh.hpp>
 #include <axgl/impl/entity_base.hpp>
 
-class FloorEntity : public axgl::impl::EntityBase
-{
+class FloorEntity : public axgl::impl::EntityBase {
 public:
   static constexpr std::string_view kTypeId = "entity::floor";
 
@@ -22,8 +21,7 @@ public:
 private:
   static axgl::ptr_t<axgl::component::Mesh> create_mesh(
     const axgl::Axgl* axgl, float size
-  )
-  {
+  ) {
     const auto& entity_service = axgl->entity_service();
     const auto& renderer_service = axgl->renderer_service();
     const auto& resource_service = axgl->resource_service();
@@ -62,8 +60,7 @@ private:
   }
 
 public:
-  void on_create() override
-  {
+  void on_create() override {
     EntityBase::on_create();
 
     static const auto mesh = create_mesh(axgl_, size_);

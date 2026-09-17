@@ -6,11 +6,9 @@
 #include <axgl/interface/service.hpp>
 #include <axgl/interface/texture.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class RendererService : virtual public axgl::Service
-{
+class RendererService : virtual public axgl::Service {
 public:
   static constexpr std::string_view kTypeId = "service::renderer";
 

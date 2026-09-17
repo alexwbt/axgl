@@ -3,8 +3,7 @@
 
 #include <axgl/common/color.hpp>
 
-int main()
-{
+int main() {
   axgl::Axgl axgl;
   setup(axgl);
 

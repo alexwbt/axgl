@@ -8,13 +8,10 @@
 #include <fstream>
 #include <vector>
 
-namespace
-{
+namespace {
 
-const std::vector<std::uint8_t>& font_data()
-{
-  static const auto data = []
-  {
+const std::vector<std::uint8_t>& font_data() {
+  static const auto data = [] {
     const auto font_path
       = std::filesystem::path(__FILE__).parent_path() / "res" / "arial.ttf";
     std::ifstream file(font_path, std::ios::binary);
@@ -27,16 +24,14 @@ const std::vector<std::uint8_t>& font_data()
 
 const std::vector<std::string> fonts{"arial"};
 
-opengl::TextOptions base_options()
-{
+opengl::TextOptions base_options() {
   opengl::TextOptions opts;
   opts.size = 32;
   opts.color = {1, 1, 1, 1};
   return opts;
 }
 
-int single_line_width(opengl::TextRenderer& renderer, const std::string& text)
-{
+int single_line_width(opengl::TextRenderer& renderer, const std::string& text) {
   auto opts = base_options();
   opts.wrap = opengl::WrapMode::None;
   opengl::Text t;
@@ -44,15 +39,12 @@ int single_line_width(opengl::TextRenderer& renderer, const std::string& text)
   return t.size.x;
 }
 
-bool skip_if_no_context_or_font(const GlContext& gl)
-{
-  if (!gl.available())
-  {
+bool skip_if_no_context_or_font(const GlContext& gl) {
+  if (!gl.available()) {
     MESSAGE("skipped: no GL context available");
     return true;
   }
-  if (font_data().empty())
-  {
+  if (font_data().empty()) {
     MESSAGE("skipped: test font not found");
     return true;
   }
@@ -61,10 +53,8 @@ bool skip_if_no_context_or_font(const GlContext& gl)
 
 } // namespace
 
-TEST_SUITE("opengl::TextRenderer::render_text layout")
-{
-  TEST_CASE("short text does not wrap and fits max_width")
-  {
+TEST_SUITE("opengl::TextRenderer::render_text layout") {
+  TEST_CASE("short text does not wrap and fits max_width") {
     const GlContext gl;
     if (skip_if_no_context_or_font(gl)) return;
 
@@ -85,8 +75,7 @@ TEST_SUITE("opengl::TextRenderer::render_text layout")
     CHECK(t.size.y > 0);
   }
 
-  TEST_CASE("Word wrap: long text wraps and height grows")
-  {
+  TEST_CASE("Word wrap: long text wraps and height grows") {
     const GlContext gl;
     if (skip_if_no_context_or_font(gl)) return;
 
@@ -107,8 +96,7 @@ TEST_SUITE("opengl::TextRenderer::render_text layout")
     CHECK(t.size.y > opts.size);
   }
 
-  TEST_CASE("Wrap None ignores max_width")
-  {
+  TEST_CASE("Wrap None ignores max_width") {
     const GlContext gl;
     if (skip_if_no_context_or_font(gl)) return;
 
@@ -128,8 +116,7 @@ TEST_SUITE("opengl::TextRenderer::render_text layout")
     CHECK(t.size.x == unwrapped);
   }
 
-  TEST_CASE("Char wrap breaks mid-word")
-  {
+  TEST_CASE("Char wrap breaks mid-word") {
     const GlContext gl;
     if (skip_if_no_context_or_font(gl)) return;
 
@@ -150,8 +137,7 @@ TEST_SUITE("opengl::TextRenderer::render_text layout")
     CHECK(t.size.y > opts.size);
   }
 
-  TEST_CASE("max_height clips the texture height")
-  {
+  TEST_CASE("max_height clips the texture height") {
     const GlContext gl;
     if (skip_if_no_context_or_font(gl)) return;
 
@@ -171,8 +157,7 @@ TEST_SUITE("opengl::TextRenderer::render_text layout")
     CHECK(t.size.y <= wrap_opts.max_height);
   }
 
-  TEST_CASE("custom line_height increases line spacing")
-  {
+  TEST_CASE("custom line_height increases line spacing") {
     const GlContext gl;
     if (skip_if_no_context_or_font(gl)) return;
 
@@ -199,8 +184,7 @@ TEST_SUITE("opengl::TextRenderer::render_text layout")
     CHECK(t_tall.size.y > t_default.size.y);
   }
 
-  TEST_CASE("empty string produces zero-size texture")
-  {
+  TEST_CASE("empty string produces zero-size texture") {
     const GlContext gl;
     if (skip_if_no_context_or_font(gl)) return;
 

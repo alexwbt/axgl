@@ -22,67 +22,58 @@
 
 #include "service_container.hpp"
 
-namespace axgl
-{
+namespace axgl {
 
 #define __AXGL_DECLARE_SERVICE_GETTER(service_type, service_getter_name)       \
-  ptr_t<service_type> service_getter_name##_service() const                    \
-  {                                                                            \
+  ptr_t<service_type> service_getter_name##_service() const {                  \
     return get_service<service_type>(service_type::kTypeId.data());            \
   }
 
-class Axgl final : public ServiceContainer
-{
+class Axgl final : public ServiceContainer {
   axgl::Context context_{this};
 
 public:
-  void initialize() override
-  {
+  void initialize() override {
 #if SPDLOG_ACTIVE_LEVEL == SPDLOG_LEVEL_DEBUG
     spdlog::set_level(spdlog::level::debug);
 #endif
 #ifdef AXGL_DEBUG
-    CPPTRACE_TRY
-    {
+    CPPTRACE_TRY {
 #endif
       ServiceContainer::set_context(&context_);
       ServiceContainer::initialize();
 #ifdef AXGL_DEBUG
     }
-    CPPTRACE_CATCH(const std::exception& e)
-    {
+    CPPTRACE_CATCH(const std::exception& e) {
       AXGL_LOG_ERROR(
-        "Exception thrown duration initialization: {}\n{}", e.what(),
+        "Exception thrown duration initialization: {}\n{}",
+        e.what(),
         cpptrace::from_current_exception().to_string(true)
       );
     }
 #endif
   }
 
-  void terminate() override
-  {
+  void terminate() override {
 #ifdef AXGL_DEBUG
-    CPPTRACE_TRY
-    {
+    CPPTRACE_TRY {
 #endif
       ServiceContainer::terminate();
 #ifdef AXGL_DEBUG
     }
-    CPPTRACE_CATCH(const std::exception& e)
-    {
+    CPPTRACE_CATCH(const std::exception& e) {
       AXGL_LOG_ERROR(
-        "Exception thrown duration termination: {}\n{}", e.what(),
+        "Exception thrown duration termination: {}\n{}",
+        e.what(),
         cpptrace::from_current_exception().to_string(true)
       );
     }
 #endif
   }
 
-  void run()
-  {
+  void run() {
 #ifdef AXGL_DEBUG
-    CPPTRACE_TRY
-    {
+    CPPTRACE_TRY {
 #endif
       using namespace std::chrono;
       constexpr std::int64_t kOneSecond = 1000000000;
@@ -96,8 +87,7 @@ public:
 #endif
 
       on_start();
-      while (running())
-      {
+      while (running()) {
         AXGL_PROFILE_SCOPE("Main Loop");
 
         const auto now = high_resolution_clock::now();
@@ -108,8 +98,7 @@ public:
         start_time = now;
 #ifdef AXGL_DEBUG
         debug_delta_time += delta_time;
-        if (debug_delta_time >= kOneSecond)
-        {
+        if (debug_delta_time >= kOneSecond) {
           AXGL_PLOT("Update hz", update_count);
           update_count = 0;
           debug_delta_time = 0;
@@ -117,8 +106,7 @@ public:
 #endif
 
         const auto should_update = delta_tick >= 1;
-        if (should_update)
-        {
+        if (should_update) {
           AXGL_PLOT("Delta time (ns)", delta_time);
           AXGL_PLOT("Delta tick", std::round(delta_tick * 100.0) / 100.0);
           AXGL_PROFILE_SCOPE("Update");
@@ -130,15 +118,13 @@ public:
 #endif
         }
 
-        while (delta_tick >= 1)
-        {
+        while (delta_tick >= 1) {
           AXGL_PROFILE_SCOPE("Tick");
           tick();
           delta_tick--;
         }
 
-        if (should_update)
-        {
+        if (should_update) {
           AXGL_PROFILE_SCOPE("Render");
           render();
         }
@@ -146,10 +132,10 @@ public:
       on_end();
 #ifdef AXGL_DEBUG
     }
-    CPPTRACE_CATCH(const std::exception& e)
-    {
+    CPPTRACE_CATCH(const std::exception& e) {
       AXGL_LOG_ERROR(
-        "Exception thrown: {}\n{}", e.what(),
+        "Exception thrown: {}\n{}",
+        e.what(),
         cpptrace::from_current_exception().to_string(true)
       );
     }
@@ -177,11 +163,9 @@ public:
 #include <axgl/impl/services/realm_service.hpp>
 #include <axgl/impl/services/resource_service.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-inline void configure_default(Axgl& axgl)
-{
+inline void configure_default(Axgl& axgl) {
   axgl.register_service_t<impl::CameraService>();
   axgl.register_service_t<impl::EntityService>();
   axgl.register_service_t<impl::RealmService>();

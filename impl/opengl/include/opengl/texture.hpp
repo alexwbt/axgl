@@ -8,26 +8,26 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-namespace opengl
-{
+namespace opengl {
 
-class StbiImage final
-{
+class StbiImage final {
 public:
   stbi_uc* stbi_ptr;
   GLenum format;
   int width = 0, height = 0;
 
-  explicit StbiImage(const std::span<const std::uint8_t>& data)
-  {
+  explicit StbiImage(const std::span<const std::uint8_t>& data) {
     int nrChannels;
     stbi_ptr = stbi_load_from_memory(
-      data.data(), util::narrow<int>(data.size()), &width, &height, &nrChannels,
+      data.data(),
+      util::narrow<int>(data.size()),
+      &width,
+      &height,
+      &nrChannels,
       0
     );
 
-    switch (nrChannels)
-    {
+    switch (nrChannels) {
     case 1: format = GL_RED; break;
     case 4: format = GL_RGBA; break;
     default: format = GL_RGB;
@@ -41,8 +41,7 @@ public:
   ~StbiImage() { stbi_image_free(stbi_ptr); }
 };
 
-class Texture final
-{
+class Texture final {
   GLuint id_ = 0;
   GLuint target_ = 0;
   GLsizei width_ = 0;
@@ -54,8 +53,7 @@ public:
   Texture(const Texture&) = delete;
   Texture& operator=(const Texture&) = delete;
 
-  Texture(Texture&& other) noexcept
-  {
+  Texture(Texture&& other) noexcept {
     id_ = other.id_;
     target_ = other.target_;
     width_ = other.width_;
@@ -65,10 +63,8 @@ public:
     other.width_ = 0;
     other.height_ = 0;
   }
-  Texture& operator=(Texture&& other) noexcept
-  {
-    if (this != &other)
-    {
+  Texture& operator=(Texture&& other) noexcept {
+    if (this != &other) {
       if (id_ > 0) glDeleteTextures(1, &id_);
 
       id_ = other.id_;
@@ -83,8 +79,7 @@ public:
     return *this;
   }
 
-  ~Texture()
-  {
+  ~Texture() {
     if (id_ > 0) glDeleteTextures(1, &id_);
   }
 
@@ -98,41 +93,37 @@ public:
 
   [[nodiscard]] bool initialized() const { return target_ > 0; }
 
-  void use(const GLenum texture_unit) const
-  {
+  void use(const GLenum texture_unit) const {
     glActiveTexture(texture_unit);
     use();
   }
 
-  void use() const
-  {
+  void use() const {
 #ifdef AXGL_DEBUG
-    if (!initialized())
-    {
+    if (!initialized()) {
       const auto trace = cpptrace::generate_trace();
       AXGL_LOG_ERROR("Using uninitialized texture.\n{}", trace.to_string());
     }
-    if (width_ <= 0 || height_ <= 0)
-    {
+    if (width_ <= 0 || height_ <= 0) {
       const auto trace = cpptrace::generate_trace();
       AXGL_LOG_WARN(
-        "Texture is used with invalid size: width {}, height {}\n{}", width_,
-        height_, trace.to_string()
+        "Texture is used with invalid size: width {}, height {}\n{}",
+        width_,
+        height_,
+        trace.to_string()
       );
     }
 #endif
     glBindTexture(target_, id_);
   }
 
-  void set_parameter(const GLenum param, const GLint value) const
-  {
+  void set_parameter(const GLenum param, const GLint value) const {
     glTexParameteri(target_, param, value);
   }
 
   void set_parameter(
     const GLenum param, const std::span<const GLfloat>& value
-  ) const
-  {
+  ) const {
     glTexParameterfv(target_, param, &value[0]);
   }
 
@@ -147,10 +138,8 @@ public:
     const GLenum format,
     const GLenum type,
     const void* pixels
-  )
-  {
-    if (initialized())
-    {
+  ) {
+    if (initialized()) {
       AXGL_LOG_ERROR("Texture is already initialized.");
       return;
     }
@@ -160,7 +149,14 @@ public:
 
     use();
     glTexImage2D(
-      target_, level, internal_format, width, height, border, format, type,
+      target_,
+      level,
+      internal_format,
+      width,
+      height,
+      border,
+      format,
+      type,
       pixels
     );
   }
@@ -175,10 +171,8 @@ public:
     const GLenum format,
     const GLenum type,
     const void* pixels
-  )
-  {
-    if (initialized())
-    {
+  ) {
+    if (initialized()) {
       AXGL_LOG_ERROR("Texture is already initialized.");
       return;
     }
@@ -188,8 +182,16 @@ public:
 
     use();
     glTexImage3D(
-      GL_TEXTURE_2D_ARRAY, level, internal_format, width, height, depth, border,
-      format, type, pixels
+      GL_TEXTURE_2D_ARRAY,
+      level,
+      internal_format,
+      width,
+      height,
+      depth,
+      border,
+      format,
+      type,
+      pixels
     );
   }
 
@@ -203,10 +205,8 @@ public:
     const GLenum format,
     const GLenum type,
     const void* pixels
-  )
-  {
-    if (initialized())
-    {
+  ) {
+    if (initialized()) {
       AXGL_LOG_ERROR("Texture is already initialized.");
       return;
     }
@@ -216,43 +216,57 @@ public:
 
     use();
     glTexImage3D(
-      GL_TEXTURE_CUBE_MAP_ARRAY, level, internal_format, width, height,
-      layers * 6, border, format, type, pixels
+      GL_TEXTURE_CUBE_MAP_ARRAY,
+      level,
+      internal_format,
+      width,
+      height,
+      layers * 6,
+      border,
+      format,
+      type,
+      pixels
     );
   }
 
-  void load_image_texture(const std::span<const uint8_t> data)
-  {
+  void load_image_texture(const std::span<const uint8_t> data) {
     const StbiImage texture(data);
-    if (!texture.stbi_ptr)
-    {
+    if (!texture.stbi_ptr) {
       AXGL_LOG_ERROR("Failed to load texture image.");
       return;
     }
 
     load_texture(
-      0, static_cast<GLint>(texture.format), texture.width, texture.height, 0,
-      texture.format, GL_UNSIGNED_BYTE, texture.stbi_ptr
+      0,
+      static_cast<GLint>(texture.format),
+      texture.width,
+      texture.height,
+      0,
+      texture.format,
+      GL_UNSIGNED_BYTE,
+      texture.stbi_ptr
     );
   }
 
-  void load_cubemap_texture(const std::array<std::span<const uint8_t>, 6>& data)
-  {
-    if (initialized())
-    {
+  void load_cubemap_texture(
+    const std::array<std::span<const uint8_t>, 6>& data
+  ) {
+    if (initialized()) {
       AXGL_LOG_ERROR("Texture is already initialized.");
       return;
     }
     target_ = GL_TEXTURE_CUBE_MAP;
 
     const StbiImage texture[6] = {
-      StbiImage(data[0]), StbiImage(data[1]), StbiImage(data[2]),
-      StbiImage(data[3]), StbiImage(data[4]), StbiImage(data[5]),
+      StbiImage(data[0]),
+      StbiImage(data[1]),
+      StbiImage(data[2]),
+      StbiImage(data[3]),
+      StbiImage(data[4]),
+      StbiImage(data[5]),
     };
-    for (int i = 0; i < 6; i++)
-    {
-      if (!texture[i].stbi_ptr)
-      {
+    for (int i = 0; i < 6; i++) {
+      if (!texture[i].stbi_ptr) {
         AXGL_LOG_ERROR("Failed to load cubemap texture. ({})", i);
         return;
       }
@@ -269,14 +283,15 @@ public:
 
     for (int i = 0; i < 6; i++)
       glTexImage2D(
-        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,       //
-        0, static_cast<GLint>(texture[i].format), //
-        texture[i].width,                         //
-        texture[i].height,                        //
-        0,                                        //
-        texture[i].format,                        //
-        GL_UNSIGNED_BYTE,                         //
-        texture[i].stbi_ptr                       //
+        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,    //
+        0,
+        static_cast<GLint>(texture[i].format), //
+        texture[i].width,                      //
+        texture[i].height,                     //
+        0,                                     //
+        texture[i].format,                     //
+        GL_UNSIGNED_BYTE,                      //
+        texture[i].stbi_ptr                    //
       );
   }
 
@@ -286,10 +301,8 @@ public:
     const GLsizei width,
     const GLsizei height,
     const GLboolean fixed_sample_locations
-  )
-  {
-    if (initialized())
-    {
+  ) {
+    if (initialized()) {
       AXGL_LOG_ERROR("Texture is already initialized.");
       return;
     }
@@ -299,7 +312,11 @@ public:
 
     use();
     glTexImage2DMultisample(
-      target_, sample_size, internal_format, width, height,
+      target_,
+      sample_size,
+      internal_format,
+      width,
+      height,
       fixed_sample_locations
     );
   }

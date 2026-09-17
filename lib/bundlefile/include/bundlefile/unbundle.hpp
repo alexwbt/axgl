@@ -7,16 +7,13 @@
 
 #include <bundlefile/bundle_fbs.h>
 
-namespace bundlefile
-{
+namespace bundlefile {
 
-class Bundle
-{
+class Bundle {
   std::vector<std::uint8_t> data_;
 
 public:
-  explicit Bundle(const std::string& path)
-  {
+  explicit Bundle(const std::string& path) {
     std::ifstream input_stream(path, std::ios::binary | std::ios::ate);
     if (!input_stream)
       throw std::runtime_error("Failed to open bundlefile: " + path);
@@ -28,8 +25,7 @@ public:
     input_stream.read(reinterpret_cast<char*>(data_.data()), size);
   }
 
-  [[nodiscard]] const auto* get_bundle() const
-  {
+  [[nodiscard]] const auto* get_bundle() const {
     return fbs::bundlefile::GetBundle(data_.data());
   }
 };

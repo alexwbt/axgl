@@ -3,13 +3,11 @@
 #include <axgl/interface/container.hpp>
 #include <axgl/interface/context.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
 class Entity;
 
-class Realm : virtual public axgl::ContextHolder
-{
+class Realm : virtual public axgl::ContextHolder {
 public:
   virtual void on_create() = 0;
   virtual void on_active() = 0;

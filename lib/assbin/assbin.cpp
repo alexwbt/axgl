@@ -46,7 +46,8 @@
 
 #define USE_ASSIMP_OPTION(option, flag)                                        \
   SPDLOG_INFO(                                                                 \
-    "{}: {}", #option,                                                         \
+    "{}: {}",                                                                  \
+    #option,                                                                   \
     fmt::format(                                                               \
       fmt::fg(                                                                 \
         ((flag) & aiProcess_##option) ? fmt::terminal_color::green             \
@@ -62,13 +63,13 @@ static int convert(
   const std::string& output,
   const std::string& format,
   unsigned int flag
-)
-{
+) {
   Assimp::Importer importer;
   const auto* scene = importer.ReadFile(input, flag);
 
-  if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-  {
+  if (
+    !scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode
+  ) {
     SPDLOG_ERROR("Failed to load model: {}", importer.GetErrorString());
     return 1;
   }
@@ -76,8 +77,7 @@ static int convert(
   if (
     Assimp::Exporter exporter;
     exporter.Export(scene, format, output) != AI_SUCCESS
-  )
-  {
+  ) {
     SPDLOG_ERROR(
       "Failed to export to format '{}': {}", format, exporter.GetErrorString()
     );
@@ -88,25 +88,24 @@ static int convert(
   return 0;
 }
 
-static void list_export_formats()
-{
+static void list_export_formats() {
   SPDLOG_INFO("{:<10} | {:<50} | {:<10}", "name", "description", "extension");
   SPDLOG_INFO("{:-<80}", "");
 
   const Assimp::Exporter exporter;
   const auto format_count = exporter.GetExportFormatCount();
-  for (size_t i = 0; i < format_count; ++i)
-  {
+  for (size_t i = 0; i < format_count; ++i) {
     const auto* desc = exporter.GetExportFormatDescription(i);
     SPDLOG_INFO(
-      "{:<10} | {:<50} | {:<10}", desc->id, desc->description,
+      "{:<10} | {:<50} | {:<10}",
+      desc->id,
+      desc->description,
       desc->fileExtension
     );
   }
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   args::ArgumentParser parser("Convert a 3d model with Assimp.");
   args::HelpFlag help(parser, "help", "Display the help menu.", {'h', "help"});
 
@@ -121,47 +120,39 @@ int main(int argc, char** argv)
     parser, "format", "The output format.", {'f', "format"}, "glb2"
   );
   args::Flag list_formats(
-    parser, "list-formats", "List all supported export formats and exit.",
+    parser,
+    "list-formats",
+    "List all supported export formats and exit.",
     {"list-formats"}
   );
 
   DEFINE_ASSIMP_OPTION(PresetTargetRealtime, parser);
   FOR_EACH_OPTIONS(DEFINE_ASSIMP_OPTION, parser);
 
-  try
-  {
+  try {
     parser.ParseCLI(argc, argv);
-  }
-  catch (const args::Completion& e)
-  {
+  } catch (const args::Completion& e) {
     std::cout << e.what();
     return 0;
-  }
-  catch (const args::Help&)
-  {
+  } catch (const args::Help&) {
     std::cout << parser;
     return 0;
-  }
-  catch (const args::Error& e)
-  {
+  } catch (const args::Error& e) {
     SPDLOG_ERROR("{}", e.what());
     return 1;
   }
 
-  if (list_formats)
-  {
+  if (list_formats) {
     list_export_formats();
     return 0;
   }
 
-  if (!source)
-  {
+  if (!source) {
     SPDLOG_ERROR("Option 'source' is required.");
     return 1;
   }
 
-  if (!target)
-  {
+  if (!target) {
     SPDLOG_ERROR("Option 'target' is required.");
     return 1;
   }

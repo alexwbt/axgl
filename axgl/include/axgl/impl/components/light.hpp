@@ -6,19 +6,16 @@
 
 #include <axgl/impl/component_base.hpp>
 
-namespace axgl::impl::component
-{
+namespace axgl::impl::component {
 
-class Light : public ComponentBase
-{
+class Light : public ComponentBase {
 public:
   static constexpr std::string_view kTypeId = "component::light";
 
   axgl::Light light{axgl::Light::Type::kSun};
   bool bind_parent = true;
 
-  void parent_update(axgl::Entity* parent) override
-  {
+  void parent_update(axgl::Entity* parent) override {
     if (bind_parent) light.position = parent->transform().position;
   }
 };

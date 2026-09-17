@@ -9,11 +9,9 @@
 
 #include <util/numcast.hpp>
 
-namespace util
-{
+namespace util {
 
-inline std::string read_text_file(const std::string& path)
-{
+inline std::string read_text_file(const std::string& path) {
   const std::ifstream file(path, std::ifstream::in);
   if (!file.is_open()) throw std::runtime_error("Could not open file: " + path);
 
@@ -22,8 +20,7 @@ inline std::string read_text_file(const std::string& path)
   return output.str();
 }
 
-inline std::vector<uint8_t> read_file(const std::string& path)
-{
+inline std::vector<uint8_t> read_file(const std::string& path) {
   std::ifstream file(path, std::ifstream::in);
   if (!file.is_open()) throw std::runtime_error("Could not open file: " + path);
 
@@ -40,8 +37,9 @@ inline std::vector<uint8_t> read_file(const std::string& path)
   return buffer;
 }
 
-inline void write_text_file(const std::string& path, const std::string& content)
-{
+inline void write_text_file(
+  const std::string& path, const std::string& content
+) {
   std::ofstream file(path);
   if (!file.is_open()) throw std::runtime_error("Could not open file: " + path);
 

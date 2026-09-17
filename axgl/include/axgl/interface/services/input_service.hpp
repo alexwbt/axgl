@@ -5,16 +5,13 @@
 #include <axgl/interface/pointer.hpp>
 #include <axgl/interface/services/window_service.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class InputService : virtual public axgl::Service
-{
+class InputService : virtual public axgl::Service {
 public:
   static constexpr std::string_view kTypeId = "service::input";
 
-  enum class CursorMode
-  {
+  enum class CursorMode {
     kLocked,
     kNormal,
   };

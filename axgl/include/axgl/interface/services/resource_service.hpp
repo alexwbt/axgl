@@ -5,11 +5,9 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/service.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class ResourceService : virtual public axgl::Service
-{
+class ResourceService : virtual public axgl::Service {
 public:
   static constexpr std::string_view kTypeId = "service::resource";
 

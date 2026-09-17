@@ -7,14 +7,12 @@
 #include <stdexcept>
 #include <type_traits>
 
-namespace util
-{
+namespace util {
 
 // Same type: trivially in range.
 template <typename to_t, typename from_t>
   requires(std::is_same_v<to_t, from_t>)
-[[nodiscard]] constexpr bool in_range(const from_t) noexcept
-{
+[[nodiscard]] constexpr bool in_range(const from_t) noexcept {
   return true;
 }
 
@@ -25,16 +23,11 @@ template <typename to_t, typename from_t>
 template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_floating_point_v<from_t> && std::is_integral_v<to_t>
-[[nodiscard]] constexpr bool in_range(const from_t value) noexcept
-{
-  if (std::is_constant_evaluated())
-  {
+[[nodiscard]] constexpr bool in_range(const from_t value) noexcept {
+  if (std::is_constant_evaluated()) {
     return static_cast<from_t>(static_cast<to_t>(value)) == value;
-  }
-  else
-  {
-    if constexpr (std::numeric_limits<from_t>::is_iec559)
-    {
+  } else {
+    if constexpr (std::numeric_limits<from_t>::is_iec559) {
       if (!std::isfinite(value)) return false;
     }
     return value >= static_cast<from_t>(std::numeric_limits<to_t>::lowest())
@@ -49,8 +42,7 @@ template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_integral_v<to_t> && std::is_integral_v<from_t>
   && (std::is_signed_v<from_t> == std::is_signed_v<to_t>)
-[[nodiscard]] constexpr bool in_range(const from_t value) noexcept
-{
+[[nodiscard]] constexpr bool in_range(const from_t value) noexcept {
   constexpr auto to_min = std::numeric_limits<to_t>::lowest();
   constexpr auto to_max = std::numeric_limits<to_t>::max();
   return value >= static_cast<from_t>(to_min)
@@ -63,8 +55,7 @@ template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_integral_v<to_t> && std::is_integral_v<from_t>
   && std::is_signed_v<from_t> && std::is_unsigned_v<to_t>
-[[nodiscard]] constexpr bool in_range(const from_t value) noexcept
-{
+[[nodiscard]] constexpr bool in_range(const from_t value) noexcept {
   if (value < 0) return false;
   constexpr auto to_max = std::numeric_limits<to_t>::max();
   return static_cast<std::make_unsigned_t<from_t>>(value)
@@ -77,8 +68,7 @@ template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_integral_v<to_t> && std::is_integral_v<from_t>
   && std::is_unsigned_v<from_t> && std::is_signed_v<to_t>
-[[nodiscard]] constexpr bool in_range(const from_t value) noexcept
-{
+[[nodiscard]] constexpr bool in_range(const from_t value) noexcept {
   constexpr auto to_max = std::numeric_limits<to_t>::max();
   return value <= static_cast<std::make_unsigned_t<from_t>>(to_max);
 }
@@ -88,8 +78,7 @@ template <typename to_t, typename from_t>
 template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_integral_v<from_t> && std::is_floating_point_v<to_t>
-[[nodiscard]] constexpr bool in_range(const from_t value) noexcept
-{
+[[nodiscard]] constexpr bool in_range(const from_t value) noexcept {
   return static_cast<from_t>(static_cast<to_t>(value)) == value;
 }
 
@@ -98,8 +87,7 @@ template <typename to_t, typename from_t>
 template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_floating_point_v<from_t> && std::is_floating_point_v<to_t>
-[[nodiscard]] constexpr bool in_range(const from_t value) noexcept
-{
+[[nodiscard]] constexpr bool in_range(const from_t value) noexcept {
   return static_cast<from_t>(static_cast<to_t>(value)) == value;
 }
 
@@ -109,8 +97,7 @@ template <typename to_t, typename from_t>
   requires std::is_arithmetic_v<to_t> && std::is_arithmetic_v<from_t>
 [[nodiscard]] constexpr std::optional<to_t> narrow_cast(
   const from_t value
-) noexcept
-{
+) noexcept {
   if (!in_range<to_t>(value)) return std::nullopt;
   return static_cast<to_t>(value);
 }
@@ -121,8 +108,7 @@ template <typename to_t, typename from_t>
   requires std::is_arithmetic_v<to_t> && std::is_arithmetic_v<from_t>
 [[nodiscard]] constexpr to_t narrow_cast(
   const from_t value, const to_t fallback
-) noexcept
-{
+) noexcept {
   if (in_range<to_t>(value)) return static_cast<to_t>(value);
   return fallback;
 }
@@ -131,8 +117,7 @@ template <typename to_t, typename from_t>
 // Use when overflow would be a bug (e.g. deserialization, untrusted input).
 template <typename to_t, typename from_t>
   requires std::is_arithmetic_v<to_t> && std::is_arithmetic_v<from_t>
-[[nodiscard]] constexpr to_t narrow(const from_t value)
-{
+[[nodiscard]] constexpr to_t narrow(const from_t value) {
   if (!in_range<to_t>(value))
     throw std::out_of_range("narrow: value out of range for target type");
   return static_cast<to_t>(value);
@@ -143,8 +128,7 @@ template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_integral_v<to_t> && std::is_integral_v<from_t>
   && (std::is_signed_v<from_t> == std::is_signed_v<to_t>)
-[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept
-{
+[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept {
   constexpr auto to_min = std::numeric_limits<to_t>::lowest();
   constexpr auto to_max = std::numeric_limits<to_t>::max();
   if (value < static_cast<from_t>(to_min)) return to_min;
@@ -158,8 +142,7 @@ template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_integral_v<to_t> && std::is_integral_v<from_t>
   && std::is_signed_v<from_t> && std::is_unsigned_v<to_t>
-[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept
-{
+[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept {
   constexpr auto to_max = std::numeric_limits<to_t>::max();
   if (value < 0) return static_cast<to_t>(0);
   if (
@@ -176,8 +159,7 @@ template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_integral_v<to_t> && std::is_integral_v<from_t>
   && std::is_unsigned_v<from_t> && std::is_signed_v<to_t>
-[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept
-{
+[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept {
   constexpr auto to_max = std::numeric_limits<to_t>::max();
   const auto max_in = static_cast<std::make_unsigned_t<from_t>>(to_max);
   if (value > max_in) return static_cast<to_t>(max_in);
@@ -188,18 +170,14 @@ template <typename to_t, typename from_t>
 template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_floating_point_v<from_t> && std::is_integral_v<to_t>
-[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept
-{
-  if (std::is_constant_evaluated())
-  {
+[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept {
+  if (std::is_constant_evaluated()) {
     if (value < static_cast<from_t>(std::numeric_limits<to_t>::lowest()))
       return std::numeric_limits<to_t>::lowest();
     if (value > static_cast<from_t>(std::numeric_limits<to_t>::max()))
       return std::numeric_limits<to_t>::max();
     return static_cast<to_t>(value);
-  }
-  else
-  {
+  } else {
     if (!std::isfinite(value)) return static_cast<to_t>(0);
     if (value < static_cast<from_t>(std::numeric_limits<to_t>::lowest()))
       return std::numeric_limits<to_t>::lowest();
@@ -215,8 +193,7 @@ template <typename to_t, typename from_t>
 template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_integral_v<from_t> && std::is_floating_point_v<to_t>
-[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept
-{
+[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept {
   return static_cast<to_t>(value);
 }
 
@@ -224,8 +201,7 @@ template <typename to_t, typename from_t>
 template <typename to_t, typename from_t>
   requires(!std::is_same_v<to_t, from_t>)
   && std::is_floating_point_v<from_t> && std::is_floating_point_v<to_t>
-[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept
-{
+[[nodiscard]] constexpr to_t clamp_cast(const from_t value) noexcept {
   if (value < static_cast<from_t>(std::numeric_limits<to_t>::lowest()))
     return static_cast<to_t>(std::numeric_limits<to_t>::lowest());
   if (value > static_cast<from_t>(std::numeric_limits<to_t>::max()))

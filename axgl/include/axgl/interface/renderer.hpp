@@ -4,11 +4,9 @@
 #include <axgl/interface/context.hpp>
 #include <axgl/interface/window.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class Renderer : virtual public axgl::ContextHolder
-{
+class Renderer : virtual public axgl::ContextHolder {
 public:
   virtual void render() = 0;
 

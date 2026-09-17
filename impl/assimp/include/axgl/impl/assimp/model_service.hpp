@@ -6,15 +6,12 @@
 
 #include "model_loader.hpp"
 
-namespace axgl::impl::assimp
-{
+namespace axgl::impl::assimp {
 
 class ModelService : virtual public axgl::ModelService,
-                     public axgl::impl::ServiceBase
-{
+                     public axgl::impl::ServiceBase {
 public:
-  ModelResources load_model(const std::string& resource_key) override
-  {
+  ModelResources load_model(const std::string& resource_key) override {
     const auto& entity_service = axgl_->entity_service();
     const auto& renderer_service = axgl_->renderer_service();
     const auto& resource_service = axgl_->resource_service();

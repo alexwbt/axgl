@@ -2,11 +2,9 @@
 
 #include <net/common.hpp>
 
-namespace net
-{
+namespace net {
 
-class Socket
-{
+class Socket {
 public:
   virtual ~Socket() = default;
 

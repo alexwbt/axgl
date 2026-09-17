@@ -9,16 +9,14 @@
 #include "entity/cube.hpp"
 #include "entity/toy_block.hpp"
 
-class HdrScene : public CommonScene
-{
+class HdrScene : public CommonScene {
 public:
   static constexpr std::string_view kTypeId = "realm::hdr";
 
 private:
   void add_wall(
     const glm::vec3& position, const glm::vec3& scale, const glm::vec2& tiling
-  )
-  {
+  ) {
     const auto& renderer_service = axgl_->renderer_service();
     const auto& resource_service = axgl_->resource_service();
     const auto diffuse = renderer_service->create_texture();
@@ -51,8 +49,7 @@ private:
   }
 
 public:
-  void on_create() override
-  {
+  void on_create() override {
     CommonScene::on_create();
 
     const float half_w = 2.5f;
@@ -63,17 +60,20 @@ public:
     // ceiling
     add_wall(
       {0.0f, wall_h - thickness * 0.5f, -length * 0.5f},
-      {half_w * 2.0f, thickness, length}, {half_w * 2.0f, length}
+      {half_w * 2.0f, thickness, length},
+      {half_w * 2.0f, length}
     );
     // right wall
     add_wall(
       {half_w + thickness * 0.5f, wall_h * 0.5f, -length * 0.5f},
-      {thickness, wall_h, length}, {length, wall_h}
+      {thickness, wall_h, length},
+      {length, wall_h}
     );
     // left wall
     add_wall(
       {-(half_w + thickness * 0.5f), wall_h * 0.5f, -length * 0.5f},
-      {thickness, wall_h, length}, {length, wall_h}
+      {thickness, wall_h, length},
+      {length, wall_h}
     );
 
     add_entity<CubeEntity>({-1.0f, 0.5f, -4.0f}, 0.5f);

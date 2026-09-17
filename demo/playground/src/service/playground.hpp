@@ -21,8 +21,7 @@
 #include "scene/entity/floor.hpp"
 #include "scene/entity/toy_block.hpp"
 
-class Playground : public axgl::impl::ServiceBase
-{
+class Playground : public axgl::impl::ServiceBase {
 public:
   static constexpr std::string_view kTypeId = "service::playground";
 
@@ -33,8 +32,7 @@ private:
   axgl::ptr_t<InputManager> inputs_;
 
 public:
-  void initialize() override
-  {
+  void initialize() override {
     const auto& entity_service = axgl_->entity_service();
     const auto& realm_service = axgl_->realm_service();
     // register components
@@ -56,8 +54,7 @@ public:
     realm_service->register_realm_t<HdrScene>();
   }
 
-  void on_start() override
-  {
+  void on_start() override {
     inputs_ = axgl_->get_service_t<InputManager>();
 
     const auto& realm_service = axgl_->realm_service();
@@ -71,11 +68,9 @@ public:
     axgl_->realm_service()->set_active_realm(scenes_[current_scene_]);
   }
 
-  void update() override
-  {
+  void update() override {
     // switch scenes
-    if (inputs_->switch_scene()->clicked())
-    {
+    if (inputs_->switch_scene()->clicked()) {
       current_scene_ = (current_scene_ + 1) % scenes_.size();
       axgl_->realm_service()->set_active_realm(scenes_[current_scene_]);
     }
@@ -91,8 +86,7 @@ public:
     // shadow
     if (inputs_->shadow()->clicked())
       renderer->set_enable_shadow(!renderer->get_enable_shadow());
-    if (inputs_->debug_csm()->clicked())
-    {
+    if (inputs_->debug_csm()->clicked()) {
       const auto& gl_renderer = axgl::ptr_cast<axgl::impl::opengl::Renderer>(
         axgl_->renderer_service()->get_active_renderer()
       );

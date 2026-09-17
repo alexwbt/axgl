@@ -8,19 +8,16 @@
 #include <axgl/impl/opengl/shaders.hpp>
 #include <axgl/impl/opengl/texture.hpp>
 
-namespace axgl::impl::opengl
-{
+namespace axgl::impl::opengl {
 
-class Mesh2dMaterial : public Material
-{
+class Mesh2dMaterial : public Material {
   const ::opengl::ShaderProgram& shader_ = Shaders::instance().mesh2d();
   axgl::ptr_t<impl::opengl::Texture> texture_;
 
 public:
   void add_texture(
     axgl::Material::TextureType, axgl::ptr_t<axgl::Texture> texture
-  ) override
-  {
+  ) override {
     texture_ = std::dynamic_pointer_cast<Texture>(texture);
 #ifdef AXGL_DEBUG
     if (!texture_)
@@ -30,8 +27,7 @@ public:
 #endif
   }
 
-  void use(const renderer::RenderContext& context) override
-  {
+  void use(const renderer::RenderContext& context) override {
     Material::use(context);
 
     shader_.use_program();
@@ -41,24 +37,19 @@ public:
     shader_.set_float("alpha_discard", alpha_discard_);
     shader_.set_float("texture_gamma", 2.2f);
 
-    if (texture_)
-    {
+    if (texture_) {
       texture_->use(GL_TEXTURE0);
       shader_.set_int("mesh_texture", 0);
       shader_.set_bool("use_texture", true);
-    }
-    else
-    {
+    } else {
       shader_.set_bool("use_texture", false);
     }
   }
 
   [[nodiscard]] int get_attribute_offset(
     const Attribute attribute
-  ) const override
-  {
-    switch (attribute)
-    {
+  ) const override {
+    switch (attribute) {
     case kVertices: return 0;
     case kUV: return 1;
     case kModels: return 2;
@@ -66,8 +57,7 @@ public:
     }
   }
 
-  [[nodiscard]] const ::opengl::ShaderProgram* get_shader() const override
-  {
+  [[nodiscard]] const ::opengl::ShaderProgram* get_shader() const override {
     return &shader_;
   }
 };

@@ -4,24 +4,20 @@
 #include <axgl/interface/service.hpp>
 #include <axgl/interface/texture.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class TextService : virtual public axgl::Service
-{
+class TextService : virtual public axgl::Service {
 public:
   static constexpr std::string_view kTypeId = "service::text";
 
-  enum class Wrap
-  {
+  enum class Wrap {
     None,
     Word,
     Char,
     Auto,
   };
 
-  struct Options
-  {
+  struct Options {
     const std::string& value;
     const std::vector<std::string>& fonts;
     const glm::vec4& font_color;

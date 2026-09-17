@@ -5,8 +5,7 @@
 #endif
 #include <axgl/common/mesh.hpp>
 
-class Application final : public axgl::impl::ServiceBase
-{
+class Application final : public axgl::impl::ServiceBase {
 public:
   static constexpr std::string_view kTypeId = "app";
 
@@ -14,8 +13,7 @@ private:
   std::shared_ptr<axgl::Entity> cube_entity_;
 
 public:
-  void on_start() override
-  {
+  void on_start() override {
     const auto& window_service = axgl_->window_service();
     const auto& renderer_service = axgl_->renderer_service();
     const auto& realm_service = axgl_->realm_service();
@@ -76,16 +74,14 @@ public:
     }
   }
 
-  void tick() override
-  {
+  void tick() override {
     auto& transform = cube_entity_->transform();
     transform.rotation += glm::vec3(0.01f, 0.02f, 0.05f);
     transform.update_matrix();
   }
 };
 
-int main()
-{
+int main() {
   axgl::Axgl axgl;
   axgl::configure_default(axgl);
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL

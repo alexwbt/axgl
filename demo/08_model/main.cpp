@@ -7,13 +7,11 @@
 #endif
 #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
 
-class Application final : public axgl::impl::ServiceBase
-{
+class Application final : public axgl::impl::ServiceBase {
 public:
   static constexpr std::string_view kTypeId = "app";
 
-  void on_start() override
-  {
+  void on_start() override {
     const auto& window_service = axgl_->window_service();
     const auto& input_service = axgl_->input_service();
     const auto& renderer_service = axgl_->renderer_service();
@@ -87,8 +85,7 @@ public:
   }
 };
 
-int main()
-{
+int main() {
   axgl::Axgl axgl;
   axgl::configure_default(axgl);
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL

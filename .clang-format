@@ -39,30 +39,6 @@ PointerAlignment: Left
 DerivePointerAlignment: false
 
 #
-# Braces (Allman style)
-#
-BreakBeforeBraces: Allman
-BraceWrapping:
-  AfterControlStatement: true
-  AfterCaseLabel: true
-  AfterClass: true
-  AfterEnum: true
-  AfterFunction: true
-  AfterNamespace: true
-  AfterObjCDeclaration: true
-  AfterStruct: true
-  AfterUnion: true
-  AfterExternBlock: true
-  BeforeCatch: true
-  BeforeElse: true
-  BeforeLambdaBody: false
-  BeforeWhile: true
-  SplitEmptyFunction: false
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: false
-SpaceInEmptyBlock: true
-
-#
 # Short constructs on a single line
 #
 AllowShortBlocksOnASingleLine: Empty
@@ -85,6 +61,7 @@ AlignTrailingComments:
 # Parameter / argument packing
 #
 BinPackParameters: OnePerLine
+BinPackArguments: false
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowAllArgumentsOnNextLine: true
 

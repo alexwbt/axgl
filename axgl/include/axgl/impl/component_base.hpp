@@ -4,14 +4,11 @@
 
 #include <axgl/impl/context_holder.hpp>
 
-namespace axgl::impl
-{
+namespace axgl::impl {
 
 class ComponentBase : virtual public axgl::Component,
-                      public axgl::impl::ContextHolder
-{
-  static std::uint64_t next_id()
-  {
+                      public axgl::impl::ContextHolder {
+  static std::uint64_t next_id() {
     static std::uint64_t id = 0;
     return ++id;
   }

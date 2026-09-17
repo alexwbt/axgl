@@ -7,12 +7,10 @@
 
 #include "../../input_manager.hpp"
 
-class DebugAxesIndicatorEntity : public axgl::impl::EntityBase
-{
+class DebugAxesIndicatorEntity : public axgl::impl::EntityBase {
   static axgl::ptr_t<axgl::Component> create_axis_mesh(
     const axgl::Axgl* axgl, const glm::vec3& axis
-  )
-  {
+  ) {
     const auto& entity_service = axgl->entity_service();
     const auto& renderer_service = axgl->renderer_service();
     auto material = renderer_service->create_material("color");
@@ -32,8 +30,7 @@ class DebugAxesIndicatorEntity : public axgl::impl::EntityBase
 public:
   static constexpr std::string_view kTypeId = "entity::debug-gizmo";
 
-  void on_create() override
-  {
+  void on_create() override {
     EntityBase::on_create();
 
     debug_input_ = axgl_->get_service_t<InputManager>()->debug();
@@ -48,8 +45,7 @@ public:
     set_hidden(true);
   }
 
-  void update() override
-  {
+  void update() override {
     EntityBase::update();
 
     if (debug_input_->clicked()) set_hidden(!is_hidden());

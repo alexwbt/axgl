@@ -4,11 +4,9 @@
 #include <axgl/interface/service.hpp>
 #include <axgl/interface/window.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class WindowService : virtual public axgl::Service
-{
+class WindowService : virtual public axgl::Service {
 public:
   static constexpr std::string_view kTypeId = "service::window";
 

@@ -6,11 +6,9 @@
 #include <axgl/interface/pointer.hpp>
 #include <axgl/interface/services/input_service.hpp>
 
-namespace axgl::impl::camera
-{
+namespace axgl::impl::camera {
 
-class Keyboard3DFreeFlyCameraMode : public axgl::CameraMode
-{
+class Keyboard3DFreeFlyCameraMode : public axgl::CameraMode {
   axgl::ptr_t<axgl::InputService> input_service_;
   axgl::ptr_t<axgl::Pointer> pointer_;
   axgl::ptr_t<axgl::Input> forward_;
@@ -47,9 +45,7 @@ public:
     right_(std::move(right)),
     escape_(std::move(escape)),
     movement_speed_(movement_speed),
-    view_sensitivity_(view_sensitivity)
-  {
-  }
+    view_sensitivity_(view_sensitivity) {}
 
   explicit Keyboard3DFreeFlyCameraMode(
     float movement_speed = 0.2f, float view_sensitivity = 0.2f
@@ -67,12 +63,9 @@ public:
       ),
       movement_speed,
       view_sensitivity
-    )
-  {
-  }
+    ) {}
 
-  void bind_inputs(ptr_t<InputService> input_service) override
-  {
+  void bind_inputs(ptr_t<InputService> input_service) override {
     input_service->add_input(escape_);
     input_service->add_pointer(pointer_);
     input_service->add_input(forward_);
@@ -85,8 +78,7 @@ public:
     input_service_ = std::move(input_service);
   }
 
-  void unbind_inputs(ptr_t<InputService> input_service) override
-  {
+  void unbind_inputs(ptr_t<InputService> input_service) override {
     input_service->remove_pointer(escape_->id);
     input_service->remove_pointer(pointer_->id);
     input_service->remove_input(forward_->id);
@@ -99,10 +91,8 @@ public:
     input_service_ = nullptr;
   }
 
-  void update(Camera& camera) override
-  {
-    if (escape_->tick == 1 && input_service_)
-    {
+  void update(Camera& camera) override {
+    if (escape_->tick == 1 && input_service_) {
       controlling_ = !controlling_;
 
       input_service_->set_cursor_mode(

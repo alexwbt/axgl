@@ -7,11 +7,9 @@
 #include <opengl/renderbuffer.hpp>
 #include <opengl/texture.hpp>
 
-namespace opengl
-{
+namespace opengl {
 
-class Framebuffer final
-{
+class Framebuffer final {
   GLuint id_ = 0;
 
 public:
@@ -20,15 +18,12 @@ public:
   Framebuffer(const Framebuffer&) = delete;
   Framebuffer& operator=(const Framebuffer&) = delete;
 
-  Framebuffer(Framebuffer&& other) noexcept
-  {
+  Framebuffer(Framebuffer&& other) noexcept {
     id_ = other.id_;
     other.id_ = 0;
   }
-  Framebuffer& operator=(Framebuffer&& other) noexcept
-  {
-    if (this != &other)
-    {
+  Framebuffer& operator=(Framebuffer&& other) noexcept {
+    if (this != &other) {
       if (id_ > 0) glDeleteFramebuffers(1, &id_);
 
       id_ = other.id_;
@@ -37,8 +32,7 @@ public:
     return *this;
   }
 
-  ~Framebuffer()
-  {
+  ~Framebuffer() {
     if (id_ > 0) glDeleteFramebuffers(1, &id_);
   }
 
@@ -50,8 +44,7 @@ public:
 
   void attach_texture(
     const GLenum attachment, const ::opengl::Texture& texture
-  ) const
-  {
+  ) const {
     use();
     glFramebufferTexture2D(
       GL_FRAMEBUFFER, attachment, texture.get_target(), texture.get_id(), 0
@@ -60,8 +53,7 @@ public:
 
   void attach_texture_layer(
     const GLenum attachment, const ::opengl::Texture& texture, const GLint layer
-  ) const
-  {
+  ) const {
     use();
     glFramebufferTextureLayer(
       GL_FRAMEBUFFER, attachment, texture.get_id(), 0, layer
@@ -73,8 +65,7 @@ public:
     const ::opengl::Texture& texture,
     const GLint layer,
     const GLint face
-  ) const
-  {
+  ) const {
     use();
     glFramebufferTextureLayer(
       GL_FRAMEBUFFER, attachment, texture.get_id(), 0, layer * 6 + face
@@ -83,34 +74,34 @@ public:
 
   void attach_renderbuffer(
     const GLenum attachment, const ::opengl::Renderbuffer& renderbuffer
-  ) const
-  {
+  ) const {
     use();
     glFramebufferRenderbuffer(
-      GL_FRAMEBUFFER, attachment, renderbuffer.get_target(),
+      GL_FRAMEBUFFER,
+      attachment,
+      renderbuffer.get_target(),
       renderbuffer.get_id()
     );
   }
 
-  void set_draw_buffers(const std::vector<GLenum>& attachments) const
-  {
+  void set_draw_buffers(const std::vector<GLenum>& attachments) const {
     use();
     glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
   }
 
   void check_status_complete(
     const std::source_location location = std::source_location::current()
-  ) const
-  {
+  ) const {
     if (const auto status = get_status(); status != GL_FRAMEBUFFER_COMPLETE)
       AXGL_LOG_ERROR(
         "Framebuffer status is incomplete. (status: {}, location: {}:{})",
-        status, location.file_name(), location.line()
+        status,
+        location.file_name(),
+        location.line()
       );
   }
 
-  [[nodiscard]] GLenum get_status() const
-  {
+  [[nodiscard]] GLenum get_status() const {
     use();
     return glCheckFramebufferStatus(GL_FRAMEBUFFER);
   }

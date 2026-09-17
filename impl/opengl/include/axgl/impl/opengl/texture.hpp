@@ -8,20 +8,17 @@
 
 #include <opengl/texture.hpp>
 
-namespace axgl::impl::opengl
-{
+namespace axgl::impl::opengl {
 
-class Texture : public axgl::Texture
-{
+class Texture : public axgl::Texture {
   axgl::ptr_t<::opengl::Texture> texture_;
 
 public:
-  Texture() : texture_(axgl::create_ptr<::opengl::Texture>()) { }
+  Texture() : texture_(axgl::create_ptr<::opengl::Texture>()) {}
 
   void use(const GLenum texture_unit) const { texture_->use(texture_unit); }
 
-  void load_texture(const std::span<const std::uint8_t> data) override
-  {
+  void load_texture(const std::span<const std::uint8_t> data) override {
     texture_->load_image_texture(data);
     texture_->set_parameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
     texture_->set_parameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -30,21 +27,17 @@ public:
     texture_->generate_mipmap();
   }
 
-  [[nodiscard]] std::uint32_t get_width() override
-  {
+  [[nodiscard]] std::uint32_t get_width() override {
     return texture_->get_width();
   }
-  [[nodiscard]] std::uint32_t get_height() override
-  {
+  [[nodiscard]] std::uint32_t get_height() override {
     return texture_->get_height();
   }
 
-  void replace_texture(axgl::ptr_t<::opengl::Texture> texture)
-  {
+  void replace_texture(axgl::ptr_t<::opengl::Texture> texture) {
     texture_ = std::move(texture);
   }
-  [[nodiscard]] axgl::ptr_t<::opengl::Texture> get_texture() const
-  {
+  [[nodiscard]] axgl::ptr_t<::opengl::Texture> get_texture() const {
     return texture_;
   }
 };

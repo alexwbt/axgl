@@ -4,8 +4,7 @@
   #include <axgl/impl/opengl.hpp>
 #endif
 
-int main()
-{
+int main() {
   axgl::Axgl axgl;
   axgl::configure_default(axgl);
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL

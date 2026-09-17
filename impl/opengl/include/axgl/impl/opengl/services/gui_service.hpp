@@ -10,12 +10,10 @@
 #include <axgl/impl/opengl/gui/page.hpp>
 #include <axgl/impl/service_base.hpp>
 
-namespace axgl::impl::opengl
-{
+namespace axgl::impl::opengl {
 
 class GuiService : virtual public axgl::GuiService,
-                   public axgl::impl::ServiceBase
-{
+                   public axgl::impl::ServiceBase {
   using FactoryFunction = std::function<axgl::ptr_t<axgl::gui::Element>()>;
 
   std::unordered_map<std::string, FactoryFunction> element_factories_;
@@ -25,20 +23,17 @@ class GuiService : virtual public axgl::GuiService,
   axgl::ptr_t<axgl::gui::Page> main_ui_;
 
 public:
-  axgl::ptr_t<axgl::gui::Page> create_page() override
-  {
+  axgl::ptr_t<axgl::gui::Page> create_page() override {
     return axgl::create_ptr<axgl::impl::opengl::gui::Page>();
   }
 
-  axgl::ptr_t<axgl::gui::Element> create_element() override
-  {
+  axgl::ptr_t<axgl::gui::Element> create_element() override {
     return axgl::create_ptr<axgl::impl::opengl::gui::Element>();
   }
 
   axgl::ptr_t<axgl::gui::Element> create_element(
     const std::string& type
-  ) override
-  {
+  ) override {
 #ifdef AXGL_DEBUG
     if (!element_factories_.contains(type))
       throw std::runtime_error(
@@ -50,13 +45,11 @@ public:
 
   void register_element_factory(
     const std::string& type, FactoryFunction element_factory
-  ) override
-  {
+  ) override {
     element_factories_.emplace(type, element_factory);
   }
 
-  axgl::ptr_t<axgl::gui::Style> create_style(const std::string& name) override
-  {
+  axgl::ptr_t<axgl::gui::Style> create_style(const std::string& name) override {
 #ifdef AXGL_DEBUG
     if (styles_.contains(name))
       AXGL_LOG_WARN(
@@ -70,11 +63,9 @@ public:
 
   axgl::ptr_t<axgl::gui::Style> get_style(
     const std::string& name
-  ) const override
-  {
+  ) const override {
     const auto it = styles_.find(name);
-    if (it == styles_.end())
-    {
+    if (it == styles_.end()) {
 #ifdef AXGL_DEBUG
       if (
         !name.ends_with(":hover") && !name.ends_with(":active")
@@ -89,27 +80,20 @@ public:
     return it->second;
   }
 
-  void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) override
-  {
-    if (main_ui)
-    {
+  void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) override {
+    if (main_ui) {
       main_ui_ = std::move(main_ui);
       main_ui_->set_context(context_);
       initialized_ = false;
-    }
-    else main_ui_ = nullptr;
+    } else main_ui_ = nullptr;
   }
-  [[nodiscard]] axgl::ptr_t<axgl::gui::Page> get_main_ui() const override
-  {
+  [[nodiscard]] axgl::ptr_t<axgl::gui::Page> get_main_ui() const override {
     return main_ui_;
   }
 
-  void update() override
-  {
-    if (main_ui_)
-    {
-      if (!initialized_)
-      {
+  void update() override {
+    if (main_ui_) {
+      if (!initialized_) {
         main_ui_->init();
         initialized_ = true;
       }

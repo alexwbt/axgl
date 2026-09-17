@@ -12,21 +12,17 @@
 
 #include <opengl/static_vaos.hpp>
 
-namespace axgl::impl::opengl::gui
-{
+namespace axgl::impl::opengl::gui {
 
-class Element : public axgl::impl::gui::ElementBase
-{
+class Element : public axgl::impl::gui::ElementBase {
 public:
-  void render(const axgl::gui::Context& context) override
-  {
+  void render(const axgl::gui::Context& context) override {
     render_base(context);
     render_children(context);
   }
 
 protected:
-  void render_base(const axgl::gui::Context& context)
-  {
+  void render_base(const axgl::gui::Context& context) {
     // const auto scissor_x = util::clamp_cast<GLint>(scissor_rect_.x);
     // const auto scissor_y =
     // util::clamp_cast<GLint>(context.page->get_height())

@@ -4,8 +4,7 @@
 #include "gl_context.hpp"
 #include <opengl/shader_program.hpp>
 
-namespace
-{
+namespace {
 
 const char* const VS_SOURCE
   = "#version 410 core\n"
@@ -17,13 +16,10 @@ const char* const FS_SOURCE = "#version 410 core\n"
                               "void main() { frag_color = vec4(1.0); }\n";
 } // namespace
 
-TEST_SUITE("opengl::ShaderSource::compile")
-{
-  TEST_CASE("embedded shaders compile and link into a valid program")
-  {
+TEST_SUITE("opengl::ShaderSource::compile") {
+  TEST_CASE("embedded shaders compile and link into a valid program") {
     const GlContext gl;
-    if (!gl.available())
-    {
+    if (!gl.available()) {
       MESSAGE("skipped: no GL context available");
       return;
     }

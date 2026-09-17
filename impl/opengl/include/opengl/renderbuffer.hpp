@@ -3,11 +3,9 @@
 #include <axgl/common.hpp>
 #include <glad/glad.h>
 
-namespace opengl
-{
+namespace opengl {
 
-class Renderbuffer final
-{
+class Renderbuffer final {
   GLuint id_ = 0;
   GLuint target_ = 0;
   GLsizei width_ = 0;
@@ -19,8 +17,7 @@ public:
   Renderbuffer(const Renderbuffer&) = delete;
   Renderbuffer& operator=(const Renderbuffer&) = delete;
 
-  Renderbuffer(Renderbuffer&& other) noexcept
-  {
+  Renderbuffer(Renderbuffer&& other) noexcept {
     id_ = other.id_;
     target_ = other.target_;
     width_ = other.width_;
@@ -30,10 +27,8 @@ public:
     other.width_ = 0;
     other.height_ = 0;
   }
-  Renderbuffer& operator=(Renderbuffer&& other) noexcept
-  {
-    if (this != &other)
-    {
+  Renderbuffer& operator=(Renderbuffer&& other) noexcept {
+    if (this != &other) {
       if (id_ > 0) glDeleteRenderbuffers(1, &id_);
 
       id_ = other.id_;
@@ -48,8 +43,7 @@ public:
     return *this;
   }
 
-  ~Renderbuffer()
-  {
+  ~Renderbuffer() {
     if (id_ > 0) glDeleteRenderbuffers(1, &id_);
   }
 
@@ -67,10 +61,8 @@ public:
 
   void init_renderbuffer(
     const GLenum internal_format, const GLsizei width, const GLsizei height
-  )
-  {
-    if (initialized())
-    {
+  ) {
+    if (initialized()) {
       AXGL_LOG_ERROR("Renderbuffer is already initialized.");
       return;
     }
@@ -87,10 +79,8 @@ public:
     const GLenum internal_format,
     const GLsizei width,
     const GLsizei height
-  )
-  {
-    if (initialized())
-    {
+  ) {
+    if (initialized()) {
       AXGL_LOG_ERROR("Renderbuffer is already initialized.");
       return;
     }

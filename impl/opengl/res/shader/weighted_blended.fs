@@ -9,19 +9,16 @@ out vec4 frag_color;
 const float EPSILON = 0.00001f;
 
 // calculate floating point numbers equality accurately
-bool approximate_equal(float a, float b)
-{
+bool approximate_equal(float a, float b) {
   return abs(a - b) <= (abs(a) < abs(b) ? abs(b) : abs(a)) * EPSILON;
 }
 
 // get the max value between three values
-float max3(vec3 v)
-{
+float max3(vec3 v) {
   return max(max(v.x, v.y), v.z);
 }
 
-void main()
-{
+void main() {
   // fragment coordination
   ivec2 coords = ivec2(gl_FragCoord.xy);
 

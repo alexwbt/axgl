@@ -17,13 +17,11 @@
 
 #include <opengl/vertex_array_object.hpp>
 
-namespace axgl::impl::opengl::component
-{
+namespace axgl::impl::opengl::component {
 
 class Mesh : virtual public axgl::component::Mesh,
              virtual public renderer::RenderComponent,
-             public axgl::impl::ComponentBase
-{
+             public axgl::impl::ComponentBase {
   axgl::ptr_t<axgl::impl::opengl::Material> material_;
 
   // mesh data stored in heap
@@ -49,78 +47,64 @@ class Mesh : virtual public axgl::component::Mesh,
   bool enable_shadow_ = true;
 
 public:
-  void set_vertices(const std::span<const glm::vec3>& vertices) override
-  {
+  void set_vertices(const std::span<const glm::vec3>& vertices) override {
     vertices_.resize(vertices.size());
     std::ranges::copy(vertices, vertices_.begin());
   }
 
-  void set_vertices(const std::span<const glm::vec2>& vertices) override
-  {
+  void set_vertices(const std::span<const glm::vec2>& vertices) override {
     vertices_2d_.resize(vertices.size());
     std::ranges::copy(vertices, vertices_2d_.begin());
   }
 
-  void set_normals(const std::span<const glm::vec3>& normals) override
-  {
+  void set_normals(const std::span<const glm::vec3>& normals) override {
     normals_.resize(normals.size());
     std::ranges::copy(normals, normals_.begin());
   }
 
-  void set_tangents(const std::span<const glm::vec3>& tangents) override
-  {
+  void set_tangents(const std::span<const glm::vec3>& tangents) override {
     tangents_.resize(tangents.size());
     std::ranges::copy(tangents, tangents_.begin());
   }
 
-  void set_bitangents(const std::span<const glm::vec3>& bitangents) override
-  {
+  void set_bitangents(const std::span<const glm::vec3>& bitangents) override {
     bitangents_.resize(bitangents.size());
     std::ranges::copy(bitangents, bitangents_.begin());
   }
 
-  void set_uv(const std::span<const glm::vec2>& uv) override
-  {
+  void set_uv(const std::span<const glm::vec2>& uv) override {
     uv_.resize(uv.size());
     std::ranges::copy(uv, uv_.begin());
   }
 
-  void set_indices(const std::span<const std::uint32_t>& indices) override
-  {
+  void set_indices(const std::span<const std::uint32_t>& indices) override {
     indices_.resize(indices.size());
     std::ranges::copy(indices, indices_.begin());
   }
 
   void set_line_width(float line_width) override { line_width_ = line_width; }
-  void set_draw_mode(axgl::component::Mesh::DrawMode draw_mode) override
-  {
+  void set_draw_mode(axgl::component::Mesh::DrawMode draw_mode) override {
     draw_mode_ = draw_mode;
   }
-  void set_cull_mode(const axgl::component::Mesh::CullMode cull_mode) override
-  {
+  void set_cull_mode(const axgl::component::Mesh::CullMode cull_mode) override {
     cull_mode_ = cull_mode;
   }
-  void set_enable_shadow(const bool enable_shadow) override
-  {
+  void set_enable_shadow(const bool enable_shadow) override {
     enable_shadow_ = enable_shadow;
   }
 
   [[nodiscard]] float get_line_width() const override { return line_width_; }
-  [[nodiscard]] axgl::component::Mesh::DrawMode get_draw_mode() const override
-  {
+  [[nodiscard]] axgl::component::Mesh::DrawMode get_draw_mode() const override {
     return draw_mode_;
   }
-  [[nodiscard]] axgl::component::Mesh::CullMode get_cull_mode() const override
-  {
+  [[nodiscard]] axgl::component::Mesh::CullMode get_cull_mode() const override {
     return cull_mode_;
   }
-  [[nodiscard]] bool get_enable_shadow() const override
-  {
+  [[nodiscard]] bool get_enable_shadow() const override {
     return enable_shadow_;
   }
 
-  void set_material(const axgl::ptr_t<axgl::Material> material) override
-  {
+  void set_material(const axgl::ptr_t<axgl::Material> material) override {
     material_ = std::dynamic_pointer_cast<impl::opengl::Material>(material);
 #ifdef AXGL_DEBUG
     if (!material_)
@@ -130,21 +114,18 @@ public:
 #endif
   }
 
-  [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override
-  {
+  [[nodiscard]] axgl::ptr_t<axgl::Material> get_material() const override {
     return material_;
   }
 
-  void calculate_tbn() override
-  {
+  void calculate_tbn() override {
     normals_.resize(vertices_.size(), glm::vec3(0.0f));
     tangents_.resize(vertices_.size(), glm::vec3(0.0f));
     bitangents_.resize(vertices_.size(), glm::vec3(0.0f));
     const auto use_indices = !indices_.empty();
     const auto size = use_indices ? indices_.size() : vertices_.size();
     // calculate normals
-    for (std::size_t i = 0; i < size; i += 3)
-    {
+    for (std::size_t i = 0; i < size; i += 3) {
       const auto i0 = use_indices ? indices_[i] : i;
       const auto i1 = use_indices ? indices_[i + 1] : i + 1;
       const auto i2 = use_indices ? indices_[i + 2] : i + 2;
@@ -161,8 +142,7 @@ public:
       normal = glm::normalize(normal);
 
     // calculate tangents and bitangents
-    for (std::size_t i = 0; i < size; i += 3)
-    {
+    for (std::size_t i = 0; i < size; i += 3) {
       const auto i0 = use_indices ? indices_[i] : i;
       const auto i1 = use_indices ? indices_[i + 1] : i + 1;
       const auto i2 = use_indices ? indices_[i + 2] : i + 2;
@@ -173,8 +153,7 @@ public:
       if (
         const float det = delta_uv1.x * delta_uv2.y - delta_uv2.x * delta_uv1.y;
         std::fabs(det) > 1e-6f
-      )
-      {
+      ) {
         float r = 1.0f / det;
         const auto tangent = (edge1 * delta_uv2.y - edge2 * delta_uv1.y) * r;
         const auto bitangent = (edge2 * delta_uv1.x - edge1 * delta_uv2.x) * r;
@@ -204,8 +183,7 @@ public:
     // each face's TBN basis matches its UV winding. The vertex shader
     // (mesh3d.vs) performs the same handedness derivation from the input
     // bitangent for assimp-loaded meshes that bypass calculate_tbn().
-    for (size_t i = 0; i < vertices_.size(); ++i)
-    {
+    for (size_t i = 0; i < vertices_.size(); ++i) {
       auto& n = normals_[i];
       auto& t = tangents_[i];
       auto& b = bitangents_[i];
@@ -217,16 +195,13 @@ public:
     }
   }
 
-  void gather_instances(const glm::mat4& transform_matrix) override
-  {
+  void gather_instances(const glm::mat4& transform_matrix) override {
     if (!material_) return;
     instanced_models_.emplace_back(transform_matrix);
   }
 
-  void submit_render_function(renderer::PipelineContext& context) override
-  {
-    if (!material_)
-    {
+  void submit_render_function(renderer::PipelineContext& context) override {
+    if (!material_) {
       AXGL_LOG_DEBUG(
         "Material not assigned to mesh({}), skip rendering.", get_id()
       );
@@ -238,34 +213,45 @@ public:
     vao_->set_mode(draw_mode_glenum());
 
     // setup instancing vertex buffer
-    if (instanced_models_buffer_id_ == 0)
-    {
+    if (instanced_models_buffer_id_ == 0) {
       constexpr size_t vec4_size = sizeof(glm::vec4);
       std::array attributes{
         ::opengl::VertexAttribute{
-          4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
+          4,
+          GL_FLOAT,
+          GL_FALSE,
+          4 * vec4_size,
           reinterpret_cast<void*>(0 * vec4_size)
         },
         ::opengl::VertexAttribute{
-          4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
+          4,
+          GL_FLOAT,
+          GL_FALSE,
+          4 * vec4_size,
           reinterpret_cast<void*>(1 * vec4_size)
         },
         ::opengl::VertexAttribute{
-          4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
+          4,
+          GL_FLOAT,
+          GL_FALSE,
+          4 * vec4_size,
           reinterpret_cast<void*>(2 * vec4_size)
         },
         ::opengl::VertexAttribute{
-          4, GL_FLOAT, GL_FALSE, 4 * vec4_size,
+          4,
+          GL_FLOAT,
+          GL_FALSE,
+          4 * vec4_size,
           reinterpret_cast<void*>(3 * vec4_size)
         },
       };
       instanced_models_buffer_id_ = vao_->create_vertex_buffer<glm::mat4>(
-        instanced_models_, attributes,
+        instanced_models_,
+        attributes,
         material_->get_attribute_offset(axgl::impl::opengl::Material::kModels),
         1
       );
-    }
-    else
+    } else
       vao_->update_buffer_data<glm::mat4>(
         instanced_models_buffer_id_, instanced_models_
       );
@@ -277,36 +263,31 @@ public:
 
     // render function
     const auto render_function
-      = [this, instance_count](const renderer::RenderContext& c)
-    {
-      material_->use(c);
-      use_state();
+      = [this, instance_count](const renderer::RenderContext& c) {
+          material_->use(c);
+          use_state();
 #ifdef AXGL_DEBUG
-      if (const auto* shader = material_->get_shader())
-      {
-        vao_->bind();
-        shader->validate_program();
-      }
+          if (const auto* shader = material_->get_shader()) {
+            vao_->bind();
+            shader->validate_program();
+          }
 #endif
-      vao_->draw_instanced(instance_count);
-    };
+          vao_->draw_instanced(instance_count);
+        };
     if (material_->get_enable_blend())
       // submit to blend pass
       context.blend_pass.emplace_back(std::move(render_function));
-    else
-    {
+    else {
       // submit to opaque pass
       context.opaque_pass.emplace_back(std::move(render_function));
 
       if (enable_shadow_)
         // submit to shadow pass
         context.shadow_pass.emplace_back(
-          [this, instance_count](const renderer::ShadowPassContext& context)
-          {
+          [this, instance_count](const renderer::ShadowPassContext& context) {
             use_state();
             // use point depth shader for point light shadows
-            if (context.light_type == axgl::Light::Type::kPoint)
-            {
+            if (context.light_type == axgl::Light::Type::kPoint) {
               const auto& shader = Shaders::instance().point_depth();
               shader.use_program();
               shader.set_mat4(
@@ -314,9 +295,7 @@ public:
               );
               shader.set_vec3("light_position", context.light_position);
               shader.set_float("far_plane", context.far_plane);
-            }
-            else
-            {
+            } else {
               const auto& depth_only_shader = Shaders::instance().depth_only();
               depth_only_shader.use_program();
               depth_only_shader.set_mat4(
@@ -329,8 +308,7 @@ public:
 
       // submit to SSAO geometry pass (opaque meshes only)
       context.geometry_pass.emplace_back(
-        [this, instance_count](const renderer::RenderContext& c)
-        {
+        [this, instance_count](const renderer::RenderContext& c) {
           const auto& shader = Shaders::instance().ssao_geometry();
           shader.use_program();
           shader.set_mat4("projection_view", c.projection_view_matrix);
@@ -341,18 +319,15 @@ public:
     }
   }
 
-  [[nodiscard]] std::uint64_t get_id() const override
-  {
+  [[nodiscard]] std::uint64_t get_id() const override {
     return ComponentBase::get_id();
   }
 
 private:
-  void use_state()
-  {
+  void use_state() {
     glLineWidth(line_width_);
     glFrontFace(GL_CW);
-    switch (cull_mode_)
-    {
+    switch (cull_mode_) {
     case axgl::component::Mesh::CullMode::kCW:
       glEnable(GL_CULL_FACE);
       glCullFace(GL_FRONT);
@@ -365,11 +340,9 @@ private:
     }
   }
 
-  [[nodiscard]] GLenum draw_mode_glenum() const
-  {
+  [[nodiscard]] GLenum draw_mode_glenum() const {
     using enum axgl::component::Mesh::DrawMode;
-    switch (draw_mode_)
-    {
+    switch (draw_mode_) {
     case kPoints: return GL_POINTS;
     case kLines: return GL_LINES;
     case kLineStrip: return GL_LINE_STRIP;
@@ -381,73 +354,71 @@ private:
     }
   }
 
-  void create_vao()
-  {
+  void create_vao() {
     vao_ = std::make_unique<::opengl::VertexArrayObject>();
 
-    if (!vertices_.empty())
-    {
+    if (!vertices_.empty()) {
       std::array attributes{::opengl::VertexAttribute{
         3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr
       }};
       vao_->create_vertex_buffer<glm::vec3>(
-        vertices_, attributes,
+        vertices_,
+        attributes,
         material_->get_attribute_offset(axgl::impl::opengl::Material::kVertices)
       );
-    }
-    else if (!vertices_2d_.empty())
-    {
+    } else if (!vertices_2d_.empty()) {
       std::array attributes{::opengl::VertexAttribute{
         2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr
       }};
       vao_->create_vertex_buffer<glm::vec2>(
-        vertices_2d_, attributes,
+        vertices_2d_,
+        attributes,
         material_->get_attribute_offset(axgl::impl::opengl::Material::kVertices)
       );
     }
 
-    if (!normals_.empty())
-    {
+    if (!normals_.empty()) {
       std::array attributes{::opengl::VertexAttribute{
         3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr
       }};
       vao_->create_vertex_buffer<glm::vec3>(
-        normals_, attributes,
+        normals_,
+        attributes,
         material_->get_attribute_offset(axgl::impl::opengl::Material::kNormals)
       );
     }
 
-    if (!tangents_.empty())
-    {
+    if (!tangents_.empty()) {
       std::array attributes{::opengl::VertexAttribute{
         3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr
       }};
       vao_->create_vertex_buffer<glm::vec3>(
-        tangents_, attributes,
+        tangents_,
+        attributes,
         material_->get_attribute_offset(axgl::impl::opengl::Material::kTangents)
       );
     }
 
-    if (!bitangents_.empty())
-    {
+    if (!bitangents_.empty()) {
       std::array attributes{::opengl::VertexAttribute{
         3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr
       }};
       vao_->create_vertex_buffer<glm::vec3>(
-        bitangents_, attributes,
+        bitangents_,
+        attributes,
         material_->get_attribute_offset(
           axgl::impl::opengl::Material::kBitangents
         )
       );
     }
 
-    if (!uv_.empty())
-    {
+    if (!uv_.empty()) {
       std::array attributes{::opengl::VertexAttribute{
         2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr
       }};
       vao_->create_vertex_buffer<glm::vec2>(
-        uv_, attributes,
+        uv_,
+        attributes,
         material_->get_attribute_offset(axgl::impl::opengl::Material::kUV)
       );
     }

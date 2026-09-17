@@ -7,8 +7,7 @@ uniform mat4 projection_view;
 
 out vec3 world_position;
 
-void main()
-{
+void main() {
   vec4 world_pos = model * vec4(position, 1.0);
   world_position = world_pos.xyz;
   gl_Position = projection_view * world_pos;

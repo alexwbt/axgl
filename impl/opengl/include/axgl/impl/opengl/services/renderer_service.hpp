@@ -19,17 +19,14 @@
 #include <axgl/impl/opengl/texture.hpp>
 #include <axgl/impl/service_base.hpp>
 
-namespace axgl::impl::opengl
-{
+namespace axgl::impl::opengl {
 
 class RendererService : virtual public axgl::RendererService,
-                        public axgl::impl::ServiceBase
-{
+                        public axgl::impl::ServiceBase {
   axgl::ptr_t<axgl::Renderer> renderer_;
 
 public:
-  void initialize() override
-  {
+  void initialize() override {
     // set glfw context
     axgl::impl::glfw::WindowService::set_window_hint(
       GLFW_CONTEXT_VERSION_MAJOR, 4
@@ -42,10 +39,8 @@ public:
     );
   }
 
-  void render() override
-  {
-    if (!renderer_)
-    {
+  void render() override {
+    if (!renderer_) {
 #ifdef AXGL_DEBUG
       AXGL_LOG_WARN("Active renderer not set.");
 #endif
@@ -54,18 +49,17 @@ public:
     renderer_->render();
   }
 
-  axgl::ptr_t<axgl::Renderer> create_renderer() override
-  {
+  axgl::ptr_t<axgl::Renderer> create_renderer() override {
     return axgl::create_ptr<axgl::impl::opengl::Renderer>();
   }
 
-  axgl::ptr_t<axgl::Texture> create_texture() override
-  {
+  axgl::ptr_t<axgl::Texture> create_texture() override {
     return axgl::create_ptr<axgl::impl::opengl::Texture>();
   }
 
-  axgl::ptr_t<axgl::Material> create_material(const std::string& type) override
-  {
+  axgl::ptr_t<axgl::Material> create_material(
+    const std::string& type
+  ) override {
     if (type == "2d")
       return axgl::create_ptr<axgl::impl::opengl::Mesh2dMaterial>();
     if (type == "3d")
@@ -79,13 +73,12 @@ public:
 #endif
   }
 
-  [[nodiscard]] axgl::ptr_t<axgl::Renderer> get_active_renderer() const override
-  {
+  [[nodiscard]] axgl::ptr_t<axgl::Renderer>
+  get_active_renderer() const override {
     return renderer_;
   }
 
-  void set_active_renderer(axgl::ptr_t<axgl::Renderer> renderer) override
-  {
+  void set_active_renderer(axgl::ptr_t<axgl::Renderer> renderer) override {
     renderer_ = std::move(renderer);
     renderer_->set_context(context_);
   }

@@ -8,24 +8,20 @@
 
 #include <opengl/shader_source.hpp>
 
-namespace opengl
-{
+namespace opengl {
 
-class ShaderProgram final
-{
+class ShaderProgram final {
   int link_status_ = 0;
   GLuint program_id_;
   mutable std::unordered_map<std::string, GLint> uniform_locations_;
 
 public:
-  explicit ShaderProgram(const std::vector<ShaderSource>& shaders)
-  {
+  explicit ShaderProgram(const std::vector<ShaderSource>& shaders) {
     program_id_ = glCreateProgram();
 
     std::vector<GLuint> shader_ids;
     shader_ids.reserve(shaders.size());
-    for (const auto& shader : shaders)
-    {
+    for (const auto& shader : shaders) {
       auto shader_id = shader.compile();
       glAttachShader(program_id_, shader_id);
       shader_ids.push_back(shader_id);
@@ -34,8 +30,7 @@ public:
     glLinkProgram(program_id_);
 
     glGetProgramiv(program_id_, GL_LINK_STATUS, &link_status_);
-    if (!link_status_)
-    {
+    if (!link_status_) {
       char log[512] = {};
       glGetProgramInfoLog(program_id_, sizeof(log), nullptr, log);
       AXGL_LOG_ERROR("Failed to link shader program: {}", log);
@@ -53,15 +48,12 @@ public:
   ShaderProgram(const ShaderProgram&) = delete;
   ShaderProgram& operator=(const ShaderProgram&) = delete;
 
-  ShaderProgram(ShaderProgram&& other) noexcept
-  {
+  ShaderProgram(ShaderProgram&& other) noexcept {
     program_id_ = other.program_id_;
     other.program_id_ = 0;
   }
-  ShaderProgram& operator=(ShaderProgram&& other) noexcept
-  {
-    if (this != &other)
-    {
+  ShaderProgram& operator=(ShaderProgram&& other) noexcept {
+    if (this != &other) {
       if (program_id_ > 0) glDeleteProgram(program_id_);
 
       program_id_ = other.program_id_;
@@ -70,45 +62,36 @@ public:
     return *this;
   }
 
-  ~ShaderProgram()
-  {
+  ~ShaderProgram() {
     if (program_id_ > 0) glDeleteProgram(program_id_);
   }
 
   [[nodiscard]] int get_link_status() const { return link_status_; }
 
-  void set_int(const std::string& name, const int value) const
-  {
+  void set_int(const std::string& name, const int value) const {
     glUniform1i(get_uniform_location(name), value);
   }
-  void set_bool(const std::string& name, const bool value) const
-  {
+  void set_bool(const std::string& name, const bool value) const {
     glUniform1i(get_uniform_location(name), static_cast<GLint>(value));
   }
-  void set_float(const std::string& name, const float value) const
-  {
+  void set_float(const std::string& name, const float value) const {
     glUniform1f(get_uniform_location(name), value);
   }
-  void set_vec2(const std::string& name, const glm::vec2& value) const
-  {
+  void set_vec2(const std::string& name, const glm::vec2& value) const {
     glUniform2fv(get_uniform_location(name), 1, &value[0]);
   }
-  void set_vec3(const std::string& name, const glm::vec3& value) const
-  {
+  void set_vec3(const std::string& name, const glm::vec3& value) const {
     glUniform3fv(get_uniform_location(name), 1, &value[0]);
   }
-  void set_vec4(const std::string& name, const glm::vec4& value) const
-  {
+  void set_vec4(const std::string& name, const glm::vec4& value) const {
     glUniform4fv(get_uniform_location(name), 1, &value[0]);
   }
-  void set_vec2(const std::string& name, const float x, const float y) const
-  {
+  void set_vec2(const std::string& name, const float x, const float y) const {
     glUniform2f(get_uniform_location(name), x, y);
   }
   void set_vec3(
     const std::string& name, const float x, const float y, const float z
-  ) const
-  {
+  ) const {
     glUniform3f(get_uniform_location(name), x, y, z);
   }
   void set_vec4(
@@ -117,48 +100,40 @@ public:
     const float y,
     const float z,
     const float w
-  ) const
-  {
+  ) const {
     glUniform4f(get_uniform_location(name), x, y, z, w);
   }
-  void set_mat2(const std::string& name, const glm::mat2& mat) const
-  {
+  void set_mat2(const std::string& name, const glm::mat2& mat) const {
     glUniformMatrix2fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]);
   }
-  void set_mat3(const std::string& name, const glm::mat3& mat) const
-  {
+  void set_mat3(const std::string& name, const glm::mat3& mat) const {
     glUniformMatrix3fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]);
   }
-  void set_mat4(const std::string& name, const glm::mat4& mat) const
-  {
+  void set_mat4(const std::string& name, const glm::mat4& mat) const {
     glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, &mat[0][0]);
   }
   void set_mat4_array(
     const std::string& name, const GLsizei count, const glm::mat4* mats
-  ) const
-  {
+  ) const {
     glUniformMatrix4fv(
       get_uniform_location(name), count, GL_FALSE, &mats[0][0][0]
     );
   }
   void set_float_array(
     const std::string& name, const GLsizei count, const GLfloat* values
-  ) const
-  {
+  ) const {
     glUniform1fv(get_uniform_location(name), count, values);
   }
 
   void use_program() const { glUseProgram(program_id_); }
 
-  void validate_program() const
-  {
+  void validate_program() const {
     glValidateProgram(program_id_);
 
     GLint is_valid = 0;
     glGetProgramiv(program_id_, GL_VALIDATE_STATUS, &is_valid);
 
-    if (is_valid == GL_FALSE)
-    {
+    if (is_valid == GL_FALSE) {
       GLint length = 0;
       glGetProgramiv(program_id_, GL_INFO_LOG_LENGTH, &length);
 
@@ -170,8 +145,7 @@ public:
   }
 
 private:
-  GLint get_uniform_location(const std::string& name) const
-  {
+  GLint get_uniform_location(const std::string& name) const {
     if (!uniform_locations_.contains(name))
       uniform_locations_[name]
         = glGetUniformLocation(program_id_, name.c_str());

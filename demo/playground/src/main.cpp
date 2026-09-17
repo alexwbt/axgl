@@ -10,8 +10,7 @@
 #include "service/input_manager.hpp"
 #include "service/playground.hpp"
 
-int main()
-{
+int main() {
   axgl::Axgl axgl;
   axgl::configure_default(axgl);
   axgl::configure_assimp(axgl);

@@ -8,16 +8,13 @@
 
 #include <axgl_opengl_impl/res.hpp>
 
-namespace opengl
-{
+namespace opengl {
 
-class StaticShaders
-{
+class StaticShaders {
   std::unique_ptr<const ::opengl::ShaderProgram> text_;
 
 public:
-  static const StaticShaders& instance()
-  {
+  static const StaticShaders& instance() {
     static StaticShaders instance_;
     return instance_;
   }
@@ -30,8 +27,7 @@ public:
   [[nodiscard]] const auto& text() const { return *text_; }
 
 private:
-  StaticShaders()
-  {
+  StaticShaders() {
     using namespace axgl_opengl_impl_res;
 
     text_ = std::make_unique<::opengl::ShaderProgram>(

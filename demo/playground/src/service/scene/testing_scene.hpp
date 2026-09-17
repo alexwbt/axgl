@@ -11,8 +11,7 @@
 #include "entity/toy_block.hpp"
 #include "entity/transparent_cube.hpp"
 
-class TestingScene : public CommonScene
-{
+class TestingScene : public CommonScene {
 public:
   static constexpr std::string_view kTypeId = "realm::testing";
 
@@ -23,8 +22,7 @@ private:
   axgl::ptr_t<axgl::impl::component::Light> sunlight_;
 
 public:
-  void on_create() override
-  {
+  void on_create() override {
     CommonScene::on_create();
 
     // sunlight
@@ -73,12 +71,10 @@ public:
     next_row();
   }
 
-  void update() override
-  {
+  void update() override {
     CommonScene::update();
 
-    if (input_manager_->rotate_sun()->down())
-    {
+    if (input_manager_->rotate_sun()->down()) {
       sunlight_->light.direction.z -= 0.05f * context_->delta_tick_f;
       if (sunlight_->light.direction.z < -1.2f)
         sunlight_->light.direction.z = 1.2f;
@@ -86,14 +82,12 @@ public:
   }
 
 private:
-  void next_row()
-  {
+  void next_row() {
     item_offset.y += margin * 2;
     item_offset.x = 0;
   }
 
-  glm::vec3 item_position(float height)
-  {
+  glm::vec3 item_position(float height) {
     item_offset.x += margin * 2.0f;
     return {item_offset.x - margin, height, item_offset.y};
   }

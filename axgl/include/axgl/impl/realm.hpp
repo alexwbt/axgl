@@ -5,33 +5,28 @@
 #include <axgl/impl/context_holder.hpp>
 #include <axgl/impl/entity_container.hpp>
 
-namespace axgl::impl
-{
+namespace axgl::impl {
 
-class Realm : virtual public axgl::Realm, public axgl::impl::ContextHolder
-{
+class Realm : virtual public axgl::Realm, public axgl::impl::ContextHolder {
 protected:
   std::uint64_t ticks_ = 0;
   axgl::impl::EntityContainer entities_{nullptr};
 
 public:
-  void on_create() override { }
-  void on_active() override { }
-  void tick() override
-  {
+  void on_create() override {}
+  void on_active() override {}
+  void tick() override {
     ++ticks_;
     entities_.tick();
   }
   void update() override { entities_.update(); }
 
   [[nodiscard]] std::uint64_t ticks() override { return ticks_; }
-  [[nodiscard]] axgl::impl::EntityContainer& entities() override
-  {
+  [[nodiscard]] axgl::impl::EntityContainer& entities() override {
     return entities_;
   }
 
-  void set_context(const axgl::Context* context) override
-  {
+  void set_context(const axgl::Context* context) override {
     axgl::impl::ContextHolder::set_context(context);
     entities_.set_context(context);
   }

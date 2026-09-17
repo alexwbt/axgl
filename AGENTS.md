@@ -52,7 +52,7 @@ A C++ game development framework. Service-oriented core (interfaces in
 
 ## Format / lint
 
-- Style is clang-format **Allman braces, 2-space, 80 col, pointers left**
+- Style is clang-format **attach braces, 2-space, 80 col, pointers left**
   (`.clang-format`). Match this exactly; do not reflow to LLVM defaults.
 - `clang-format` major version **22** is required (enforced by
   `_scripts/format.sh`; override with `CLANG_FORMAT_SKIP_VERSION_CHECK=1`).

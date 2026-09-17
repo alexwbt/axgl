@@ -4,30 +4,25 @@
 #include <axgl/interface/gui/element.hpp>
 #include <axgl/interface/gui/layout.hpp>
 
-namespace axgl::impl::gui
-{
+namespace axgl::impl::gui {
 
-class BlockLayout : virtual public axgl::gui::Layout
-{
+class BlockLayout : virtual public axgl::gui::Layout {
 public:
   void apply(
     const axgl::gui::Context& context,
     axgl::Container<axgl::gui::Element>& elements
-  ) const override
-  {
+  ) const override {
     using namespace axgl::gui;
 
     const auto page_width = context.page->get_width();
     float x = 0.0f, y = 0.0f;
 
-    for (const auto& element : elements.get())
-    {
+    for (const auto& element : elements.get()) {
       const auto& style = element->get_computed_style();
       const auto& margin = style.get_margin() * context.scale;
       const auto& intrinsic_size = element->get_intrinsic_size();
 
-      switch (style.get_display())
-      {
+      switch (style.get_display()) {
       case Display::kBlock:
         y += margin.x;
         x += margin.z;

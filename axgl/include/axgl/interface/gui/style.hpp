@@ -8,30 +8,25 @@ private:                                                                       \
   bool using_##name##_ = false;                                                \
                                                                                \
 public:                                                                        \
-  type get_##name() const                                                      \
-  {                                                                            \
+  type get_##name() const {                                                    \
     return name##_;                                                            \
   }                                                                            \
-  Style* set_##name(const type&(name))                                         \
-  {                                                                            \
+  Style* set_##name(const type&(name)) {                                       \
     name##_ = name;                                                            \
     using_##name##_ = true;                                                    \
     modified_ = true;                                                          \
     return this;                                                               \
   };                                                                           \
-  bool using_##name() const                                                    \
-  {                                                                            \
+  bool using_##name() const {                                                  \
     return using_##name##_;                                                    \
   }
 
 #define __AXGL_GUI_STYLE_APPLY_TO(name)                                        \
   if (using_##name##_) target.name##_ = name##_
 
-namespace axgl::gui
-{
+namespace axgl::gui {
 
-enum class Display
-{
+enum class Display {
   kBlock,
   kInline,
   // kInlineBlock,
@@ -39,8 +34,7 @@ enum class Display
   // kGrid,
 };
 
-enum class Cursor
-{
+enum class Cursor {
   kNormal,
   kText,
   kPointer,
@@ -53,15 +47,13 @@ enum class Cursor
   kNotAllowed,
 };
 
-enum class TextAlign
-{
+enum class TextAlign {
   kLeft,
   kRight,
   kCenter,
 };
 
-class Style
-{
+class Style {
 private:
   bool modified_ = false;
 
@@ -69,8 +61,7 @@ public:
   [[nodiscard]] bool is_modified() const { return modified_; }
   void reset_modified() { modified_ = false; }
 
-  void apply_to(Style& target) const
-  {
+  void apply_to(Style& target) const {
     __AXGL_GUI_STYLE_APPLY_TO(position);
     __AXGL_GUI_STYLE_APPLY_TO(size);
     __AXGL_GUI_STYLE_APPLY_TO(color);

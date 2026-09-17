@@ -16,8 +16,7 @@ in vec2 vert_uv;
 
 out vec4 frag_color;
 
-void main()
-{
+void main() {
   vec3 frag_pos = texture(position_texture, vert_uv).xyz;
   vec3 normal = normalize(texture(normal_texture, vert_uv).xyz);
   vec3 random_vec = texture(noise_texture, vert_uv * noise_scale).xyz;
@@ -27,8 +26,7 @@ void main()
   mat3 tbn = mat3(tangent, bitangent, normal);
 
   float occlusion = 0.0;
-  for (int i = 0; i < KERNEL_SIZE; ++i)
-  {
+  for (int i = 0; i < KERNEL_SIZE; ++i) {
     vec3 sample_pos = tbn * kernel_samples[i];
     sample_pos = frag_pos + sample_pos * radius;
 

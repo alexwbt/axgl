@@ -7,16 +7,13 @@
 
 #include <opengl/vertex_array_object.hpp>
 
-namespace opengl
-{
+namespace opengl {
 
-class StaticVAOs
-{
+class StaticVAOs {
   std::unique_ptr<VertexArrayObject> quad_;
 
 public:
-  static const StaticVAOs& instance()
-  {
+  static const StaticVAOs& instance() {
     static StaticVAOs instance_;
     return instance_;
   }
@@ -31,10 +28,15 @@ public:
 private:
   StaticVAOs() { init_quad(); }
 
-  void init_quad()
-  {
-    std::array vertices{glm::vec2{0, 0}, glm::vec2{0, 1}, glm::vec2{1, 0},
-                        glm::vec2{1, 0}, glm::vec2{0, 1}, glm::vec2{1, 1}};
+  void init_quad() {
+    std::array vertices{
+      glm::vec2{0, 0},
+      glm::vec2{0, 1},
+      glm::vec2{1, 0},
+      glm::vec2{1, 0},
+      glm::vec2{0, 1},
+      glm::vec2{1, 1}
+    };
     std::array attributes{
       VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr},
       VertexAttribute{2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr}

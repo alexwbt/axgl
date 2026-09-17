@@ -9,15 +9,13 @@
 #include <args.hxx>
 #include <spdlog/spdlog.h>
 
-struct File
-{
+struct File {
   std::string path;
   std::string key;
   size_t key_hash;
 };
 
-static std::string entry_to_string(const std::filesystem::path& path)
-{
+static std::string entry_to_string(const std::filesystem::path& path) {
   std::stringstream stream;
   for (const auto& e : path)
     stream << e.string() << "/";
@@ -26,15 +24,12 @@ static std::string entry_to_string(const std::filesystem::path& path)
   return value;
 }
 
-static std::vector<File> read_directory(const std::string& source)
-{
+static std::vector<File> read_directory(const std::string& source) {
   std::vector<File> files;
   std::hash<std::string> to_hash;
   for (const auto& entry :
-       std::filesystem::recursive_directory_iterator(source))
-  {
-    if (!std::filesystem::is_directory(entry.path()))
-    {
+       std::filesystem::recursive_directory_iterator(source)) {
+    if (!std::filesystem::is_directory(entry.path())) {
       const auto path = entry_to_string(entry.path());
       const auto key
         = entry_to_string(std::filesystem::relative(entry.path(), source));
@@ -49,8 +44,7 @@ static void write_files(
   const std::vector<File>& files,
   const std::string& target,
   const std::string& ns
-)
-{
+) {
   std::ofstream header_output_stream(target + ".hpp");
   header_output_stream << "#pragma once" << std::endl;
   header_output_stream << "#include <span>" << std::endl;
@@ -75,8 +69,7 @@ static void write_files(
                 << std::endl;
   if (!ns.empty()) output_stream << "namespace " << ns << " {" << std::endl;
 
-  for (const auto& file : files)
-  {
+  for (const auto& file : files) {
     std::ifstream input_stream(file.path, std::ios::binary | std::ios::ate);
     const auto size = input_stream.tellg();
     input_stream.seekg(0, std::ios::beg);
@@ -105,15 +98,12 @@ static void write_files(
 
 static int embed_files(
   const std::string& source, const std::string& target, const std::string& ns
-)
-{
-  if (!std::filesystem::is_directory(source))
-  {
+) {
+  if (!std::filesystem::is_directory(source)) {
     SPDLOG_ERROR("Source must be a directory.");
     return 1;
   }
-  if (std::filesystem::is_directory(target))
-  {
+  if (std::filesystem::is_directory(target)) {
     SPDLOG_ERROR("Target must not be a directory.");
     return 1;
   }
@@ -124,8 +114,7 @@ static int embed_files(
   return 0;
 }
 
-int main(const int argc, char** argv)
-{
+int main(const int argc, char** argv) {
   args::ArgumentParser parser(
     "Embeds all files in a directory into a cpp file."
   );
@@ -141,22 +130,15 @@ int main(const int argc, char** argv)
     parser, "namespace", "Optional namespace.", {'n', "namespace"}
   );
 
-  try
-  {
+  try {
     parser.ParseCLI(argc, argv);
-  }
-  catch (const args::Completion& e)
-  {
+  } catch (const args::Completion& e) {
     std::cout << e.what();
     return 0;
-  }
-  catch (const args::Help&)
-  {
+  } catch (const args::Help&) {
     std::cout << parser;
     return 0;
-  }
-  catch (const args::Error& e)
-  {
+  } catch (const args::Error& e) {
     SPDLOG_ERROR("{}", e.what());
     return 1;
   }

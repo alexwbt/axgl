@@ -12,10 +12,8 @@
   #define AXGL_DEBUG_LINE ""
 #endif
 
-TEST_SUITE("opengl::ShaderSource::preprocess")
-{
-  TEST_CASE("prepend is injected after the first line")
-  {
+TEST_SUITE("opengl::ShaderSource::preprocess") {
+  TEST_CASE("prepend is injected after the first line") {
     const std::string source = "#version 410 core\nvoid main() {}\n";
     const std::string prepend = "#define FOO 1\n";
 
@@ -28,8 +26,7 @@ TEST_SUITE("opengl::ShaderSource::preprocess")
     CHECK(result == expected);
   }
 
-  TEST_CASE("first line is preserved verbatim including trailing content")
-  {
+  TEST_CASE("first line is preserved verbatim including trailing content") {
     const std::string source = "#version 410 core\nbody";
     const opengl::ShaderSource s(GL_FRAGMENT_SHADER, source);
     const auto result = s.preprocess();
@@ -38,8 +35,7 @@ TEST_SUITE("opengl::ShaderSource::preprocess")
     CHECK(result.find("body") != std::string::npos);
   }
 
-  TEST_CASE("empty prepend leaves only the version + debug define")
-  {
+  TEST_CASE("empty prepend leaves only the version + debug define") {
     const std::string source = "#version 410 core\ncode";
     const opengl::ShaderSource s(GL_VERTEX_SHADER, source, "");
     const auto result = s.preprocess();
@@ -48,8 +44,7 @@ TEST_SUITE("opengl::ShaderSource::preprocess")
     CHECK(result == expected);
   }
 
-  TEST_CASE("multi-line prepend is fully injected")
-  {
+  TEST_CASE("multi-line prepend is fully injected") {
     const std::string source = "#version 410 core\nmain\n";
     const std::string prepend = "#define A 1\n"
                                 "#define B 2\n"
@@ -66,8 +61,7 @@ TEST_SUITE("opengl::ShaderSource::preprocess")
     CHECK(result == expected);
   }
 
-  TEST_CASE("prepend appears before the shader body but after #version")
-  {
+  TEST_CASE("prepend appears before the shader body but after #version") {
     const std::string source = "#version 410 core\nBODY_MARKER\n";
     const std::string prepend = "PREPEND_MARKER\n";
 
@@ -85,8 +79,7 @@ TEST_SUITE("opengl::ShaderSource::preprocess")
     CHECK(prepend_pos < body_pos);
   }
 
-  TEST_CASE("byte-span constructor produces the same output as string")
-  {
+  TEST_CASE("byte-span constructor produces the same output as string") {
     const std::string source = "#version 410 core\nbody\n";
     const std::string prepend = "#define P 1\n";
 
@@ -100,8 +93,7 @@ TEST_SUITE("opengl::ShaderSource::preprocess")
     CHECK(from_string.preprocess() == from_bytes.preprocess());
   }
 
-  TEST_CASE("include directive is resolved from embedded resources")
-  {
+  TEST_CASE("include directive is resolved from embedded resources") {
     const std::string source = "#version 410 core\n"
                                "#include \"shader/color.fs\"\n"
                                "void main() {}\n";
@@ -118,8 +110,7 @@ TEST_SUITE("opengl::ShaderSource::preprocess")
     CHECK(result.find(included_str) != std::string::npos);
   }
 
-  TEST_CASE("prepend and include combine in a single pass")
-  {
+  TEST_CASE("prepend and include combine in a single pass") {
     const std::string source = "#version 410 core\n"
                                "#include \"shader/color.fs\"\n"
                                "void main() {}\n";

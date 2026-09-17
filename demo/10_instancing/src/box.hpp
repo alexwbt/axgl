@@ -4,8 +4,7 @@
 
 #include <axgl/impl/entity_base.hpp>
 
-class Box final : public axgl::impl::EntityBase
-{
+class Box final : public axgl::impl::EntityBase {
 public:
   static constexpr std::string_view kTypeId = "entity::box";
 
@@ -17,8 +16,7 @@ private:
   glm::vec3 rotation_speed_{0.0f};
 
 public:
-  void on_create() override
-  {
+  void on_create() override {
     const auto& position = transform().position;
     const glm::vec2 p2{position.x, position.z};
     y_ = position.y;
@@ -26,8 +24,7 @@ public:
     radius_ = glm::length(p2);
   }
 
-  void update() override
-  {
+  void update() override {
     auto& transform = this->transform();
     theta_ += orbit_speed_ * context_->delta_tick_f / radius_;
     transform.position.x = std::cos(theta_) * radius_;
@@ -38,8 +35,7 @@ public:
   }
 
   void set_orbit_speed(float orbit_speed) { orbit_speed_ = orbit_speed; }
-  void set_rotation_speed(glm::vec3 rotation_speed)
-  {
+  void set_rotation_speed(glm::vec3 rotation_speed) {
     rotation_speed_ = rotation_speed;
   }
 };

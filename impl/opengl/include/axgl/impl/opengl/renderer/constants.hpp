@@ -2,8 +2,7 @@
 
 #include <cstddef>
 
-namespace axgl::impl::opengl::renderer
-{
+namespace axgl::impl::opengl::renderer {
 
 inline constexpr std::size_t kSunLightLimit = 8;
 inline constexpr std::size_t kSunShadowLimit = 1;

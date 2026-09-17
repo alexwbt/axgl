@@ -10,21 +10,17 @@
 
 #include <opengl/framebuffer.hpp>
 
-namespace axgl::impl::opengl::gui
-{
+namespace axgl::impl::opengl::gui {
 
-class Page : public axgl::impl::gui::PageBase
-{
+class Page : public axgl::impl::gui::PageBase {
   std::unique_ptr<::opengl::Framebuffer> framebuffer_;
   axgl::ptr_t<axgl::impl::opengl::Texture> texture_;
 
 public:
-  void init() override
-  {
+  void init() override {
     axgl::impl::gui::PageBase::init();
 
-    if (width_ > 0 && height_ > 0)
-    {
+    if (width_ > 0 && height_ > 0) {
       const auto texture = axgl_->renderer_service()->create_texture();
       texture_ = axgl::ptr_cast<axgl::impl::opengl::Texture>(texture);
 #ifdef AXGL_DEBUG
@@ -37,8 +33,13 @@ public:
 
       const auto opengl_texture = texture_->get_texture();
       opengl_texture->load_texture(
-        0, GL_RGBA, util::clamp_cast<GLsizei>(width_),
-        util::clamp_cast<GLsizei>(height_), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+        0,
+        GL_RGBA,
+        util::clamp_cast<GLsizei>(width_),
+        util::clamp_cast<GLsizei>(height_),
+        0,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
         nullptr
       );
       opengl_texture->set_parameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -55,12 +56,10 @@ public:
     }
   }
 
-  void render() override
-  {
+  void render() override {
     axgl::impl::gui::PageBase::render();
 
-    if (width_ > 0 && height_ > 0 && framebuffer_)
-    {
+    if (width_ > 0 && height_ > 0 && framebuffer_) {
       framebuffer_->use();
       const auto width = util::clamp_cast<GLsizei>(width_);
       const auto height = util::clamp_cast<GLsizei>(height_);
@@ -93,8 +92,7 @@ public:
     }
   }
 
-  [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture() const override
-  {
+  [[nodiscard]] axgl::ptr_t<axgl::Texture> get_texture() const override {
     return texture_;
   }
 };

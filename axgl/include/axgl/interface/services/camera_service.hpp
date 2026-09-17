@@ -6,11 +6,9 @@
 #include <axgl/interface/entity.hpp>
 #include <axgl/interface/service.hpp>
 
-namespace axgl
-{
+namespace axgl {
 
-class CameraService : virtual public axgl::Service
-{
+class CameraService : virtual public axgl::Service {
 public:
   static constexpr std::string_view kTypeId = "service::camera";
 
