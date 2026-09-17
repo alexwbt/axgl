@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <opengl/shader_program.hpp>
+#include <opengl/shader_source.hpp>
 
 #include <axgl_opengl_impl/res.hpp>
 
@@ -34,7 +35,7 @@ private:
     using namespace axgl_opengl_impl_res;
 
     text_ = std::make_unique<::opengl::ShaderProgram>(
-      std::vector<::opengl::ShaderProgram::Shader>{
+      std::vector<::opengl::ShaderSource>{
         {GL_VERTEX_SHADER, get("shader/mesh2d.vs")},
         {GL_FRAGMENT_SHADER, get("shader/text.fs")}
       }

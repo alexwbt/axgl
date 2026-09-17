@@ -1,4 +1,6 @@
+include(${CMAKE_SOURCE_DIR}/_cmake/compile_proxy.cmake)
 include(${CMAKE_SOURCE_DIR}/_cmake/resource.cmake)
+include(${CMAKE_SOURCE_DIR}/_cmake/tests.cmake)
 
 add_library(axgl_opengl_impl)
 
@@ -17,6 +19,5 @@ target_link_libraries(axgl_opengl_impl
 )
 
 embed_resource(axgl_opengl_impl res)
-
-include(${CMAKE_SOURCE_DIR}/_cmake/compile_proxy.cmake)
+add_tests(test_opengl_impl test DEPS axgl_opengl_impl)
 add_compile_proxy(axgl_opengl_impl "${CMAKE_CURRENT_SOURCE_DIR}/include")

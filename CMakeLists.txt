@@ -6,7 +6,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/_bin)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(AXGL_DEBUG "Enable AXGL_DEBUG" ON)
+option(AXGL_BUILD_TESTS "Build tests" OFF)
 message("AXGL_DEBUG: ${AXGL_DEBUG}")
+message("AXGL_BUILD_TESTS: ${AXGL_BUILD_TESTS}")
 
 if(AXGL_DEBUG)
   add_compile_definitions(AXGL_DEBUG)
@@ -31,6 +33,12 @@ add_subdirectory(_external/cpptrace)
 add_subdirectory(_external/simdjson)
 add_subdirectory(_external/freetype)
 add_subdirectory(_external/flatbuffer)
+add_subdirectory(_external/doctest)
+
+if(AXGL_BUILD_TESTS)
+  enable_testing()
+  add_custom_target(axgl_tests)
+endif()
 
 # Internal Libraries
 add_subdirectory(lib/net)

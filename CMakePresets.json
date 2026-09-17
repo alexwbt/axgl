@@ -11,6 +11,7 @@
       "binaryDir": "_build/Debug",
       "cacheVariables": {
         "AXGL_DEBUG": "ON",
+        "AXGL_BUILD_TESTS": "ON",
         "CMAKE_BUILD_TYPE": "Debug",
         "TRACY_ENABLE": "ON",
         "TRACY_ON_DEMAND": "ON",
