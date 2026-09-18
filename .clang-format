@@ -60,7 +60,7 @@ AlignTrailingComments:
 #
 # Parameter / argument packing
 #
-BinPackParameters: OnePerLine
+BinPackParameters: false
 BinPackArguments: false
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowAllArgumentsOnNextLine: true

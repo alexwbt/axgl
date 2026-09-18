@@ -16,7 +16,6 @@ namespace axgl::impl::opengl {
 class TextService : virtual public axgl::TextService,
                     public axgl::impl::ServiceBase {
   ::opengl::TextRenderer text_renderer_;
-
   axgl::ptr_t<axgl::RendererService> renderer_service_;
 
 public:
@@ -49,12 +48,10 @@ public:
   [[nodiscard]] axgl::ptr_t<axgl::Texture> create_texture(
     const Options& options
   ) const override {
-    ::opengl::Text text;
-    text_renderer_.render_text(
-      text,
+    return create_texture(
       options.value,
       options.fonts,
-      {
+      ::opengl::TextOptions{
         .color = options.font_color,
         .size = util::clamp_cast<std::uint32_t>(options.font_size),
         .max_width = options.max_width,
@@ -64,6 +61,15 @@ public:
         .vertical = options.vertical,
       }
     );
+  }
+
+  [[nodiscard]] axgl::ptr_t<axgl::Texture> create_texture(
+    const std::string& value,
+    const std::vector<std::string>& fonts,
+    const ::opengl::TextOptions& options
+  ) const {
+    ::opengl::Text text;
+    text_renderer_.render_text(text, value, fonts, options);
 
     const auto texture = std::dynamic_pointer_cast<axgl::impl::opengl::Texture>(
       renderer_service_->create_texture()

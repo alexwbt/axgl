@@ -204,6 +204,11 @@ public:
   [[nodiscard]] bool has_char(uint32_t code) const {
     return FT_Get_Char_Index(face_, code) > 0;
   }
+
+  [[nodiscard]] int line_height(uint32_t size) const {
+    FT_Set_Pixel_Sizes(face_, 0, size);
+    return static_cast<int>(face_->size->metrics.height >> 6);
+  }
 };
 
 class TextRenderer final {
@@ -285,6 +290,11 @@ public:
     codepoints.reserve(value.size() / 2);
     for (auto it = value.begin(), end = value.end(); it != end;) {
       std::uint32_t c = utf8::next(it, end);
+      if (c == '\r') continue;
+      if (c == '\n') {
+        codepoints.push_back(c);
+        continue;
+      }
       if (!chars.contains(c)) {
         int f = get_renderable_font(font, c);
         if (f < 0) {
@@ -309,7 +319,10 @@ public:
 
     const int line_step = options.line_height > 0.0f
       ? util::clamp_cast<int>(options.line_height)
-      : util::clamp_cast<int>(options.size);
+      : std::max(
+          util::clamp_cast<int>(options.size),
+          fonts_.at(font[0])->line_height(options.size)
+        );
 
     const bool do_wrap = options.wrap != WrapMode::None
       && ((options.vertical && options.max_height > 0)
@@ -328,25 +341,42 @@ public:
 
     if (!do_wrap) {
       int pen_a = 0;
+      int pen_b = 0;
+      bool trim_leading = false;
       for (const auto c : codepoints) {
+        if (c == '\n') {
+          max_primary = std::max(max_primary, pen_a);
+          pen_a = 0;
+          pen_b += line_step;
+          trim_leading = true;
+          continue;
+        }
+        if (trim_leading && c == ' ') continue;
+        trim_leading = false;
         const auto& ch = chars[c];
         if (options.vertical) {
-          placed.push_back({c, 0, pen_a});
+          placed.push_back({c, pen_b, pen_a});
           pen_a += ch.advance.y;
           max_secondary = std::max(max_secondary, ch.size.x);
         } else {
-          placed.push_back({c, pen_a, 0});
+          placed.push_back({c, pen_a, pen_b});
           pen_a += ch.advance.x;
           max_secondary = std::max(max_secondary, ch.size.y);
         }
       }
-      max_primary = pen_a;
-      total_secondary = max_secondary;
+      max_primary = std::max(max_primary, pen_a);
+      total_secondary = pen_b + max_secondary;
+
+      if (!options.vertical) {
+        for (auto& p : placed)
+          p.y = pen_b - p.y;
+      }
     } else {
       int pen_a = 0;
       int pen_b = 0;
       int line_start = 0;
       int last_break = -1;
+      bool trim_leading = false;
 
       const auto flush_line = [&]() {
         max_primary = std::max(max_primary, pen_a);
@@ -354,10 +384,17 @@ public:
         pen_b += line_step;
         line_start = static_cast<int>(placed.size());
         last_break = -1;
+        trim_leading = true;
       };
 
       for (std::size_t i = 0; i < codepoints.size(); ++i) {
         const auto c = codepoints[i];
+
+        if (c == '\n') {
+          flush_line();
+          continue;
+        }
+
         const auto& ch = chars[c];
         const int advance = options.vertical ? ch.advance.y : ch.advance.x;
         const int max_extent
@@ -373,7 +410,13 @@ public:
             );
             placed.resize(static_cast<std::size_t>(last_break));
             flush_line();
+            bool skipped_first = false;
             for (auto& p : carried) {
+              if (trim_leading && !skipped_first && p.c == ' ') {
+                skipped_first = true;
+                continue;
+              }
+              trim_leading = false;
               const int& adv = options.vertical ? chars[p.c].advance.y
                                                 : chars[p.c].advance.x;
               if (options.vertical) {
@@ -391,6 +434,12 @@ public:
           }
         }
 
+        if (trim_leading && c == ' ') {
+          trim_leading = false;
+          continue;
+        }
+        trim_leading = false;
+
         if (options.vertical) placed.push_back({c, pen_b, pen_a});
         else placed.push_back({c, pen_a, pen_b});
         pen_a += advance;
@@ -405,6 +454,11 @@ public:
       }
       max_primary = std::max(max_primary, pen_a);
       total_secondary = pen_b + max_secondary;
+
+      if (!options.vertical) {
+        for (auto& p : placed)
+          p.y = pen_b - p.y;
+      }
     }
 
     int width = options.vertical ? total_secondary : max_primary;
@@ -440,8 +494,12 @@ public:
     framebuffer.use();
     glViewport(0, 0, width, height);
 
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_CULL_FACE);
 
     const auto& text_shader = ::opengl::StaticShaders::instance().text();
     text_shader.use_program();
@@ -472,6 +530,8 @@ public:
     }
 
     glDisable(GL_BLEND);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 };
 
