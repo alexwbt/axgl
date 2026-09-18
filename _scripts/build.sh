@@ -56,13 +56,21 @@ rm -f $LOG_FILE
 
 cd $ROOT_DIR
 
+EXTRA_CONFIG_ARGS=()
+if [ -f "$ROOT_DIR/.env" ]; then
+  while IFS='=' read -r key val; do
+    [ -z "$key" ] || [[ "$key" == \#* ]] && continue
+    EXTRA_CONFIG_ARGS+=("-D$key=$val")
+  done < "$ROOT_DIR/.env"
+fi
+
 if [ $NO_CONFIG -eq 0 ]; then
   log
   log "#"
   log "# Starting cmake config ($PRESET)"
   log "#"
 
-  cmake --preset $PRESET | log
+  cmake --preset $PRESET "${EXTRA_CONFIG_ARGS[@]}" | log
 fi
 
 if [ $NO_BUILD -eq 0 ]; then
