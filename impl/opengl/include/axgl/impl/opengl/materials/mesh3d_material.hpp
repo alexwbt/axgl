@@ -86,34 +86,26 @@ public:
 
     const auto use_ssao = context.ssao_texture != nullptr;
     shader.set_bool("use_ssao", use_ssao);
-    if (use_ssao) {
-      context.ssao_texture->use(GL_TEXTURE4);
-      shader.set_int("ssao_texture", 4);
-    }
+    shader.set_int("ssao_texture", 4);
+    if (use_ssao) context.ssao_texture->use(GL_TEXTURE4);
 
     const auto use_sun_shadow = context.sun_shadow_maps != nullptr;
     shader.set_bool("enable_sun_shadow", use_sun_shadow);
 #ifdef AXGL_DEBUG
     shader.set_bool("csm_debug_borders", context.csm_debug_borders);
 #endif
-    if (use_sun_shadow) {
-      context.sun_shadow_maps->use(GL_TEXTURE5);
-      shader.set_int("sun_shadow_maps", 5);
-    }
+    shader.set_int("sun_shadow_maps", 5);
+    if (use_sun_shadow) context.sun_shadow_maps->use(GL_TEXTURE5);
 
     const auto use_spot_shadow = context.spot_shadow_maps != nullptr;
     shader.set_bool("enable_spot_shadow", use_spot_shadow);
-    if (use_spot_shadow) {
-      context.spot_shadow_maps->use(GL_TEXTURE6);
-      shader.set_int("spot_shadow_maps", 6);
-    }
+    shader.set_int("spot_shadow_maps", 6);
+    if (use_spot_shadow) context.spot_shadow_maps->use(GL_TEXTURE6);
 
     const auto use_point_shadow = context.point_shadow_maps != nullptr;
     shader.set_bool("enable_point_shadow", use_point_shadow);
-    if (use_point_shadow) {
-      context.point_shadow_maps->use(GL_TEXTURE7);
-      shader.set_int("point_shadow_maps", 7);
-    }
+    shader.set_int("point_shadow_maps", 7);
+    if (use_point_shadow) context.point_shadow_maps->use(GL_TEXTURE7);
   }
 
   [[nodiscard]] const ::opengl::ShaderProgram* get_shader() const override {
