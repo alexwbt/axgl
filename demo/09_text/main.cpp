@@ -86,39 +86,14 @@ public:
     realm_ = realm_service->create_realm();
     realm_service->set_active_realm(realm_);
 
-    // camera entity
-    {
-      const auto camera_entity = entity_service->create_entity();
-      const auto camera_comp
-        = entity_service->create_component_t<axgl::impl::component::Camera>();
-      camera_entity->add_component(camera_comp);
-      realm_->entities().add(camera_entity);
-      camera_entity->transform().position.z = -2;
-      camera_entity->transform().update_matrix();
-
-      // camera input
-      camera_service->set_camera_mode(
-        axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>()
-      );
-      camera_service->set_camera_entity(camera_entity);
-    }
-
-    // light entity
-    {
-      const auto light_entity = entity_service->create_entity();
-      const auto light_comp
-        = entity_service->create_component_t<axgl::impl::component::Light>();
-      light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
-      light_entity->add_component(light_comp);
-      realm_->entities().add(light_entity);
-    }
-
     // load fonts
     text_service->load_font("arial", demo_text_res::get("font/arial.ttf"), 0);
     text_service->load_font(
       "noto-tc", demo_text_res::get("font/noto-tc.ttf"), 0
     );
 
+    create_camera();
+    create_light();
     create_text();
   }
 
@@ -184,6 +159,35 @@ private:
     const auto border_entity = entity_service->create_entity();
     border_entity->add_component(mesh);
     text_entity_->add_child(border_entity);
+  }
+
+  void create_camera() {
+    const auto& camera_service = axgl_->camera_service();
+    const auto& entity_service = axgl_->entity_service();
+
+    const auto camera_entity = entity_service->create_entity();
+    const auto camera_comp
+      = entity_service->create_component_t<axgl::impl::component::Camera>();
+    camera_entity->add_component(camera_comp);
+    realm_->entities().add(camera_entity);
+    camera_entity->transform().position.z = -2;
+    camera_entity->transform().update_matrix();
+
+    // camera input
+    camera_service->set_camera_mode(
+      axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>()
+    );
+    camera_service->set_camera_entity(camera_entity);
+  }
+
+  void create_light() {
+    const auto& entity_service = axgl_->entity_service();
+    const auto light_entity = entity_service->create_entity();
+    const auto light_comp
+      = entity_service->create_component_t<axgl::impl::component::Light>();
+    light_comp->light = axgl::Light::sunlight({0.2f, -1.0f, 1.2f});
+    light_entity->add_component(light_comp);
+    realm_->entities().add(light_entity);
   }
 };
 
