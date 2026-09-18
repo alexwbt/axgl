@@ -285,7 +285,7 @@ public:
         // submit to shadow pass
         context.shadow_pass.emplace_back(
           [this, instance_count](const renderer::ShadowPassContext& context) {
-            use_state();
+            glDisable(GL_CULL_FACE);
             // use point depth shader for point light shadows
             if (context.light_type == axgl::Light::Type::kPoint) {
               const auto& shader = Shaders::instance().point_depth();

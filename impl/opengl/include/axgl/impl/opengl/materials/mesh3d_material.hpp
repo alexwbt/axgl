@@ -63,6 +63,7 @@ public:
     shader.use_program();
     shader.set_bool("transparent", enable_blend_);
     shader.set_mat4("projection_view", context.projection_view_matrix);
+    shader.set_mat4("view_matrix", context.view_matrix);
     shader.set_vec3("camera_pos", context.viewpoint);
     shader.set_vec2("viewport", context.viewport);
     shader.set_vec4("mesh_color", color_);

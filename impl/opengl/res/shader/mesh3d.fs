@@ -112,6 +112,7 @@ uniform float normal_scale;
 uniform bool enable_sun_shadow;
 uniform sampler2DArray sun_shadow_maps;
 uniform float cascade_split_far[SUN_SHADOW_CASCADE_COUNT];
+uniform mat4 view_matrix;
 #ifdef AXGL_DEBUG
 uniform bool csm_debug_borders;
 #endif
@@ -199,18 +200,22 @@ vec2 calc_height_offset(Context ctx) {
 }
 
 /**
- * Selects the cascade index whose split range covers the fragment's distance
- * from the camera. Nearer cascades have higher depth precision.
+ * Selects the cascade index whose split range covers the fragment's view-space
+ * depth (distance along the camera forward axis). View-space depth is used
+ * rather than euclidean distance so the selection boundary is a plane
+ * perpendicular to the view direction, matching how the cascade split distances
+ * are computed (slices of the camera frustum by depth). Nearer cascades have
+ * higher depth precision.
  */
 int select_cascade() {
-  float frag_distance = length(vso.position - vso.camera_pos);
-  int cascade_index = 0;
+  vec4 view_pos = view_matrix * vec4(vso.position, 1.0);
+  float frag_distance = -view_pos.z;
+  int cascade_index = SUN_SHADOW_CASCADE_COUNT - 1;
   for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i) {
     if (frag_distance <= cascade_split_far[i]) {
       cascade_index = i;
       break;
     }
-    cascade_index = i;
   }
   return cascade_index;
 }
@@ -227,8 +232,22 @@ float calc_sun_shadow(SunLight light) {
   if (projection_coords.z > 1.0) return 0.0;
 
   vec3 light_dir = normalize(-light.direction);
-  float NdotL = max(dot(normalize(vso.normal), light_dir), 0.0);
-  float bias = 0.0;
+  float normal_dot = dot(normalize(vso.normal), light_dir);
+  // back-facing fragments are self-shadowed by definition; the shadow map is
+  // meaningless for them (and the bias/slope math blows up), so skip the lookup
+  // entirely. this also eliminates grazing-angle acne on surfaces nearly
+  // parallel to the light.
+  if (normal_dot < 0.0) return 1.0;
+  // slope-scaled bias: depth error grows as tan(angle) at grazing angles, so
+  // use tan(acos(N.L)) rather than the linear (1 - N.L) approximation. a floor
+  // keeps flat surfaces at a small bias (no peter panning) while the ceiling
+  // caps steep angles so the bias never grows large enough to detach shadows.
+  // scaled inversely with the cascade's far plane (farther cascades have a
+  // larger ortho Z range, so a given world-space error is a smaller fraction
+  // of [0,1]).
+  float bias = max(0.0002, 0.0005 * tan(acos(normal_dot)));
+  bias = min(bias, 0.0015);
+  bias *= 1.0 / (cascade_split_far[cascade_index] * 0.5);
 
   float shadow = 0.0;
   // textureSize on a sampler2DArray returns ivec3(w, h, layers); .xy is the
@@ -254,12 +273,20 @@ float calc_sun_shadow(SunLight light) {
 float calc_spot_shadow(int slot_index, vec3 normal, vec3 light_dir) {
   int layer = spot_shadow_index[slot_index];
   vec4 clip = vso.spot_light_space_position[layer];
-  vec3 proj = clip.xyz / clip.w;
-  proj = proj * 0.5 + 0.5;
-  if (proj.z > 1.0) return 0.0;
+  vec3 project = clip.xyz / clip.w;
+  project = project * 0.5 + 0.5;
+  if (project.z > 1.0) return 0.0;
 
-  float NdotL = max(dot(normal, light_dir), 0.0);
-  float bias = 0.0;
+  // back-facing fragments are self-shadowed; skip the lookup (also kills
+  // grazing-angle acne where the shadow map can't resolve the surface).
+  float normal_dot = dot(normal, light_dir);
+  if (normal_dot <= 0.0) return 1.0;
+  // slope-scaled bias in normalized [0,1] depth. the spot's perspective
+  // projection already maps its [near, far] depth range to [0,1], so no extra
+  // far-plane normalization is needed (unlike the sun's ortho cascades). floor
+  // keeps flat surfaces small (no peter panning); ceiling caps steep angles.
+  float bias = max(0.00002, 0.00005 * tan(acos(normal_dot)));
+  bias = min(bias, 0.00015);
 
   vec2 texel_size = 1.0 / textureSize(spot_shadow_maps, 0).xy;
   float shadow = 0.0;
@@ -267,10 +294,10 @@ float calc_spot_shadow(int slot_index, vec3 normal, vec3 light_dir) {
     for (int y = -1; y <= 1; ++y) {
       float pcf_depth
         = texture(
-            spot_shadow_maps, vec3(proj.xy + vec2(x, y) * texel_size, layer)
+            spot_shadow_maps, vec3(project.xy + vec2(x, y) * texel_size, layer)
         )
             .r;
-      shadow += proj.z - bias > pcf_depth ? 1.0 : 0.0;
+      shadow += project.z - bias > pcf_depth ? 1.0 : 0.0;
     }
   }
   return shadow / 9.0;
@@ -290,13 +317,18 @@ float calc_point_shadow(int slot_index, vec3 normal, vec3 light_dir) {
   vec3 tangent = normalize(cross(sample_dir, t));
   vec3 bitangent = cross(sample_dir, tangent);
 
-  // slope-scaled bias in normalized [0,1] depth. Back-face culling in the
-  // shadow pass means the depth buffer stores the far side, so only a small
-  // bias is needed for depth quantization noise.
-  float NdotL = max(dot(normal, light_dir), 0.0);
-  float bias = clamp(
-    0.00002 * tan(acos(NdotL)) / point_shadow_far_plane[layer], 0.0, 0.0002
-  );
+  // back-facing fragments are self-shadowed; skip the lookup (also kills
+  // grazing-angle acne where the shadow map can't resolve the surface).
+  float normal_dot = dot(normal, light_dir);
+  if (normal_dot <= 0.0) return 1.0;
+  // slope-scaled bias in normalized [0,1] depth. the point shadow stores
+  // linear depth as length(frag_to_light)/far_plane, so the bias is already in
+  // the same [0,1] space and needs no extra far_plane normalization. back-face
+  // culling in the shadow pass stores the far side, so only a small bias is
+  // needed for depth quantization noise. floor keeps flat surfaces small (no
+  // peter panning); ceiling caps steep angles.
+  float bias = max(0.0002, 0.0005 * tan(acos(normal_dot)));
+  bias = min(bias, 0.0015);
 
   float shadow = 0.0;
   for (int x = -1; x <= 1; ++x) {
@@ -376,7 +408,7 @@ vec3 calc_spot_light(Context ctx, SpotLight light, int slot_index) {
   float intensity = clamp((theta - cos_outer_cut_off) / epsilon, 0.0, 1.0);
 
   float shadow = (enable_spot_shadow && spot_shadow_index[slot_index] >= 0)
-    ? calc_spot_shadow(slot_index, ctx.frag_normal, light_dir)
+    ? calc_spot_shadow(slot_index, normalize(vso.normal), light_dir)
     : 0.0;
 
   return (ambient + (1.0 - shadow) * (diffuse + specular) * intensity)
@@ -409,7 +441,7 @@ vec3 calc_point_light(Context ctx, PointLight light, int slot_index) {
     / (light.constant + light.linear * dis + light.quadratic * (dis * dis));
 
   float shadow = (enable_point_shadow && point_shadow_index[slot_index] >= 0)
-    ? calc_point_shadow(slot_index, ctx.frag_normal, light_dir)
+    ? calc_point_shadow(slot_index, normalize(vso.normal), light_dir)
     : 0.0;
 
   return (ambient + (1.0 - shadow) * (diffuse + specular)) * attenuation;
@@ -443,7 +475,7 @@ void main() {
   // matrix). This is done per-fragment using the single interpolated TBN rather
   // than per-vertex in the VS, so the basis is consistent across the triangle.
   // When no normal map is bound, use the interpolated world-space normal.
-  // See mesh3d.vs for why the TBN's handedness (bitangent sign) matters.
+  // See mesh3d.vs for why the TBNs handedness (bitangent sign) matters.
   vec3 normal_sample = texture(normal_texture, uv).rgb * 2.0 - 1.0;
   normal_sample.xy *= normal_scale;
   ctx.frag_normal = use_normal_texture ? normalize(vso.tbn * normal_sample)
@@ -469,10 +501,11 @@ void main() {
   // concentric outlines where they intersect scene geometry.
   if (csm_debug_borders && enable_sun_shadow) {
     for (int i = 0; i < SUN_SHADOW_CASCADE_COUNT; ++i) {
-      vec3 proj = vso.sun_light_space_position[i].xyz
+      vec3 project = vso.sun_light_space_position[i].xyz
         / vso.sun_light_space_position[i].w;
-      float min_edge
-        = min(min(1.0 - abs(proj.x), 1.0 - abs(proj.y)), 1.0 - abs(proj.z));
+      float min_edge = min(
+        min(1.0 - abs(project.x), 1.0 - abs(project.y)), 1.0 - abs(project.z)
+      );
       if (min_edge > 0.2) continue;
 
       float border = 1.0 - smoothstep(0.0, 0.02, abs(min_edge));

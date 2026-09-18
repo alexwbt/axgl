@@ -20,6 +20,7 @@ words = [
     "cmake",
     "codegen",
     "cpptrace",
+    "csm",
     "cstdint",
     "ctest",
     "cubemap",
@@ -45,14 +46,19 @@ words = [
     "lastword",
     "lfs",
     "lightmap",
+    "lod",
     "metalness",
+    "mip",
     "msaa",
     "msvc",
     "mswsock",
     "multisample",
     "noto",
+    "oit",
     "opengl",
+    "ortho",
     "orthogonalize",
+    "pcf",
     "perlin",
     "phong",
     "renderable",
@@ -67,9 +73,12 @@ words = [
     "stb",
     "stbi",
     "stdlib",
+    "tbn",
     "ubyte",
+    "unoccluded",
     "unrenderable",
     "utfcpp",
+    "vao",
 ]
 ignore_paths = [
     ".git/**/*",
@@ -119,9 +128,12 @@ paths = [
     "**/*.vs",
 ]
 extra_words = [
-    "ivec",
-    "texel",
     "isinf",
+    "ivec",
+    "smoothstep",
+    "texel",
+    "vso",
+    "xyz",
 ]
 
 [[overrides]]

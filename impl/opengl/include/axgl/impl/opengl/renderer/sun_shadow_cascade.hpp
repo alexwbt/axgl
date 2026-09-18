@@ -123,10 +123,15 @@ struct SunShadowCascade {
 
       // pad z so shadow casters just outside the slice still project into the
       // depth range. too large wrecks depth precision (acne); too small clips
-      // off-slice casters.
-      constexpr float z_padding = 1.0f;
-      min_z -= z_padding;
-      max_z += z_padding;
+      // off-slice casters. multiplicative scaling (like the LearnOpenGL CSM
+      // article's zMult) grows with the slice's Z extent, so deeper cascades
+      // (bigger slices) get proportionally more room for off-slice casters,
+      // while shallow near cascades keep tight depth precision.
+      constexpr float z_mult = 10.0f;
+      if (min_z < 0.0f) min_z *= z_mult;
+      else min_z /= z_mult;
+      if (max_z < 0.0f) max_z /= z_mult;
+      else max_z *= z_mult;
 
       const glm::mat4 light_proj
         = glm::ortho(min_x, max_x, min_y, max_y, min_z, max_z);
