@@ -27,7 +27,10 @@ public:
         y += margin.x;
         x += margin.z;
         element->set_position({x, y});
-        element->set_size({page_width, intrinsic_size.y});
+        element->set_size(
+          {page_width - util::clamp_cast<std::uint32_t>(margin.z + margin.w),
+           intrinsic_size.y}
+        );
         x = 0.0f;
         y += margin.y + intrinsic_size.y;
         break;

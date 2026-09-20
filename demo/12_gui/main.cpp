@@ -46,8 +46,8 @@ int main() {
   page->set_scroll_pointer(scroll_pointer);
   page->set_scale_input(scale_input);
   page->set_activate_input(activate_input);
-  page->set_focus_switch_input(focus_switch_input);
   page->set_focus_activate_input(focus_activate_input);
+  page->set_focus_switch_input(focus_switch_input);
   gui_service->set_main_ui(page);
 
   using namespace axgl::gui;
@@ -59,11 +59,11 @@ int main() {
     ->set_display(Display::kBlock)
     ->set_font_size(32.0f)
     ->set_font_weight(700)
-    ->set_margin({10.0f, 10.0f, 0.0f, 0.0f});
+    ->set_margin(glm::vec4(10.0f));
 
   gui_service->create_style("p")
     ->set_display(Display::kBlock)
-    ->set_margin({10.0f, 10.0f, 0.0f, 0.0f});
+    ->set_margin(glm::vec4(10.0f));
 
   {
     const auto e = gui_service->create_element_t<TextElement>();
