@@ -33,6 +33,7 @@ words = [
     "flatbuffer",
     "flatbuffers",
     "flatc",
+    "focusable",
     "fontface",
     "framebuffer",
     "freetype",
