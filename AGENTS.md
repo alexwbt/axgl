@@ -118,6 +118,16 @@ See `README.md` for the architecture design philosophy.
   `demo_net_chatroom_client`. Net demos link `net` and, on MinGW/Windows, need
   `ws2_32 mswsock` (guarded by `WIN32 AND MINGW` in their `CMakeLists.txt`).
 
+## Docs (`docs/`)
+
+Interface-focused topic guides live in `docs/` — read the relevant one before
+working on matching code. `docs/README.md` is the index plus the engine
+lifecycle, service list, and scene model. The numbered topic files correspond
+one-to-one with the numbered demos (`demo/01_...` ... `demo/12_gui`) and
+document the interfaces only (no `impl::` or backend details). When adding a
+demo/topic, add the matching numbered doc; when an interface changes, update
+its topic doc and keep it interface-only.
+
 ## Codegen / resource pipeline (easy to miss)
 
 `_cmake/resource.cmake` defines three CMake functions used across the tree. They
