@@ -65,17 +65,25 @@ int main() {
     ->set_display(Display::kBlock)
     ->set_margin(glm::vec4(10.0f));
 
+  // title
   {
     const auto e = gui_service->create_element_t<TextElement>();
     e->set_text("Hello World");
     e->set_style({"text", "h1"})->set_color(kRed);
     page->elements().add(e);
   }
+  // paragraph
   {
     const auto e = gui_service->create_element_t<TextElement>();
     e->set_text("This is a axgl gui demo.");
     e->set_style({"text", "p"})->set_color(kBlue);
     page->elements().add(e);
+  }
+  // button
+  {
+    const auto e = gui_service->create_element_t<ButtonElement>();
+    e->set_text("Click me!");
+    e->set_style({"button"});
   }
 
   axgl.run();

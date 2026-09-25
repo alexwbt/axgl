@@ -6,11 +6,10 @@
 
 namespace axgl::gui {
 
-class ButtonElement : virtual public axgl::gui::Element {
+class ButtonElement : virtual public axgl::gui::Element,
+                      virtual public axgl::gui::TextElement {
 public:
   static constexpr std::string_view kTypeId = "element:button";
-
-  [[nodiscard]] virtual TextElement* label() const = 0;
 
   virtual void on_click(std::function<void(const axgl::gui::Context&)> handler)
     = 0;

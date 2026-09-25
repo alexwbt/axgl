@@ -10,9 +10,8 @@
 namespace axgl::impl::opengl::gui {
 
 class ButtonElement : virtual public axgl::gui::ButtonElement,
-                      public axgl::impl::opengl::gui::Element {
+                      public axgl::impl::opengl::gui::TextElement {
   std::function<void(const axgl::gui::Context&)> handler_;
-  std::shared_ptr<axgl::impl::opengl::gui::TextElement> label_;
 
 public:
   void on_click(
