@@ -160,6 +160,9 @@ protected:
   }
 
   void update_styles(const axgl::gui::Context& context) {
+    // FIXME: this reset runs before the is_modified() check below, so a
+    // direct inline change via style()->set_*() is never detected
+    // (set_style()/append_style()/remove_style() set update_styles_ instead).
     element_style_->reset_modified();
 
     if (update_styles_) {
@@ -179,6 +182,10 @@ protected:
          })
     ) {
       computed_style_ = std::make_unique<axgl::gui::Style>();
+      // FIXME: apply_to() assigns members directly and never sets
+      // computed_style_->modified_, so the freshly rebuilt Style always
+      // reports is_modified() == false (TextElement::update relies on that
+      // flag to regenerate its texture).
       for (const auto& style : using_styles_)
         style->apply_to(*computed_style_);
       element_style_->apply_to(*computed_style_);

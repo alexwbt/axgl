@@ -12,6 +12,7 @@ namespace axgl::impl::opengl::gui {
 class TextElement : virtual public axgl::gui::TextElement,
                     public axgl::impl::opengl::gui::Element {
   std::string text_;
+  float text_width_ = 0.0f;
   float text_scale_ = 1.0f;
   bool modified_text_ = false;
   axgl::ptr_t<axgl::impl::opengl::Texture> text_texture_;
@@ -27,12 +28,18 @@ public:
     axgl::impl::opengl::gui::Element::update(context);
 
     const auto text_scale = context.scale * context.font_scale;
+    // FIXME: computed_style_->is_modified() is always false because
+    // Style::apply_to() never sets modified_ (see style.hpp), and the font
+    // inputs (fonts/font_size/font_color) are not compared below, so the
+    // texture goes stale on a style-only font change. Cache and compare the
+    // font inputs here.
     if (
       computed_style_->is_modified() || modified_text_
-      || text_scale_ != text_scale
+      || text_scale_ != text_scale || text_width_ != size_.x
     ) {
       modified_text_ = false;
       text_scale_ = text_scale;
+      text_width_ = size_.x;
 
       const auto fonts = computed_style_->get_fonts();
       const auto font_color = computed_style_->get_font_color();
@@ -45,6 +52,7 @@ public:
             .fonts = fonts,
             .font_color = font_color,
             .font_size = font_size,
+            .max_width = util::clamp_cast<std::int32_t>(size_.x),
             .vertical = false,
           })
         );
@@ -62,6 +70,12 @@ public:
         text_texture_ = nullptr;
         intrinsic_size_ = {0.0f, 0.0f};
       }
+
+      // Regenerating the texture leaves the page's cached framebuffer stale,
+      // so mark it dirty (same pattern as ElementBase's hover/active/focus
+      // handlers). Note this fires on any guard hit, including sub-pixel
+      // width changes, so it can over-trigger a full page re-render.
+      context.page->set_should_render(true);
     }
   }
 
