@@ -32,9 +32,16 @@ public:
            intrinsic_size.y}
         );
         x = 0.0f;
-        y += margin.y + intrinsic_size.y;
+        y += intrinsic_size.y + margin.y;
         break;
-      case Display::kInline: break;
+      case Display::kInline:
+        y += margin.x;
+        x += margin.z;
+        element->set_position({x, y});
+        element->set_size(intrinsic_size);
+        x += intrinsic_size.x + margin.w;
+        y += intrinsic_size.y + margin.y;
+        break;
       }
     }
   }

@@ -22,6 +22,14 @@ void init_page(
     ->set_display(Display::kBlock)
     ->set_margin(glm::vec4(10.0f));
 
+  gui_service->create_style("button")
+    ->set_fonts({"arial", "noto-tc"})
+    ->set_display(Display::kInline);
+  gui_service->create_style("button:hover")
+    ->set_color({1.0f, 1.0f, 1.0f, 0.2f});
+  gui_service->create_style("button:active")
+    ->set_color({1.0f, 1.0f, 1.0f, 0.5f});
+
   // title
   {
     const auto e = gui_service->create_element_t<TextElement>();
