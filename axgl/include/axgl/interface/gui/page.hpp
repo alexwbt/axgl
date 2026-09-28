@@ -3,6 +3,7 @@
 #include <axgl/common.hpp>
 #include <axgl/interface/container.hpp>
 #include <axgl/interface/context.hpp>
+#include <axgl/interface/gui/layout.hpp>
 #include <axgl/interface/gui/style.hpp>
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/pointer.hpp>
@@ -30,6 +31,9 @@ public:
   [[nodiscard]] virtual std::uint32_t get_height() const = 0;
   [[nodiscard]] virtual axgl::ptr_t<axgl::Texture> get_texture() const = 0;
   [[nodiscard]] virtual axgl::Container<axgl::gui::Element>& elements() = 0;
+
+  [[nodiscard]] virtual const axgl::gui::Layout& get_layout() const = 0;
+  virtual void set_layout(axgl::ptr_t<axgl::gui::Layout> layout) = 0;
 
   virtual void set_cursor(axgl::gui::Cursor cursor) = 0;
   [[nodiscard]] virtual axgl::gui::Cursor get_cursor() = 0;

@@ -19,6 +19,11 @@ public:
   ) override {
     handler_ = std::move(handler);
   }
+
+  void on_activate(const axgl::gui::Context& context) override {
+    axgl::impl::opengl::gui::TextElement::on_activate(context);
+    handler_(context);
+  }
 };
 
 } // namespace axgl::impl::opengl::gui

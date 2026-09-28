@@ -17,6 +17,8 @@ protected:
   std::uint32_t width_ = 0;
   std::uint32_t height_ = 0;
   axgl::impl::gui::ElementContainer elements_;
+  axgl::ptr_t<axgl::gui::Layout> layout_
+    = axgl::create_ptr<axgl::impl::gui::BlockLayout>();
 
   float scale_ = 1.0f;
   float font_scale_ = 1.0f;
@@ -52,12 +54,14 @@ public:
       glm::mat4(1.0f),
     };
 
-    // apply layout
-    BlockLayout layout;
-    layout.apply(current_context, elements_);
-
     for (const auto& element : elements_.get())
       element->init(current_context);
+
+    const glm::vec2 size{
+      static_cast<float>(width_), static_cast<float>(height_)
+    };
+    layout_->measure(current_context, elements_, size);
+    layout_->arrange(current_context, elements_, {0.0f, 0.0f}, size);
 
     should_render_ = true;
   }
@@ -99,9 +103,11 @@ public:
     for (const auto& element : elements_.get())
       element->update(current_context);
 
-    // apply layout
-    BlockLayout layout;
-    layout.apply(current_context, elements_);
+    const glm::vec2 size{
+      static_cast<float>(width_), static_cast<float>(height_)
+    };
+    layout_->measure(current_context, elements_, size);
+    layout_->arrange(current_context, elements_, {0.0f, 0.0f}, size);
   }
 
   void render() override { should_render_ = false; }
@@ -111,6 +117,12 @@ public:
   [[nodiscard]] std::uint32_t get_height() const override { return height_; }
   [[nodiscard]] axgl::Container<axgl::gui::Element>& elements() override {
     return elements_;
+  }
+  [[nodiscard]] const axgl::gui::Layout& get_layout() const override {
+    return *layout_;
+  }
+  void set_layout(axgl::ptr_t<axgl::gui::Layout> layout) override {
+    layout_ = std::move(layout);
   }
 
   void set_cursor(axgl::gui::Cursor cursor) override { cursor_ = cursor; }

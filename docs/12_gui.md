@@ -15,7 +15,7 @@ objects, and a named `Style` system with state pseudo-classes.
 | `axgl::gui::Page`    | `interface/gui/page.hpp`             | Root of a UI tree; holds top-level elements and input bindings |
 | `axgl::gui::Element` | `interface/gui/element.hpp`          | Base UI node; style, geometry, state, lifecycle                |
 | `axgl::gui::Style`   | `interface/gui/style.hpp`            | A set of optional presentation properties                      |
-| `axgl::gui::Layout`  | `interface/gui/layout.hpp`           | Positions children of a container                              |
+| `axgl::gui::Layout`  | `interface/gui/layout.hpp`           | Measures and positions children of a container                 |
 | `axgl::gui::Context` | `interface/gui/context.hpp`          | Per-call context (service, page, parent, scale, projection)    |
 
 `Context` carries the `GuiService*`, the current `Page*`, the parent element,
@@ -79,16 +79,19 @@ page for re-render.
 
 `Element` (`interface/gui/element.hpp`) exposes:
 
-- Identity and geometry: `get_id`, `get_position`, `get_size`, `get_rect`,
-  `get_visible_rect`, `get_intrinsic_size`.
+- Identity and geometry: `get_id`, `get_position` (absolute), `get_offset`
+  (relative to the parent), `get_size`, `get_desired_size` (the result of the
+  last measure), `get_rect`, `get_visible_rect`.
 - State: `is_focusable`, `is_focused`, `is_hovering`, `is_activated`.
 - Style: `get_computed_style()` (the resolved style) and `style()` (the
   element's own inline style).
-- Children: `children()` returns a `Container<Element>&`.
+- Children: `children()` returns a `Container<Element>&`, plus `get_layout()` /
+  `set_layout()` for the layout applied to those children.
 - Lifecycle: `init`, `update`, `render`.
+- Measurement: `measure(context, available_size)` and `arrange(context, offset,
+  size)`, called by the parent layout (see [Layout](#layout)).
 - Events: `on_pointer_enter`, `on_pointer_exit`, `on_activate`, `on_deactivate`,
   `on_focus`, `on_blur`.
-- Geometry setters: `set_position`, `set_size`.
 - Style management: `set_style(names)`, `append_style(name)`,
   `remove_style(name)`.
 
@@ -127,25 +130,24 @@ and combined into a per-element _computed style_.
 / `set_x()` pair plus a `using_x()` query. The `using_x` flag records whether
 the property was explicitly set.
 
-| Property      | Type             | Default        |
-| ------------- | ---------------- | -------------- |
-| `position`    | `glm::vec2`      | `{0, 0}`       |
-| `size`        | `glm::vec2`      | `{0, 0}`       |
-| `color`       | `glm::vec4`      | `{0, 0, 0, 0}` |
-| `opacity`     | `float`          | `1.0`          |
-| `cursor`      | `Cursor`         | `kNormal`      |
-| `fonts`       | `vector<string>` | empty          |
-| `font_color`  | `glm::vec4`      | `{1, 1, 1, 1}` |
-| `font_size`   | `float`          | `16.0`         |
-| `font_weight` | `int`            | `400`          |
-| `line_height` | `float`          | `1.5`          |
-| `text_align`  | `TextAlign`      | `kCenter`      |
-| `display`     | `Display`        | `kBlock`       |
-| `margin`      | `glm::vec4`      | `{0, 0, 0, 0}` |
-| `padding`     | `glm::vec4`      | `{0, 0, 0, 0}` |
+| Property     | Type             | Default        |
+| ------------ | ---------------- | -------------- |
+| `color`      | `glm::vec4`      | `{0, 0, 0, 0}` |
+| `opacity`    | `float`          | `1.0`          |
+| `cursor`     | `Cursor`         | `kNormal`      |
+| `fonts`      | `vector<string>` | empty          |
+| `font_color` | `glm::vec4`      | `{1, 1, 1, 1}` |
+| `font_size`  | `float`          | `16.0`         |
+| `display`    | `Display`        | `kBlock`       |
+| `margin`     | `glm::vec4`      | `{0, 0, 0, 0}` |
+| `padding`    | `glm::vec4`      | `{0, 0, 0, 0}` |
 
-Enums: `Display { kBlock, kInline }`, `Cursor { ... }`,
-`TextAlign { kLeft, kRight, kCenter }`.
+`margin` and `padding` use the CSS shorthand order `(top, right, bottom, left)`.
+Element geometry is owned by the layout, not by styles: an element's position and
+size are assigned during arrange. Use `margin` / `padding` / `display` to
+influence it.
+
+Enums: `Display { kBlock, kInline }`, `Cursor { ... }`.
 
 ### Named styles
 
@@ -157,7 +159,6 @@ gui_service->create_style("text")->set_fonts({"arial", "noto-tc"});
 gui_service->create_style("h1")
   ->set_display(axgl::gui::Display::kBlock)
   ->set_font_size(32.0f)
-  ->set_font_weight(700)
   ->set_margin(glm::vec4(10.0f));
 
 gui_service->create_style("p")
@@ -213,19 +214,40 @@ layer.
 
 ## Layout
 
-`axgl::gui::Layout` (`interface/gui/layout.hpp`) applies positioning to a
-container's children:
+`axgl::gui::Layout` (`interface/gui/layout.hpp`) drives a container's children
+in two phases:
 
 ```cpp
-virtual void apply(
+virtual glm::vec2 measure(
   const axgl::gui::Context& context,
-  axgl::Container<axgl::gui::Element>& element
+  axgl::Container<axgl::gui::Element>& elements,
+  const glm::vec2& available_size
+) const = 0;
+
+virtual void arrange(
+  const axgl::gui::Context& context,
+  axgl::Container<axgl::gui::Element>& elements,
+  const glm::vec2& content_origin,
+  const glm::vec2& available_size
 ) const = 0;
 ```
 
-A page applies a layout to its top-level elements before running their
-lifecycle. `intrinsic_size` is provided by each element and is used by layouts
-to size content.
+- **Measure** is top-down constraints, bottom-up sizes: the layout asks each
+  child to `measure` itself and returns the container's content size. Each
+  element records its own `get_desired_size()` during this pass.
+- **Arrange** is top-down placement: the layout positions each child with a
+  parent-relative `offset` and a final `size`. `content_origin` is the top-left
+  of the container's content box (i.e. inside its padding).
+
+Layout is **recursive and owned per container**. Both `Page` and `Element`
+expose `get_layout()` / `set_layout()`; the default is `BlockLayout`. A page
+measures and arranges its top-level elements, and every element arranges its own
+children with its layout, so nesting works without special cases. The page
+lifecycle is `init` (or `update`) → `measure` → `arrange`, then `render`.
+
+Coordinate resolution is explicit: an element stores a parent-relative
+`offset_` and an absolute `position_`, resolved once during arrange. There is no
+in-place accumulation, so geometry is stable frame-to-frame.
 
 ## Writing a custom element
 

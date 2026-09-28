@@ -11,6 +11,7 @@
 #include <axgl/interface/services/gui_service.hpp>
 
 #include <axgl/impl/gui/element_container.hpp>
+#include <axgl/impl/gui/layouts/block_layout.hpp>
 
 namespace axgl::impl::gui {
 
@@ -33,23 +34,29 @@ protected:
   std::vector<axgl::ptr_t<axgl::gui::Style>> using_styles_;
 
   ElementContainer children_;
+  axgl::ptr_t<axgl::gui::Layout> layout_;
 
+  glm::vec2 offset_{0.0f};
   glm::vec2 position_{0.0f};
   glm::vec2 size_{0.0f};
   glm::vec4 rect_{0.0f};
   glm::vec4 scissor_rect_{0.0f};
-  glm::vec2 intrinsic_size_{0.0f};
+  glm::vec2 desired_size_{0.0f};
+  glm::vec2 available_size_{0.0f};
 
 public:
+  ElementBase() : layout_(axgl::create_ptr<axgl::impl::gui::BlockLayout>()) {}
+
   [[nodiscard]] std::uint64_t get_id() const override { return id_; }
   [[nodiscard]] glm::vec2 get_position() const override { return position_; }
+  [[nodiscard]] glm::vec2 get_offset() const override { return offset_; }
   [[nodiscard]] glm::vec2 get_size() const override { return size_; }
+  [[nodiscard]] glm::vec2 get_desired_size() const override {
+    return desired_size_;
+  }
   [[nodiscard]] glm::vec4 get_rect() const override { return rect_; }
   [[nodiscard]] glm::vec4 get_visible_rect() const override {
     return scissor_rect_;
-  }
-  [[nodiscard]] glm::vec2 get_intrinsic_size() const override {
-    return intrinsic_size_;
   }
   [[nodiscard]] const axgl::gui::Style& get_computed_style() const override {
     return *computed_style_;
@@ -65,16 +72,19 @@ public:
   [[nodiscard]] axgl::Container<axgl::gui::Element>& children() override {
     return children_;
   }
+  [[nodiscard]] const axgl::gui::Layout& get_layout() const override {
+    return *layout_;
+  }
+  void set_layout(axgl::ptr_t<axgl::gui::Layout> layout) override {
+    layout_ = std::move(layout);
+  }
 
   void init(const axgl::gui::Context& context) override {
     update_styles(context);
-    update_scissor_rect(context);
     init_children(context);
   }
 
   void update(const axgl::gui::Context& context) override {
-    update_scissor_rect(context);
-
     const auto& active_input = context.page->get_activate_input();
     const auto& pointer = context.page->get_cursor_pointer();
     const bool pointer_in_rect = pointer
@@ -88,9 +98,9 @@ public:
     if (!activated_ && hovering_ && active_input->tick == 1)
       on_activate(context);
     if (activated_ && active_input->tick == 0) on_deactivate(context);
-    if (hovering_) context.page->set_cursor(computed_style_->get_cursor());
 
     update_styles(context);
+    if (hovering_) context.page->set_cursor(computed_style_->get_cursor());
     update_children(context);
   }
 
@@ -130,9 +140,24 @@ public:
     context.page->set_should_render(true);
   }
 
-  void set_position(glm::vec2 position) override { position_ = position; }
+  void measure(
+    const axgl::gui::Context& context, glm::vec2 available_size
+  ) override {
+    available_size_ = available_size;
+    desired_size_ = measure_content(context, available_size);
+  }
 
-  void set_size(glm::vec2 size) override { size_ = size; }
+  void arrange(
+    const axgl::gui::Context& context, glm::vec2 offset, glm::vec2 size
+  ) override {
+    offset_ = offset;
+    position_ = offset;
+    if (context.parent) position_ += context.parent->get_position();
+    size_ = size;
+    rect_ = {position_, position_ + size_};
+    update_scissor_rect(context);
+    arrange_children(context);
+  }
 
   axgl::gui::Style* set_style(const std::vector<std::string>& styles) override {
     styles_.clear();
@@ -152,6 +177,23 @@ public:
   }
 
 protected:
+  [[nodiscard]] virtual glm::vec2 measure_content(
+    const axgl::gui::Context& context, const glm::vec2& available_size
+  ) {
+    const auto padding = computed_style_->get_padding() * context.scale;
+    const glm::vec2 padding_size{padding.y + padding.w, padding.x + padding.z};
+    if (children_.empty()) return padding_size;
+
+    const glm::vec2 content_available{
+      std::max(0.0f, available_size.x - padding_size.x),
+      std::max(0.0f, available_size.y - padding_size.y)
+    };
+    axgl::gui::Context child_context = context;
+    child_context.parent = this;
+    return layout_->measure(child_context, children_, content_available)
+      + padding_size;
+  }
+
   void init_children(const axgl::gui::Context& context) {
     axgl::gui::Context current_context = context;
     current_context.parent = this;
@@ -160,9 +202,7 @@ protected:
   }
 
   void update_styles(const axgl::gui::Context& context) {
-    // FIXME: this reset runs before the is_modified() check below, so a
-    // direct inline change via style()->set_*() is never detected
-    // (set_style()/append_style()/remove_style() set update_styles_ instead).
+    const bool inline_modified = element_style_->is_modified();
     element_style_->reset_modified();
 
     if (update_styles_) {
@@ -176,16 +216,12 @@ protected:
       }
     }
     if (
-      update_styles_ || element_style_->is_modified()
+      update_styles_ || inline_modified
       || std::ranges::any_of(using_styles_, [](const auto& s) {
            return s->is_modified();
          })
     ) {
       computed_style_ = std::make_unique<axgl::gui::Style>();
-      // FIXME: apply_to() assigns members directly and never sets
-      // computed_style_->modified_, so the freshly rebuilt Style always
-      // reports is_modified() == false (TextElement::update relies on that
-      // flag to regenerate its texture).
       for (const auto& style : using_styles_)
         style->apply_to(*computed_style_);
       element_style_->apply_to(*computed_style_);
@@ -207,9 +243,23 @@ protected:
       child->render(current_context);
   }
 
+  void arrange_children(const axgl::gui::Context& context) {
+    if (children_.empty()) return;
+    const auto padding = computed_style_->get_padding() * context.scale;
+    const glm::vec2 padding_size{padding.y + padding.w, padding.x + padding.z};
+    axgl::gui::Context child_context = context;
+    child_context.parent = this;
+    const glm::vec2 content_size{
+      std::max(0.0f, size_.x - padding_size.x),
+      std::max(0.0f, size_.y - padding_size.y)
+    };
+    layout_->arrange(
+      child_context, children_, {padding.w, padding.x}, content_size
+    );
+  }
+
   void update_scissor_rect(const axgl::gui::Context& context) {
-    if (context.parent) position_ += context.parent->get_position();
-    scissor_rect_ = rect_ = {position_, position_ + size_};
+    scissor_rect_ = rect_;
     if (context.parent) {
       const auto parent_rect = context.parent->get_rect();
       scissor_rect_.x = std::max(scissor_rect_.x, parent_rect.x);
