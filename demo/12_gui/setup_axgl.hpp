@@ -9,7 +9,7 @@
 #include <axgl/common/mesh.hpp>
 #include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
 
-inline void setup(axgl::Axgl& axgl) {
+inline void setup_axgl(axgl::Axgl& axgl) {
   axgl::configure_default(axgl);
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL
   axgl::configure_glfw(axgl);

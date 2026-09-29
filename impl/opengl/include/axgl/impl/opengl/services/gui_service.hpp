@@ -61,7 +61,7 @@ public:
     return style;
   }
 
-  axgl::ptr_t<axgl::gui::Style> get_style(
+  [[nodiscard]] axgl::ptr_t<axgl::gui::Style> get_style(
     const std::string& name
   ) const override {
     const auto it = styles_.find(name);
