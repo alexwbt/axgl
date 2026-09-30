@@ -8,12 +8,12 @@
 
 #include <axgl/impl/opengl/gui/element.hpp>
 #include <axgl/impl/opengl/gui/page.hpp>
-#include <axgl/impl/service_base.hpp>
+#include <axgl/impl/services/gui_service.hpp>
 
 namespace axgl::impl::opengl {
 
 class GuiService : virtual public axgl::GuiService,
-                   public axgl::impl::ServiceBase {
+                   public axgl::impl::GuiServiceBase {
   using FactoryFunction = std::function<axgl::ptr_t<axgl::gui::Element>()>;
 
   std::unordered_map<std::string, FactoryFunction> element_factories_;
@@ -40,7 +40,9 @@ public:
         std::format("Element factory for '{}' not registered.", type)
       );
 #endif
-    return element_factories_.at(type)();
+    const auto element = element_factories_.at(type)();
+    set_element_default_style(type, element);
+    return element;
   }
 
   void register_element_factory(
@@ -108,4 +110,3 @@ public:
 };
 
 } // namespace axgl::impl::opengl
-

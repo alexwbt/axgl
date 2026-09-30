@@ -28,7 +28,12 @@ Defined in `interface/services/gui_service.hpp`. Key operations:
 
 - `create_page()` — make a new `Page`.
 - `create_element()` / `create_element(type_id)` — make an element, optionally
-  by registered type id.
+  by registered type id. If a style named after the part of the type id following
+  `element:` (`text`, `button`, ...) exists, it is appended to the new element
+  automatically.
+- `create_element_t<T>(default_style = {})` — typed convenience wrapper. When
+  `default_style` is non-empty, it replaces the element's style name list with
+  those names.
 - `register_element_factory(type_id, fn)` / `register_element_t<T>()` — register
   a factory for a concrete element type.
 - `create_style(name)` — create (or replace) a named style and return it.
@@ -39,6 +44,10 @@ Defined in `interface/services/gui_service.hpp`. Key operations:
 The service drives the main page's lifecycle and resets per-frame style
 modification tracking between updates. In debug builds, requesting a missing
 element id or style name is reported.
+
+The default GUI service installs a set of built-in named styles: `text` (the font
+base), `header1` and `paragraph` (block styles based on `text`), and `button`
+together with the `button:hover` / `button:active` pseudo-class variants.
 
 ## Pages
 
@@ -99,7 +108,7 @@ page for re-render.
 element's inline style, so it can be chained:
 
 ```cpp
-e->set_style({"text", "h1"})->set_color(axgl::colors::kRed);
+e->set_style({"text", "header1"})->set_color(axgl::colors::kRed);
 ```
 
 ### Built-in element types
@@ -115,11 +124,14 @@ Register additional element types with `register_element_t<T>()`.
 ### Creating elements
 
 ```cpp
-const auto e = gui_service->create_element_t<axgl::gui::TextElement>();
+const auto e = gui_service->create_element_t<axgl::gui::TextElement>({"header1"});
 e->set_text("Hello World");
-e->set_style({"text", "h1"});
 page->elements().add(e);
 ```
+
+`create_element_t<T>()` with no arguments applies whatever default style matches
+the element's type id, if one exists (for example `text` for `TextElement`,
+`button` for `ButtonElement`). Passing a name list overrides that choice.
 
 ## Styles
 
@@ -128,7 +140,8 @@ and combined into a per-element _computed style_.
 
 `axgl::gui::Style` (`interface/gui/style.hpp`) exposes a property as a `get_x()`
 / `set_x()` pair plus a `using_x()` query. The `using_x` flag records whether
-the property was explicitly set.
+the property was explicitly set. A property that was not set is read from the
+style's base style, if one is set (see [Base styles](#base-styles)).
 
 | Property     | Type             | Default        |
 | ------------ | ---------------- | -------------- |
@@ -156,20 +169,40 @@ Register a style through the service, then attach it to elements by name:
 ```cpp
 gui_service->create_style("text")->set_fonts({"arial", "noto-tc"});
 
-gui_service->create_style("h1")
+gui_service->create_style("header1")
+  ->set_base_style(gui_service->get_style("text"))
   ->set_display(axgl::gui::Display::kBlock)
   ->set_font_size(32.0f)
   ->set_margin(glm::vec4(10.0f));
 
-gui_service->create_style("p")
+gui_service->create_style("paragraph")
+  ->set_base_style(gui_service->get_style("text"))
   ->set_display(axgl::gui::Display::kBlock)
   ->set_margin(glm::vec4(10.0f));
 
-e->set_style({"text", "h1"});
+e->set_style({"header1"});
 ```
 
 Re-creating an existing name replaces it. `append_style` / `remove_style` adjust
 the list incrementally.
+
+### Base styles
+
+A style can point at another style with `set_base_style(style)`. Reading a
+property that was not set locally (`using_x()` is false) falls back to the base
+style's value, so a base can supply shared defaults such as `fonts` while the
+derived style overrides only what differs. The base is held by shared ownership,
+so it stays alive as long as a derived style references it. Assigning a base that
+would form a cycle (`a -> b -> a`) is detected and ignored.
+
+```cpp
+const auto text = gui_service->create_style("text");
+text->set_fonts({"arial", "noto-tc"});
+
+gui_service->create_style("header1")
+  ->set_base_style(text)
+  ->set_font_size(32.0f);
+```
 
 ### State pseudo-classes
 
@@ -193,19 +226,20 @@ Resolution order:
 3. Apply the element's own inline style (`element->style()`).
 4. Publish the result as the _computed style_.
 
-Only properties whose `using_` flag is set are copied during application, so a
+Only properties the style sets are copied during application. A property not
+set locally is copied from the style's base chain (its resolved value), so a
 later style overrides an earlier one and inline setters override everything.
 Within one element the pseudo-class variant of a name is applied right after the
 base name, so it wins over the base but is still overridden by later names.
 
 Style recomputation is lazy: it happens when the element's name list or state
-changed, its inline style was modified, or a contributing named style was
-modified.
+changed, its inline style was modified, or a contributing named style (or a
+style it inherits from) was modified.
 
 ### Inline overrides
 
 ```cpp
-e->set_style({"text", "h1"})->set_color(axgl::colors::kRed);
+e->set_style({"text", "header1"})->set_color(axgl::colors::kRed);
 e->style()->set_font_size(20.0f);
 ```
 

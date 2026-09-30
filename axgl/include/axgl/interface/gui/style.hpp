@@ -9,6 +9,7 @@ private:                                                                       \
                                                                                \
 public:                                                                        \
   type get_##name() const {                                                    \
+    if (!using_##name##_ && base_style_) return base_style_->get_##name();     \
     return name##_;                                                            \
   }                                                                            \
   Style* set_##name(const type&(name)) {                                       \
@@ -18,11 +19,13 @@ public:                                                                        \
     return this;                                                               \
   };                                                                           \
   bool using_##name() const {                                                  \
+    if (!using_##name##_ && base_style_) return base_style_->using_##name();   \
     return using_##name##_;                                                    \
   }
 
 #define __AXGL_GUI_STYLE_APPLY_TO(name)                                        \
-  if (using_##name##_) target.name##_ = name##_
+  if (using_##name##_) target.name##_ = name##_;                               \
+  else if (using_##name()) target.name##_ = get_##name();
 
 namespace axgl::gui {
 
@@ -49,10 +52,41 @@ enum class Cursor {
 
 class Style {
 private:
+  axgl::ptr_t<Style> base_style_;
   bool modified_ = false;
 
 public:
-  [[nodiscard]] bool is_modified() const { return modified_; }
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, color, {0.0f})
+  __AXGL_GUI_STYLE_PROPERTY(float, opacity, = 1.0f)
+  __AXGL_GUI_STYLE_PROPERTY(Cursor, cursor, = Cursor::kNormal)
+  // content
+  __AXGL_GUI_STYLE_PROPERTY(std::vector<std::string>, fonts, )
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, font_color, {1.0f})
+  __AXGL_GUI_STYLE_PROPERTY(float, font_size, = 16.0f)
+  // layout
+  __AXGL_GUI_STYLE_PROPERTY(Display, display, = Display::kBlock)
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, margin, {0.0f})
+  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, padding, {0.0f})
+
+  Style* set_base_style(axgl::ptr_t<Style> style) {
+    for (auto* node = style.get(); node != nullptr;) {
+      if (node == this) {
+#ifdef AXGL_DEBUG
+        AXGL_LOG_WARN("Ignored base style: circular reference detected");
+#endif
+        return this;
+      }
+      node = node->base_style_.get();
+    }
+    base_style_ = std::move(style);
+    modified_ = true;
+    return this;
+  }
+
+  [[nodiscard]] bool is_modified() const {
+    if (!modified_ && base_style_) return base_style_->is_modified();
+    return modified_;
+  }
   void reset_modified() { modified_ = false; }
 
   void apply_to(Style& target) const {
@@ -68,18 +102,6 @@ public:
     __AXGL_GUI_STYLE_APPLY_TO(margin);
     __AXGL_GUI_STYLE_APPLY_TO(padding);
   }
-
-  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, color, {0.0f})
-  __AXGL_GUI_STYLE_PROPERTY(float, opacity, = 1.0f)
-  __AXGL_GUI_STYLE_PROPERTY(Cursor, cursor, = Cursor::kNormal)
-  // content
-  __AXGL_GUI_STYLE_PROPERTY(std::vector<std::string>, fonts, )
-  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, font_color, {1.0f})
-  __AXGL_GUI_STYLE_PROPERTY(float, font_size, = 16.0f)
-  // layout
-  __AXGL_GUI_STYLE_PROPERTY(Display, display, = Display::kBlock)
-  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, margin, {0.0f})
-  __AXGL_GUI_STYLE_PROPERTY(glm::vec4, padding, {0.0f})
 };
 
 } // namespace axgl::gui

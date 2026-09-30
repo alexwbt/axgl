@@ -32,7 +32,9 @@ public:
   }
 
   template <typename ElementType>
-  axgl::ptr_t<ElementType> create_element_t() {
+  axgl::ptr_t<ElementType> create_element_t(
+    const std::vector<std::string>& default_style = {}
+  ) {
     const auto type = ElementType::kTypeId.data();
     auto element = axgl::ptr_cast<ElementType>(create_element(type));
 #ifdef AXGL_DEBUG
@@ -43,6 +45,7 @@ public:
         )
       );
 #endif
+    if (!default_style.empty()) element->set_style(default_style);
     return element;
   }
 
