@@ -65,6 +65,7 @@ public:
   [[nodiscard]] bool is_focused() const override { return focused_; }
   [[nodiscard]] bool is_hovering() const override { return hovering_; }
   [[nodiscard]] bool is_activated() const override { return activated_; }
+  void set_focusable(bool focusable) override { focusable_ = focusable; }
 
   [[nodiscard]] axgl::gui::Style* style() const override {
     return element_style_.get();
