@@ -162,4 +162,18 @@ public:
   [[nodiscard]] bool up() const { return tick == 0; }
 };
 
+struct TextInputEvent {
+  enum class Type {
+    kChar,
+    kBackspace,
+    kDelete,
+    kEnter,
+    kLeft,
+    kRight,
+  };
+
+  Type type = Type::kChar;
+  char32_t codepoint = 0;
+};
+
 } // namespace axgl

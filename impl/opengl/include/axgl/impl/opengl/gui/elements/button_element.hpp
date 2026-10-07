@@ -14,6 +14,8 @@ class ButtonElement : virtual public axgl::gui::ButtonElement,
   std::function<void(const axgl::gui::Context&)> handler_;
 
 public:
+  ButtonElement() { set_focusable(true); }
+
   void on_click(
     std::function<void(const axgl::gui::Context&)> handler
   ) override {

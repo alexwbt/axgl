@@ -13,6 +13,7 @@ namespace axgl::impl::opengl::gui {
 
 class TextElement : virtual public axgl::gui::TextElement,
                     public axgl::impl::opengl::gui::Element {
+protected:
   std::string text_;
   axgl::ptr_t<axgl::impl::opengl::Texture> text_texture_;
 

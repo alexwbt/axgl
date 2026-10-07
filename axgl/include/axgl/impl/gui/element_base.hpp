@@ -17,7 +17,12 @@ namespace axgl::impl::gui {
 
 class ElementBase : virtual public axgl::gui::Element {
 protected:
-  std::uint64_t id_ = 0;
+  static std::uint64_t next_id() {
+    static std::uint64_t next_id_ = 1;
+    return next_id_++;
+  }
+
+  std::uint64_t id_ = next_id();
 
   bool focusable_ = false;
   bool focused_ = false;
@@ -262,7 +267,7 @@ protected:
   void update_scissor_rect(const axgl::gui::Context& context) {
     scissor_rect_ = rect_;
     if (context.parent) {
-      const auto parent_rect = context.parent->get_rect();
+      const auto parent_rect = context.parent->get_visible_rect();
       scissor_rect_.x = std::max(scissor_rect_.x, parent_rect.x);
       scissor_rect_.y = std::max(scissor_rect_.y, parent_rect.y);
       scissor_rect_.z = std::min(scissor_rect_.z, parent_rect.z);

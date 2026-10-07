@@ -18,6 +18,7 @@ class InputService : virtual public axgl::InputService,
   axgl::ptr_t<axgl::impl::glfw::Window> window_;
   std::vector<axgl::ptr_t<axgl::Input>> inputs_;
   std::vector<axgl::ptr_t<axgl::Pointer>> pointers_;
+  std::vector<axgl::TextInputEvent> text_input_events_;
   axgl::InputService::CursorMode cursor_mode_
     = axgl::InputService::CursorMode::kNormal;
 
@@ -254,9 +255,18 @@ public:
     return {view.begin(), view.end()};
   }
 
+  [[nodiscard]] std::span<const axgl::TextInputEvent>
+  get_text_input_events() const override {
+    return text_input_events_;
+  }
+
   void update() override {
     if (!window_) return;
     const auto window = window_->glfw_window();
+
+    const auto text_events = window->get_text_input_events();
+    text_input_events_.assign(text_events.begin(), text_events.end());
+    window->reset_text_input_events();
 
     for (const auto& input : inputs_) {
       const auto active

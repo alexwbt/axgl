@@ -29,6 +29,8 @@ public:
   get_input_by_source(axgl::Input::Source source) = 0;
   [[nodiscard]] virtual std::vector<axgl::ptr_t<axgl::Pointer>>
   get_pointer_by_source(axgl::Pointer::Source source) = 0;
+  [[nodiscard]] virtual std::span<const axgl::TextInputEvent>
+  get_text_input_events() const = 0;
 
   [[nodiscard]] std::int32_t priority() const override { return 999; }
 

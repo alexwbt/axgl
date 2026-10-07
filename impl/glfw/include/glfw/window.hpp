@@ -12,6 +12,7 @@
 #include <spdlog/spdlog.h>
 
 #include <axgl/common.hpp>
+#include <axgl/interface/input.hpp>
 
 namespace glfw {
 
@@ -19,6 +20,7 @@ struct EventListener {
   virtual ~EventListener() = default;
   virtual void on_key_down(int) {}
   virtual void on_key_up(int) {}
+  virtual void on_char(unsigned int) {}
   virtual void on_mouse_down(int) {}
   virtual void on_mouse_up(int) {}
   virtual void on_mouse_move(double, double) {}
@@ -114,6 +116,10 @@ private:
   static void key_callback(
     GLFWwindow* glfw_window, int key, int, int action, int
   ) {
+    if (action == GLFW_PRESS)
+      if (const auto window = get_window(glfw_window))
+        window->record_key_text_event(key);
+
     const auto listener = get_window_event_listener(glfw_window);
     if (!listener) return;
 
@@ -122,6 +128,16 @@ private:
     case GLFW_RELEASE: listener->on_key_up(key); break;
     default:;
     }
+  }
+
+  static void char_callback(GLFWwindow* glfw_window, unsigned int codepoint) {
+    if (const auto window = get_window(glfw_window))
+      window->text_input_events_.push_back(
+        {axgl::TextInputEvent::Type::kChar, static_cast<char32_t>(codepoint)}
+      );
+
+    if (const auto listener = get_window_event_listener(glfw_window))
+      listener->on_char(codepoint);
   }
 
   static void cursor_pos_callback(GLFWwindow* glfw_window, double x, double y) {
@@ -191,8 +207,24 @@ private:
   std::unordered_map<int, GLFWcursor*> cursors_;
   double scroll_x_ = 0.0;
   double scroll_y_ = 0.0;
+  std::vector<axgl::TextInputEvent> text_input_events_;
   glm::vec2 framebuffer_scale_{1.0f};
   bool destroyed_ = false;
+
+  void record_key_text_event(const int key) {
+    using enum axgl::TextInputEvent::Type;
+    switch (key) {
+    case GLFW_KEY_BACKSPACE:
+      text_input_events_.push_back({kBackspace, 0});
+      break;
+    case GLFW_KEY_DELETE: text_input_events_.push_back({kDelete, 0}); break;
+    case GLFW_KEY_ENTER:
+    case GLFW_KEY_KP_ENTER: text_input_events_.push_back({kEnter, 0}); break;
+    case GLFW_KEY_LEFT: text_input_events_.push_back({kLeft, 0}); break;
+    case GLFW_KEY_RIGHT: text_input_events_.push_back({kRight, 0}); break;
+    default:;
+    }
+  }
 
   void update_framebuffer_scale() {
     int window_width = 0, window_height = 0;
@@ -226,6 +258,7 @@ private:
     }
 
     glfwSetKeyCallback(glfw_window_, key_callback);
+    glfwSetCharCallback(glfw_window_, char_callback);
     glfwSetScrollCallback(glfw_window_, scroll_callback);
     glfwSetCursorPosCallback(glfw_window_, cursor_pos_callback);
     glfwSetMouseButtonCallback(glfw_window_, mouse_button_callback);
@@ -272,6 +305,13 @@ public:
     };
   }
   [[nodiscard]] glm::vec2 get_scroll() const { return {scroll_x_, scroll_y_}; }
+
+  [[nodiscard]] std::span<const axgl::TextInputEvent>
+  get_text_input_events() const {
+    return text_input_events_;
+  }
+
+  void reset_text_input_events() { text_input_events_.clear(); }
 
   void reset_scroll() {
     scroll_x_ = 0;

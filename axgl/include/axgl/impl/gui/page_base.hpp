@@ -1,5 +1,8 @@
 #pragma once
 
+#include <algorithm>
+#include <ranges>
+
 #include <axgl/interface/gui/context.hpp>
 #include <axgl/interface/gui/page.hpp>
 #include <axgl/interface/services/input_service.hpp>
@@ -24,6 +27,7 @@ protected:
   float font_scale_ = 1.0f;
   bool should_render_ = false;
   bool using_cursor_ = false;
+  std::uint64_t focused_id_ = 0;
   axgl::gui::Cursor cursor_ = axgl::gui::Cursor::kNormal;
   axgl::ptr_t<axgl::Pointer> cursor_pointer_;
   axgl::ptr_t<axgl::Pointer> scroll_pointer_;
@@ -99,6 +103,8 @@ public:
       glm::mat4(1.0f),
     };
 
+    update_focus(current_context);
+
     // update elements
     for (const auto& element : elements_.get())
       element->update(current_context);
@@ -167,6 +173,45 @@ public:
   [[nodiscard]] axgl::ptr_t<axgl::Input>
   get_focus_activate_input() const override {
     return focus_activate_input_;
+  }
+
+protected:
+  static void collect_focusable(
+    axgl::gui::Element* element, std::vector<axgl::gui::Element*>& focusable
+  ) {
+    if (element->is_focusable()) focusable.push_back(element);
+    for (const auto& child : element->children().get())
+      collect_focusable(child.get(), focusable);
+  }
+
+  void update_focus(const axgl::gui::Context& context) {
+    std::vector<axgl::gui::Element*> focusable;
+    for (const auto& element : elements_.get())
+      collect_focusable(element.get(), focusable);
+
+    axgl::gui::Element* focused = nullptr;
+    for (auto* element : focusable)
+      if (element->get_id() == focused_id_) focused = element;
+    if (!focused) focused_id_ = 0;
+
+    if (
+      focus_switch_input_ && focus_switch_input_->clicked()
+      && !focusable.empty()
+    ) {
+      std::size_t next = 0;
+      if (focused) {
+        const auto it = std::ranges::find(focusable, focused);
+        next = (static_cast<std::size_t>(it - focusable.begin()) + 1)
+          % focusable.size();
+      }
+      if (focused) focused->on_blur(context);
+      focused = focusable[next];
+      focused_id_ = focused->get_id();
+      focused->on_focus(context);
+    }
+
+    if (focused && focus_activate_input_ && focus_activate_input_->clicked())
+      focused->on_activate(context);
   }
 };
 

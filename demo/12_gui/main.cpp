@@ -1,5 +1,6 @@
 #include "setup_axgl.hpp"
 #include "setup_input.hpp"
+#include <axgl/interface/gui/elements/input_element.hpp>
 #include <demo_gui/res.hpp>
 
 int main() {
@@ -53,6 +54,15 @@ int main() {
     AXGL_LOG_INFO("hello world");
   });
   page->elements().add(button_element);
+
+  // input
+  const auto input_element
+    = gui_service->create_element_t<axgl::gui::InputElement>();
+  input_element->set_text("Edit me");
+  input_element->on_submit([](axgl::gui::Context) {
+    AXGL_LOG_INFO("submitted");
+  });
+  page->elements().add(input_element);
 
   axgl.run();
   axgl.terminate();
