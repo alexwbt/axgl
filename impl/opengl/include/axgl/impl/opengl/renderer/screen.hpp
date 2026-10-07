@@ -19,6 +19,8 @@ struct Screen {
     );
     screen_texture->set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     screen_texture->set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // Keep this depth format in sync with the MSAA depth attachment in
+    // msaa.hpp: the MSAA resolve blit requires both depth formats to match.
     depth_texture = std::make_unique<::opengl::Texture>();
     depth_texture->load_texture(
       0,
