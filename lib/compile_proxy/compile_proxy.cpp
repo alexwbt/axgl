@@ -82,8 +82,8 @@ static int fix_compile_proxy(const std::string& directory) {
     // read
     std::string_view directory = entry[DIRECTORY_FIELD];
     std::string_view command = entry[COMMAND_FIELD];
+    std::string_view output;
     std::string file{std::string_view(entry[FILE_FIELD])};
-    std::string_view output = entry[OUTPUT_FIELD];
 
     // process
     if (is_proxy_file(file)) resolve_header_file(file, command);
@@ -99,8 +99,10 @@ static int fix_compile_proxy(const std::string& directory) {
     builder.append_key_value<COMMAND_FIELD>(command);
     builder.append_raw(",\n  ");
     builder.append_key_value<FILE_FIELD>(file);
-    builder.append_raw(",\n  ");
-    builder.append_key_value<OUTPUT_FIELD>(output);
+    if (entry[OUTPUT_FIELD].get_string().get(output) == simdjson::SUCCESS) {
+      builder.append_raw(",\n  ");
+      builder.append_key_value<OUTPUT_FIELD>(output);
+    }
     builder.append_raw("\n");
     builder.end_object();
   }
