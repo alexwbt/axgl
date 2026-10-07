@@ -154,8 +154,18 @@ private:
   static void frame_buffer_size_callback(
     GLFWwindow* glfw_window, int width, int height
   ) {
+    if (const auto window = get_window(glfw_window))
+      window->update_framebuffer_scale();
+
     if (const auto listener = get_window_event_listener(glfw_window))
       listener->on_resize(width, height);
+  }
+
+  static void window_content_scale_callback(
+    GLFWwindow* glfw_window, float, float
+  ) {
+    if (const auto window = get_window(glfw_window))
+      window->update_framebuffer_scale();
   }
 
   static axgl::ptr_t<Window> get_window(GLFWwindow* glfw_window) {
@@ -181,7 +191,26 @@ private:
   std::unordered_map<int, GLFWcursor*> cursors_;
   double scroll_x_ = 0.0;
   double scroll_y_ = 0.0;
+  glm::vec2 framebuffer_scale_{1.0f};
   bool destroyed_ = false;
+
+  void update_framebuffer_scale() {
+    int window_width = 0, window_height = 0;
+    glfwGetWindowSize(glfw_window_, &window_width, &window_height);
+    if (window_width <= 0 || window_height <= 0) {
+      framebuffer_scale_ = {1.0f, 1.0f};
+      return;
+    }
+
+    int framebuffer_width = 0, framebuffer_height = 0;
+    glfwGetFramebufferSize(
+      glfw_window_, &framebuffer_width, &framebuffer_height
+    );
+    framebuffer_scale_ = {
+      static_cast<float>(framebuffer_width) / static_cast<float>(window_width),
+      static_cast<float>(framebuffer_height) / static_cast<float>(window_height)
+    };
+  }
 
   Window(int width, int height, const std::string& title) noexcept {
     if (!initialized_ || terminated_) {
@@ -201,6 +230,10 @@ private:
     glfwSetCursorPosCallback(glfw_window_, cursor_pos_callback);
     glfwSetMouseButtonCallback(glfw_window_, mouse_button_callback);
     glfwSetFramebufferSizeCallback(glfw_window_, frame_buffer_size_callback);
+    glfwSetWindowContentScaleCallback(
+      glfw_window_, window_content_scale_callback
+    );
+    update_framebuffer_scale();
   }
 
 public:
@@ -233,7 +266,10 @@ public:
   [[nodiscard]] glm::vec2 get_mouse_pos() const {
     double x, y;
     glfwGetCursorPos(glfw_window_, &x, &y);
-    return {x, y};
+    return {
+      static_cast<float>(x) * framebuffer_scale_.x,
+      static_cast<float>(y) * framebuffer_scale_.y
+    };
   }
   [[nodiscard]] glm::vec2 get_scroll() const { return {scroll_x_, scroll_y_}; }
 
