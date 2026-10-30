@@ -79,7 +79,10 @@ public:
 #ifdef AXGL_DEBUG
     if (
       std::ranges::any_of(
-        entities_, [&entity](const auto& e) { return e == entity; }
+        entities_,
+        [&entity](const auto& e) {
+          return e == entity;
+        }
       )
       || std::ranges::any_of(new_entities_, [&entity](const auto& e) {
            return e == entity;

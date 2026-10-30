@@ -36,7 +36,9 @@ struct SSAO {
   std::unique_ptr<::opengl::Framebuffer> blur_framebuffer;
 
   void generate_kernel() {
-    auto lerp = [](float a, float b, float f) { return a + f * (b - a); };
+    auto lerp = [](float a, float b, float f) {
+      return a + f * (b - a);
+    };
 
     std::uniform_real_distribution<float> dist01(0.0f, 1.0f);
     std::uniform_real_distribution<float> dist11(-1.0f, 1.0f);

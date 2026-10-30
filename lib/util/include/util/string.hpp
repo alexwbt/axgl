@@ -24,8 +24,9 @@ inline std::vector<std::string> split_string(const std::string& s, char delim) {
 
 // trim from start (in place)
 inline void ltrim(std::string& value) {
-  const auto char_is_space
-    = [](const unsigned char ch) { return !std::isspace(ch); };
+  const auto char_is_space = [](const unsigned char ch) {
+    return !std::isspace(ch);
+  };
   value.erase(value.begin(), std::ranges::find_if(value, char_is_space));
 }
 
@@ -35,7 +36,9 @@ inline void rtrim(std::string& value) {
     std::find_if(
       value.rbegin(),
       value.rend(),
-      [](unsigned char ch) { return !std::isspace(ch); }
+      [](unsigned char ch) {
+        return !std::isspace(ch);
+      }
     ).base(),
     value.end()
   );

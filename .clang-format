@@ -43,7 +43,7 @@ DerivePointerAlignment: false
 #
 AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: Inline
-AllowShortLambdasOnASingleLine: All
+AllowShortLambdasOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortCaseExpressionOnASingleLine: true

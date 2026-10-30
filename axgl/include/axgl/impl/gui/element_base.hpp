@@ -181,7 +181,9 @@ public:
 
   void remove_style(const std::string& style) override {
     update_styles_ = true;
-    std::erase_if(styles_, [&style](const auto& s) { return s == style; });
+    std::erase_if(styles_, [&style](const auto& s) {
+      return s == style;
+    });
   }
 
 protected:

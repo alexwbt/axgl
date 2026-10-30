@@ -249,7 +249,9 @@ public:
   }
 
   void remove_input(std::uint64_t id) override {
-    std::erase_if(inputs_, [id](const auto& input) { return input->id == id; });
+    std::erase_if(inputs_, [id](const auto& input) {
+      return input->id == id;
+    });
   }
 
   void remove_pointer(std::uint64_t id) override {
@@ -272,8 +274,9 @@ public:
   [[nodiscard]] std::vector<axgl::ptr_t<axgl::Pointer>> get_pointer_by_source(
     axgl::Pointer::Source source
   ) override {
-    const auto is_source
-      = [&source](const auto& e) { return e->source == source; };
+    const auto is_source = [&source](const auto& e) {
+      return e->source == source;
+    };
     auto view = pointers_ | std::views::filter(is_source);
     return {view.begin(), view.end()};
   }

@@ -59,9 +59,12 @@ int main() {
   const auto input_element
     = gui_service->create_element_t<axgl::gui::InputElement>();
   input_element->set_text("Edit me");
-  input_element->on_submit([](
-                             const axgl::gui::Context&, const std::string& value
-                           ) { AXGL_LOG_INFO("submitted: {}", value); });
+
+  input_element->on_submit(
+    [](const axgl::gui::Context&, const std::string& value) {
+      AXGL_LOG_INFO("submitted: {}", value);
+    }
+  );
   page->elements().add(input_element);
 
   axgl.run();
