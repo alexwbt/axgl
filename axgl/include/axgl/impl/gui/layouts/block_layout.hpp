@@ -32,14 +32,18 @@ public:
 
       switch (style.get_display()) {
       case Display::kBlock: {
+        if (line_height > 0.0f) {
+          y += line_height;
+          max_width = std::max(max_width, line_width);
+          line_width = 0.0f;
+          line_height = 0.0f;
+        }
         const float width
           = std::max(0.0f, available_size.x - margin_left - margin_right);
         element->measure(context, {width, available_size.y});
         const auto desired = element->get_desired_size();
         y += margin_top + desired.y + margin_bottom;
         max_width = std::max(max_width, width);
-        line_width = 0.0f;
-        line_height = 0.0f;
         break;
       }
       case Display::kInline: {
@@ -92,6 +96,10 @@ public:
 
       switch (style.get_display()) {
       case Display::kBlock:
+        if (line_height > 0.0f) {
+          y += line_height;
+          line_height = 0.0f;
+        }
         y += margin_top;
         x = origin_x + margin_left;
         size.x = std::max(0.0f, available_size.x - margin_left - margin_right);

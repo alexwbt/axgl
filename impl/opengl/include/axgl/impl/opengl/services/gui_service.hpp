@@ -34,13 +34,21 @@ public:
   axgl::ptr_t<axgl::gui::Element> create_element(
     const std::string& type
   ) override {
+    const auto factory = element_factories_.find(type);
 #ifdef AXGL_DEBUG
-    if (!element_factories_.contains(type))
+    if (factory == element_factories_.end())
       throw std::runtime_error(
         std::format("Element factory for '{}' not registered.", type)
       );
+#else
+    if (factory == element_factories_.end()) {
+      AXGL_LOG_WARN(
+        "GuiService: element factory for \"{}\" is not registered.", type
+      );
+      return nullptr;
+    }
 #endif
-    const auto element = element_factories_.at(type)();
+    const auto element = factory->second();
     set_element_default_style(type, element);
     return element;
   }
@@ -106,6 +114,13 @@ public:
     // reset updated
     for (const auto& entry : styles_)
       entry.second->reset_modified();
+  }
+
+  void terminate() override {
+    main_ui_ = nullptr;
+    initialized_ = false;
+    element_factories_.clear();
+    styles_.clear();
   }
 };
 
