@@ -84,6 +84,13 @@ The service calls `init()` once, then `update()` each frame; `render()` draws
 when `should_render()` is set. Any element state change is expected to mark the
 page for re-render.
 
+Focus is page-driven. Each frame the page collects the focusable elements in
+tree order (an element opts in with `set_focusable(true)`; buttons and inputs do
+so by default). `focus_switch_input` (e.g. Tab) advances focus to the next one,
+wrapping around, and calls `on_blur` on the old element and `on_focus` on the
+new one. `focus_activate_input` (e.g. Enter) calls `on_activate` on the focused
+element, which is how a focused button fires its click handler.
+
 ## Elements
 
 `Element` (`interface/gui/element.hpp`) exposes:
@@ -104,6 +111,11 @@ page for re-render.
 - Style management: `set_style(names)`, `append_style(name)`,
   `remove_style(name)`.
 
+`get_id` is a process-unique id assigned when the element is created. `get_rect`
+is the element's own rect in page coordinates; `get_visible_rect` additionally
+intersects it with its ancestors' rects, so rendering clips to it and nested or
+composite widgets clip cleanly.
+
 `set_style` replaces the element's style name list and returns a pointer to the
 element's inline style, so it can be chained:
 
@@ -116,8 +128,12 @@ e->set_style({"text", "header1"})->set_color(axgl::colors::kRed);
 - `axgl::gui::TextElement` (`kTypeId = "element:text"`) — `set_text` /
   `get_text`.
 - `axgl::gui::ButtonElement` (`kTypeId = "element:button"`) — `label()` and
-  `on_click(handler)`.
-- `axgl::gui::InputElement` — currently an empty interface.
+  `on_click(handler)`. Focusable by default.
+- `axgl::gui::InputElement` (`kTypeId = "element:input"`) — a focusable,
+  single-line text field. Inherits `TextElement` (`set_text` / `get_text`) and
+  adds `on_submit(handler)` for Enter. While focused it consumes the
+  `InputService` text-edit events (typing, backspace, delete, arrow keys,
+  Enter) and draws a caret.
 
 Register additional element types with `register_element_t<T>()`.
 

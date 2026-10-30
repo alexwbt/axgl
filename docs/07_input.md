@@ -47,6 +47,20 @@ input->up();      // released (tick == 0)
 bound keys/buttons. Pointers track position and delta for mouse move and scroll
 sources, as used by the [12. GUI](12_gui.md).
 
+## Text input
+
+`InputService` also exposes the text-edit events the window produced, refreshed
+each frame:
+
+```cpp
+virtual std::span<const axgl::TextInputEvent> get_text_input_events() const = 0;
+```
+
+A `TextInputEvent` has a `Type` (`kChar`, `kBackspace`, `kDelete`, `kEnter`,
+`kLeft`, `kRight`) and, for `kChar`, the typed Unicode `codepoint`. A focused
+text widget reads the span and consumes characters, editing keys, and submit in
+one pass. See [12. GUI](12_gui.md).
+
 ## Camera modes
 
 A `CameraMode` turns input into camera motion. Install one and point it at the

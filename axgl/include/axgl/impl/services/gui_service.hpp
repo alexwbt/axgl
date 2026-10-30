@@ -35,6 +35,17 @@ public:
       ->set_cursor(axgl::gui::Cursor::kPointer)
       ->set_color({1.0f, 1.0f, 1.0f, 0.5f});
     create_style("button:active")->set_color({1.0f, 1.0f, 1.0f, 0.8f});
+
+    create_style("input")
+      ->set_base_style(text_style)
+      ->set_display(axgl::gui::Display::kBlock)
+      ->set_padding(glm::vec4(6.0f))
+      ->set_margin(glm::vec4(10.0f))
+      ->set_color({0.0f, 0.0f, 0.0f, 0.4f});
+    create_style("input:hover")
+      ->set_cursor(axgl::gui::Cursor::kText)
+      ->set_color({0.0f, 0.0f, 0.0f, 0.5f});
+    create_style("input:focus")->set_color({0.0f, 0.0f, 0.0f, 0.7f});
   }
 
 protected:
