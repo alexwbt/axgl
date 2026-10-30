@@ -4,6 +4,7 @@
 #include <axgl/interface/gui/layout.hpp>
 #include <axgl/interface/gui/page.hpp>
 #include <axgl/interface/gui/style.hpp>
+#include <axgl/interface/input.hpp>
 
 namespace axgl::gui {
 
@@ -41,6 +42,9 @@ public:
   virtual void on_deactivate(const axgl::gui::Context& context) = 0;
   virtual void on_focus(const axgl::gui::Context& context) = 0;
   virtual void on_blur(const axgl::gui::Context& context) = 0;
+  virtual void on_keydown(
+    const axgl::gui::Context& context, const axgl::KeyEvent& event
+  ) = 0;
 
   virtual void measure(
     const axgl::gui::Context& context, glm::vec2 available_size

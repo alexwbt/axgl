@@ -162,4 +162,9 @@ public:
   [[nodiscard]] bool up() const { return tick == 0; }
 };
 
+struct KeyEvent {
+  axgl::Input::Source key;
+  char32_t character = 0;
+};
+
 } // namespace axgl

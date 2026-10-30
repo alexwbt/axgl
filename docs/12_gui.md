@@ -91,6 +91,14 @@ wrapping around, and calls `on_blur` on the old element and `on_focus` on the
 new one. `focus_activate_input` (e.g. Enter) calls `on_activate` on the focused
 element, which is how a focused button fires its click handler.
 
+Keyboard events are not bound through named `Input` objects. Each frame the page
+reads the window's key events from `InputService::get_key_events()` and forwards
+every `KeyEvent` to the focused element as `on_keydown(context, event)`. A
+`KeyEvent` carries the physical `key` (an `Input::Source`) and the produced
+`character` (`char32_t`, or `0` when the key produced no text). This mirrors a
+browser `keydown` event, so a focused text field can insert typed characters and
+handle editing keys without registering every key up front.
+
 ## Elements
 
 `Element` (`interface/gui/element.hpp`) exposes:
@@ -107,7 +115,9 @@ element, which is how a focused button fires its click handler.
 - Measurement: `measure(context, available_size)` and `arrange(context, offset,
   size)`, called by the parent layout (see [Layout](#layout)).
 - Events: `on_pointer_enter`, `on_pointer_exit`, `on_activate`, `on_deactivate`,
-  `on_focus`, `on_blur`.
+  `on_focus`, `on_blur`, `on_keydown`. The base implementation of `on_keydown`
+  is a no-op; focusable elements that consume keyboard input override it. The
+  page only delivers `on_keydown` to the focused element.
 - Style management: `set_style(names)`, `append_style(name)`,
   `remove_style(name)`.
 
@@ -131,9 +141,10 @@ e->set_style({"text", "header1"})->set_color(axgl::colors::kRed);
   `on_click(handler)`. Focusable by default.
 - `axgl::gui::InputElement` (`kTypeId = "element:input"`) — a focusable,
   single-line text field. Inherits `TextElement` (`set_text` / `get_text`) and
-  adds `on_submit(handler)` for Enter. While focused it consumes the
-  `InputService` text-edit events (typing, backspace, delete, arrow keys,
-  Enter) and draws a caret.
+  adds `on_change(handler)` and `on_submit(handler)`. While focused it consumes
+  the `on_keydown` events it receives: printable `character`s are inserted,
+  Backspace / Delete and Left / Right edit the text and caret, and Enter fires
+  the submit handler. It draws a blinking caret.
 
 Register additional element types with `register_element_t<T>()`.
 

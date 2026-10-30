@@ -146,6 +146,8 @@ public:
     context.page->set_should_render(true);
   }
 
+  void on_keydown(const axgl::gui::Context&, const axgl::KeyEvent&) override {}
+
   void measure(
     const axgl::gui::Context& context, glm::vec2 available_size
   ) override {

@@ -47,19 +47,29 @@ input->up();      // released (tick == 0)
 bound keys/buttons. Pointers track position and delta for mouse move and scroll
 sources, as used by the [12. GUI](12_gui.md).
 
-## Text input
+## Key events
 
-`InputService` also exposes the text-edit events the window produced, refreshed
-each frame:
+Besides the per-`Input` state, `InputService` exposes the key presses the window
+produced this frame, refreshed on every update:
 
 ```cpp
-virtual std::span<const axgl::TextInputEvent> get_text_input_events() const = 0;
+virtual std::span<const axgl::KeyEvent> get_key_events() const = 0;
 ```
 
-A `TextInputEvent` has a `Type` (`kChar`, `kBackspace`, `kDelete`, `kEnter`,
-`kLeft`, `kRight`) and, for `kChar`, the typed Unicode `codepoint`. A focused
-text widget reads the span and consumes characters, editing keys, and submit in
-one pass. See [12. GUI](12_gui.md).
+A `KeyEvent` is modelled on the browser `keydown` event:
+
+```cpp
+struct KeyEvent {
+  axgl::Input::Source key; // physical key
+  char32_t character = 0;  // produced character, 0 if none
+};
+```
+
+`key` identifies the physical key (reusing the `Input::Source` enum).
+`character` is the Unicode character the press produced, already accounting for
+shift and keyboard layout; it is `0` for keys that produce no text (Backspace,
+arrows, Enter, ...). Keys are reported whether or not they are bound to an
+`Input`. See [12. GUI](12_gui.md) for how the focused widget consumes them.
 
 ## Camera modes
 

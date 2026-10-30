@@ -1,5 +1,7 @@
 #pragma once
 
+#include <span>
+
 #include <axgl/common.hpp>
 #include <axgl/interface/input.hpp>
 #include <axgl/interface/pointer.hpp>
@@ -29,6 +31,9 @@ public:
   get_input_by_source(axgl::Input::Source source) = 0;
   [[nodiscard]] virtual std::vector<axgl::ptr_t<axgl::Pointer>>
   get_pointer_by_source(axgl::Pointer::Source source) = 0;
+
+  [[nodiscard]] virtual std::span<const axgl::KeyEvent> get_key_events() const
+    = 0;
 
   [[nodiscard]] std::int32_t priority() const override { return 999; }
 

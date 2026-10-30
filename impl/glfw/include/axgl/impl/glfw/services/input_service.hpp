@@ -1,7 +1,9 @@
 #pragma once
 
 #include <algorithm>
+#include <optional>
 #include <ranges>
+#include <unordered_map>
 
 #include <axgl/common.hpp>
 #include <axgl/interface/input.hpp>
@@ -18,6 +20,7 @@ class InputService : virtual public axgl::InputService,
   axgl::ptr_t<axgl::impl::glfw::Window> window_;
   std::vector<axgl::ptr_t<axgl::Input>> inputs_;
   std::vector<axgl::ptr_t<axgl::Pointer>> pointers_;
+  std::vector<axgl::KeyEvent> key_events_;
   axgl::InputService::CursorMode cursor_mode_
     = axgl::InputService::CursorMode::kNormal;
 
@@ -148,6 +151,27 @@ class InputService : virtual public axgl::InputService,
     }
   }
 
+  static std::optional<axgl::Input::Source> from_glfw_keycode(int key) {
+    using enum axgl::Input::Source;
+    static const auto source_by_keycode = [] {
+      std::unordered_map<int, axgl::Input::Source> map;
+      for (auto i = static_cast<int>(kKeySpace);
+           i <= static_cast<int>(kKeyMenu);
+           ++i) {
+        const auto source = static_cast<axgl::Input::Source>(i);
+        if (
+          const auto glfw_keycode = to_glfw_keycode(source); glfw_keycode != -1
+        )
+          map.emplace(glfw_keycode, source);
+      }
+      return map;
+    }();
+
+    const auto it = source_by_keycode.find(key);
+    if (it == source_by_keycode.end()) return std::nullopt;
+    return it->second;
+  }
+
   static int to_glfw_mouse_button(const axgl::Input::Source source) {
     using enum axgl::Input::Source;
     switch (source) {
@@ -254,9 +278,19 @@ public:
     return {view.begin(), view.end()};
   }
 
+  [[nodiscard]] std::span<const axgl::KeyEvent>
+  get_key_events() const override {
+    return key_events_;
+  }
+
   void update() override {
+    key_events_.clear();
     if (!window_) return;
     const auto window = window_->glfw_window();
+
+    for (const auto& event : window->get_key_events())
+      if (const auto source = from_glfw_keycode(event.key))
+        key_events_.push_back({*source, event.character});
 
     for (const auto& input : inputs_) {
       const auto active

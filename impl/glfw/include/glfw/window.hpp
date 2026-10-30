@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -14,6 +15,11 @@
 #include <axgl/common.hpp>
 
 namespace glfw {
+
+struct KeyEvent {
+  int key = -1;
+  char32_t character = 0;
+};
 
 struct EventListener {
   virtual ~EventListener() = default;
@@ -95,6 +101,9 @@ public:
   }
 
   static void update_all() {
+    for (const auto& window : windows_ | std::views::values)
+      window->key_events_.clear();
+
     glfwPollEvents();
 
     // destroy closed windows
@@ -114,6 +123,12 @@ private:
   static void key_callback(
     GLFWwindow* glfw_window, int key, int, int action, int
   ) {
+    if (
+      const auto window = get_window(glfw_window);
+      window && (action == GLFW_PRESS || action == GLFW_REPEAT)
+    )
+      window->key_events_.push_back({key, 0});
+
     const auto listener = get_window_event_listener(glfw_window);
     if (!listener) return;
 
@@ -121,6 +136,18 @@ private:
     case GLFW_PRESS: listener->on_key_down(key); break;
     case GLFW_RELEASE: listener->on_key_up(key); break;
     default:;
+    }
+  }
+
+  static void char_callback(GLFWwindow* glfw_window, unsigned int codepoint) {
+    const auto window = get_window(glfw_window);
+    if (!window) return;
+
+    // glfw emits the character right after the key press that produced it
+    for (auto& event : window->key_events_ | std::views::reverse) {
+      if (event.character != 0) continue;
+      event.character = static_cast<char32_t>(codepoint);
+      break;
     }
   }
 
@@ -188,6 +215,7 @@ private:
 
   GLFWwindow* glfw_window_;
   axgl::ptr_t<EventListener> event_listener_;
+  std::vector<KeyEvent> key_events_;
   std::unordered_map<int, GLFWcursor*> cursors_;
   double scroll_x_ = 0.0;
   double scroll_y_ = 0.0;
@@ -226,6 +254,7 @@ private:
     }
 
     glfwSetKeyCallback(glfw_window_, key_callback);
+    glfwSetCharCallback(glfw_window_, char_callback);
     glfwSetScrollCallback(glfw_window_, scroll_callback);
     glfwSetCursorPosCallback(glfw_window_, cursor_pos_callback);
     glfwSetMouseButtonCallback(glfw_window_, mouse_button_callback);
@@ -257,6 +286,9 @@ public:
 
   [[nodiscard]] GLFWwindow* get_glfw_window() const { return glfw_window_; }
   [[nodiscard]] bool is_destroyed() const { return destroyed_; }
+  [[nodiscard]] const std::vector<KeyEvent>& get_key_events() const {
+    return key_events_;
+  }
   [[nodiscard]] bool key_down(int key) const {
     return glfwGetKey(glfw_window_, key) == GLFW_PRESS;
   }

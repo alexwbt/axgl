@@ -103,7 +103,8 @@ public:
       glm::mat4(1.0f),
     };
 
-    update_focus(current_context);
+    if (auto* focused = update_focus(current_context))
+      dispatch_keydown(current_context, focused);
 
     // update elements
     for (const auto& element : elements_.get())
@@ -184,7 +185,7 @@ protected:
       collect_focusable(child.get(), focusable);
   }
 
-  void update_focus(const axgl::gui::Context& context) {
+  axgl::gui::Element* update_focus(const axgl::gui::Context& context) {
     std::vector<axgl::gui::Element*> focusable;
     for (const auto& element : elements_.get())
       collect_focusable(element.get(), focusable);
@@ -212,6 +213,17 @@ protected:
 
     if (focused && focus_activate_input_ && focus_activate_input_->clicked())
       focused->on_activate(context);
+
+    return focused;
+  }
+
+  void dispatch_keydown(
+    const axgl::gui::Context& context, axgl::gui::Element* focused
+  ) {
+    const auto& input_service = axgl_->input_service();
+    if (!input_service) return;
+    for (const auto& event : input_service->get_key_events())
+      focused->on_keydown(context, event);
   }
 };
 
