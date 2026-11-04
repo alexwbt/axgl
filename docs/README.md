@@ -17,6 +17,7 @@ framework topic; the numbering matches the corresponding worked example.
 | [Instancing](10_instancing.md)       | Custom entities and instancing     |
 | [Blending](11_blending.md)           | Alpha blending materials           |
 | [GUI](12_gui.md)                     | Pages, elements, and styles        |
+| [Physics](13_physics.md)             | Physics service and rigid bodies    |
 
 ## Engine lifecycle
 
