@@ -34,6 +34,7 @@ add_subdirectory(_external/simdjson)
 add_subdirectory(_external/freetype)
 add_subdirectory(_external/flatbuffer)
 add_subdirectory(_external/doctest)
+add_subdirectory(_external/bullet)
 
 if(AXGL_BUILD_TESTS)
   enable_testing()
