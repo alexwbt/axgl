@@ -18,26 +18,23 @@ A C++ game development framework. Service-oriented core (interfaces in
 
 ## Build
 
-- Use the wrapper:
-  `_scripts/build.sh [debug|release] [--target <target>] [--no-config] [--no-build]`
-  (logs to `_log/build.log` plus a timestamped archive in `_log/`). The default
-  preset is `debug`. `--no-config` skips configure; `--no-build` skips the build
-  step (configure only). `--target <name>` builds a single target (e.g.
-  `--target demo_blending`). Preset is a positional arg; flags can appear in any
-  position. When testing a change, build the `debug` preset only (it is the
-  default).
-- The `Makefile` wraps the same scripts: `make` (= `make debug`),
-  `make release`, `make target TARGET=<name>`, `make run [TARGET=<name>]`,
-  `make demo_<name>` (e.g. `make demo_window`), `make clean`, `make format`,
-  `make tidy`. Default TARGET is `demo_playground`; parallelism via `PARALLEL=N`
-  (exported as `CMAKE_BUILD_PARALLEL_LEVEL`).
+- Build with the `Makefile`: `make` (= `make debug`), `make release`,
+  `make target TARGET=<name>`, `make run [TARGET=<name>]`, `make demo_<name>`
+  (e.g. `make demo_window`), `make clean`, `make format`, `make tidy`. Default
+  TARGET is `demo_playground`; parallelism via `PARALLEL=N` (exported as
+  `CMAKE_BUILD_PARALLEL_LEVEL`). The default preset is `debug`; when testing a
+  change, build `debug` only.
+- The `Makefile` wraps `_scripts/build.sh` (which logs to `_log/build.log` plus
+  a timestamped archive in `_log/`); call the Makefile rather than invoking the
+  script directly. Only wrap the script by hand for what the Makefile does not
+  expose: `--no-config` (skips configure) and `--no-build` (configure only).
 - `make run` does **not** build first — it just runs `_bin/<TARGET>` and errors
   if it doesn't exist. Build (`make` / `make target TARGET=...`) before
   `make run`.
-- After a full debug build, `build.sh` runs the `compile_proxy` tool (see
+- After a full debug build, `make` runs the `compile_proxy` tool (see
   "compile_proxy" below) to post-process `compile_commands.json` so clangd /
   clang-tidy get real entries for header-only TUs. This is skipped for
-  `--target` builds (database may be incomplete).
+  single-target builds (`make target TARGET=...`; database may be incomplete).
 - Check `_log/build.log` for errors/output instead of relying on stdout, which
   may be empty, truncated, or intermixed with runtime output. Use the Read tool
   (or Grep) on `_log/build.log`, not `tail`/`cat` via Bash.
@@ -45,7 +42,8 @@ A C++ game development framework. Service-oriented core (interfaces in
   `CMAKE_EXPORT_COMPILE_COMMANDS` is ON, so `compile_commands.json` lands in
   `_build/Debug` — this is what `.clangd` and clang-tidy (`-p _build/Debug`)
   read. If you wipe `_build/`, clangd/clang-tidy break until you reconfigure.
-- Clean: `_scripts/clean.sh` (or `make clean`) — removes `_build/` and `_bin/`.
+- Clean: `make clean` (wraps `_scripts/clean.sh`) — removes `_build/` and
+  `_bin/`.
 - Debug preset defines `AXGL_DEBUG` and `TRACY_ENABLE=ON`; release turns both
   off. See "Debug/profiling instrumentation" below — these flags change
   behavior, not just optimization.
@@ -54,16 +52,18 @@ A C++ game development framework. Service-oriented core (interfaces in
 
 - Style is clang-format **attach braces, 2-space, 80 col, pointers left**
   (`.clang-format`). Match this exactly; do not reflow to LLVM defaults.
+- Format with the `Makefile`: `make format` (clang-format only) or
+  `make tidy` (clang-tidy `-fix -fix-errors` across `axgl/`, `demo/`, `impl/`,
+  `lib/`, then clang-format). `make tidy` requires a configured `_build/Debug`
+  for the compile database. Both wrap `_scripts/format.sh`.
 - `clang-format` major version **22** is required (enforced by
   `_scripts/format.sh`; override with `CLANG_FORMAT_SKIP_VERSION_CHECK=1`).
 - `pre-commit` hook (in `.githooks`) auto-runs `clang-format -i` on staged
   `.cpp/.hpp/.fs/.vs` under `axgl/`, `demo/`, `impl/`, `lib/` and re-stages
-  them. If you commit from a shell that doesn't run hooks, run
-  `_scripts/format.sh` first.
-- `_scripts/format.sh` (or `make tidy`) also runs `clang-tidy -fix -fix-errors`
-  (pass `--no-tidy`, or use `make format`, to skip) across the same four trees,
-  then clang-format. It requires a configured `_build/Debug` for the compile
-  database. Use `--files <f1> <f2> ...` to format only listed files (no tidy).
+  them. If you commit from a shell that doesn't run hooks, run `make format`
+  first.
+- For a subset of files, call the script directly:
+  `_scripts/format.sh --files <f1> <f2> ...` (no tidy).
 - clang-tidy checks are pinned in `.clang-tidy` (large bugprone/modernize/
   performance/readability set). Don't disable checks ad hoc; edit the file.
 
@@ -80,7 +80,7 @@ A C++ game development framework. Service-oriented core (interfaces in
   CTest entry, all gathered under the `axgl_tests` custom target. Tests may
   skip themselves at runtime when a prerequisite (e.g. a GL context) is
   unavailable — guard with an availability check, don't fail.
-- Run: `make test` (builds `axgl_tests` with `--no-config` then runs
+- Run: `make test` (builds `axgl_tests` without reconfiguring, then runs
   `ctest --test-dir _build/Debug --output-on-failure`). CTest filters work,
   e.g. `ctest --test-dir _build/Debug -R '<pattern>'`; a single test binary
   is `_bin/<test_target>`.
@@ -165,9 +165,10 @@ every `impl/*` target, `net`, `util`, `bundlefile_lib`, `demo_playground`, and
 libs here are header-only INTERFACE targets, nearly every header gets a compile
 command this way.
 
-After building, `_scripts/build.sh` runs the `compile_proxy` tool
-(`lib/compile_proxy`) to rewrite the stub entries' `file` field to point at the
-real header, so editors jump to the header instead of the stub.
+After a full debug build (`make`), the build runs the `compile_proxy` tool
+(`lib/compile_proxy`, invoked by `_scripts/build.sh`) to rewrite the stub
+entries' `file` field to point at the real header, so editors jump to the header
+instead of the stub.
 
 ## Debug / profiling instrumentation (changes semantics)
 
