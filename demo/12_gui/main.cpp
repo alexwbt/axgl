@@ -1,71 +1,67 @@
+#include "actions.hpp"
+#include "menu.hpp"
+#include "navigator.hpp"
+#include "rebind_field.hpp"
+#include "settings_display.hpp"
+#include "settings_input.hpp"
 #include "setup_axgl.hpp"
 #include "setup_input.hpp"
+
 #include <axgl/interface/gui/elements/input_element.hpp>
+#include <axgl/interface/services/gui_service.hpp>
 #include <demo_gui/res.hpp>
 
 int main() {
   axgl::Axgl axgl;
-  setup_axgl(axgl);
+
+  const auto actions = demo_gui::create_actions();
+  setup_axgl(axgl, actions);
 
   const auto& gui_service = axgl.gui_service();
   const auto& text_service = axgl.text_service();
-  const auto& input_service = axgl.input_service();
 
   // load fonts
   text_service->load_font("arial", demo_gui_res::get("font/arial.ttf"), 0);
   text_service->load_font("noto-tc", demo_gui_res::get("font/noto-tc.ttf"), 0);
 
-  const auto page = gui_service->create_page();
-  // TODO: add input manager (for input settings later)
-  setup_input(input_service, page);
-  gui_service->set_main_ui(page);
-
   // set font style
   gui_service->get_style("text")->set_fonts({"arial", "noto-tc"});
 
-  // title
-  const auto title_element
-    = gui_service->create_element_t<axgl::gui::TextElement>({"header1"});
-  title_element->set_text("Hello World");
-  page->elements().add(title_element);
+  // style for the demo-local rebind widget (based on the input field)
+  if (const auto input_style = gui_service->get_style("input"))
+    gui_service->create_style("demo_rebind_field")->set_base_style(input_style);
 
-  // paragraph
-  const auto paragraph_element
-    = gui_service->create_element_t<axgl::gui::TextElement>({"paragraph"});
-  paragraph_element->set_text(
-    "The GUI service is a small, CSS-inspired layer built on top of the "
-    "service architecture. It is made of a GuiService, a tree of Page and "
-    "Element objects, and a named Style system with hover, active, and "
-    "focus pseudo-classes. Named styles are defined once, referenced by "
-    "elements by name, and combined into a per-element computed style, so "
-    "inline overrides win and recomputation stays lazy. Pages own the "
-    "element list, size, render target, and cursor, scroll, scale, and "
-    "focus input bindings, while the service drives their lifecycle each "
-    "frame. Built-in Text, Button, and Input elements cover common "
-    "widgets, and custom types are added by registering a factory."
+  // shared GUI input bindings
+  const auto mouse_pointer = axgl::create_ptr<axgl::Pointer>(
+    "Cursor", axgl::Pointer::Source::kMouseMove
   );
-  page->elements().add(paragraph_element);
+  auto gui_bindings = demo_gui::create_gui_bindings(mouse_pointer);
+  gui_bindings.bind(axgl.input_service());
 
-  // button
-  const auto button_element
-    = gui_service->create_element_t<axgl::gui::ButtonElement>();
-  button_element->set_text("Click me!");
-  button_element->on_click([](axgl::gui::Context) {
-    AXGL_LOG_INFO("hello world");
-  });
-  page->elements().add(button_element);
+  // current renderer / window (created in setup_axgl)
+  const auto& renderer = axgl.renderer_service()->get_active_renderer();
+  const auto& window = renderer->get_window();
 
-  // input
-  const auto input_element
-    = gui_service->create_element_t<axgl::gui::InputElement>();
-  input_element->set_text("Edit me");
+  // registry for the demo-local rebind widget
+  demo_gui::register_rebind_field(gui_service);
 
-  input_element->on_submit(
-    [](const axgl::gui::Context&, const std::string& value) {
-      AXGL_LOG_INFO("submitted: {}", value);
-    }
-  );
-  page->elements().add(input_element);
+  // navigator
+  const auto nav = axgl::create_ptr<demo_gui::Navigator>();
+  nav->gui = gui_service;
+
+  // build pages
+  nav->display_settings
+    = demo_gui::create_display_settings(gui_service, nav, renderer, window);
+  nav->input_settings
+    = demo_gui::create_input_settings(gui_service, nav, actions);
+
+  gui_bindings.apply(nav->display_settings);
+  gui_bindings.apply(nav->input_settings);
+
+  nav->main_menu = demo_gui::create_main_menu(gui_service, nav);
+  gui_bindings.apply(nav->main_menu);
+
+  nav->gui->set_main_ui(nav->main_menu);
 
   axgl.run();
   axgl.terminate();

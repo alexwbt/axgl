@@ -146,6 +146,22 @@ e->set_style({"text", "header1"})->set_color(axgl::colors::kRed);
   Backspace / Delete and Left / Right edit the text and caret, and Enter fires
   the submit handler. It draws a blinking caret.
 
+Additional widgets cover common settings-style inputs:
+
+- `axgl::gui::ToggleElement` (`kTypeId = "element:toggle"`) — a focusable
+  checkbox. Inherits `TextElement` for its label and adds `set_checked` /
+  `is_checked` and `on_toggle(handler)`. Activating it (mouse or Enter /
+  Space) flips the checked state.
+- `axgl::gui::SliderElement` (`kTypeId = "element:slider"`) — a focusable
+  horizontal slider. `set_value` / `get_value`, `set_range(min, max)`, and
+  `on_change(handler)`. It can be dragged with the mouse or stepped with the arrow
+  keys while focused.
+- `axgl::gui::DropdownElement` (`kTypeId = "element:dropdown"`) — a focusable
+  selection box. Inherits `TextElement` for the currently selected label and adds
+  `set_options` / `get_options`, `set_selected` / `get_selected`, and
+  `on_change(handler)`. Up / Down change the selection; Enter / Space toggle the
+  open list.
+
 Register additional element types with `register_element_t<T>()`.
 
 ### Creating elements
@@ -323,4 +339,12 @@ For style-driven behavior, read from `get_computed_style()` rather than
 `style()`.
 
 Example: `demo/12_gui`.
+
+The example builds a small menu application with three `Page`s swapped through
+`GuiService::set_main_ui`: a **Main Menu**, an **Input Settings** screen that
+rebinds named `Input` actions, and a **Display Settings** screen that toggles
+renderer options (`ToggleElement`), adjusts exposure (`SliderElement`), and selects a
+window resolution (`DropdownElement`). Each input field is clicked and then a key is
+pressed to rebind; Esc cancels. The same `Cursor` pointer and GUI input
+bindings are shared across all three pages.
 

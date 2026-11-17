@@ -7,9 +7,10 @@
 #endif
 #include <axgl/common/color.hpp>
 #include <axgl/common/mesh.hpp>
-#include <axgl/impl/camera/keyboard_3d_free_fly_camera_mode.hpp>
 
-inline void setup_axgl(axgl::Axgl& axgl) {
+#include "actions.hpp"
+
+inline void setup_axgl(axgl::Axgl& axgl, const demo_gui::Actions& actions) {
   axgl::configure_default(axgl);
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL
   axgl::configure_glfw(axgl);
@@ -32,6 +33,7 @@ inline void setup_axgl(axgl::Axgl& axgl) {
 
   // input
   input_service->set_window(window);
+  actions.bind(input_service);
 
   // renderer
   const auto renderer = renderer_service->create_renderer();
@@ -44,7 +46,7 @@ inline void setup_axgl(axgl::Axgl& axgl) {
   const auto realm = realm_service->create_realm();
   realm_service->set_active_realm(realm);
 
-  // camera entity
+  // camera entity (static, so the menu is immediately interactive)
   {
     const auto camera_entity = entity_service->create_entity();
     const auto camera_comp
@@ -53,12 +55,6 @@ inline void setup_axgl(axgl::Axgl& axgl) {
     realm->entities().add(camera_entity);
     camera_entity->transform().position.z = -2;
     camera_entity->transform().update_matrix();
-    camera_service->set_camera_entity(camera_entity);
-
-    // camera input
-    camera_service->set_camera_mode(
-      axgl::create_ptr<axgl::impl::camera::Keyboard3DFreeFlyCameraMode>()
-    );
     camera_service->set_camera_entity(camera_entity);
   }
 

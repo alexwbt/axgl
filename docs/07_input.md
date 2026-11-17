@@ -47,6 +47,12 @@ input->up();      // released (tick == 0)
 bound keys/buttons. Pointers track position and delta for mouse move and scroll
 sources, as used by the [12. GUI](12_gui.md).
 
+`Input::sources` (and `name`) are public, so an action can be rebound at
+runtime by replacing its `sources` list. The `demo/12_gui` Input Settings
+screen does exactly this: capturing a key and assigning `input->sources = {key}`
+rebinds the shared action, which any consumer (such as a `CameraMode`) reads the
+same way it reads the original binding.
+
 ## Key events
 
 Besides the per-`Input` state, `InputService` exposes the key presses the window

@@ -46,6 +46,32 @@ public:
       ->set_cursor(axgl::gui::Cursor::kText)
       ->set_color({0.0f, 0.0f, 0.0f, 0.5f});
     create_style("input:focus")->set_color({0.0f, 0.0f, 0.0f, 0.7f});
+
+    create_style("toggle")
+      ->set_base_style(text_style)
+      ->set_display(axgl::gui::Display::kBlock)
+      ->set_padding(glm::vec4(4.0f))
+      ->set_margin(glm::vec4(4.0f, 10.0f, 4.0f, 10.0f));
+    create_style("toggle:hover")->set_cursor(axgl::gui::Cursor::kPointer);
+    create_style("toggle:focus")->set_color({1.0f, 1.0f, 1.0f, 0.1f});
+
+    create_style("slider")
+      ->set_base_style(text_style)
+      ->set_display(axgl::gui::Display::kBlock)
+      ->set_padding(glm::vec4(12.0f))
+      ->set_margin(glm::vec4(4.0f, 10.0f, 4.0f, 10.0f));
+    create_style("slider:hover")
+      ->set_cursor(axgl::gui::Cursor::kResizeHorizontal);
+    create_style("slider:focus")->set_color({1.0f, 1.0f, 1.0f, 0.1f});
+
+    create_style("dropdown")
+      ->set_base_style(text_style)
+      ->set_display(axgl::gui::Display::kBlock)
+      ->set_padding(glm::vec4(6.0f))
+      ->set_margin(glm::vec4(4.0f, 10.0f, 4.0f, 10.0f))
+      ->set_color({0.3f, 0.3f, 0.3f, 0.5f});
+    create_style("dropdown:hover")->set_cursor(axgl::gui::Cursor::kPointer);
+    create_style("dropdown:focus")->set_color({0.3f, 0.3f, 0.3f, 0.8f});
   }
 
 protected:
