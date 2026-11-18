@@ -9,7 +9,7 @@
 
 #include <axgl/impl/opengl/gui/elements/text_element.hpp>
 
-#include "actions.hpp"
+#include "axgl/interface/input_source.hpp"
 
 namespace demo_gui {
 
@@ -17,16 +17,16 @@ class RebindFieldElement : virtual public axgl::gui::TextElement,
                            public axgl::impl::opengl::gui::TextElement {
 public:
   using Handler
-    = std::function<void(const axgl::gui::Context&, axgl::Input::Source)>;
+    = std::function<void(const axgl::gui::Context&, axgl::InputSource)>;
 
   static constexpr std::string_view kTypeId = "element:demo_rebind_field";
 
-  void set_source(axgl::Input::Source source) {
+  void set_source(axgl::InputSource source) {
     source_ = source;
     update_label();
   }
 
-  [[nodiscard]] axgl::Input::Source get_source() const { return source_; }
+  [[nodiscard]] axgl::InputSource get_source() const { return source_; }
 
   void on_rebind(Handler handler) { handler_ = std::move(handler); }
 
@@ -47,7 +47,7 @@ public:
   void on_keydown(
     const axgl::gui::Context& context, const axgl::KeyEvent& event
   ) override {
-    using enum axgl::Input::Source;
+    using enum axgl::InputSource;
     if (!listening_) return;
 
     if (event.key == kKeyEscape) {
@@ -65,12 +65,14 @@ public:
   }
 
 private:
-  axgl::Input::Source source_ = axgl::Input::Source::kKeyA;
+  axgl::InputSource source_ = axgl::InputSource::kKeyA;
   bool listening_ = false;
   Handler handler_;
 
   void update_label() {
-    set_text(listening_ ? "Press a key..." : demo_gui::source_name(source_));
+    set_text(
+      listening_ ? "Press a key..." : axgl::input_source_info().at(source_).name
+    );
   }
 };
 

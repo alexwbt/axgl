@@ -8,9 +8,9 @@
 #include <axgl/common/color.hpp>
 #include <axgl/common/mesh.hpp>
 
-#include "actions.hpp"
+#include "setup_input.hpp"
 
-inline void setup_axgl(axgl::Axgl& axgl, const demo_gui::Actions& actions) {
+inline void setup_axgl(axgl::Axgl& axgl, const demo_gui::Inputs& inputs) {
   axgl::configure_default(axgl);
 #ifdef AXGL_DEMO_USE_OPENGL_IMPL
   axgl::configure_glfw(axgl);
@@ -33,7 +33,7 @@ inline void setup_axgl(axgl::Axgl& axgl, const demo_gui::Actions& actions) {
 
   // input
   input_service->set_window(window);
-  actions.bind(input_service);
+  inputs.bind(input_service);
 
   // renderer
   const auto renderer = renderer_service->create_renderer();

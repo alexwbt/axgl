@@ -348,3 +348,7 @@ window resolution (`DropdownElement`). Each input field is clicked and then a ke
 pressed to rebind; Esc cancels. The same `Cursor` pointer and GUI input
 bindings are shared across all three pages.
 
+Each screen is built by a `build_*` function that assembles its elements through
+a small `Ui` builder, and an `App` holds the engine and shared inputs, builds the
+three pages once, and routes between them.
+

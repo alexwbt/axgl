@@ -64,7 +64,7 @@ public:
   void on_keydown(
     const axgl::gui::Context& context, const axgl::KeyEvent& event
   ) override {
-    using enum axgl::Input::Source;
+    using enum axgl::InputSource;
     if (event.key == kKeyUp && !options_.empty()) {
       set_selected((selected_ + options_.size() - 1) % options_.size());
       emit_change(context);

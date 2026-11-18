@@ -61,7 +61,7 @@ public:
   void on_keydown(
     const axgl::gui::Context& context, const axgl::KeyEvent& event
   ) override {
-    using enum axgl::Input::Source;
+    using enum axgl::InputSource;
     const float step = (max_ - min_) * 0.05f;
     if (event.key == kKeyLeft || event.key == kKeyDown) {
       set_value(value_ - step);

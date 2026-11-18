@@ -37,7 +37,7 @@ public:
   void on_keydown(
     const axgl::gui::Context& context, const axgl::KeyEvent& event
   ) override {
-    using enum axgl::Input::Source;
+    using enum axgl::InputSource;
     if (event.key == kKeySpace || event.key == kKeyEnter) {
       checked_ = !checked_;
       if (handler_) handler_(context, checked_);
