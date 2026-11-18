@@ -450,46 +450,46 @@ private:
       AXGL_PROFILE_SCOPE("GUI Render");
       gui->render();
 
+      using enum axgl::gui::Cursor;
       const auto& glfw_window = window_->glfw_window();
       switch (gui->get_cursor()) {
       default:
-      case gui::Cursor::kNormal:
-        glfw_window->use_standard_cursor(GLFW_ARROW_CURSOR);
-        break;
-      case gui::Cursor::kText:
-        glfw_window->use_standard_cursor(GLFW_IBEAM_CURSOR);
-        break;
-      case gui::Cursor::kPointer:
+      case kNormal: glfw_window->use_standard_cursor(GLFW_ARROW_CURSOR); break;
+      case kText: glfw_window->use_standard_cursor(GLFW_IBEAM_CURSOR); break;
+      case kPointer:
         glfw_window->use_standard_cursor(GLFW_POINTING_HAND_CURSOR);
         break;
-      case gui::Cursor::kCrosshair:
+      case kCrosshair:
         glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR);
         break;
-      case gui::Cursor::kResizeVertical:
+      case kResizeVertical:
         glfw_window->use_standard_cursor(GLFW_RESIZE_NS_CURSOR);
         break;
-      case gui::Cursor::kResizeHorizontal:
+      case kResizeHorizontal:
         glfw_window->use_standard_cursor(GLFW_RESIZE_EW_CURSOR);
         break;
-      case gui::Cursor::kResizeDiagonalLeft:
+      case kResizeDiagonalLeft:
         glfw_window->use_standard_cursor(GLFW_RESIZE_NESW_CURSOR);
         break;
-      case gui::Cursor::kResizeDiagonalRight:
+      case kResizeDiagonalRight:
         glfw_window->use_standard_cursor(GLFW_RESIZE_NWSE_CURSOR);
         break;
-      case gui::Cursor::kResize:
+      case kResize:
         glfw_window->use_standard_cursor(GLFW_CROSSHAIR_CURSOR);
         break;
-      case gui::Cursor::kNotAllowed:
+      case kNotAllowed:
         glfw_window->use_standard_cursor(GLFW_NOT_ALLOWED_CURSOR);
         break;
       }
     }
 
-    const auto gui_texture
-      = axgl::ptr_cast<axgl::impl::opengl::Texture>(gui->get_texture());
+    const auto& gui_texture = gui->get_texture();
+    if (!gui_texture) return;
+
+    const auto gui_gl_texture
+      = axgl::ptr_cast<axgl::impl::opengl::Texture>(gui_texture);
 #ifdef AXGL_DEBUG
-    if (!gui_texture)
+    if (!gui_gl_texture)
       throw std::runtime_error(
         "axgl::impl::opengl::Texture is required to use "
         "axgl::impl::opengl::Renderer"
@@ -500,7 +500,7 @@ private:
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    gui_texture->use(GL_TEXTURE0);
+    gui_gl_texture->use(GL_TEXTURE0);
     const auto& screen_shader = Shaders::instance().screen();
     screen_shader.use_program();
     screen_shader.set_int("screen", 0);
