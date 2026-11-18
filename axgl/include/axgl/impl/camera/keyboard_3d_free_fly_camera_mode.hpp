@@ -52,15 +52,13 @@ public:
   ) :
     Keyboard3DFreeFlyCameraMode(
       axgl::create_ptr<Pointer>("View Movement", Pointer::Source::kMouseMove),
-      axgl::create_ptr<Input>("Move Forward", Input::Source::kKeyW),
-      axgl::create_ptr<Input>("Move Backward", Input::Source::kKeyS),
-      axgl::create_ptr<Input>("Move Up", Input::Source::kKeySpace),
-      axgl::create_ptr<Input>("Move Down", Input::Source::kKeyLeftShift),
-      axgl::create_ptr<Input>("Move Left", Input::Source::kKeyA),
-      axgl::create_ptr<Input>("Move Right", Input::Source::kKeyD),
-      axgl::create_ptr<Input>(
-        "Toggle Camera Control", Input::Source::kKeyEscape
-      ),
+      axgl::create_ptr<Input>("Move Forward", InputSource::kKeyW),
+      axgl::create_ptr<Input>("Move Backward", InputSource::kKeyS),
+      axgl::create_ptr<Input>("Move Up", InputSource::kKeySpace),
+      axgl::create_ptr<Input>("Move Down", InputSource::kKeyLeftShift),
+      axgl::create_ptr<Input>("Move Left", InputSource::kKeyA),
+      axgl::create_ptr<Input>("Move Right", InputSource::kKeyD),
+      axgl::create_ptr<Input>("Toggle Camera Control", InputSource::kKeyEscape),
       movement_speed,
       view_sensitivity
     ) {}

@@ -44,42 +44,38 @@ public:
 
   void initialize() override {
     rotate_sun_
-      = axgl::create_ptr<axgl::Input>("Rotate Sun", axgl::Input::Source::kKeyR);
-    exposure_up_ = axgl::create_ptr<axgl::Input>(
-      "Exposure Up", axgl::Input::Source::kKeyUp
-    );
+      = axgl::create_ptr<axgl::Input>("Rotate Sun", axgl::InputSource::kKeyR);
+    exposure_up_
+      = axgl::create_ptr<axgl::Input>("Exposure Up", axgl::InputSource::kKeyUp);
     exposure_down_ = axgl::create_ptr<axgl::Input>(
-      "Exposure Down", axgl::Input::Source::kKeyDown
+      "Exposure Down", axgl::InputSource::kKeyDown
     );
     flashlight_ = axgl::create_ptr<axgl::Input>(
-      "Toggle Flashlight", axgl::Input::Source::kKeyF
+      "Toggle Flashlight", axgl::InputSource::kKeyF
     );
     switch_scene_ = axgl::create_ptr<axgl::Input>(
-      "Switch Scene", axgl::Input::Source::kKeyF1
+      "Switch Scene", axgl::InputSource::kKeyF1
     );
     blend_ = axgl::create_ptr<axgl::Input>(
-      "Toggle Blend", axgl::Input::Source::kKeyF2
+      "Toggle Blend", axgl::InputSource::kKeyF2
     );
-    msaa_ = axgl::create_ptr<axgl::Input>(
-      "Toggle MSAA", axgl::Input::Source::kKeyF3
-    );
+    msaa_
+      = axgl::create_ptr<axgl::Input>("Toggle MSAA", axgl::InputSource::kKeyF3);
     debug_ = axgl::create_ptr<axgl::Input>(
-      "Toggle Debug Mode", axgl::Input::Source::kKeyF4
+      "Toggle Debug Mode", axgl::InputSource::kKeyF4
     );
     shadow_ = axgl::create_ptr<axgl::Input>(
-      "Toggle Shadow", axgl::Input::Source::kKeyF5
+      "Toggle Shadow", axgl::InputSource::kKeyF5
     );
     debug_csm_ = axgl::create_ptr<axgl::Input>(
-      "Toggle CSM Borders", axgl::Input::Source::kKeyF6
+      "Toggle CSM Borders", axgl::InputSource::kKeyF6
     );
-    hdr_ = axgl::create_ptr<axgl::Input>(
-      "Toggle HDR", axgl::Input::Source::kKeyF7
-    );
-    ssao_ = axgl::create_ptr<axgl::Input>(
-      "Toggle SSAO", axgl::Input::Source::kKeyF8
-    );
+    hdr_
+      = axgl::create_ptr<axgl::Input>("Toggle HDR", axgl::InputSource::kKeyF7);
+    ssao_
+      = axgl::create_ptr<axgl::Input>("Toggle SSAO", axgl::InputSource::kKeyF8);
     bloom_ = axgl::create_ptr<axgl::Input>(
-      "Toggle Bloom", axgl::Input::Source::kKeyF9
+      "Toggle Bloom", axgl::InputSource::kKeyF9
     );
   }
 

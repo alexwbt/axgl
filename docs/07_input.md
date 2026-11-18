@@ -19,18 +19,18 @@ virtual void add_input(axgl::ptr_t<axgl::Input> input) = 0;
 virtual void add_pointer(axgl::ptr_t<axgl::Pointer> pointer) = 0;
 virtual void remove_input(std::uint64_t id) = 0;
 virtual void remove_pointer(std::uint64_t id) = 0;
-virtual std::vector<ptr_t<Input>> get_input_by_source(Input::Source) = 0;
+virtual std::vector<ptr_t<Input>> get_input_by_source(InputSource) = 0;
 virtual std::vector<ptr_t<Pointer>> get_pointer_by_source(Pointer::Source) = 0;
 ```
 
 ## Input objects
 
 `Input` is constructed with a name and one or more `Source` values (keyboard
-keys or mouse buttons from the `Input::Source` enum):
+keys or mouse buttons from the `InputSource` enum):
 
 ```cpp
 const auto input = axgl::create_ptr<axgl::Input>(
-  "Jump", axgl::Input::Source::kKeySpace
+  "Jump", axgl::InputSource::kKeySpace
 );
 axgl.input_service()->add_input(input);
 ```
@@ -60,12 +60,12 @@ A `KeyEvent` is modelled on the browser `keydown` event:
 
 ```cpp
 struct KeyEvent {
-  axgl::Input::Source key; // physical key
+  axgl::InputSource key; // physical key
   char32_t character = 0;  // produced character, 0 if none
 };
 ```
 
-`key` identifies the physical key (reusing the `Input::Source` enum).
+`key` identifies the physical key (reusing the `InputSource` enum).
 `character` is the Unicode character the press produced, already accounting for
 shift and keyboard layout; it is `0` for keys that produce no text (Backspace,
 arrows, Enter, ...). Keys are reported whether or not they are bound to an

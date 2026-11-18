@@ -32,10 +32,10 @@ public:
 
   explicit Keyboard2DFreeFlyCameraMode(float movement_speed = 2.0f) :
     Keyboard2DFreeFlyCameraMode(
-      axgl::create_ptr<axgl::Input>("Move Up", axgl::Input::Source::kKeyW),
-      axgl::create_ptr<axgl::Input>("Move Down", axgl::Input::Source::kKeyS),
-      axgl::create_ptr<axgl::Input>("Move Left", axgl::Input::Source::kKeyA),
-      axgl::create_ptr<axgl::Input>("Move Right", axgl::Input::Source::kKeyD),
+      axgl::create_ptr<axgl::Input>("Move Up", axgl::InputSource::kKeyW),
+      axgl::create_ptr<axgl::Input>("Move Down", axgl::InputSource::kKeyS),
+      axgl::create_ptr<axgl::Input>("Move Left", axgl::InputSource::kKeyA),
+      axgl::create_ptr<axgl::Input>("Move Right", axgl::InputSource::kKeyD),
       movement_speed
     ) {}
 

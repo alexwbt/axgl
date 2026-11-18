@@ -71,7 +71,7 @@ public:
     // input
     input_service->set_window(window);
     border_input_ = axgl::create_ptr<axgl::Input>(
-      "Toggle Border", axgl::Input::Source::kKeyB
+      "Toggle Border", axgl::InputSource::kKeyB
     );
     input_service->add_input(border_input_);
 

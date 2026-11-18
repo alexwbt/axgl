@@ -94,7 +94,7 @@ element, which is how a focused button fires its click handler.
 Keyboard events are not bound through named `Input` objects. Each frame the page
 reads the window's key events from `InputService::get_key_events()` and forwards
 every `KeyEvent` to the focused element as `on_keydown(context, event)`. A
-`KeyEvent` carries the physical `key` (an `Input::Source`) and the produced
+`KeyEvent` carries the physical `key` (an `InputSource`) and the produced
 `character` (`char32_t`, or `0` when the key produced no text). This mirrors a
 browser `keydown` event, so a focused text field can insert typed characters and
 handle editing keys without registering every key up front.

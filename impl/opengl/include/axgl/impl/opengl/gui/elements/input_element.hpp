@@ -50,7 +50,7 @@ public:
   void on_keydown(
     const axgl::gui::Context& context, const axgl::KeyEvent& event
   ) override {
-    using enum axgl::Input::Source;
+    using enum axgl::InputSource;
 
     bool changed = false;
     bool moved = false;

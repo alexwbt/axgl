@@ -16,16 +16,16 @@ inline void setup_input(
     "GUI Scroll", axgl::Pointer::Source::kScroll
   );
   const auto scale_input = axgl::create_ptr<axgl::Input>(
-    "GUI Scale", axgl::Input::Source::kKeyLeftControl
+    "GUI Scale", axgl::InputSource::kKeyLeftControl
   );
   const auto activate_input = axgl::create_ptr<axgl::Input>(
-    "GUI Activate", axgl::Input::Source::kMouseButton1
+    "GUI Activate", axgl::InputSource::kMouseButton1
   );
   const auto focus_switch_input = axgl::create_ptr<axgl::Input>(
-    "GUI Focus Next", axgl::Input::Source::kKeyTab
+    "GUI Focus Next", axgl::InputSource::kKeyTab
   );
   const auto focus_activate_input = axgl::create_ptr<axgl::Input>(
-    "GUI Focus Next", axgl::Input::Source::kKeyEnter
+    "GUI Focus Next", axgl::InputSource::kKeyEnter
   );
   input_service->add_pointer(cursor_pointer);
   input_service->add_pointer(scroll_pointer);

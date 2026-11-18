@@ -24,8 +24,8 @@ class InputService : virtual public axgl::InputService,
   axgl::InputService::CursorMode cursor_mode_
     = axgl::InputService::CursorMode::kNormal;
 
-  static int to_glfw_keycode(const axgl::Input::Source source) {
-    using enum axgl::Input::Source;
+  static int to_glfw_keycode(const axgl::InputSource source) {
+    using enum axgl::InputSource;
     switch (source) {
     case kKeySpace: return GLFW_KEY_SPACE;
     case kKeyApostrophe: return GLFW_KEY_APOSTROPHE;
@@ -151,14 +151,14 @@ class InputService : virtual public axgl::InputService,
     }
   }
 
-  static std::optional<axgl::Input::Source> from_glfw_keycode(int key) {
-    using enum axgl::Input::Source;
+  static std::optional<axgl::InputSource> from_glfw_keycode(int key) {
+    using enum axgl::InputSource;
     static const auto source_by_keycode = [] {
-      std::unordered_map<int, axgl::Input::Source> map;
+      std::unordered_map<int, axgl::InputSource> map;
       for (auto i = static_cast<int>(kKeySpace);
            i <= static_cast<int>(kKeyMenu);
            ++i) {
-        const auto source = static_cast<axgl::Input::Source>(i);
+        const auto source = static_cast<axgl::InputSource>(i);
         if (
           const auto glfw_keycode = to_glfw_keycode(source); glfw_keycode != -1
         )
@@ -172,8 +172,8 @@ class InputService : virtual public axgl::InputService,
     return it->second;
   }
 
-  static int to_glfw_mouse_button(const axgl::Input::Source source) {
-    using enum axgl::Input::Source;
+  static int to_glfw_mouse_button(const axgl::InputSource source) {
+    using enum axgl::InputSource;
     switch (source) {
     case kMouseButton1: return GLFW_MOUSE_BUTTON_1;
     case kMouseButton2: return GLFW_MOUSE_BUTTON_2;
@@ -188,7 +188,7 @@ class InputService : virtual public axgl::InputService,
   }
 
   static bool get_glfw_input(
-    const axgl::Input::Source source, const axgl::ptr_t<::glfw::Window>& window
+    const axgl::InputSource source, const axgl::ptr_t<::glfw::Window>& window
   ) {
     if (
       const auto keycode = to_glfw_keycode(source);
@@ -261,7 +261,7 @@ public:
   }
 
   [[nodiscard]] std::vector<axgl::ptr_t<axgl::Input>> get_input_by_source(
-    axgl::Input::Source source
+    axgl::InputSource source
   ) override {
     const auto contains = [&source](const auto& e) {
       return std::find(e->sources.begin(), e->sources.end(), source)
