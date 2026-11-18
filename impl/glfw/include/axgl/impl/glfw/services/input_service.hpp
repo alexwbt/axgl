@@ -260,6 +260,14 @@ public:
     });
   }
 
+  [[nodiscard]] axgl::ptr_t<axgl::Input> get_input_by_name(
+    const std::string& name
+  ) override {
+    for (const auto& input : inputs_)
+      if (input->name == name) return input;
+    return nullptr;
+  }
+
   [[nodiscard]] std::vector<axgl::ptr_t<axgl::Input>> get_input_by_source(
     axgl::InputSource source
   ) override {
@@ -269,6 +277,14 @@ public:
     };
     auto view = inputs_ | std::views::filter(contains);
     return {view.begin(), view.end()};
+  }
+
+  [[nodiscard]] axgl::ptr_t<axgl::Pointer> get_pointer_by_name(
+    const std::string& name
+  ) override {
+    for (const auto& pointer : pointers_)
+      if (pointer->name == name) return pointer;
+    return nullptr;
   }
 
   [[nodiscard]] std::vector<axgl::ptr_t<axgl::Pointer>> get_pointer_by_source(

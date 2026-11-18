@@ -27,8 +27,16 @@ public:
   virtual void add_pointer(axgl::ptr_t<axgl::Pointer> pointer) = 0;
   virtual void remove_input(std::uint64_t id) = 0;
   virtual void remove_pointer(std::uint64_t id) = 0;
+
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Input> get_input_by_name(
+    const std::string& name
+  ) = 0;
   [[nodiscard]] virtual std::vector<axgl::ptr_t<axgl::Input>>
   get_input_by_source(axgl::InputSource source) = 0;
+
+  [[nodiscard]] virtual axgl::ptr_t<axgl::Pointer> get_pointer_by_name(
+    const std::string& name
+  ) = 0;
   [[nodiscard]] virtual std::vector<axgl::ptr_t<axgl::Pointer>>
   get_pointer_by_source(axgl::Pointer::Source source) = 0;
 
