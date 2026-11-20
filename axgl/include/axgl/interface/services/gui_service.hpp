@@ -55,8 +55,14 @@ public:
     const std::string& name
   ) const = 0;
 
-  virtual void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) = 0;
-  [[nodiscard]] virtual axgl::ptr_t<axgl::gui::Page> get_main_ui() const = 0;
+  virtual void register_page(
+    const std::string& path, axgl::ptr_t<axgl::gui::Page> page
+  ) = 0;
+  virtual void unregister_page(const std::string& path) = 0;
+  virtual void navigate(const std::string& path) = 0;
+  [[nodiscard]] virtual axgl::ptr_t<axgl::gui::Page> get_active_page() const
+    = 0;
+  [[nodiscard]] virtual const std::string& get_active_path() const = 0;
 };
 
 } // namespace axgl

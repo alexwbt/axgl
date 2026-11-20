@@ -5,7 +5,6 @@
 #include "setup_axgl.hpp"
 #include "style_sheet.hpp"
 
-#include <cstddef>
 #include <utility>
 
 #include <demo_gui/res.hpp>
@@ -25,14 +24,11 @@ int main() {
   demo_gui::setup_styles(app.gui());
   demo_gui::register_rebind_field(app.gui());
 
-  app.pages[static_cast<std::size_t>(demo_gui::Route::kMenu)]
-    = demo_gui::build_main_menu(app);
-  app.pages[static_cast<std::size_t>(demo_gui::Route::kInputSettings)]
-    = demo_gui::build_input_settings(app);
-  app.pages[static_cast<std::size_t>(demo_gui::Route::kDisplaySettings)]
-    = demo_gui::build_display_settings(app);
+  demo_gui::build_main_menu(app);
+  demo_gui::build_input_settings(app);
+  demo_gui::build_display_settings(app);
 
-  app.navigate(demo_gui::Route::kMenu);
+  app.navigate("/main");
 
   axgl.run();
   axgl.terminate();

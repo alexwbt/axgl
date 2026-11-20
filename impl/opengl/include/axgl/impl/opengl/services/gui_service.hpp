@@ -19,9 +19,6 @@ class GuiService : virtual public axgl::GuiService,
   std::unordered_map<std::string, FactoryFunction> element_factories_;
   std::unordered_map<std::string, axgl::ptr_t<axgl::gui::Style>> styles_;
 
-  bool initialized_ = false;
-  axgl::ptr_t<axgl::gui::Page> main_ui_;
-
 public:
   axgl::ptr_t<axgl::gui::Page> create_page() override {
     return axgl::create_ptr<axgl::impl::opengl::gui::Page>();
@@ -90,26 +87,8 @@ public:
     return it->second;
   }
 
-  void set_main_ui(axgl::ptr_t<axgl::gui::Page> main_ui) override {
-    if (main_ui) {
-      main_ui_ = std::move(main_ui);
-      main_ui_->set_context(context_);
-      initialized_ = false;
-    } else main_ui_ = nullptr;
-  }
-  [[nodiscard]] axgl::ptr_t<axgl::gui::Page> get_main_ui() const override {
-    return main_ui_;
-  }
-
   void update() override {
-    if (main_ui_) {
-      if (!initialized_) {
-        main_ui_->init();
-        initialized_ = true;
-      }
-      AXGL_PROFILE_SCOPE("GUI Update");
-      main_ui_->update();
-    }
+    update_active_page();
 
     // reset updated
     for (const auto& entry : styles_)
@@ -117,8 +96,7 @@ public:
   }
 
   void terminate() override {
-    main_ui_ = nullptr;
-    initialized_ = false;
+    GuiServiceBase::terminate();
     element_factories_.clear();
     styles_.clear();
   }

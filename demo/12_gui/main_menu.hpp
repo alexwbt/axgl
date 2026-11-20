@@ -1,14 +1,13 @@
 #pragma once
 
 #include <axgl/common.hpp>
-#include <axgl/interface/gui/page.hpp>
 
 #include "app.hpp"
 
 namespace demo_gui {
 
-inline axgl::ptr_t<axgl::gui::Page> build_main_menu(App& app) {
-  const auto page = app.create_page();
+inline void build_main_menu(App& app) {
+  const auto page = app.create_page("/main");
 
   page->elements().add(app.ui.text("Main Menu", "header1"));
   page->elements().add(app.ui.text(
@@ -21,14 +20,12 @@ inline axgl::ptr_t<axgl::gui::Page> build_main_menu(App& app) {
   }));
 
   page->elements().add(app.ui.button("Input Settings", [&app] {
-    app.navigate(Route::kInputSettings);
+    app.navigate("/main/settings/input");
   }));
 
   page->elements().add(app.ui.button("Display Settings", [&app] {
-    app.navigate(Route::kDisplaySettings);
+    app.navigate("/main/settings/display");
   }));
-
-  return page;
 }
 
 } // namespace demo_gui

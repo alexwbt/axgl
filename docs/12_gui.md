@@ -11,7 +11,7 @@ objects, and a named `Style` system with state pseudo-classes.
 
 | Type                 | Header                               | Role                                                           |
 | -------------------- | ------------------------------------ | -------------------------------------------------------------- |
-| `axgl::GuiService`   | `interface/services/gui_service.hpp` | Creates pages/elements/styles; owns the main UI                |
+| `axgl::GuiService`   | `interface/services/gui_service.hpp` | Creates pages/elements/styles; routes pages by path            |
 | `axgl::gui::Page`    | `interface/gui/page.hpp`             | Root of a UI tree; holds top-level elements and input bindings |
 | `axgl::gui::Element` | `interface/gui/element.hpp`          | Base UI node; style, geometry, state, lifecycle                |
 | `axgl::gui::Style`   | `interface/gui/style.hpp`            | A set of optional presentation properties                      |
@@ -38,12 +38,21 @@ Defined in `interface/services/gui_service.hpp`. Key operations:
   a factory for a concrete element type.
 - `create_style(name)` — create (or replace) a named style and return it.
 - `get_style(name)` — look up a named style; returns `nullptr` if absent.
-- `set_main_ui(page)` / `get_main_ui()` — install the page that the service
-  drives each frame.
+- `register_page(path, page)` / `unregister_page(path)` — add or remove a page
+  in the routing table. Passing a null page to `register_page` unregisters the
+  path.
+- `navigate(path)` — select the page for a path. Paths are normalized: a
+  missing leading `/` is added and duplicate or trailing slashes are dropped.
+  If no page is registered at the exact path, the nearest registered ancestor
+  is used, so `/main/settings/input` falls back to `/main/settings`, then
+  `/main`, then `/`.
+- `get_active_page()` / `get_active_path()` — the page driven each frame and
+  the most recently requested path.
 
-The service drives the main page's lifecycle and resets per-frame style
+The service drives the active page's lifecycle and resets per-frame style
 modification tracking between updates. In debug builds, requesting a missing
-element id or style name is reported.
+element id or style name is reported, as is navigating to a path with no
+registered page.
 
 The default GUI service installs a set of built-in named styles: `text` (the font
 base), `header1` and `paragraph` (block styles based on `text`), and `button`
@@ -77,12 +86,13 @@ page->set_scale_input(scale_input);
 page->set_activate_input(activate_input);
 page->set_focus_activate_input(focus_activate_input);
 page->set_focus_switch_input(focus_switch_input);
-gui_service->set_main_ui(page);
+gui_service->register_page("/main", page);
+gui_service->navigate("/main");
 ```
 
-The service calls `init()` once, then `update()` each frame; `render()` draws
-when `should_render()` is set. Any element state change is expected to mark the
-page for re-render.
+When the active page changes, the service calls `init()` once on the new page,
+then `update()` each frame; `render()` draws when `should_render()` is set. Any
+element state change is expected to mark the page for re-render.
 
 Focus is page-driven. Each frame the page collects the focusable elements in
 tree order (an element opts in with `set_focusable(true)`; buttons and inputs do
@@ -340,15 +350,18 @@ For style-driven behavior, read from `get_computed_style()` rather than
 
 Example: `demo/12_gui`.
 
-The example builds a small menu application with three `Page`s swapped through
-`GuiService::set_main_ui`: a **Main Menu**, an **Input Settings** screen that
-rebinds named `Input` actions, and a **Display Settings** screen that toggles
-renderer options (`ToggleElement`), adjusts exposure (`SliderElement`), and selects a
-window resolution (`DropdownElement`). Each input field is clicked and then a key is
-pressed to rebind; Esc cancels. The same `Cursor` pointer and GUI input
-bindings are shared across all three pages.
+The example builds a small menu application with three `Page`s routed by path
+through `GuiService::register_page` / `navigate`: a **Main Menu** at `/main`,
+an **Input Settings** screen at `/main/settings/input` that rebinds named
+`Input` actions, and a **Display Settings** screen at
+`/main/settings/display` that toggles renderer options (`ToggleElement`),
+adjusts exposure (`SliderElement`), and selects a window resolution
+(`DropdownElement`). Each input field is clicked and then a key is pressed to
+rebind; Esc cancels. The same `Cursor` pointer and GUI input bindings are
+shared across all three pages.
 
 Each screen is built by a `build_*` function that assembles its elements through
-a small `Ui` builder, and an `App` holds the engine and shared inputs, builds the
-three pages once, and routes between them.
+a small `Ui` builder, and an `App` holds the engine and shared inputs, builds
+the three pages once, registers them under their paths, and navigates between
+them.
 

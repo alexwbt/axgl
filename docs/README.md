@@ -57,7 +57,7 @@ The engine is a set of services, each reachable from `Axgl` via a
 - `TextService` — loads fonts and renders text to a `Texture`.
 - `ModelService` — loads model files into meshes, materials, and textures.
 - `ResourceService` — holds resource data by key.
-- `GuiService` — creates pages, elements, and styles.
+- `GuiService` — creates pages, elements, and styles, and routes pages by path.
 
 Services are registered individually:
 

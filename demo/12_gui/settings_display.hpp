@@ -5,7 +5,6 @@
 #include <vector>
 
 #include <axgl/common.hpp>
-#include <axgl/interface/gui/page.hpp>
 #include <axgl/interface/renderer.hpp>
 #include <axgl/interface/window.hpp>
 
@@ -13,8 +12,8 @@
 
 namespace demo_gui {
 
-inline axgl::ptr_t<axgl::gui::Page> build_display_settings(App& app) {
-  const auto page = app.create_page();
+inline void build_display_settings(App& app) {
+  const auto page = app.create_page("/main/settings/display");
   const auto renderer = app.renderer();
   const auto window = app.window();
 
@@ -95,10 +94,8 @@ inline axgl::ptr_t<axgl::gui::Page> build_display_settings(App& app) {
   ));
 
   page->elements().add(app.ui.button("Back", [&app] {
-    app.navigate(Route::kMenu);
+    app.navigate("/main");
   }));
-
-  return page;
 }
 
 } // namespace demo_gui

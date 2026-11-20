@@ -51,11 +51,12 @@ public:
   void render() override {
     if (!window_ || !window_->ready()) return;
 
-    const auto& gui = axgl_->gui_service()->get_main_ui();
+    const auto& gui = axgl_->gui_service()->get_active_page();
     const auto& realm = axgl_->realm_service()->get_active_realm();
 
     const auto viewport_i = window_->get_size();
     const auto viewport_f = glm::vec2(viewport_i);
+    const auto viewport_u = glm::uvec2(viewport_i);
     // setup
     if (viewport_ != viewport_f) {
       viewport_ = viewport_f;
@@ -65,10 +66,13 @@ public:
       if (hdr.enabled) hdr.setup(viewport_i);
       if (ssao.enabled) ssao.setup(viewport_i, *screen.depth_texture);
       if (bloom.enabled) bloom.setup(viewport_i);
-      if (gui) {
-        gui->set_size(viewport_i.x, viewport_i.y);
-        gui->init();
-      }
+    }
+    if (
+      gui
+      && (gui->get_width() != viewport_u.x || gui->get_height() != viewport_u.y)
+    ) {
+      gui->set_size(viewport_u.x, viewport_u.y);
+      gui->init();
     }
     msaa.update(viewport_i);
     blend.update(viewport_i, *screen.depth_texture);

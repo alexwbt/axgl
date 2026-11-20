@@ -1,7 +1,6 @@
 #pragma once
 
 #include <axgl/common.hpp>
-#include <axgl/interface/gui/page.hpp>
 #include <axgl/interface/services/gui_service.hpp>
 
 #include "app.hpp"
@@ -15,8 +14,8 @@ inline void register_rebind_field(
   gui_service->register_element_t<RebindFieldElement>();
 }
 
-inline axgl::ptr_t<axgl::gui::Page> build_input_settings(App& app) {
-  const auto page = app.create_page();
+inline void build_input_settings(App& app) {
+  const auto page = app.create_page("/main/settings/input");
 
   page->elements().add(app.ui.text("Input Settings", "header1"));
   page->elements().add(app.ui.text(
@@ -42,10 +41,8 @@ inline axgl::ptr_t<axgl::gui::Page> build_input_settings(App& app) {
   add_row("Move Down", app.inputs.move_down);
 
   page->elements().add(app.ui.button("Back", [&app] {
-    app.navigate(Route::kMenu);
+    app.navigate("/main");
   }));
-
-  return page;
 }
 
 } // namespace demo_gui
