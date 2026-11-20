@@ -1,8 +1,5 @@
 #pragma once
 
-#include <span>
-#include <unordered_map>
-
 #include <axgl/common.hpp>
 #include <axgl/interface/services/resource_service.hpp>
 

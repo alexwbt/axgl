@@ -1,12 +1,8 @@
 #pragma once
 
 #include <algorithm>
-#include <cstdint>
 #include <format>
-#include <memory>
-#include <span>
 #include <stdexcept>
-#include <unordered_map>
 
 #include <util/numcast.hpp>
 
